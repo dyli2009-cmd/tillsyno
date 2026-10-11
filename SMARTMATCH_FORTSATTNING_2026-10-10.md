@@ -1,3 +1,13 @@
+# TEST v36.62 – återskapad överstor bildmask vid zoom (2026-10-11)
+
+v36.61 löste inte användarens iPhone-krasch. Granskningen fann att PDF.js 3.11.174 `_createMaskCanvas` dimensionerar `fillCanvas` efter hela den zoomade masken och inte efter destinationscanvas. Ett kontrollerat test med exakt appens PDF.js och worker försöker skapa 14000 × 21000 pixlar (294 miljoner, cirka 1.18 GB RGBA) trots att utsnittet bara är 780 × 1200. Allokeringen fångas och blockeras av testets canvasFactory före minnesreservation.
+
+TEST v36.62 använder en isolerad kopia `smartmatch-pdf-v36-62.js`, med maskens tillfälliga färgyta klippt till destinationsbilden och motsvarande cache-offset. `vendor/pdf.min.js` och ordinarie app är oförändrade. Worker är fortfarande samma befintliga vendor-worker. Ingen skärpesänkning eller extra etiketter. Alla versionerade TEST-resurser och fasta adressen uppdaterade. Nästa TEST är v36.63.
+
+Verifierat: allokering i samma test reduceras till 780 × 1200; pixlar mot originalbiblioteket är identiska i sex scenarier med zoom, panorering, rotation, negativa offset och mask utanför vyn. Syntaxkontroller passerar. Detta är ett bekräftat allokeringsfel, men det är ännu inte bekräftat att användarens PDF innehåller den utlösande masken. Fysisk iPhone-test kvarstår; modell och jämförelse med liten PDF efterfrågades. iPad v36.60 stående använder redan samma mobila kodgren; högre minnesmarginal är en möjlig förklaring, inte uppmätt.
+
+Löpande TEST-publicering är redan godkänd av användaren. Kontrollflöde och iOS/TestFlight förblir låsta.
+
 # TEST v36.61 – mobil PDF-resurshantering (2026-10-11)
 
 Användaren bekräftar att TEST v36.60 fungerar på iPad i stående läge, men att telefonen fortfarande kraschar vid upprepad zoom. Båda använder redan samma mobila renderingsgren; inget separat iPad-läge att kopiera.
