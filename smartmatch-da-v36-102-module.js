@@ -1205,6 +1205,11 @@ window.SmartMatchDALink=(()=>{
  function verifiedSLRSource(o){
   const gs=resolveGs(o);
   if(!gs)return {gs:null,reason:'Ingen säker GS-koppling. Koppla rätt GS innan dörrkortets uppgifter används i SLR.'};
+  // A previously confirmed GS can predate the corrected physical matching.
+  // Show the disagreement and do NOT offer it as a trusted SLR source.
+  const suggested=chooseNearestGS(o,linkCardCache);
+  if(suggested.g&&!sameGsPosition(gs,suggested.g))
+   return {gs:null,reason:'Sparad '+gs.code+' avviker från verifierat förslag '+suggested.g.code+'. Kontrollera GS-kopplingen innan uppgifter används i SLR.'};
   if(conflictingPhysicalGS(o,gs))
    return {gs:null,reason:'Samma fysiska automatik har motstridiga sparade GS. Välj rätt GS manuellt.'};
   const card=linkCardCache.get(String(gs.code||'').toUpperCase().replace(/\s+/g,''));
