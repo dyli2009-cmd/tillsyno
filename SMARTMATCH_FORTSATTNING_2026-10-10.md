@@ -3,9 +3,17 @@
 **Senast uppdaterad:** 2026-10-10  
 **Status:** Avstämning och överlämning; **ingen ny funktionskod** i denna commit.  
 **Repo:** `dyli2009-cmd/tillsyno`  
-**Senaste TEST-kodversion:** **SmartMatch TEST v36.58** (skarpa SVG-etiketter för identifierade GS-/DA-/DS-/automatikstämplar på mobil). Nästa funktionsversion är **TEST v36.59**.  
+**Senaste TEST-kodversion:** **SmartMatch TEST v36.59** (små pixelbegränsade utsnitt av originalstämplarna från PDF, inga extra textetiketter). Nästa funktionsversion är **TEST v36.60**.  
 **Fast TEST-adress:** https://dyli2009-cmd.github.io/tillsyno/project-workspace-smartmatch-test.html  
 **Viktigt:** Detta är bara Projektflöde/SmartMatch TEST; INGA ändringar i Kontrollflöde, ordinarie Dörrservice eller iOS/TestFlight utan uttryckligt nytt beslut.
+
+## Löpande publiceringsgodkännande från användaren 2026-10-11
+
+Användaren: ”Ja, men du kan publicera alltid. Behöver inte fråga. Så vi här vi håller på att ändra hela tiden, så du kan publicera bara.” Detta ger löpande godkännande att publicera de SmartMatch TEST-ändringar vi arbetar med i denna utveckling, utan nytt godkännande per testversion. Gäller inte iOS/TestFlight, ordinarie app eller låst Kontrollflöde.
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.59
+
+Användaren behöver själva originalstämplarnas former/symboler, inte extra text. SVG-text/ID-plattor borttagna. Mobilen renderar små utsnitt direkt från PDF runt identifierade stämpel-/objektområden efter 900 ms stillhet, en i taget, med pixelbegränsad cache. Kopplingspilar/ramar kvar. Riktig PDF-rastertest: roterad syntetisk färgstämples utsnitt pixelidentiskt med källrenderingen. Safari med användarens PDF ej verifierat. Se [SMARTMATCH_TEST_V36_59.md](SMARTMATCH_TEST_V36_59.md).
 
 ## Uppdatering 2026-10-11: SmartMatch TEST v36.58
 
