@@ -1,0 +1,8 @@
+# SmartMatch TEST v36.79 – koppla pil till GS manuellt genom att skriva
+11 oktober 2026. Ändring endast i SmartMatch TEST. Den tidigare v36.78 kvar.
+
+Dörrautomatikens Koppla/ändra GS visar alltid identifierad automatik samt en tydlig sammanställning över befintlig eller föreslagen GS (kod, position, ritningssida). Det finns nu skrivbara GS-nummer och ritningssida. Appen letar i *befintliga verkliga* GS-markeringar på sidan, visar separata positioner även om de heter samma sak, förklarar om dörrkort ännu inte lästs eller varför valet är upptaget/felaktigt. Välj en kandidat och spara manuellt; skrivna bokstäver måste matcha den fysiska markeringen och pilen kräver att GS och automatik ligger på samma ritningssida. Detta skyddar mot en falsk pil som skulle peka från en PDF-sida till en annan.
+
+Det finns också knappen Visa vald GS: den flyttar ritningsvyn till GS utan att göra eller ändra kopplingen. Peka ut GS på ritningen fungerar som innan. Dörrkortet läses vid öppning av länkdiallogen. När läsningen slutförts ritas pilarna om och valens status uppdateras. Efter inläsning av PDF ritas också pilar om när cache är färdig. En GS med uttryckligt fel maskin/ID, ingen dörrautomatik, eller som redan är upptagen blockeras fortsatt. Dörrkort med osäkert automatikfält kräver separat manuell bekräftelse.
+
+Avstånd har ingen maxgräns inom ritningssidan; hindren är verifiering, GS-kandidat, ID/maskin, befintliga kopplingar och sidkrav. Kodsyntax, nya HTML-ID:n och textinmatningens normalisering testade. Äkta PDF och fysisk iPhone/iPad Safari återstår. GS-kopplingar, checklistor, PDF-export och Kontrollflöde samt native iOS/TestFlight har inte ändrats i sak.

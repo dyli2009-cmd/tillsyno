@@ -1,3 +1,6 @@
+# TEST v36.79 – GS skrivfält, förslag och Visa vald GS (2026-10-11)
+Koppla/ändra GS: identifierad DA → föreslagen närmaste verifierade GS med kod/position/sida; manuell GS-nummer + ritningssida; lista riktiga GS-positioner inklusive dublettkoder; Spara kräver exakt vald fysisk GS samt korrekt sida och bekräftat dörrkort; Visa flyttar ritningsvyn utan att ändra kopplingen. Vid kortcache färdig ritas sparade pilar om. Ingen avståndsgräns inom en sida. Kända fel/GS-upptagna blockeras. Se SMARTMATCH_TEST_V36_79.md. Kontrollflöde/iOS orörda.
+
 # TEST v36.78 – automatisk GS-stämpelform (2026-10-11)
 Befintlig klickmarkering följer PDF Circle/Square eller säker rasterdetekterad oval/rund/fyrkantig/rektangulär kontur. För enskilda färgpatchar kan klicköverläggets VISUELLA rektangel följa patchens storlek, men GS-koder/dörrkort/positioner ändras inte. Manuell form fortsätter gälla; valet 'Följ PDF-stämpeln automatiskt' återställer. pmSizedMarker CSS-bugg överstyrd. Simulerade formtester (även tunna ovala linjer), syntax och versionskopplingar testade; riktig PDF återstår. Se SMARTMATCH_TEST_V36_78.md. Kontrollflöde/iOS orörda.
 
