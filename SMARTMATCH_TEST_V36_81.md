@@ -1,0 +1,8 @@
+# SmartMatch TEST v36.81 – maskintyp kod 24 = Dorma ED 100
+Datum 2026-10-11. Isolerad SmartMatch TEST-fix av GS-/dörrautomatik-jämförelse; ingen ändring i Kontrollflöde, normalt Projektflöde, TestFlight/iOS, PDF-export eller sparade protokoll.
+
+Den gemensamma maskintypstabellen (PROJECT_AUTOMATION_MODELS) är auktoritet. Märkningens fält efter objektnummer är maskintypens numeriska kod, exempelvis 24, inte tillverkarens modellnummer 100. Kod 24 motsvarar "Dorma ED 100" i vår lista. Kortläsningen mappar olika skrivsätt "ED100", "ED 100", "ED-100", "Dorma ED 100", "ID 100" på dörrautomatikraden till kod 24 och läser också explicit "Maskintyp 24"/"Typ av maskin: 24". Typkod 024 normaliseras till 24, och modellnamn på angränsande rad stöds när Dörrautomatik-raden saknar värde. Okända eller tvetydiga maskintexter gissas inte till en annan kod. Exempelvis "24 V" blir inte typ 24.
+
+När GS verifieras jämförs nu kanoniska **typkoder mot typkoder**. Felmeddelandet vid en verklig konflikt visar båda kodvärdena och deras maskinnamn, t.ex. märkning 24 (Dorma ED 100) men dörrkort 37 (Dorma ED 250). En giltig 24→ED100-koppling ska inte blockeras av namnskillnad. Fel GS, fel kod, upptagen GS och fel dokumentation skyddas som tidigare. UI för GS-koppling visar "Maskintyp 24 (Dorma ED 100)" och antal.
+
+Verifierat genom JS-parser, 14 testexempel för maskinnamn/koder, 3 fall för automatikkod, samt positiv/negativ cardIssue-test: samma kod passerar, verklig 24 mot 37 blockeras och visar båda. Unika HTML-id och modulfilsreferenser kontrollerade. **Ingen äkta kund-PDF eller fysisk iPhone/iPad-webbläsare testad.** V36.80 kvar för jämförelse.

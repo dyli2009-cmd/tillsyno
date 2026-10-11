@@ -1,3 +1,6 @@
+# TEST v36.81 – kodbaserad maskintypmatchning, 24 = Dorma ED 100 (2026-10-11)
+Dörrautomatikens GS-pil jämför maskintyp via PROJECT_AUTOMATION_MODELS, inte modellnummer i fritext. ED100/ED 100/ID100 = kod 24; kanoniska "024" = 24. Klarar dörrkort med etikett "Dörrautomatik" och värde på raden under. Visar både typkoder och namn om de faktiskt skiljer, mot tidigare generiska fel. GS och andra skydd kvar. Se SMARTMATCH_TEST_V36_81.md. Isolerat TEST; Kontrollflöde/iOS orört.
+
 # TEST v36.80 – GS-manual och återritning, v36.79 korrigerad (2026-10-11)
 En ny DA-modul byggd om från fungerande v36.75 sedan v36.79 hade ett funktionsplaceringsfel. Läs SMARTMATCH_TEST_V36_80.md. GS manuell skrivning+ritningssida, lediga fysiska positioner, förslag, Visa GS och återritning av pilar. Känd felmatch blockerar, okända dörrkort kräver bekräftelse, sidkrav för fysisk pil bevarat. Kontrollflöde/iOS orört.
 
