@@ -1,3 +1,6 @@
+# TEST v36.84 – extra läslägen högra dörrkortskolumnen (2026-10-11)
+GS (standard) oförändrat; Alla = högra tabellkolumnens samtliga värden inklusive Mötesrum/OK; Eget sökord = innehåller term bara i högra cellen, t.ex. DT. Kompakt UI i Ritning & dörrkort. Projektinställning sparas; GS och alternativ har skilda kontrollnycklar så avprickningar finns kvar. Byter bara kontrollpunktsuttag, inte ID/dörrkort, GS-pilar eller annan modul. Se SMARTMATCH_TEST_V36_84.md.
+
 # TEST v36.83 – dörrautomatik progresskontur (2026-10-11)
 Egenkontroll till vänster och SLR till höger som grå/grön yttre kontur, separat procent från nedersta mittpunkten och upp runt respektive halva. Ingen linje över siffror. Korta yttre mittstreck och små etiketter. SLR har manuell arbetsstatus per tio rubriker, inte faktiska färdiga dokumentmallar, sparar i befintligt slrDocuments. Se SMARTMATCH_TEST_V36_83.md. GS/protokoll/ControlFlow/iOS orörda.
 
