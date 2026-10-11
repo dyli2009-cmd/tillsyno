@@ -73,6 +73,10 @@ Se [tabellregelns avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md) och [TEST v36.94](SM
 Den kända titel/Objekt/Komponent-profilen räcker som kortbevis även med en utrustningsrad. Äldre klassningskrav på ytterligare Låshus-/Cylinder-ord gäller inte för den redan verifierade profilen. Profilen och den låsta standardavläsningen ändras inte. Se [TEST v36.95](SMARTMATCH_TEST_V36_95.md).
 
 
+## ED100/ED250 och ID100/ID250 – TEST v36.98
+
+Undantaget gäller endast GS-valets maskintyp, i båda riktningar: 24 (ED100/ID100) och 37 (ED250/ID250). `ID250` och `ID 250` läses uttryckligen som typ 37. Fullständiga ID ska behålla samma objekt och sista nummer; originaltyp, kontroller och SLR ändras inte. Se [TEST v36.98](SMARTMATCH_TEST_V36_98.md). Föregående v36.97 är historik och återgångssnapshot.
+
 ## Protokollsexport utan ritning – TEST v36.96
 
 Användaren vill ta bort Ta med ritning och GS-länkar från Spara → Protokoll. Exporten ska bara innehålla valda protokoll. Godkända protokoll är förvalda enligt det befintliga urvalet; urvalsfilter och kontrollstatus ändras inte. Både ett och flera valda protokoll ger bara sina protokollsidor. Detta är skilt från att spara själva projektet med ritningen. Se [TEST v36.96](SMARTMATCH_TEST_V36_96.md).
