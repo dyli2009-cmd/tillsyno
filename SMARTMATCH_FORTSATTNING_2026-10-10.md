@@ -3,9 +3,13 @@
 **Senast uppdaterad:** 2026-10-10  
 **Status:** Avstämning och överlämning; **ingen ny funktionskod** i denna commit.  
 **Repo:** `dyli2009-cmd/tillsyno`  
-**Senaste TEST-kodversion:** **SmartMatch TEST v36.53** (Radera ett lokalt projekt eller Radera alla på startsidan; lokalt projektutkast rensas också; Dropbox-filer berörs inte). Nästa funktionsversion är **TEST v36.54**.  
+**Senaste TEST-kodversion:** **SmartMatch TEST v36.54** (serialiserad mobilrendering, frigjorda avbrutna canvasytor och kort återställningsrad utan native popup). Nästa funktionsversion är **TEST v36.55**.  
 **Fast TEST-adress:** https://dyli2009-cmd.github.io/tillsyno/project-workspace-smartmatch-test.html  
 **Viktigt:** Detta är bara Projektflöde/SmartMatch TEST; INGA ändringar i Kontrollflöde, ordinarie Dörrservice eller iOS/TestFlight utan uttryckligt nytt beslut.
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.54
+
+Snabb mobilzoom/panorering: helbild och detaljbild renderas i samma kö, avbrutna canvasytor frigörs i finally, lägre mobilpixelbudget och 450 ms stillhet före skärpning. Safari-minnestryck är misstänkt men fysisk iPhone-test återstår. Extern PDF öppnas direkt; lokal återställning erbjuds via kort rad Återställ / Behåll PDF. Samma aktiva session återupptas utan popup. Automatisk sparning är fortsatt lokal arbetskopia; extern Projekt-PDF sparas uttryckligen. Mocktester för avbrott/serialisering/återställning och syntax godkända. Se [SMARTMATCH_TEST_V36_54.md](SMARTMATCH_TEST_V36_54.md). Endast TEST; iOS/TestFlight och Kontrollflöde orörda.
 
 ## Uppdatering 2026-10-11: SmartMatch TEST v36.53
 
