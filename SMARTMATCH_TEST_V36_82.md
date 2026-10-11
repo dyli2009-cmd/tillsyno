@@ -1,0 +1,6 @@
+# SmartMatch TEST v36.82 – kompatibel ED100/ED250-familj för GS-pilar
+11 oktober 2026. Regel endast för GS-koppling och val av dörrkort. Maskintyp 24 = Dorma ED 100, 37 = Dorma ED 250, **fortfarande skilda maskintyper**. Båda kan kopplas över typkodsskillnaden 24↔37 när övriga uppgifter stämmer. Andra typkoder, upptagen GS, olika objekt och annan serie/antal fortsätter att blockera. Har dörrkortet fullständigt ID med 37 men originalstämpeln 24, krävs identiskt objektnummer och identiskt sista nummer; bara typkoden får skilja sig.
+
+Auto-matchning prioriterar: (0) exakt fullständigt ID, (1) kompatibelt fullständigt ED-ID med samma objekt/antal, (2) exakt typkod, (3) kompatibel ED-familj och (4) annars bekräftad automatik. Tidigare avstånds- och tvetydighetsspärrar finns kvar. Manuell GS-lista och förslag visar när kopplingen sker via en kompatibel ED-familj. Originalmärkning, masterlista, PDF, checklistor och SLR ändras INTE; detta är bara ett kopplingsundantag. Kontrollflöde och TestFlight/iOS orörda.
+
+Verifierat med JS-syntax, fem typpar, fyra fullständiga ID:n, sex dörrkortscase och rankning mellan exakt/kompatibel/fel GS. Versions- och HTML-referenser verifierade; verklig kund-PDF på dator, iPad och iPhone återstår. V36.81 sparad som jämförelse.

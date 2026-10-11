@@ -1,3 +1,6 @@
+# TEST v36.82 – ED100/ED250 familj för GS-pilar (2026-10-11)
+24/37 är kompatibla endast vid GS-koppling, men originalmodeller och typkoder lämnas kvar. GS full-ID matchar bara om objekt och sista antal/serie är identiska; annan kod än 24/37 tillåts ej. Exakt ID rankas före kompatibelt ID, och manuell meny visar kompatibilitetsnotis. Kod/test i SMARTMATCH_TEST_V36_82.md. Kontrollflöde/iOS orörda.
+
 # TEST v36.81 – kodbaserad maskintypmatchning, 24 = Dorma ED 100 (2026-10-11)
 Dörrautomatikens GS-pil jämför maskintyp via PROJECT_AUTOMATION_MODELS, inte modellnummer i fritext. ED100/ED 100/ID100 = kod 24; kanoniska "024" = 24. Klarar dörrkort med etikett "Dörrautomatik" och värde på raden under. Visar både typkoder och namn om de faktiskt skiljer, mot tidigare generiska fel. GS och andra skydd kvar. Se SMARTMATCH_TEST_V36_81.md. Isolerat TEST; Kontrollflöde/iOS orört.
 
