@@ -1117,8 +1117,16 @@ window.SmartMatchDALink=(()=>{
   }
   // Duplicate historic records retain their independent checks, but only one physical arrow is drawn.
   const distinct=[];
+  const samePhysicalSource=(a,b)=>{
+   if(a.page!==b.page||itemFullId(a)!==itemFullId(b))return false;
+   const [ax0,ay0,ax1,ay1]=a.rect,[bx0,by0,bx1,by1]=b.rect;
+   const overlapX=Math.max(0,Math.min(ax1,bx1)-Math.max(ax0,bx0));
+   const overlapY=Math.max(0,Math.min(ay1,by1)-Math.max(ay0,by0));
+   const smallArea=Math.min(Math.abs((ax1-ax0)*(ay1-ay0)),Math.abs((bx1-bx0)*(by1-by0)));
+   return smallArea>0&&overlapX*overlapY/smallArea>=.45;
+  };
   for(const item of items){
-   const index=distinct.findIndex(x=>x.page===item.page&&itemFullId(x)===itemFullId(item)&&nearPhysicalRect(x.rect,item.rect));
+   const index=distinct.findIndex(x=>samePhysicalSource(x,item));
    if(index<0){distinct.push(item);continue}
    const weight=o=>(resolveGs(o)?100:0)+(o.gsLinkConfirmed?20:0)+Object.values(o.checks||{}).filter(Boolean).length+Object.keys(o.slrDocuments||{}).length;
    if(weight(item)>weight(distinct[index]))distinct[index]=item;
