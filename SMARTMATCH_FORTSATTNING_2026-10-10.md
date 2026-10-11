@@ -1,3 +1,7 @@
+# TEST v36.90 – återinförd manuell GS-referens (2026-10-11)
+
+Efter jämförelse med v36.19–v36.23 godkände användaren att första manuella DA→GS-kopplingen åter används som riktning/avståndsstöd vid objektnummersökning. Okända automatikuppgifter tillåts bara med befintligt kort och tydlig närgeometri; explicita fel, saknade kort, dubbla GS och tvetydighet blockeras. gsReferenceId sparas och valideras även efter återöppning. Kontrollerat helkedjetest med verkliga Snidaren-PDF:en ger 17 märkningar och 17 verifierade GS-pilar med första automatiken manuellt kopplad till GS4. Se SMARTMATCH_TEST_V36_90.md. Låst tabellregel och övriga moduler oförändrade.
+
 # TEST v36.89 – sök från manuellt placerad automatik (2026-10-11)
 
 Explicit vald automatik som sökreferens, hela objektnumret som filter, maskintyp per träff, färsk dörrkortskontroll vid sökning. Annotation-ID söks i samtliga Contents/Subj/T-fält, dedupliceras. Status visar sökt objektnummer. Test på riktiga Snidaren ger 17 märkningar för 200154-28; full koppling i användarens aktiva session ej verifierad. Se SMARTMATCH_TEST_V36_89.md. Låst tabellregel och UI-förenkling bevarade.

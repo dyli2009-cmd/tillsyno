@@ -1,0 +1,11 @@
+# SmartMatch TEST v36.90 – första manuella GS-kopplingen som referens
+
+Användaren godkänner återinförande av den äldre v36.19–v36.23-principen: första manuellt placerade och GS-kopplade automatikens riktning används som stöd för övriga objektnummerträffar. Sökningen läser fortfarande maskintyp per märkning och söker i PDF-text och annotationer.
+
+En manuellt bekräftad referens i samma objekt ger en vektor från DA till GS. Hela märkningens exakta ID och kompatibelt ID har högst prioritet; övriga kandidater får den äldre avstånds-/referenspoängen med bonus för bekräftad automatik och passande maskintyp. Ett kort med okänd/otydlig automatik kan användas endast om kortet finns, avståndet är under 145 PDF-enheter, referensavvikelsen under 60 och alternativ är tydligt separerade (20 poäng). Explicit ingen automatik, fel maskintyp/ID, saknat kort, upptagen fysisk GS och tvetydighet blockeras. Referensen måste vara manuellt bekräftad och får inte vara uttryckligen frånkopplad eller ha fel kortuppgifter. Referenskopplingarna skrivs inte som manuellt bekräftade.
+
+Auto-objekt lagrar gsReferenceId och pilvalideringen använder samma underlag. Referens-ID inkluderas i lokal/PDF-snapshot och bevaras vid återöppning. Manuellt ändrad GS-koppling blir självständig och rensar referens-ID. Befintliga kopplingar och uttryckliga frånkopplingar skrivs inte över vid sökning.
+
+Verifierat: node tests/smartmatch-da-reference-v36-90.cjs. Hela DA-modulen körs med kontrollerad DOM/bridge och en riktig genererad PDF: referensstyrd fallback, pilvalidering, fel maskintyp, tvetydighet, explicit ingen automatik, saknat kort, frånkopplad referens och återöppning. Samma test med den skickade Snidaren-PDF:en, appens PDF.js 3.11.174 och PDF-lib, alla 15 kort och GS-annotationer, första 200154-28-24-1 manuellt kopplad till närmaste GS4: 17 hittade automatiker, 17 verifierade GS-pilar, 0 manuellt olösta och inga dubbla fysiska GS-kopplingar. Det är ett kontrollerat integrationstest; ingen faktisk fysisk enhet eller användarens aktiva webbläsarsession har styrts. JavaScript-syntax passerar.
+
+Ny versionerad DA-modul och HTML/JS/CSS, fast TEST-entry identisk, v36.89 bevarad. Låst tabellregel och v36.88 UI-förenkling oförändrade. Kontrollflöde och native iOS/TestFlight orörda.
