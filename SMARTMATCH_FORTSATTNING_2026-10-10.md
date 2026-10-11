@@ -1,3 +1,7 @@
+# TEST v36.92 – placering → hela objektet → närmaste GS
+
+Användaren ersätter tidigare DA-kort-/en-till-en-krav med närmaste fysisk GS på samma ritningssida. Sparad placeringsruta läses för objektnummer, maskintyp och antal; sedan söks objektet automatiskt på alla ritningssidor och varje träff får Egenkontroll/SLR-knapp och GS-pil. Fullt Chromium-test avslöjade verklig orsak: ritningar felklassades som kort och uteslöts från sökningen. Explicit GS-geometri och ritningsstämpel hindrar detta; Snidaren kortlista nu exakt 11–25. Tester i riktiga HTML-flödet med original och rå testkopia: 17 fysiska träffar med GS-pilar; originalets 18 sparade poster (en äldre dublett) och kontroller bevaras. Se SMARTMATCH_TEST_V36_92.md. Låst tabell-ID-regel, Kontrollflöde och native iOS orörda.
+
 # TEST v36.91 – faktiskt laddad automatikmodul rättad
 
 36.90-sidan laddade fortfarande DA v36.85, så den testade ändringen var inte aktiv. 36.91 kopplar både fast och versionsmärkt entry till DA v36.90; nytt test kontrollerar resursreferensen. Se SMARTMATCH_TEST_V36_91.md.
@@ -347,3 +351,4 @@ v36.31 publicerad via GitHub Pages. Läs även `SMARTMATCH_TEST_V36_30.md` och `
 **Versionsdisciplin:** Se alltid `DEVELOPMENT_RULES.md`. Ändra aldrig ordinarie TestFlight/Kontrollflöde utan nytt godkännande. Nästa TEST efter bekräftad v36.31 = v36.32. Behåll fasta `project-workspace-smartmatch-test.html` vid varje funktionspublicering.
 
 **Påminnelse:** Användaren har bett om en framtida påminnelse och idéer när arbetet återupptas; **ingen tid är angiven och ingen automation har skapats**. Fråga om önskat datum/klockslag för en verklig notifiering.
+
