@@ -1,3 +1,7 @@
+# TEST v36.97 – återställ dörrkortskontroll av GS-pilar (2026-10-11)
+
+Användaren begär att dörrautomatik bara får en pil till närmaste **rätt** GS; dörrkortets dörrautomatikrad, maskintyp och eventuellt fullständigt ID ska först kontrolleras. v36.82:s bevisbaserade kopplingslogik återförs till v36.92:s fungerande objektsökning. Obekräftade automatiska länkar kan räknas om; manuellt bekräftade länkar och sparade egenkontroller/SLR bevaras. Äldre dubbla poster raderas inte men ger endast en synlig pil per fysisk automatik. Fristående v36.97-snapshot; tidigare v36.96 oförändrad. Se SMARTMATCH_TEST_V36_97.md och SMARTMATCH_AUTOMATION_RULE_LOCK.md.
+
 # TEST v36.96 – endast protokoll i protokollsexporten
 
 Användaren tar bort Ta med ritning och GS-länkar under Spara → Protokoll. Ny separat protokollsexportmodul36.96 kopierar endast valda revisionsprotokollsidor. Godkända protokoll förblir förvalda; sparande av hela projektet, de låsta avläsningsreglerna, DA92, profilen94 och sessionslogiken ändras inte. Riktigt Chromium-test: sju godkända förvalda i underlaget; val av ett/två protokoll ger exakt en/två protokollsidor, inga interna GS-länkar och inga originalritningsläsningar i protokollsexporten. Befintliga externa företagslänkar i själva protokollen behålls. Version95 inklusive önskat sidhuvud behålls som snapshot; samma placering i96. Se [TEST v36.96](SMARTMATCH_TEST_V36_96.md).
