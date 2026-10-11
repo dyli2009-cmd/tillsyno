@@ -44,7 +44,7 @@ Detta dokument sparar och låser beteenderegeln. Det inför ingen ny appfunktion
 
 ## 6. Samband med dörrautomatik och gemensam regelsamling
 
-Den här regeln bestämmer **dörrkortets ID → motsvarande ritningsposition**. [Automatikregeln](SMARTMATCH_AUTOMATION_RULE_LOCK.md) bestämmer **automatikens märkning → objektsökning → närmaste GS-position**. GS-positionens dörrkortskoppling gör att man kan hitta vidare till kortet, men kortets automatikrad eller modell får inte hindra automatikens knapp eller närmaste-GS-pil.
+Den här regeln bestämmer **dörrkortets ID → motsvarande ritningsposition**. [Automatikregeln](SMARTMATCH_AUTOMATION_RULE_LOCK.md) bestämmer **automatikens märkning → objektsökning → dörrkortskontroll → närmaste verifierade GS-position**. En automatik får sin knapp oberoende av dörrkort, men automatisk GS-pil kräver att rätt dörrkorts automatikuppgifter stämmer. Den tidigare rena närmaste-GS-regeln i v36.92 har ersatts av v36.97.
 
 Se [samlade funktionsregler](SMARTMATCH_FUNCTION_RULES_LOCK.md) för motiven, sambandet och hur reglerna ska förklaras vid nästa genomgång.
 
