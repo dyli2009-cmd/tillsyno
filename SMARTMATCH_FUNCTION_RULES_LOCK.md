@@ -73,6 +73,10 @@ Se [tabellregelns avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md) och [TEST v36.94](SM
 Den kända titel/Objekt/Komponent-profilen räcker som kortbevis även med en utrustningsrad. Äldre klassningskrav på ytterligare Låshus-/Cylinder-ord gäller inte för den redan verifierade profilen. Profilen och den låsta standardavläsningen ändras inte. Se [TEST v36.95](SMARTMATCH_TEST_V36_95.md).
 
 
+## Närmaste GS med dörrautomatik och kompatibel ED200 – TEST v36.99
+
+Nytt uttryckligt användarbeslut 2026-10-11: en automatik ska peka på **den närmaste GS vars eget dörrkort har dörrautomatik**. Stöd för ED200/ID200 (kod 17) ihop med tidigare ED100/ID100 (24) och ED250/ID250 (37) gäller endast denna pil. Exakt ID får inte föra pilen långt bort förbi en närmare kompatibel GS. För långa automatiska pilar avstår koppling och erbjuder manuellt val; äldre automatiska GS2-pilar räknas om när projektet öppnas, medan uttryckliga manuella kopplingar, kontroller och SLR sparas. Se [TEST v36.99](SMARTMATCH_TEST_V36_99.md).
+
 ## ED100/ED250 och ID100/ID250 – TEST v36.98
 
 Undantaget gäller endast GS-valets maskintyp, i båda riktningar: 24 (ED100/ID100) och 37 (ED250/ID250). `ID250` och `ID 250` läses uttryckligen som typ 37. Fullständiga ID ska behålla samma objekt och sista nummer; originaltyp, kontroller och SLR ändras inte. Se [TEST v36.98](SMARTMATCH_TEST_V36_98.md). Föregående v36.97 är historik och återgångssnapshot.
