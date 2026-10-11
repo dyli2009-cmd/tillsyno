@@ -1,3 +1,7 @@
+# TEST v36.103 – förenklad placeringsdialog, samma söklogik (2026-10-11)
+
+På användarens begäran har rubriken ”Koppla dörrautomatik” och den långa texten ”Objektnummer–maskintyp–antal. Exempel: … Rita rutan kring märkningen; sedan söks samma objekt på alla ritningssidor.” tagits bort ur modalrutan. Endast instruktionen **”Rita en ruta kring dörrautomatikens ID. Sedan söker appen samma objekt på alla ritningssidor.”** visas. Inmatningsfältet, placeringsknappen, DA-modulen från v36.102, GS-regeln och SLR är orörda. Fasta `project-workspace-smartmatch-test.html` har samma innehåll som v36.103-versionen; ingen iOS-/TestFlight-ändring.
+
 # TEST v36.102 – GS-ändringen var inte synlig trots versionsnumret (2026-10-11)
 
 Användaren såg `101` men inte effekten av uppdateringen. v36.102 gör kopplingen synlig i dörrautomatikdialogen: visar sparad GS och närmaste verifierade förslag samt avvikelse, inklusive tidigare manuellt sparad fel-GS. Koden läser DA-symboler och GS-dörrkort även i den vanliga dialogen, inte bara länkningsläget. Teknikern kan välja föreslagen GS men måste spara själv. SLR laddar kontrollunderlaget vid öppning, visar GS/kortsida överst och använder **inte** sparad fel-GS som verifierad automatiserad SLR-källa. 11 isolerade kodassertioner för Snidaren, gamla fel och SLR passerade; full iPad/iPhone-GUI-verifiering återstår. Fasta testadressen har uppdaterats. Se [SMARTMATCH_TEST_V36_102.md](SMARTMATCH_TEST_V36_102.md). Låst v36.101-princip om EN korrekt GS per fysisk automatik oförändrad.
