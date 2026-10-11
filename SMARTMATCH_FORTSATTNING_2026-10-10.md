@@ -1,3 +1,6 @@
+# TEST v36.74 – Ej kontrollerat alla (2026-10-11)
+En andra knapp nollställer alla resultat och punktanmärkningar på just den öppna automatiken (0 %) utan att röra andra DA, projektinformation eller GS/SLR. Den befintliga Godkänn alla är kvar. Se SMARTMATCH_TEST_V36_74.md. DA/GS-modulen v36.73 återanvänds oförändrad.
+
 # TEST v36.73 – egenkontroll skiljs åt, markering och pil (2026-10-11)
 Buggrättning: inget checklistdelat tillstånd mellan två DA, kolliderande interna ID korrigeras vid inläsning; tidigare matchning endast samma fysiska position. Godkänn alla gäller vald DA. Gult fokus försvinner vid klick utanför DA på ritningen. ↗ Justera pil åter i menyn och DA-dialogen. Se SMARTMATCH_TEST_V36_73.md. v36.72 bevarad och Kontrollflöde/iOS orörda.
 
