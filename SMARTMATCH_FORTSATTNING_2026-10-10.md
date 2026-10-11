@@ -1,3 +1,7 @@
+# TEST v36.89 – sök från manuellt placerad automatik (2026-10-11)
+
+Explicit vald automatik som sökreferens, hela objektnumret som filter, maskintyp per träff, färsk dörrkortskontroll vid sökning. Annotation-ID söks i samtliga Contents/Subj/T-fält, dedupliceras. Status visar sökt objektnummer. Test på riktiga Snidaren ger 17 märkningar för 200154-28; full koppling i användarens aktiva session ej verifierad. Se SMARTMATCH_TEST_V36_89.md. Låst tabellregel och UI-förenkling bevarade.
+
 # TEST v36.88 – förenklad Ritning & dörrkort (2026-10-11)
 
 Läs kontrollpunkter och Lägg till position / koppla dörrkort borttagna ur den synliga gruppen enligt användarens beslut. Manuellt formulär dolt; åtgärdsrader för kort utan funnen ritningsposition visas inte längre. Hittade positioner/kopplingar kvar. Kontrollpunktslogik och sparade läslägen bevaras; låst tabellregel/ID-avläsning oförändrad. Se SMARTMATCH_TEST_V36_88.md.
