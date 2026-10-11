@@ -3,13 +3,17 @@
 **Senast uppdaterad:** 2026-10-10  
 **Status:** Avstämning och överlämning; **ingen ny funktionskod** i denna commit.  
 **Repo:** `dyli2009-cmd/tillsyno`  
-**Senaste TEST-kodversion:** **SmartMatch TEST v36.59** (små pixelbegränsade utsnitt av originalstämplarna från PDF, inga extra textetiketter). Nästa funktionsversion är **TEST v36.60**.  
+**Senaste TEST-kodversion:** **SmartMatch TEST v36.60** (normal helhetsvy, hel synlig PDF-yta skärps efter 1,2 s stillhet med en mobilcanvas). Nästa funktionsversion är **TEST v36.61**.  
 **Fast TEST-adress:** https://dyli2009-cmd.github.io/tillsyno/project-workspace-smartmatch-test.html  
 **Viktigt:** Detta är bara Projektflöde/SmartMatch TEST; INGA ändringar i Kontrollflöde, ordinarie Dörrservice eller iOS/TestFlight utan uttryckligt nytt beslut.
 
 ## Löpande publiceringsgodkännande från användaren 2026-10-11
 
 Användaren: ”Ja, men du kan publicera alltid. Behöver inte fråga. Så vi här vi håller på att ändra hela tiden, så du kan publicera bara.” Detta ger löpande godkännande att publicera de SmartMatch TEST-ändringar vi arbetar med i denna utveckling, utan nytt godkännande per testversion. Gäller inte iOS/TestFlight, ordinarie app eller låst Kontrollflöde.
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.60
+
+Användaren vill ha normalt skarpt originalutseende på hela vyn, inte stämpelpatchar. Separata utsnitt borttagna; hela synliga PDF-ytan skärps efter 1,2 s stillhet på mobil. En direkt begränsad canvas används utan extra kopia; startad rendering avslutas utan cancel/restart-churn, inaktuella resultat visas inte och gemensam kö behålls. CSS zoom under mobilpinch och skydd mot inaktuella touchend-callbacks. Verklig Node-PDF-rastertest av funktionen gav pixelidentiskt originalområde på roterad sida, 936k pixlar. Safari/CSS zoom med riktig telefon ännu ej testat. Ingen automatisk page reload i ritningskoden; Safari-processkrasch kan inte spärras med JS. Se [SMARTMATCH_TEST_V36_60.md](SMARTMATCH_TEST_V36_60.md).
 
 ## Uppdatering 2026-10-11: SmartMatch TEST v36.59
 
