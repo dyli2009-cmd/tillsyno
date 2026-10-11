@@ -1,3 +1,9 @@
+# TEST v36.67 – hela textrader i kundmall 1.5, 1.6 och 1.12 (2026-10-11)
+
+Användaren vill att fullständig benämning för 1.5, 1.6 och 1.12 ligger på en rad i kundmallens ruta, inklusive hastighet/låshus utan oönskad nedflyttning. PDF-tabellen beräknade radbrytning innan typsnitt och storlek valdes, alltså med föregående cells font. Rätt font sätts nu först. Dessa tre punkter hålls på en rad med full text och mätt anpassning till tillgänglig bredd om det skulle behövas. Övriga rader behåller vanlig radbrytning. Textinnehåll och rutornas storlek är oförändrade.
+
+Verifierat med exakt appens jsPDF: alla tre fullständiga etiketter ryms på en rad både vid 6.8 och 7.4 punkters ordinarie textstorlek (max 94.32 mm mot 97 mm tillgängligt); inga borttagna ord, samma vertikala centrering. Teststart med avsiktligt annan font bekräftar oberoende av föregående cell. JS-syntax passerar. Kundmallens förhandsvisning och export använder samma PDF-generering. Zoom/DA-arbetsflöde orört. Fasta TEST-adressen och alla versionerade resurser uppdaterade. Löpande publicering godkänd. Kontrollflöde och iOS/TestFlight orörda. Nästa TEST v36.68.
+
 # TEST v36.66 – snabbare skärpning på iPad (2026-10-11)
 
 Användaren ber om snabbare iPad-skärpning. Enda funktionella ändringen från v36.65: detaljrenderingens schemaläggningspaus på mobil/tablet är nu 120 ms, tidigare 1200 ms på iPad. Telefonen behåller 120 ms och desktop 300 ms. Skärpa, pixelgränser, serialisering, cache och DA-funktioner är oförändrade.
