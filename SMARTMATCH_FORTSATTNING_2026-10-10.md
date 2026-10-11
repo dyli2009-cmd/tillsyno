@@ -1,3 +1,7 @@
+# TEST v36.96 – endast protokoll i protokollsexporten
+
+Användaren tar bort Ta med ritning och GS-länkar under Spara → Protokoll. Ny separat protokollsexportmodul36.96 kopierar endast valda revisionsprotokollsidor. Godkända protokoll förblir förvalda; sparande av hela projektet, de låsta avläsningsreglerna, DA92, profilen94 och sessionslogiken ändras inte. Riktigt Chromium-test: sju godkända förvalda i underlaget; val av ett/två protokoll ger exakt en/två protokollsidor, inga interna GS-länkar och inga originalritningsläsningar i protokollsexporten. Befintliga externa företagslänkar i själva protokollen behålls. Version95 inklusive önskat sidhuvud behålls som snapshot; samma placering i96. Se [TEST v36.96](SMARTMATCH_TEST_V36_96.md).
+
 # TEST v36.95 – känd profil även med en utrustningsrad (2026-10-11)
 
 Extra återanvändningstest visade att titel/Objekt/Komponent-profilens ID kunde identifieras men sidan sedan sorteras bort av äldre krav på extra Låshus/Cylinder-ord. v36.95 godtar den verifierade profilen som kortbevis. Endast denna klassningsgren är ny; profil94, första-cell-avläsning och DA92 är oförändrade. Faktiska app95-tester: fem kort ensamma, 14 kopplingar i exemplet, nytt GC2-kort med endast en automatikrad; tidigare 15 GS-kort och 17DA/17GS-pilar samt 18 sparade poster behålls. 94-snapshots kvar. Se [TEST v36.95](SMARTMATCH_TEST_V36_95.md).
@@ -371,4 +375,5 @@ v36.31 publicerad via GitHub Pages. Läs även `SMARTMATCH_TEST_V36_30.md` och `
 **Versionsdisciplin:** Se alltid `DEVELOPMENT_RULES.md`. Ändra aldrig ordinarie TestFlight/Kontrollflöde utan nytt godkännande. Nästa TEST efter bekräftad v36.31 = v36.32. Behåll fasta `project-workspace-smartmatch-test.html` vid varje funktionspublicering.
 
 **Påminnelse:** Användaren har bett om en framtida påminnelse och idéer när arbetet återupptas; **ingen tid är angiven och ingen automation har skapats**. Fråga om önskat datum/klockslag för en verklig notifiering.
+
 

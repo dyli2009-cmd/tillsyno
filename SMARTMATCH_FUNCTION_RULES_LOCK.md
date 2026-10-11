@@ -11,6 +11,7 @@ Det här är ingången när vi återupptar utvecklingen eller användaren fråga
 | Dörrautomatik | Första placeringsrutans märkning → hela objektnumret söks på ritningssidorna → egen knapp per träff → pil till närmaste GS på samma sida | [Dörrautomatik och GS-koppling](SMARTMATCH_AUTOMATION_RULE_LOCK.md) | LÅST; v36.92 bekräftad av användaren |
 | Dörrkort, standardprofil | Identifiera tabellen → läs ID i översta vänstra cellen → matcha samma hela ID på ritningen → koppla kortet till positionen | [Tabellavläsning och dörrkort](SMARTMATCH_TABLE_RULE_LOCK.md) | LÅST; generell tolkning av alla tabellupplägg är ännu inte färdig |
 | Dörrkort, separat känt tillägg | Uttrycklig korttitel → verifierad Objekt-rad och Komponent/Produkt-tabell → samma hela ID på ritningen | [Tabellavläsning, avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md) | Tillägg enligt användarbeslut; v36.95 |
+| Protokollexport | Spara → Protokoll → endast valda protokollsidor; godkända är förvalda; inga ritningssidor eller GS-länkmenyer | [TEST v36.96](SMARTMATCH_TEST_V36_96.md) | Beslutad enligt användarens instruktion |
 
 ## Två kopplingar som bygger på varandra
 
@@ -69,3 +70,8 @@ Se [tabellregelns avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md) och [TEST v36.94](SM
 ## Återanvändning för korta tabeller – TEST v36.95
 
 Den kända titel/Objekt/Komponent-profilen räcker som kortbevis även med en utrustningsrad. Äldre klassningskrav på ytterligare Låshus-/Cylinder-ord gäller inte för den redan verifierade profilen. Profilen och den låsta standardavläsningen ändras inte. Se [TEST v36.95](SMARTMATCH_TEST_V36_95.md).
+
+
+## Protokollsexport utan ritning – TEST v36.96
+
+Användaren vill ta bort Ta med ritning och GS-länkar från Spara → Protokoll. Exporten ska bara innehålla valda protokoll. Godkända protokoll är förvalda enligt det befintliga urvalet; urvalsfilter och kontrollstatus ändras inte. Både ett och flera valda protokoll ger bara sina protokollsidor. Detta är skilt från att spara själva projektet med ritningen. Se [TEST v36.96](SMARTMATCH_TEST_V36_96.md).
