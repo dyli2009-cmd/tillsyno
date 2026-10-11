@@ -1,3 +1,11 @@
+# TEST v36.61 – mobil PDF-resurshantering (2026-10-11)
+
+Användaren bekräftar att TEST v36.60 fungerar på iPad i stående läge, men att telefonen fortfarande kraschar vid upprepad zoom. Båda använder redan samma mobila renderingsgren; inget separat iPad-läge att kopiera.
+
+v36.61 behåller v36.60:s skarpa original-PDF och frigör PDF.js analysresurser innan ritningen visas. Mobila färgskanningar och avslutade detaljrenderingar frigör också sidans cache efter att renderingen avslutats. Ingen sänkning av visningsupplösningen. Nästa TEST är v36.62.
+
+Verifierat: JS-syntax; aktiv render avslutas innan cleanup, ingen mobil extra canvas, återanvändning av färdig vy; faktisk PDF-rendering av roterad sida är pixelidentisk med originalet även efter cleanup och omrendering. Safari på fysisk iPhone har inte kunnat testas; orsaken till kraschen är fortfarande en hypotes. Publicering av SmartMatch TEST är redan löpande godkänd av användaren. Kontrollflöde och iOS/TestFlight är fortsatt orörda.
+
 # SMARTMATCH – FORTSÄTT HÄR NÄSTA GÅNG
 
 **Senast uppdaterad:** 2026-10-10  
