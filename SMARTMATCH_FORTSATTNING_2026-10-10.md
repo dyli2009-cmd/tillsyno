@@ -1,3 +1,6 @@
+# TEST v36.83 – dörrautomatik progresskontur (2026-10-11)
+Egenkontroll till vänster och SLR till höger som grå/grön yttre kontur, separat procent från nedersta mittpunkten och upp runt respektive halva. Ingen linje över siffror. Korta yttre mittstreck och små etiketter. SLR har manuell arbetsstatus per tio rubriker, inte faktiska färdiga dokumentmallar, sparar i befintligt slrDocuments. Se SMARTMATCH_TEST_V36_83.md. GS/protokoll/ControlFlow/iOS orörda.
+
 # TEST v36.82 – ED100/ED250 familj för GS-pilar (2026-10-11)
 24/37 är kompatibla endast vid GS-koppling, men originalmodeller och typkoder lämnas kvar. GS full-ID matchar bara om objekt och sista antal/serie är identiska; annan kod än 24/37 tillåts ej. Exakt ID rankas före kompatibelt ID, och manuell meny visar kompatibilitetsnotis. Kod/test i SMARTMATCH_TEST_V36_82.md. Kontrollflöde/iOS orörda.
 

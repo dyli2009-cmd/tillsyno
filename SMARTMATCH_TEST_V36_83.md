@@ -1,0 +1,7 @@
+# SmartMatch TEST v36.83 – progressram för Egenkontroll och SLR
+
+Datum 2026-10-11. Den lodräta mittlinjen som tidigare gick över PDF-siffrorna ersätts med två korta yttre mittmarkeringar precis vid över- och underkant. Ingen mittlinje går igenom PDF-texten. Vänster halva av yttre ramen visar Egenkontroll, från nedre mittpunkten vänsterut runt nedre vänsterhörnet och upp till övre mittpunkt. Höger halva visar SLR från nedre mittpunkten högerut och runt högerhörnet till övre mittpunkten. Grått är återstående, grönt visar framsteg, separat för vardera halvan. Diskreta små etiketter Egenkontroll x% och SLR y% ligger precis nedanför märket. Ramen är tunn, originalets text/PDF förblir synlig och GS-pilar/ID/kopplingar är orörda.
+
+Egenkontrolls procent kommer från befintliga checklistor, med anmärkning fortsatt visad som ! och varning. För SLR fanns ännu bara en mallstruktur. Därför tillförs enkel MANUELL dokumentstatus på de tio befintliga rubrikerna: Ej påbörjad, Pågår och Kontrollerad/klar. Pågår räknas som 0.5 del, klar som 1 del, procent per tio delar. Detta är arbetsuppföljning och inte automatiskt godkänd CE- eller SLR-dokumentation; själva mallarna skapas senare. Status sparas per automatik i befintliga slrDocuments och visas på ramen. Checklistor, PDF-export, GS-logik och Kontrollflöde/iOS lämnas orörda.
+
+Kontrollerat JavaScript-syntax, HTML-tillgångar, procentformel 0/25/100, progressriktning, två oberoende SVG-banor och live-uppdatering. Riktig kund-PDF på iPad/iPhone inte verifierad ännu. v36.82 finns kvar.
