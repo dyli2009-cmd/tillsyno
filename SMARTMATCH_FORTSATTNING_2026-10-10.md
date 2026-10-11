@@ -1,3 +1,7 @@
+# TEST v36.102 – GS-ändringen var inte synlig trots versionsnumret (2026-10-11)
+
+Användaren såg `101` men inte effekten av uppdateringen. v36.102 gör kopplingen synlig i dörrautomatikdialogen: visar sparad GS och närmaste verifierade förslag samt avvikelse, inklusive tidigare manuellt sparad fel-GS. Koden läser DA-symboler och GS-dörrkort även i den vanliga dialogen, inte bara länkningsläget. Teknikern kan välja föreslagen GS men måste spara själv. SLR laddar kontrollunderlaget vid öppning, visar GS/kortsida överst och använder **inte** sparad fel-GS som verifierad automatiserad SLR-källa. 11 isolerade kodassertioner för Snidaren, gamla fel och SLR passerade; full iPad/iPhone-GUI-verifiering återstår. Fasta testadressen har uppdaterats. Se [SMARTMATCH_TEST_V36_102.md](SMARTMATCH_TEST_V36_102.md). Låst v36.101-princip om EN korrekt GS per fysisk automatik oförändrad.
+
 # TEST v36.101 – en rätt GS och säker SLR-källa (2026-10-11)
 
 Användaren bestämde att varje fysisk automatik bara får en korrekt GS-koppling, inte två. Detta är viktigare än att blint följa den fysiska DA-symbolen, som fortsatt används som hjälp för avstånd och dörrplacering (Snidaren GS4/GS2). Gamla dubbletter med motstridiga GS får inte användas som SLR-underlag; ett manuellt bekräftat nytt GS-val rättar samma fysiska automatik utan att radera checklistor/SLR. Framtida SLR ska läsa verifierad GS och dess dörrkortssida. [v36.101](SMARTMATCH_TEST_V36_101.md) beskriver implementation, begränsningar och regressionstest; ny testkod är incheckad men inte körd, iPhone/iPad-verifiering kvar.
