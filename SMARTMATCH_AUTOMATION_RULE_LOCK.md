@@ -1,7 +1,7 @@
 # SmartMatch – låst regel för dörrautomatik och GS-koppling
 
 **STATUS: LÅST enligt användarens uppdaterade beslut 2026-10-11.**
-**Gällande kopplingsregel: TEST v36.99.** Föregående godkända objektsökning och placering från v36.92 behålls, men dess rena närmaste-GS-regel ersätts av dörrkortsverifierad GS-matchning. Den tidigare regeln finns dokumenterad som historik.
+**Gällande kopplingsregel: TEST v36.100.** Föregående godkända objektsökning och placering från v36.92 behålls, men dess rena närmaste-GS-regel ersätts av dörrkortsverifierad GS-matchning. Den tidigare regeln finns dokumenterad som historik.
 
 Detta är den gällande beteenderegeln för dörrautomatik i SmartMatch TEST. Läs även [samlingen av funktionsregler](SMARTMATCH_FUNCTION_RULES_LOCK.md). Äldre versionsanteckningar beskriver historik; de får inte återinföra äldre kopplingskrav som strider mot detta beslut.
 
@@ -52,14 +52,16 @@ Två representationer av samma märkning på samma fysiska plats ska ge en träf
 
 Vid **Verktyg → Koppla dörrautomatik** läses automatikens fullständiga märkning på ritningen. Systemet går därefter igenom de identifierade GS-positionernas **egna kopplade dörrkort** och kontrollerar att kortet anger dörrautomatik. Fullständig märkning, maskintyp och eventuella skillnader i objekt/antal används för att undvika felkoppling. Kompatibilitetsundantaget omfattar ED100/ID100 (typkod 24), ED200/ID200 (17) och ED250/ID250 (37), i båda riktningar **endast för GS-pilen**, aldrig ommärkning av maskintyp. `ID250` rättades i v36.98 och `ID200` i v36.99. Samma objekt och sista nummer måste fortsatt stämma om kortet innehåller ett fullständigt automatik-ID.
 
-**Urval – uppdaterat i v36.99:** Välj **närmaste fysiska GS på samma ritningssida vars eget dörrkort bekräftar dörrautomatik och är kompatibelt**. Fullständigt ID/typ används som kontroll av att GS-kandidaten är möjlig, inte för att välja en långt bort liggande GS framför en närmare giltig GS. Kompatibel ED-familj **åt båda håll för pilen** är 17 (ED200/ID200), 24 (ED100/ID100), 37 (ED250/ID250). Om dörrkortet innehåller komplett automatik-ID ska samma objekt och sista nummer gälla. Om närmaste verifierade GS trots detta ligger orimligt långt bort visas **Koppla manuellt** i stället för en lång pil. Endast två faktiskt lika nära, likvärdiga GS kräver manuellt val.
+**Urval – uppdaterat i v36.99 och fysiskt förankrat i v36.100:** Välj **närmaste fysiska GS på samma ritningssida vars eget dörrkort bekräftar dörrautomatik och är kompatibelt**. Fullständigt ID/typ används som kontroll av att GS-kandidaten är möjlig, inte för att välja en långt bort liggande GS framför en närmare giltig GS. Kompatibel ED-familj **åt båda håll för pilen** är 17 (ED200/ID200), 24 (ED100/ID100), 37 (ED250/ID250). Om dörrkortet innehåller komplett automatik-ID ska samma objekt och sista nummer gälla. Om närmaste verifierade GS trots detta ligger orimligt långt bort visas **Koppla manuellt** i stället för en lång pil. Endast två faktiskt lika nära, likvärdiga GS kräver manuellt val.
+
+**Ny precisering i v36.100 efter kontroll av Snidaren-PDF (sida 3, Plan 0):** Den långa textmärkningens mittpunkt kan ligga mellan två GS-stämplar fast varje dörr har en separat `DA`-symbol. Fördela närliggande DA-symboler **en-till-en mellan unika fysiska automatikmärkningar** och mät sedan GS-avståndet från den tillhörande DA-symbolen. Om en tydlig DA-symbol inte kan identifieras används textrektangelns tidigare avstånd som reserv, med samma kontroller av dörrkort och långa pilar. Verifierat exempel: `200154-28-24-1 → GS4` och `200154-28-24-2 → GS2`. Båda dörrkorten anger ED100 (PDF s. 14 respektive 12). Se [TEST v36.100](SMARTMATCH_TEST_V36_100.md).
 
 **Exakt en GS-pil per fysisk automatik.** Äldre dubbla poster på samma fysiska märkning får inte orsaka två synliga pilar; befintliga kontrollsvar, SLR och historik raderas inte. Två olika fysiska automatiker kan däremot dela GS när de tillhör samma dörr.
 
 - En automatik utan verifierad GS behåller egen knapp, egenkontroll och SLR, och kan kopplas manuellt.
 - Manuell korrigering vid avvikande dörrkort kräver uttrycklig bekräftelse.
 - Tidigare manuellt bekräftade kopplingar och frånkopplingar bevaras vid omsökning.
-- Vid återsökning och återöppning räknas endast automatiska, obekräftade kopplingar om till närmaste godkända GS. Manuellt bekräftade val och bortval förblir orörda.
+- Vid återsökning och återöppning räknas endast automatiska, obekräftade kopplingar om till närmaste godkända GS, efter att dörrkort och eventuella läsbara DA-symboler har hämtats. Manuellt bekräftade val och bortval förblir orörda.
 - För ändring av pilens spets används befintlig justering, utan ny dörrkoppling.
 
 **Historik:** TEST v36.92 valde endast närmaste GS utan dörrkortskontroll. I v36.97–v36.98 prioriterades bevisningstyp (exakt ID/modell) så högt att fjärran GS kunde väljas före nära ED200 och vissa pilar saknades. **v36.99 ersätter detta med närmaste giltiga automatik-GS**, ED200-kompatibilitet och skydd mot för långa automatiska pilar. Fungerande objektsökning och projektsparande behålls.
