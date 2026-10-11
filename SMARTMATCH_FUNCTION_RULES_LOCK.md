@@ -1,6 +1,6 @@
 # SmartMatch – samlade och låsta funktionsregler
 
-**Beslut 2026-10-11:** Användaren bekräftade v36.92:s objektsökning. Senare samma dag begärde användaren återställning av dörrkortskontroll och endast en GS-pil per fysisk automatik. Gällande regel är v36.97; v36.92:s närmaste-GS-utan-kort gäller inte längre.
+**Beslut 2026-10-11:** Användaren bekräftade v36.92:s objektsökning. Senare samma dag begärde användaren återställning av dörrkortskontroll och endast en GS-pil per fysisk automatik. Gällande regel är v36.99: närmaste GS med dörrautomatik enligt sitt eget dörrkort. v36.92:s närmaste-GS-utan-kort och v36.97–v36.98:s ID-prioriterade fjärrval gäller inte längre.
 
 Det här är ingången när vi återupptar utvecklingen eller användaren frågar: **”Hur tänkte vi kring den här funktionen?”** Läs den berörda regeln före ändring. Använd aktuell beslutad regel; äldre versionsanteckningar är historik.
 
@@ -8,7 +8,7 @@ Det här är ingången när vi återupptar utvecklingen eller användaren fråga
 
 | Funktion | Avläsningskälla och koppling | Gällande dokument | Status |
 | --- | --- | --- | --- |
-| Dörrautomatik | Placering → hela objektnumret → egen knapp per fysisk automatik → läs kopplat GS-dörrkort → en pil till närmaste rätta GS på samma sida | [Dörrautomatik och GS-koppling](SMARTMATCH_AUTOMATION_RULE_LOCK.md) | LÅST; v36.97 ersätter v36.92:s fria närmaste-koppling |
+| Dörrautomatik | Placering → hela objektnumret → egen knapp per fysisk automatik → läs kopplat GS-dörrkort → en pil till närmaste rätta GS på samma sida | [Dörrautomatik och GS-koppling](SMARTMATCH_AUTOMATION_RULE_LOCK.md) | LÅST; v36.99 anger närmaste verifierade GS, ED100/ED200/ED250 |
 | Dörrkort, standardprofil | Identifiera tabellen → läs ID i översta vänstra cellen → matcha samma hela ID på ritningen → koppla kortet till positionen | [Tabellavläsning och dörrkort](SMARTMATCH_TABLE_RULE_LOCK.md) | LÅST; generell tolkning av alla tabellupplägg är ännu inte färdig |
 | Dörrkort, separat känt tillägg | Uttrycklig korttitel → verifierad Objekt-rad och Komponent/Produkt-tabell → samma hela ID på ritningen | [Tabellavläsning, avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md) | Tillägg enligt användarbeslut; v36.95 |
 | Protokollexport | Spara → Protokoll → endast valda protokollsidor; godkända är förvalda; inga ritningssidor eller GS-länkmenyer | [TEST v36.96](SMARTMATCH_TEST_V36_96.md) | Beslutad enligt användarens instruktion |
