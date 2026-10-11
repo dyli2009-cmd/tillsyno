@@ -1,3 +1,9 @@
+# TEST v36.71 – senaste beslut och implementation (2026-10-11)
+
+SmartMatch TEST har nu tre synliga sparval (Spara lokalt / Spara PDF / Skicka mejl), överflödigt Spara fil dolt, snabbare återanvändning av befintlig stor PDF-blob vid lokala sparningar, enstegsexport med fortsatt obligatorisk PDF-kontroll och cache som ogiltigförklaras vid ändringar. Den separata designmallen `smartmatch-protocol-templates.js` / `SMARTMATCH_MALL_EGENKONTROLL.md` ger EN rubrik ”EGENKONTROLL” i kundprotokoll och sparad layout. × Stäng ritning ligger bredvid Spara och fortsätter lokalt arkivera.
+
+Online kontroll av ny version visar uppdateringsknapp enbart vid nytt bygge. Med aktiv PDF erbjuds säker uppdatering **efter att ritningen stängts**, i stället för att avbryta och skanna om ritningen. Äkta byte av körande moduler utan omladdning ingår inte. Första stora PDF-genereringen och första lokala lagringen kan ännu ta tid; inga tester på fysisk enhet. Se [detaljer](SMARTMATCH_TEST_V36_71.md). Ordinarie app och iOS/TestFlight är orörda.
+
 # TEST v36.70 – kompakt revisionschecklista, X-sparning och separat PDF (2026-10-11)
 
 Beställt för dator/iPad/iPhone: synlig allmän anmärkning längst ned, kompakt scroll; X sparar också utan att kräva Klart; synlig knapp för PDF av endast aktuell ifylld revision; lika breda resultatkolumner; EGENKONTROLL i stället för SERVICE, inget dokumentnr; Checklista revision dörrautomatik under EGENKONTROLL; endast Anläggning och ID-märkning i fetstil bland uppgiftsfält, anläggningsnr/datum/AO/kund/företag vanliga. Anläggningsnamn visas nu som eget fält i formuläret (tidigare dolt men redan befintligt metadatafält).
