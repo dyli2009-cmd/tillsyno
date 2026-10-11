@@ -1,0 +1,6 @@
+# SmartMatch TEST v36.85 – dörrkortens första rad är auktoritativ
+Datum 2026-10-11. Enbart den första tryckta raden används för att få dörrens ID. Prefix såsom Dörrkort, Dorrkort, Littera eller andra benämningar ignoreras; ett ensamt 1, 2, 3, 140 C, 140C, A-105, WC, HWC eller VC fungerar. Sök exakt samma ID på ritningen, aldrig en del av 1-45-1, 11 eller L140C. Lås- och produktnummer på senare rader ska aldrig sökas som ID. Om samma ID står på flera ritningspositioner kopplas de till samma entydiga dörrkortssida, men är separata arbetspositioner. Flera olika dörrkortssidor med identiskt ID kräver fortfarande användarval, utan chansning.
+
+En kortsida utan känt rubrikord kan nu accepteras om en läsbar ID-rad följs av minst två rader i en riktig tvåkolumnstabell. En ritningssida där översta raden är 'Stor planritning med dorrkort' räknas inte som dörrkort. GS/Alla/Eget sökord och övrig Projektflöde TEST-logik, pilverktyg, PDF och projektlagring orörda; Kontrollflöde/iOS orörda.
+
+Automatiserade tester: JS-syntax, 19 exempel på första raden, avvisning av längre ner i dokumentet, numeriska/hyphen-delträffar, oförändrade GS/Alla/Eget kodutdrag och HTML-assets. Referensfil 'Stor_Ritning_Dorrkort.pdf' har 16 positioner på ritningens första sida och dörrkort på sidorna 2–6. Verklig iPad- och iPhone-testning återstår.

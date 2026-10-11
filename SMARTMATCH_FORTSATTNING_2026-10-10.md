@@ -1,3 +1,6 @@
+# TEST v36.85 – strikt första-rads-ID (2026-10-11)
+Matcha endast dörrkortets första tryckta rad mot exakt beteckning på ritningen (1, 2, 3, 140C, 140 C, A-105, WC etc); prefixet spelar ingen roll. Inte söka bland senare utrustningsrader. Hindra ID 1 att matcha del av 1-45-1 eller 11. Dörrkort utan känd rubrik får stöd genom riktig tvåkolumnstabell. GS/Alla/Eget sökord oförändrat. Se SMARTMATCH_TEST_V36_85.md.
+
 # TEST v36.84 – extra läslägen högra dörrkortskolumnen (2026-10-11)
 GS (standard) oförändrat; Alla = högra tabellkolumnens samtliga värden inklusive Mötesrum/OK; Eget sökord = innehåller term bara i högra cellen, t.ex. DT. Kompakt UI i Ritning & dörrkort. Projektinställning sparas; GS och alternativ har skilda kontrollnycklar så avprickningar finns kvar. Byter bara kontrollpunktsuttag, inte ID/dörrkort, GS-pilar eller annan modul. Se SMARTMATCH_TEST_V36_84.md.
 
