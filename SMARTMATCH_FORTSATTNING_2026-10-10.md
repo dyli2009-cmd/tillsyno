@@ -1,3 +1,7 @@
+# TEST v36.98 – ID250/ED250 undantag för GS-pilar (2026-10-11)
+
+Dörrkortets ID250 och ID 250 måste läsas som typkod 37 så att ED100/ID100 (24) och ED250/ID250 (37) kan paras åt båda håll för närmaste korrekta GS. Undantaget gäller endast pilens GS-val; komplett ID kräver samma objekt och sista nummer och originalmaskinens kod ändras inte. Separat v36.98-snapshot, regressionstest och återgång till v36.97 kvar. Se SMARTMATCH_TEST_V36_98.md.
+
 # TEST v36.97 – återställ dörrkortskontroll av GS-pilar (2026-10-11)
 
 Användaren begär att dörrautomatik bara får en pil till närmaste **rätt** GS; dörrkortets dörrautomatikrad, maskintyp och eventuellt fullständigt ID ska först kontrolleras. v36.82:s bevisbaserade kopplingslogik återförs till v36.92:s fungerande objektsökning. Obekräftade automatiska länkar kan räknas om; manuellt bekräftade länkar och sparade egenkontroller/SLR bevaras. Äldre dubbla poster raderas inte men ger endast en synlig pil per fysisk automatik. Fristående v36.97-snapshot; tidigare v36.96 oförändrad. Se SMARTMATCH_TEST_V36_97.md och SMARTMATCH_AUTOMATION_RULE_LOCK.md.
