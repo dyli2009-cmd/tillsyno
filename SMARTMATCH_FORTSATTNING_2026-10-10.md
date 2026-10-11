@@ -1,3 +1,7 @@
+# TEST v36.101 – en rätt GS och säker SLR-källa (2026-10-11)
+
+Användaren bestämde att varje fysisk automatik bara får en korrekt GS-koppling, inte två. Detta är viktigare än att blint följa den fysiska DA-symbolen, som fortsatt används som hjälp för avstånd och dörrplacering (Snidaren GS4/GS2). Gamla dubbletter med motstridiga GS får inte användas som SLR-underlag; ett manuellt bekräftat nytt GS-val rättar samma fysiska automatik utan att radera checklistor/SLR. Framtida SLR ska läsa verifierad GS och dess dörrkortssida. [v36.101](SMARTMATCH_TEST_V36_101.md) beskriver implementation, begränsningar och regressionstest; ny testkod är incheckad men inte körd, iPhone/iPad-verifiering kvar.
+
 # TEST v36.100 – uppmätt Snidaren-fel GS4 i stället för GS2 (2026-10-11)
 
 Granskat användarens uppladdade `Snidaren   3.pdf` på PDF-sida 3/Plan 0. `200154-28-24-1` hör till övre GS4 och `200154-28-24-2` till nedre GS2. Dörrkorten s. 14 resp. 12 har båda ED100; maskintyp förklarar inte felet. Textens mittpunkt ligger nästan mellan båda dörrarna. Fysisk DA-symbol på ritningen identifieras från originalets PDF-text; en-till-en-parning av automatik-ID och DA-symbol ger geometrisk ankare före valet av närmaste korrekta GS. Gamla auto-länkar räknas om; manuellt godkända länkar och SLR/checklistor sparas. Se SMARTMATCH_TEST_V36_100.md.
