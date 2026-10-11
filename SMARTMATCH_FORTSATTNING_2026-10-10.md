@@ -1,3 +1,13 @@
+# TEST v36.64 – snabb telefonzoom och hela skarpa utsnittet (2026-10-11)
+
+Användaren vill ha snabb, smidig och skarp zoom utan 2–3 sekunders väntan. v36.63:s separata stämpelutsnitt tas bort. Hela synliga PDF-utsnittet skärps igen på telefon, med samma enskilda 1-miljon-pixelbildyta som tidigare. Telefonens avsiktliga väntetid kortas från 1200 till 120 ms. Befintlig färdig detaljbild behålls vid zoom/pan på samma sida och följer ritningens koordinater. Telefonens lättare 900000-pixelbakgrund kvarstår.
+
+Aktuell PDF-sidas resurser återanvänds i stället för cleanup/ombyggnad efter varje zoom. Föregående sidans cache frigörs i den serialiserade renderingskön vid sidbyte; dokumentet förstörs vid stängning. Ingen gest avbryter eller resizar aktiv mobil render. Mask-allokeringsfixen från v36.62 kvarstår i TEST-isolerat bibliotek. iPad behåller 1200-ms-planeringen, desktop 300 ms. Nästa TEST v36.65.
+
+Verifierat: JS-syntax; mockad renderlivscykel visar färdig crop kvar under navigation, cacheåteranvändning och frigörande av stale resultat; actual roterad PDF-vy pixelidentisk med original och aktuell sidas cleanup körs inte vid upprepad zoom. Ingen fysisk iPhone-prestandamätning. 120 ms är schemaläggningspaus, inte garanterad total tid; PDF-renderingtiden tillkommer. Chrome på iPhone är inte en garanterad lösning på minneskrascher.
+
+Publicering är löpande godkänd. Kontrollflöde och iOS/TestFlight orörda.
+
 # TEST v36.63 – telefon prioriterar stämplar (2026-10-11)
 
 Användaren förtydligar: samma PDF på iPhone/iPad; ritningens bakgrund och linjer får vara mindre skarpa på telefon, men faktiska stämplar och projekterade kopplingar ska vara tydliga. Löpande publicering fortsatt godkänd.
