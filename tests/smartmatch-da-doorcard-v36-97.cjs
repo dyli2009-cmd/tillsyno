@@ -8,7 +8,7 @@ const vm=require('node:vm');
 let source=fs.readFileSync(path.join(__dirname,'..','smartmatch-da-v36-97-module.js'),'utf8');
 const hook=" init(null);\n return {init,";
 assert(source.includes(hook),'Expected non-production test injection anchor');
-source=source.replace(hook," window.__daTest={proposeGS,chooseNearestGS,gsCandidates,setGsLink,drawArrows,cardIssue};\n return {init,");
+source=source.replace(hook," window.__daTest={proposeGS,chooseNearestGS,gsCandidates,setGsLink,drawArrows,cardIssue,linkCardCache};\n return {init,");
 const cards={
   2:['Dörrautomatik -'],
   3:['Dörrautomatik ED 100','ID-märkning 20-83-92-3-24-10'],
@@ -45,7 +45,7 @@ const api=window.__daTest;
  const tied=await api.proposeGS(item,new Map());
  assert.equal(tied.g,undefined,'Equally strong and equally distant GS must require manual selection');
  positions.splice(0,positions.length,gs1,gs2,gs3,gs4);
- const confirmed=await api.proposeGS(item,new Map());
+ const confirmed=await api.proposeGS(item,api.linkCardCache);
  api.setGsLink(item,confirmed.g,false);
  const duplicate={...item,id:'test-old-copy',checks:{'1.2':true},rect:[4,0,14,10],linkedGsId:gs2.id,linkedGsCode:gs2.code,linkedGsRect:gs2.rect};
  api.drawArrows({width:150,height:100},[item,duplicate],1);
