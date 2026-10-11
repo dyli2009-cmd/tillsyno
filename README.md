@@ -2,7 +2,11 @@
 
 > **Viktigt före ändringar:** Läs [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md). Där finns regler för modulgränser, versionshantering och hur Kontrollflöde/Projektflöde ska hållas separerade.
 
-## SmartMatch TEST v36.102
+## SmartMatch TEST v36.103
+
+Senaste separata TEST: Förenklad text i **Koppla dörrautomatik**-dialogen. Endast instruktionen "Rita en ruta kring dörrautomatikens ID. Sedan söker appen samma objekt på alla ritningssidor." visas. Funktionerna och GS/SLR-regeln från v36.102 är oförändrade. Fasta testadressen är uppdaterad.
+
+## Tidigare GS-kontroll v36.102
 
 [Senaste kontrollen av GS-koppling och SLR-källa (v36.102)](SMARTMATCH_TEST_V36_102.md) visar nu sparad GS mot föreslagen GS direkt i automatikdialogen och stoppar osäker källa till SLR. Korrigerad länk måste bekräftas av teknikern. Separat TEST, ingen TestFlight-uppdatering.
 
