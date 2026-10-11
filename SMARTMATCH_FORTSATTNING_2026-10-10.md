@@ -1,3 +1,7 @@
+# TEST v36.100 – uppmätt Snidaren-fel GS4 i stället för GS2 (2026-10-11)
+
+Granskat användarens uppladdade `Snidaren   3.pdf` på PDF-sida 3/Plan 0. `200154-28-24-1` hör till övre GS4 och `200154-28-24-2` till nedre GS2. Dörrkorten s. 14 resp. 12 har båda ED100; maskintyp förklarar inte felet. Textens mittpunkt ligger nästan mellan båda dörrarna. Fysisk DA-symbol på ritningen identifieras från originalets PDF-text; en-till-en-parning av automatik-ID och DA-symbol ger geometrisk ankare före valet av närmaste korrekta GS. Gamla auto-länkar räknas om; manuellt godkända länkar och SLR/checklistor sparas. Se SMARTMATCH_TEST_V36_100.md.
+
 # TEST v36.99 – närmaste GS med automatik, ED200/ID200 (2026-10-11)
 
 Ny uttrycklig korrigering efter felrapport: tidigare prioritering av exakta kortuppgifter skapade långa pilar till GS2 och gömde andra pilar, särskilt när närliggande dörrkort angav ED200. Nu är 17/24/37 kompatibla för själva GS-pilen och endast närmaste korrekta GS väljs geografiskt; för långt bort ska kopplas manuellt. Gamla obekräftade automatiska länkar rättas vid återöppning efter dörrkortsläsning utan förlust av kontrollsvar/SLR. Se SMARTMATCH_TEST_V36_99.md.
