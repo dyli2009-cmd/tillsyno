@@ -52,7 +52,7 @@ Läs **[SMARTMATCH_FORTSATTNING_2026-10-10.md](SMARTMATCH_FORTSATTNING_2026-10-1
 
 Läs **[SMARTMATCH_FUNCTION_RULES_LOCK.md](SMARTMATCH_FUNCTION_RULES_LOCK.md)** före fortsatt SmartMatch-utveckling och när användaren frågar hur en funktion är tänkt. Den samlar gällande principer, avläsningskällor, kopplingar, motiv, verifiering och beslutshistorik.
 
-**[SMARTMATCH_AUTOMATION_RULE_LOCK.md](SMARTMATCH_AUTOMATION_RULE_LOCK.md)** låser det av användaren bekräftade v36.92-flödet: placerad märkning → sök hela objektnumret → egen knapp per fysisk träff → närmaste GS på samma sida. Dörrkortets automatikuppgifter och äldre en-till-en-krav får inte återinföras som spärr. Manuella val och sparade kontroller bevaras.
+**[SMARTMATCH_AUTOMATION_RULE_LOCK.md](SMARTMATCH_AUTOMATION_RULE_LOCK.md)** låser det uppdaterade v36.97-flödet: placerad märkning → sök hela objektnumret → egen knapp per fysisk träff → kontrollera GS:s eget dörrkort → pil till närmaste verifierade GS på samma sida. Exakt en synlig pil per fysisk automatik; inga sparade kontroller raderas. Ren närmaste-GS från v36.92 är historik. Manuella val bevaras.
 
 Dessa beteendeprinciper ändras endast efter ett nytt uttryckligt användarbeslut. Felrättningar som återställer beslutad funktion är tillåtna inom beställd omfattning. Äldre versionsanteckningar är historik och överstyr inte aktuell låst regel.
 
@@ -68,7 +68,7 @@ SmartMatch TEST är en fristående experimentversion och ska inte förväxlas me
 - Skapa nya versionsmärkta HTML-, JS- och CSS-filer för varje ny testversion (t.ex. `project-workspace-smartmatch-v36-14.html`, `.js`, `.css`). Behåll föregående version oförändrad som jämförelse/återgång.
 - Uppdatera konsekvent sidrubrik, versionsmärkning, resursreferenser, logg- och nedladdningsnamn. Använd en separat lokal lagringsnyckel för varje testversion.
 - Läs gärna tidigare testversioners inbäddade projekt-PDF-data så att tidigare arbete går att ta med till den nya versionen. Skriv däremot nytt projektformat under den nya versionen.
-- Nuvarande aktiva testversion: **TEST v36.96**. Nästa underrevision blir **TEST v36.97**.
+- Nuvarande aktiva testversion: **TEST v36.97**. Nästa underrevision blir **TEST v36.98**.
 - **En enda fast adress för SmartMatch TEST:** `project-workspace-smartmatch-test.html` på GitHub Pages. Denna fil är alltid en full kopia av senaste `project-workspace-smartmatch-vNN.html` och länkar till samma versionsmärkta JS/CSS (ingen vidarebefordran, inget iframe).
 - **Varje gång en ny TEST vNN görs måste samma commit också uppdatera `project-workspace-smartmatch-test.html`**, så användaren alltid kan använda samma bokmärke/hemskärmsikon. Öppna den fasta adressen först för att verifiera rätt testnummer.
 - TEST-versionen betyder **inte** att Tillsyno-appen eller TestFlight har uppdaterats. Publicering dit kontrolleras separat.
