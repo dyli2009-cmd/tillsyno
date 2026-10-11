@@ -1,3 +1,7 @@
+# TEST v36.91 – faktiskt laddad automatikmodul rättad
+
+36.90-sidan laddade fortfarande DA v36.85, så den testade ändringen var inte aktiv. 36.91 kopplar både fast och versionsmärkt entry till DA v36.90; nytt test kontrollerar resursreferensen. Se SMARTMATCH_TEST_V36_91.md.
+
 # TEST v36.90 – återinförd manuell GS-referens (2026-10-11)
 
 Efter jämförelse med v36.19–v36.23 godkände användaren att första manuella DA→GS-kopplingen åter används som riktning/avståndsstöd vid objektnummersökning. Okända automatikuppgifter tillåts bara med befintligt kort och tydlig närgeometri; explicita fel, saknade kort, dubbla GS och tvetydighet blockeras. gsReferenceId sparas och valideras även efter återöppning. Kontrollerat helkedjetest med verkliga Snidaren-PDF:en ger 17 märkningar och 17 verifierade GS-pilar med första automatiken manuellt kopplad till GS4. Se SMARTMATCH_TEST_V36_90.md. Låst tabellregel och övriga moduler oförändrade.
