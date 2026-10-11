@@ -1,3 +1,9 @@
+# TEST v36.66 – snabbare skärpning på iPad (2026-10-11)
+
+Användaren ber om snabbare iPad-skärpning. Enda funktionella ändringen från v36.65: detaljrenderingens schemaläggningspaus på mobil/tablet är nu 120 ms, tidigare 1200 ms på iPad. Telefonen behåller 120 ms och desktop 300 ms. Skärpa, pixelgränser, serialisering, cache och DA-funktioner är oförändrade.
+
+Kontrollerat JS-syntax och jämförelse mot v36.65: endast väntetiden ändrad utöver versionsmärkning. 120 ms avser startpaus, inte total PDF-renderingstid. Ingen fysisk iPad-mätning. Alla TEST-resurser versionsmärkta och fasta adressen uppdaterad. Löpande publicering godkänd; Kontrollflöde/iOS/TestFlight orörda. Nästa TEST v36.67.
+
 # TEST v36.65 – DA-dialoger, projektuppgifter och kopplingar (2026-10-11)
 
 Beställt: flytta Koppla dörrautomatik även på iPhone/iPad, kompakta/centrerade datumfält, kund före utförande företag, signatur hos utförande företag med logga; positionpanelen ska täcka ritningens markeringar; egna professionella ändra/ta-bort-dialoger; redan sparad koppling ska visas och pilen ska peka mot dörrautomatiken. Befintligt placeringskors fungerar och är oförändrat. Löpande TEST-publicering är godkänd.
