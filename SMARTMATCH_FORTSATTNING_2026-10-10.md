@@ -3,9 +3,13 @@
 **Senast uppdaterad:** 2026-10-10  
 **Status:** Avstämning och överlämning; **ingen ny funktionskod** i denna commit.  
 **Repo:** `dyli2009-cmd/tillsyno`  
-**Senaste TEST-kodversion:** **SmartMatch TEST v36.57** (SVG-lager för PDF-text på mobil och flyttbara Positioner/Koppla dörrautomatik på dator). Nästa funktionsversion är **TEST v36.58**.  
+**Senaste TEST-kodversion:** **SmartMatch TEST v36.58** (skarpa SVG-etiketter för identifierade GS-/DA-/DS-/automatikstämplar på mobil). Nästa funktionsversion är **TEST v36.59**.  
 **Fast TEST-adress:** https://dyli2009-cmd.github.io/tillsyno/project-workspace-smartmatch-test.html  
 **Viktigt:** Detta är bara Projektflöde/SmartMatch TEST; INGA ändringar i Kontrollflöde, ordinarie Dörrservice eller iOS/TestFlight utan uttryckligt nytt beslut.
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.58
+
+Förtydligat behov: stämplars beteckningar ska också vara skarpa. Mobilen visar identifierade GS-/projektstämplar och automatik-ID:n som SVG-etiketter vid zoom från 100 procent. Exakta kända etiketter och sparade rektanglar används, med vit läsplatta inom rektangeln. Kopplingspilar/ramar kvar som HTML/SVG. Ingen ny rasterrendering. Okända skannade symboler rekonstrueras inte. Mocktester/syntax godkända; fysisk läsbarhet och Safari-stabilitet återstår. Se [SMARTMATCH_TEST_V36_58.md](SMARTMATCH_TEST_V36_58.md).
 
 ## Uppdatering 2026-10-11: SmartMatch TEST v36.57
 
