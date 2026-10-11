@@ -1,3 +1,13 @@
+# TEST v36.65 – DA-dialoger, projektuppgifter och kopplingar (2026-10-11)
+
+Beställt: flytta Koppla dörrautomatik även på iPhone/iPad, kompakta/centrerade datumfält, kund före utförande företag, signatur hos utförande företag med logga; positionpanelen ska täcka ritningens markeringar; egna professionella ändra/ta-bort-dialoger; redan sparad koppling ska visas och pilen ska peka mot dörrautomatiken. Befintligt placeringskors fungerar och är oförändrat. Löpande TEST-publicering är godkänd.
+
+v36.65 har egen DA-modulkopia (`smartmatch-da-v36-65-module.js`) och nya versionerade resurser. Draghandtag på Koppla DA och DA-val/koppling accepterar touch/mus, begränsas till skärmen. Positionpanelen är ogenomskinlig ovanför ritningens isolerade lager. Kundsektion först i formulär och kundprotokoll; signaturfält flyttat till utförande sektion tillsammans med logga. Fälten kompaktare, datumvärden centrerade. Märkningsändring, borttagning, kopplingsbekräftelse och fri modell använder appens HTML-dialog med validering/Avbryt i stället för browser prompt/confirm.
+
+Koppling löses genom aktuellt ID, sparad beteckning+rektangel eller entydig beteckning på samma sida. Äldre scan/ocr-ID:n kan läsas för GS-beteckning och koordinater. Otydliga dubletter gissas aldrig; oåterställd koppling visas som kontrollbehov i stället för tomt 'ingen koppling'. Vid sparning bevaras ID/kod/rect samt explicit frånkoppling. Visningspilen går nu GS→DA; pilspets redigeras på DA-kanten och sparas i separat `daArrowTip`, så tidigare GS-tip inte feltolkas.
+
+Verifierat: JS-syntax; länkresolver (omindexering, äldre ID, dubbla beteckningar, koordinatmatchning, frånkoppling); pilkoordinater GS→DA och separat spets; HTML-dialog validering/spara/avbryt; touchdrag inom skärm; HTML-ID:n unika, signatur i utförande sektion, kund före utförande, fast TEST-kopia identisk. Befintliga zoomlivscykel- och verkliga roterade PDF-renderingstester passerar. Zoomlogik från fungerande v36.64 behålls. Ingen fysisk Safari/iPad-visuell kontroll tillgänglig; kompakt layout och datumrendering behöver användartest. Kontrollflöde och iOS/TestFlight orörda. Nästa TEST v36.66.
+
 # TEST v36.64 – snabb telefonzoom och hela skarpa utsnittet (2026-10-11)
 
 Användaren vill ha snabb, smidig och skarp zoom utan 2–3 sekunders väntan. v36.63:s separata stämpelutsnitt tas bort. Hela synliga PDF-utsnittet skärps igen på telefon, med samma enskilda 1-miljon-pixelbildyta som tidigare. Telefonens avsiktliga väntetid kortas från 1200 till 120 ms. Befintlig färdig detaljbild behålls vid zoom/pan på samma sida och följer ritningens koordinater. Telefonens lättare 900000-pixelbakgrund kvarstår.
