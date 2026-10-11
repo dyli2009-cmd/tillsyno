@@ -1,3 +1,7 @@
+# TEST v36.104 – fix: tryck på automatik ska öppna Egenkontroll/SLR (2026-10-11)
+
+Användaren upptäckte att tryck på `2001-34-28-24-1` inte längre öppnade menyn. Rotorsaken bekräftades i v36.102-DA-modulen som kördes av v36.103: `refreshGsSuggestion` anropade `chooseNearestGS(o)` utan obligatoriska `linkCardCache`, vilket bröt före `showModal()`. v36.104 byter **bara** till `chooseNearestGS(o,linkCardCache)`. Isolerad DOM/JS-test med samma ID öppnade dialogen och Egenkontroll-knappen korrekt. Regressionstest och [detaljer](SMARTMATCH_TEST_V36_104.md) finns på GitHub. Testa fortfarande i riktig Safari/iPhone/iPad. Låst GS/SLR-princip oförändrad.
+
 # TEST v36.103 – förenklad placeringsdialog, samma söklogik (2026-10-11)
 
 På användarens begäran har rubriken ”Koppla dörrautomatik” och den långa texten ”Objektnummer–maskintyp–antal. Exempel: … Rita rutan kring märkningen; sedan söks samma objekt på alla ritningssidor.” tagits bort ur modalrutan. Endast instruktionen **”Rita en ruta kring dörrautomatikens ID. Sedan söker appen samma objekt på alla ritningssidor.”** visas. Inmatningsfältet, placeringsknappen, DA-modulen från v36.102, GS-regeln och SLR är orörda. Fasta `project-workspace-smartmatch-test.html` har samma innehåll som v36.103-versionen; ingen iOS-/TestFlight-ändring.
