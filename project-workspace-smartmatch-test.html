@@ -7,9 +7,9 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Projektflöde SmartMatch – TEST v36.69</title>
+<title>Projektflöde SmartMatch – TEST v36.70</title>
 
-<script src="smartmatch-pdf-v36-69.js"></script>
+<script src="smartmatch-pdf-v36-70.js"></script>
 <script src="vendor/pdf-lib.min.js"></script>
 <script src="vendor/jspdf.umd.min.js"></script>
 <style>
@@ -377,7 +377,7 @@
 }
 
 </style>
-<link rel="stylesheet" href="project-workspace-smartmatch-v36-69.css?v=36-69">
+<link rel="stylesheet" href="project-workspace-smartmatch-v36-70.css?v=36-70">
 </head>
 <body class="pwStartMode">
 <header class="pwHeader">
@@ -385,7 +385,7 @@
   <div class="pwTitle">
     <strong>SmartMatch</strong>
     <div class="pwReleaseLine" aria-label="Programversion och uppdatering">
-      <span id="pwBuildVersion" class="pwTitleVersion" data-build="36.69" title="Appversion som finns i denna sida">TEST v36.69</span>
+      <span id="pwBuildVersion" class="pwTitleVersion" data-build="36.70" title="Appversion som finns i denna sida">TEST v36.70</span>
       <button id="pwRefreshBuild" class="pwRefreshBuild" type="button" title="Hämta senaste SmartMatch-uppdateringen" aria-label="Uppdatera SmartMatch till senaste versionen">↻ Uppdatera</button>
     </div>
     <small class="smHeaderSubtitle" aria-hidden="true">Projektflöde</small>
@@ -668,11 +668,11 @@
 </dialog>
 <dialog id="pwAutomationDialog" class="pwAutomationDialog">
   <div class="pwAutomationHead">
-    <div><span>EGENKONTROLL</span><strong>Revision dörrautomatik</strong><small id="pwAutomationIdentity">–</small></div>
+    <div><span>EGENKONTROLL</span><strong>Checklista revision dörrautomatik</strong><small id="pwAutomationIdentity">–</small></div>
     <div class="pwAutomationHeadActions">
       <button id="pwDARevisionSave" type="button" title="Spara ändringarna lokalt och återgå till ritningen">Klart</button>
       <button id="pwAutomationPreview" type="button" title="Visa hur revisionsprotokollet ser ut för kunden, utan att spara eller skicka">Kundmall</button>
-      <button id="pwDAExportRevision" type="button" hidden aria-hidden="true" tabindex="-1" title="Spara separat revisions-PDF">Spara lokalt</button>
+      <button id="pwDAExportRevision" type="button" title="Spara PDF för endast detta ifyllda protokoll">Spara protokoll · PDF</button>
       <button id="pwDAEmailRevision" type="button" hidden aria-hidden="true" tabindex="-1" title="Dela revisions-PDF">Skicka mejl</button>
       <button id="pwAutomationClose" type="button" aria-label="Stäng">×</button>
     </div>
@@ -687,11 +687,12 @@
       <summary><span>Projektuppgifter</span><span>Visa / dölj</span></summary>
       <div class="pwRevisionProjectBody">
         <div class="pwRevisionBasics" aria-label="Anläggning, datum och dörrmärkning">
+          <label class="pwRevisionFacilityName">Anläggning<input id="pwProjectName"></label>
           <label>Anläggningsnummer<input id="pwProjectFacility"></label>
           <label>Bokat datum<input id="pwProjectDate" type="date"></label>
           <label>Nästa provning<input id="pwProjectNextDate" type="date"></label>
           <label>Ordernummer / AO<input id="pwProjectOrder"></label>
-          <label>ID-märkning · automatiskt<input id="pwAutomationFullId" readonly aria-readonly="true" placeholder="Hämtas från ritningen"></label>
+          <label class="pwRevisionIdentity">ID-märkning · automatiskt<input id="pwAutomationFullId" readonly aria-readonly="true" placeholder="Hämtas från ritningen"></label>
           <label class="pwRevisionLocation">Placering / dörrlittra<input id="pwAutomationLocation" placeholder="T.ex. dörr till garage"></label>
           <label class="pwRevisionMachine">Typ av dörrautomatik<select id="pwAutomationModel" aria-describedby="pwRevisionMachineHelp"><option value="">Välj maskintyp…</option></select><small id="pwRevisionMachineHelp">Avläses från maskinkoden i ID. Kan ändras för denna dörr.</small></label>
         </div>
@@ -734,7 +735,6 @@
           </div>
         </details>
         <div class="pwRevisionLegacy" hidden aria-hidden="true">
-          <input id="pwProjectName" tabindex="-1" aria-label="Sparat projektnamn (dolt i revisionsformuläret)">
           <input id="pwProjectAgreement" tabindex="-1" aria-label="Tidigare avtalsnummer">
           <input id="pwProjectTechnician" tabindex="-1" aria-label="Tidigare teknikernamn">
         </div>
@@ -743,7 +743,7 @@
 
     <div id="pwAutomationProgressRow" class="pwAutomationProgress" data-inspection-status="pending"><strong id="pwAutomationProgress">0%</strong><span id="pwAutomationInspectionLabel" role="status" aria-live="polite">Ej kontrollerad</span><button id="pwAutomationApproveAll" type="button">✓ Godkänn alla</button></div>
     <div id="pwAutomationChecks" class="pwAutomationChecks"></div>
-    <label class="pwAutomationNotes">Allmän anmärkning<textarea id="pwAutomationNotes" rows="3"></textarea></label>
+    <label class="pwAutomationNotes">Allmän anmärkning<textarea id="pwAutomationNotes" rows="2"></textarea></label>
   </div>
 </dialog>
 
@@ -838,7 +838,7 @@
 </dialog>
 <dialog id="labDiagnosticDialog" class="labDiagnosticDialog smartReportsDialog" aria-labelledby="labDiagnosticTitle">
  <div class="labDiagnosticHead">
-  <div><small>SMARTMATCH · TEST v36.69</small><h2 id="labDiagnosticTitle">Analys & rapporter</h2></div>
+  <div><small>SMARTMATCH · TEST v36.70</small><h2 id="labDiagnosticTitle">Analys & rapporter</h2></div>
   <div class="smartReportHeadActions"><button id="smartReportFontMinus" type="button" aria-label="Minska textstorleken">A−</button><button id="smartReportFontPlus" type="button" aria-label="Öka textstorleken">A+</button><button id="labDiagnosticClose" type="button" aria-label="Stäng analysvyn">×</button></div>
  </div>
  <div id="smartPdfPageCounts" class="smartPdfPageCounts">Öppna en PDF för att se ritningar och dörrkort.</div>
@@ -954,10 +954,10 @@
  <p id="smartExportStatus" class="smartExportStatus" role="status" aria-live="polite">Förbereder PDF…</p>
  <p class="smSaveReminder">Lokalt sparas arbetet i den här webbläsaren på den här enheten. PDF kan sparas som fil och delas.</p>
 </dialog>
-<script src="smartmatch-da-v36-69-module.js?v=36-69"></script>
-<script src="project-workspace-smartmatch-v36-69.js?v=36-69"></script>
-<script src="smartmatch-protocol-export-v36-69.js?v=36-69"></script>
-<script src="smartmatch-session-v36-69.js?v=36-69"></script>
+<script src="smartmatch-da-v36-70-module.js?v=36-70"></script>
+<script src="project-workspace-smartmatch-v36-70.js?v=36-70"></script>
+<script src="smartmatch-protocol-export-v36-70.js?v=36-70"></script>
+<script src="smartmatch-session-v36-70.js?v=36-70"></script>
 
 <!-- Session module handles refresh + reopen -->
 </body>
