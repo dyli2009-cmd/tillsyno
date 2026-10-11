@@ -1,7 +1,7 @@
 # SmartMatch – låst regel för dörrautomatik och GS-koppling
 
-**STATUS: LÅST enligt användarens beslut 2026-10-11.**
-**Godkänd grund: SmartMatch TEST v36.92.** Användaren bekräftade: ”Okej, nu funkar detta” och bad att reglerna sparas och låses.
+**STATUS: LÅST enligt användarens uppdaterade beslut 2026-10-11.**
+**Gällande kopplingsregel: TEST v36.97.** Föregående godkända objektsökning och placering från v36.92 behålls, men dess rena närmaste-GS-regel ersätts av dörrkortsverifierad GS-matchning. Den tidigare regeln finns dokumenterad som historik.
 
 Detta är den gällande beteenderegeln för dörrautomatik i SmartMatch TEST. Läs även [samlingen av funktionsregler](SMARTMATCH_FUNCTION_RULES_LOCK.md). Äldre versionsanteckningar beskriver historik; de får inte återinföra äldre kopplingskrav som strider mot detta beslut.
 
@@ -12,7 +12,7 @@ Detta är den gällande beteenderegeln för dörrautomatik i SmartMatch TEST. L�
 3. Rita en ruta runt den första automatikens märkning, justera vid behov och tryck **Spara**.
 4. Appen läser märkningen i rutan och söker automatiskt efter samma hela objektnummer på alla ritningssidor.
 5. Varje fysisk träff får en egen tryckknapp för **Egenkontroll dörrautomatik** och **SLR-dokumentmapp**. Knappen hör till den träffens egen sida och position.
-6. Pilen går från automatiken till närmaste fysiska GS-position på samma ritningssida. GS-positionens befintliga koppling leder vidare till dörrkortet.
+6. Appen läser dörrkortet för respektive GS och väljer närmaste kompatibla fysiska GS-position på samma ritningssida. En fysisk automatik får endast en GS-pil. Om tillräckligt underlag saknas visas manuell koppling i stället för en gissning.
 
 **Hitta fler automatiker** ska kunna upprepa objektsökningen i det öppna projektet.
 
@@ -48,18 +48,21 @@ Ritningssidor får inte uteslutas för att en legend eller ritningsstämpel råk
 
 Två representationer av samma märkning på samma fysiska plats ska ge en träff. Samma ID på olika fysiska platser ska behålla sina egna positioner. Ny placering på en redan befintlig märkning ska återanvända posten. Upprepad sökning ska inte skapa nya dubletter.
 
-## 5. GS-pilen styrs av närmaste position
+## 5. GS-pilen styrs av dörrkortet och närmaste rätta position – v36.97
 
-Den automatiska pilen väljer närmaste fysiska GS på **samma sida**, utifrån märkningens och GS-positionens mittpunkter.
+Vid **Verktyg → Koppla dörrautomatik** läses automatikens fullständiga märkning på ritningen. Systemet går därefter igenom de identifierade GS-positionernas **egna kopplade dörrkort** och kontrollerar att kortet anger dörrautomatik. Fullständig märkning, maskintyp och eventuella skillnader i objekt/antal används för att undvika felkoppling. Kompatibilitetsundantaget ED100 (typkod 24) och ED250 (37) gäller **endast GS-matchning**, inte ommärkning av maskintyp.
 
-Dörrkortets automatikrad, modell, ID eller förekomst får inte användas som spärr för denna geometriska koppling. Äldre krav på en automatik per GS får inte återinföras: flera märkningar kan därför peka på samma GS.
+**Urval:** (1) fullständigt exakt ID, (2) kompatibelt ED-ID med samma objekt och sista nummer, (3) samma maskintyp, (4) kompatibel ED-familj, (5) bekräftad automatik på kortet. Inom lika säkra grupper väljs den **närmaste GS-positionen på samma ritningssida**. Två oskiljbara alternativ kräver manuellt val. Saknat/oläsbart/felaktigt dörrkort får inte leda till gissad automatisk pil.
 
-Närmaste GS anger vilken fysisk dörrposition pilen går till. Det intygar inte att all utrustning på dörrkortet stämmer med märkningen.
+**Exakt en GS-pil per fysisk automatik.** Äldre dubbla poster på samma fysiska märkning får inte orsaka två synliga pilar; befintliga kontrollsvar, SLR och historik raderas inte. Två olika fysiska automatiker kan däremot dela GS när de tillhör samma dörr.
 
-- Saknas GS på sidan ska automatikens knapp ändå finnas, med möjlighet att koppla manuellt.
-- Ligger två skilda GS exakt lika nära ska appen begära ett manuellt val.
-- Operatören ska kunna ändra GS-kopplingen och justera pilen.
-- Uttryckligt bekräftade manuella kopplingar och frånkopplingar ska bevaras vid omsökning.
+- En automatik utan verifierad GS behåller egen knapp, egenkontroll och SLR, och kan kopplas manuellt.
+- Manuell korrigering vid avvikande dörrkort kräver uttrycklig bekräftelse.
+- Tidigare manuellt bekräftade kopplingar och frånkopplingar bevaras vid omsökning.
+- Vid återsökning kan endast automatiska, obekräftade kopplingar räknas om.
+- För ändring av pilens spets används befintlig justering, utan ny dörrkoppling.
+
+**Historik:** TEST v36.92 valde endast närmaste GS utan dörrkortskontroll. Denna princip är uttryckligen ersatt efter användarens instruktion 2026-10-11; fungerande objektsökning och projektsparande från v36.92 behålls.
 
 Dörrkortets eget ID läses enligt [den låsta tabellregeln](SMARTMATCH_TABLE_RULE_LOCK.md). Automatikens märkning och dörrkortets ID är olika uppgifter med olika avläsningskällor.
 
@@ -81,7 +84,7 @@ Bildbaserade automatikmärkningar har inte fått en ny OCR-funktion i v36.92. De
 
 ## 8. Låset och framtida ändringar
 
-**Principerna ovan får endast ändras efter ett nytt uttryckligt beslut från användaren.** En annan uppgift i appen innebär inte att denna regel låses upp.
+**Principerna ovan får endast ändras efter ett nytt uttryckligt beslut från användaren.** Gällande version av GS-regeln är v36.97; v36.92 är historik för endast geometrisk GS-koppling. En annan uppgift i appen innebär inte att denna regel låses upp.
 
 Felrättningar som återställer regeln, förbättrat stöd för ett nytt PDF-upplägg och dokumentationsförtydliganden är tillåtna inom användarens beställda arbete. Låset gäller beteendet, inte ett förbud mot att rätta kod.
 
