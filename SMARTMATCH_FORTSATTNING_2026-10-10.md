@@ -3,9 +3,13 @@
 **Senast uppdaterad:** 2026-10-10  
 **Status:** Avstämning och överlämning; **ingen ny funktionskod** i denna commit.  
 **Repo:** `dyli2009-cmd/tillsyno`  
-**Senaste TEST-kodversion:** **SmartMatch TEST v36.56** (redigerbart filnamn i Projekt-PDF- och Protokoll-sparrutan). Nästa funktionsversion är **TEST v36.57**.  
+**Senaste TEST-kodversion:** **SmartMatch TEST v36.57** (SVG-lager för PDF-text på mobil och flyttbara Positioner/Koppla dörrautomatik på dator). Nästa funktionsversion är **TEST v36.58**.  
 **Fast TEST-adress:** https://dyli2009-cmd.github.io/tillsyno/project-workspace-smartmatch-test.html  
 **Viktigt:** Detta är bara Projektflöde/SmartMatch TEST; INGA ändringar i Kontrollflöde, ordinarie Dörrservice eller iOS/TestFlight utan uttryckligt nytt beslut.
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.57
+
+Mobilens fasta bild kompletteras med skarp SVG-visning av riktig PDF-text, utan ny PDF-rasterrendering vid zoom. Text cachelagras och visas inom synlig yta med begränsat antal etiketter. Skannad bildtext blir inte skarpare. Datorns Positioner öppnas som en fristående flyttbar ruta; även Koppla dörrautomatik kan dras i rubriken. Mocktester/syntax godkända; verklig Safari-läsbarhet/stabilitet och musdrag återstår. Se [SMARTMATCH_TEST_V36_57.md](SMARTMATCH_TEST_V36_57.md).
 
 ## Uppdatering 2026-10-11: SmartMatch TEST v36.56
 
