@@ -1,3 +1,6 @@
+# TEST v36.73 – egenkontroll skiljs åt, markering och pil (2026-10-11)
+Buggrättning: inget checklistdelat tillstånd mellan två DA, kolliderande interna ID korrigeras vid inläsning; tidigare matchning endast samma fysiska position. Godkänn alla gäller vald DA. Gult fokus försvinner vid klick utanför DA på ritningen. ↗ Justera pil åter i menyn och DA-dialogen. Se SMARTMATCH_TEST_V36_73.md. v36.72 bevarad och Kontrollflöde/iOS orörda.
+
 # TEST v36.72 – ny DA→GS-koppling (2026-10-11)
 Användaren vill nu att Hitta alla automatiker väljer närmaste GS med dörrautomatik på tilldelat dörrkort, inte närmaste GS över huvud taget. Exakt ID/modell prioriteras, en GS per DA och omvänt. Oläsbart/otydligt = manuell koppling, ingen påhittad pil. SLR ska senare läsa det exakt kopplade dörrkortet. Se SMARTMATCH_TEST_V36_72.md. Bara TEST, ingen native iOS.
 
