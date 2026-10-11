@@ -1,3 +1,11 @@
+# TEST v36.69 – former, appdialoger och separat lokal sparning (2026-10-11)
+
+Positionsmenyn har Form på markeringen: rund/oval, rektangel, rundade hörn. Circle/Square-annoteringar får motsvarande form automatiskt; övriga stämplar behöver manuellt val (ingen gissning av tillplattad grafik). Endast klickmarkeringen ändras, ingen PDF-text/kopplingslogik. Form sparas i positionEdits och manuella positioner för PDF/lokal återöppning.
+
+Alla native confirm/prompt i TEST-arbetsytan ersatta med appdialog; DA/protokollets alert-info ersatt också. Sparrutan visas utan automatisk PDF-generering. Spara lokalt lagrar original-PDF + fullständig arbetskopia i befintligt IndexedDB-arkiv, med valt namn och bibehållen aktiv session; Stäng ritningen använder fortsatt samma arkiv. Lokal sparning markerar inte PDF-filen som exporterad. Spara PDF bygger/verifierar därefter, Spara fil/dela blir tillgängligt efter verifiering (ny användargest för iOS delning). Namnfält och knappar förbättrade.
+
+Verifierat JS-syntax, appdialogers spara/validera/avbryt och touch-flytt, DA→GS/matchningsregression, lokal arkivering med bevarad aktiv session och senare stängning, full snapshot/flush före filarkiv, originalbytes + namn/sida, ingen PDF-generering vid öppning, unika HTML-ID och identisk fast TEST-entry. IndexedDB-transaktion testad med kontrollerat DB-mock, fysisk Safari/Chrome och användarens PDF inte tillgängliga; inga påståenden om fysisk återöppningstest. Lokalt arbete är bundet till samma enhet/webbläsare och kan försvinna vid rensning av webbplatsdata. Ingen Kontrollflöde/iOS/TestFlight-ändring. Löpande publicering godkänd. Nästa TEST v36.70.
+
 # TEST v36.68 – DA→GS, dörrkort före avstånd och inga dubbla kopplingar (2026-10-11)
 
 Användaren förtydligar pilriktning: dörrautomatikens placering ska peka mot rätt GS-position med matchande dörrkort, inte närmaste GS. GS4 får inte kopplas dubbelt/fel. Historik läst: v36.25 bevarar giltiga länkar och kräver granskning av osäkra; v36.45 tar bort närmaste-GS i manuell placering. Kvarvarande bulk-skanner använde fortfarande avståndspoäng och familjskanner `nearestGS`.
