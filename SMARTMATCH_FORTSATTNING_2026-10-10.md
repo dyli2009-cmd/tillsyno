@@ -1,3 +1,6 @@
+# TEST v36.72 – ny DA→GS-koppling (2026-10-11)
+Användaren vill nu att Hitta alla automatiker väljer närmaste GS med dörrautomatik på tilldelat dörrkort, inte närmaste GS över huvud taget. Exakt ID/modell prioriteras, en GS per DA och omvänt. Oläsbart/otydligt = manuell koppling, ingen påhittad pil. SLR ska senare läsa det exakt kopplade dörrkortet. Se SMARTMATCH_TEST_V36_72.md. Bara TEST, ingen native iOS.
+
 # TEST v36.71 – senaste beslut och implementation (2026-10-11)
 
 SmartMatch TEST har nu tre synliga sparval (Spara lokalt / Spara PDF / Skicka mejl), överflödigt Spara fil dolt, snabbare återanvändning av befintlig stor PDF-blob vid lokala sparningar, enstegsexport med fortsatt obligatorisk PDF-kontroll och cache som ogiltigförklaras vid ändringar. Den separata designmallen `smartmatch-protocol-templates.js` / `SMARTMATCH_MALL_EGENKONTROLL.md` ger EN rubrik ”EGENKONTROLL” i kundprotokoll och sparad layout. × Stäng ritning ligger bredvid Spara och fortsätter lokalt arkivera.
