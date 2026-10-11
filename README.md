@@ -2,7 +2,11 @@
 
 > **Viktigt före ändringar:** Läs [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md). Där finns regler för modulgränser, versionshantering och hur Kontrollflöde/Projektflöde ska hållas separerade.
 
-## SmartMatch TEST v36.104
+## SmartMatch TEST v36.105
+
+Den separata TEST-appen visar vid tryck på en dörrautomatik **endast två dokumentval sida vid sida**: Egenkontroll dörrautomatik (vänster) och SLR-dokumentmapp (höger). Överflödig status-/objektinformation är dold i själva valmenyn, och dubblerad `Sök fler automatiker` syns inte där utan finns kvar i sidosektionen. GS-/SLR-logik samt korrigeringen av dörrklick från v36.104 är oförändrade; iOS/TestFlight har inte ändrats.
+
+## Tidigare dörrklicksfix v36.104
 
 Aktiv separat TEST: [fixad dörrklicksbugg](SMARTMATCH_TEST_V36_104.md). Tryck på dörrautomatikens markeringsruta ska nu öppna Egenkontroll-/SLR-val igen. Rotorsak i v36.103 var att GS-förslagets funktion fick `undefined` istället för dörrkortscachen. Samma GS/SLR-logik och förenklade instruktion från tidigare versioner behålls. Ordinarie app och TestFlight oförändrade.
 
