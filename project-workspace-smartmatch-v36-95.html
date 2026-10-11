@@ -378,21 +378,21 @@
 }
 
 </style>
-<link rel="stylesheet" href="project-workspace-smartmatch-v36-95.css?v=36-95">
+<link rel="stylesheet" href="project-workspace-smartmatch-v36-95.css?v=36-95-header-1">
 </head>
 <body class="pwStartMode">
 <header class="pwHeader">
   <a class="pwHome" href="./" aria-label="Hem">‹ Hem</a>
   <div class="pwTitle">
     <strong>SmartMatch</strong>
-    <div class="pwReleaseLine" aria-label="Programversion och uppdatering">
+    <div class="pwReleaseLine" aria-label="Programversion">
       <span id="pwBuildVersion" class="pwTitleVersion" data-build="36.95" title="Appversion som finns i denna sida">TEST v36.95</span>
-      <span id="pwUpdateStatus" class="pwUpdateStatus" role="status" aria-live="polite">Kontrollerar…</span>
-      <button id="pwRefreshBuild" class="pwRefreshBuild" type="button" hidden title="Ny version tillgänglig" aria-label="Uppdatera SmartMatch när ritningen är stängd">↻ Uppdatera</button>
+      <span id="pwUpdateStatus" class="pwUpdateStatus" hidden aria-hidden="true"></span>
     </div>
     <small class="smHeaderSubtitle" aria-hidden="true">Projektflöde</small>
   </div>
   <div class="pwHeaderActions">
+      <button id="pwRefreshBuild" class="pwRefreshBuild" type="button" hidden title="Ny version tillgänglig" aria-label="Uppdatera SmartMatch när ritningen är stängd">↻ Uppdatera</button>
     <!-- Legacy save controls remain in DOM to preserve existing handlers, but are
          hidden: the single visible entry is Granska PDF + save within dialog. -->
     <div class="pwSaveWrap" hidden aria-hidden="true">
