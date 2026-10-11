@@ -2,7 +2,11 @@
 
 > **Viktigt före ändringar:** Läs [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md). Där finns regler för modulgränser, versionshantering och hur Kontrollflöde/Projektflöde ska hållas separerade.
 
-## SmartMatch TEST v36.71
+## SmartMatch TEST v36.101
+
+Senaste separata TEST: [högst en verifierad GS per fysisk automatik – säker framtida källa för SLR](SMARTMATCH_TEST_V36_101.md). DA-symbolen från v36.100 finns kvar som positionshjälp, inte som garanti att GS är rätt. Ordinarie Kontrollflöde och iOS är oförändrade.
+
+## Tidigare spar-/uppdateringsflöde v36.71
 
 Se [senaste implementerade spar- och uppdateringsflödet](SMARTMATCH_TEST_V36_71.md) och [sparad mall för kundens Egenkontroll](SMARTMATCH_MALL_EGENKONTROLL.md). TEST fungerar separat från ordinarie app.
 
