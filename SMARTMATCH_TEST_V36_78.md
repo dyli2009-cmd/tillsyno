@@ -1,0 +1,9 @@
+# SmartMatch TEST v36.78 – stämpelform följer original-PDF (2026-10-11)
+
+Endast klickbar markering i fristående SmartMatch TEST. **Dörrkort, GS-ID, pilkopplingar, positioners huvudrektanglar, protokoll och PDF-export är oförändrade.**
+
+För Circle-PDF-annotering visas rund/oval kontur direkt utifrån annoteringsrektangelns bredd/höjd. Square-PDF-annotering visas fyrkantig/rektangulär. För Stamp/FreeText/färgmarkeringar analyserar en ny isolerad modul hörn och mittkanter i ett begränsat utsnitt av **redan ritad PDF-canvas**. Tydligt ellipsformad kontur ger rund/oval knapp; tydliga rektangulära hörn ger fyrkantig/rektangulär knapp. Osäker form behåller avrundad standard och kan ändras manuellt. Den tidigare pmSizedMarker CSS-regeln som tvingade alla redigerade markeringar till 4px rundning överstyrdes.
+
+För en ensam ID-markering på en rimligt liten, sammanhängande färgpatch kan enbart den visuella klickrektangeln använda hela färgpatchens kontur/bounds, så knappen blir lika stor som PDF-stämpeln; den ursprungliga ID-markeringens rect och koppling används fortsatt för beräkningar. En manuellt vald markörform går alltid före automatisk; i formmenyn finns nu valet "Följ PDF-stämpeln automatiskt". Cachen är per dokument/sida/zoom/ID och nollställs vid projektbyte. Inga extra fullsidiga raster eller nätverksanrop behövs.
+
+Kontrollerade simuleringar: rund, oval, fyrkantig och rektangulär, både fylld och tunn kontur; PDF Circle/Square metadata; JavaScript-syntax; HTML-version/unik ID och filreferenser. **Inte** testat med verkliga kund-PDF:er på iPhone/iPad – formigenkänning är avsiktligt försiktig för att undvika felmatchningar. v36.77 finns kvar. Kontrollflöde/iOS/TestFlight lämnas oförändrade.

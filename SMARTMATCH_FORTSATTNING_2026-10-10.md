@@ -1,3 +1,6 @@
+# TEST v36.78 – automatisk GS-stämpelform (2026-10-11)
+Befintlig klickmarkering följer PDF Circle/Square eller säker rasterdetekterad oval/rund/fyrkantig/rektangulär kontur. För enskilda färgpatchar kan klicköverläggets VISUELLA rektangel följa patchens storlek, men GS-koder/dörrkort/positioner ändras inte. Manuell form fortsätter gälla; valet 'Följ PDF-stämpeln automatiskt' återställer. pmSizedMarker CSS-bugg överstyrd. Simulerade formtester (även tunna ovala linjer), syntax och versionskopplingar testade; riktig PDF återstår. Se SMARTMATCH_TEST_V36_78.md. Kontrollflöde/iOS orörda.
+
 # TEST v36.77 – kompakt responsiv historik (2026-10-11)
 PDF-historikdialog och listan Senast sparade mer kompakt: dator 460px, iPad 440px, iPhone skärmbredd och vertikala tryckvänliga val, landscape maxhöjd; bra radbrytning filnamn/tid. Ingen ändring i lagringslogik. Se SMARTMATCH_TEST_V36_77.md. Kontrollflöde/iOS orörda.
 
