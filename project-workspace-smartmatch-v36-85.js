@@ -2074,39 +2074,93 @@ function smartNormalizeCardLabel(value){
  return '';
 }
 
-/* TEST v36.85: door ID derives only from the first printed text line. */
-function smartFirstRowIdentifier(row){
- const raw=String(row||'').toUpperCase().replace(/[\u00a0\u2007\u202f]/g,' ').replace(/[–—]/g,'-').replace(/\s+/g,' ').trim();
- if(!raw||raw.length>100)return '';
- if(/^(?:SNIDAREN|ETAPP|PROJEKT|RITNING|PLANRITNING|STOR\s+PLANRITNING|UPPRÄTTAD|REVIDERAD|SIDAN?|PAGE|REV(?:ISION)?|DATUM|LÅSHANDLING|HANDLING|BESKRIVNING|INNEHÅLL|KUND|BESTÄLLARE|ENTREPRENÖR|ARTIKEL|FABRIKAT|LÅSHUS|SLUTBLECK|CYLINDER|TRYCKE|BESLAG|ANTAL|ANMÄRKNING|ANSVAR|KONTROLLPUNKT)\b/.test(raw))return '';
- const notId=/^(?:GS|WCWC|LOKAL|PLAN|KORT|DÖRR|DORR|DÖRRKORT|DORRKORT|SIDA|NAMN|TYP|DATUM|VERSION|STATUS|KUND|BESLAG|ANTAL|KOD|ID|PRODUKT|KOMPONENT)$/;
- // Preserve the existing GS-first rule for first-line labels such as WC GS10.
- const gs=smartGSInHeader(raw);if(gs)return gs;
+/* TEST v36.85 – identify door cards from the FIRST ROW OF THE TABLE.
+   Free-form project headers above the door-card table are irrelevant. */
+function smartRowDoorCode(value){
+ const raw=String(value||'').toUpperCase().normalize('NFC')
+  .replace(/[\u00a0\u2007\u202f]/g,' ').replace(/[–—]/g,'-')
+  .replace(/\s+/g,' ').trim();
+ if(!raw||raw.length>110)return '';
+ if(/^(?:SNIDAREN|ETAPP|PROJEKT|RITNING|PLANRITNING|UPPRÄTTAD|REVIDERAD|SIDAN?|PAGE|REV(?:ISION)?|DATUM|LÅSHANDLING|LASBESKRIVNING|LÅSBESKRIVNING|HANDLING|BESKRIVNING|KUND|BESTÄLLARE|ENTREPRENÖR|ARTIKEL|FABRIKAT|LÅSHUS|LASHUS|SLUTBLECK|CYLINDER|TRYCKE|BESLAG|ANMÄRKNING|ANSVAR|KONTROLLPUNKT|KOMPONENT|PRODUKT|STATUS|OBJEKT(?:NR|NUMMER)?|ANTAL)\b/.test(raw))return '';
+ const gs=[...raw.matchAll(/(?:^|[^A-ZÅÄÖ0-9]|(?:WC|VC|HWC|RWC)[\s/_-]*)G[\s/_-]*S[\s/_-]*(\d{1,6}[A-ZÅÄÖ]{0,3})(?=$|[^A-ZÅÄÖ0-9])/g)]
+  .map(m=>'GS'+m[1]);
+ const ids=[...new Set(gs)];
+ if(ids.length===1)return ids[0];
+ if(ids.length>1)return '';
+ const blocked=/^(?:GS|WCWC|LOKAL|PLAN|KORT|DÖRR|DORR|DÖRRKORT|DORRKORT|SIDA|NAMN|TYP|DATUM|VERSION|STATUS|KUND|BESLAG|ANTAL|KOD|ID|PRODUKT|KOMPONENT|MÖTESRUM|KONTOR|TEKNIK|FÖRRÅD)$/;
  const direct=smartNormalizeCardLabel(raw);
- if(direct&&!notId.test(direct))return direct;
- // Prefix may say "Dörrkort", "Dorrkort", "Littera" or anything else.
- const tail=raw.match(/(?:^|[\s:#=])([A-ZÅÄÖ]{0,5}[\s/_-]*\d{1,6}(?:[\s/_-]*[A-ZÅÄÖ]{0,4})?|\d{1,6}(?:[\s/_-]*[A-ZÅÄÖ]{0,4})?|[A-ZÅÄÖ]{2,6})\s*$/);
- if(!tail)return '';
- const code=smartNormalizeCardLabel(tail[1]);
- return code&&!notId.test(code)?code:'';
+ if(direct&&!blocked.test(direct))return direct;
+ if(/\b(?:LÅS|LAS|AUTOMATIK|SLUTBLECK|LÅSHUS|LASHUS|MAGNET|GLAS|HANDTAG|ARMKONTAKT|DÖRRSTÄNGARE|DORRSTANGARE)\b/.test(raw))return '';
+ const parts=raw.split(/[\s:#=]+/).filter(Boolean),last=parts.at(-1)||'';
+ const attempts=[last,parts.length>1?parts[parts.length-2]+' '+last:''];
+ for(const t of attempts){
+  const code=smartNormalizeCardLabel(t);
+  if(code&&!blocked.test(code))return code;
+ }
+ return '';
 }
+function smartTableCardIdentity(text){
+ const rows=groupLines(text?.items||[]);
+ const pairs=rows.map((row,i)=>{
+  const items=[...(row.items||[])].sort((a,b)=>a.x-b.x);
+  let maxGap=0,pivot=-1;
+  for(let j=1;j<items.length;j++){
+   const gap=items[j].x-(items[j-1].x+Math.max(items[j-1].w,1));
+   if(gap>maxGap){maxGap=gap;pivot=j}
+  }
+  return {row,i,left:items[0]?.x||0,right:pivot>0?items[pivot].x:0,
+   valid:!!row.label&&!!row.value&&maxGap>18&&pivot>0};
+ }).filter(p=>p.valid);
+ const seen=[];
+ for(let i=0;i<pairs.length;i++){
+  const p=pairs[i];
+  if(seen.some(s=>p.i-s.i<=15&&p.i>=s.i&&Math.abs(p.left-s.left)<20&&Math.abs(p.right-s.right)<26))continue;
+  const support=pairs.some((q,j)=>j>i&&q.i-p.i<=8&&Math.abs(p.left-q.left)<=20&&Math.abs(p.right-q.right)<=26);
+  if(!support)continue;
+  seen.push(p);
+  // A spanning first table row can sit immediately above the first pair.
+  const possible=[p.row],previous=rows[p.i-1];
+  if(previous&&previous.y>p.row.y&&previous.y-p.row.y<35){
+   const x=Math.min(...(previous.items||[]).map(x=>x.x));
+   if(Number.isFinite(x)&&x>=p.left-25&&x<=p.left+75)possible.unshift(previous);
+  }
+  for(const r of possible){
+   const code=smartRowDoorCode(r.text);
+   if(code)return {code,row:r.text,order:rows.indexOf(r),area:'table-first-row'};
+  }
+  // Do not scan additional component rows in the same table when the
+  // first row was only a heading (e.g. Komponent / Produkt).
+ }
+ return null;
+}
+function smartFirstRowIdentifier(row){return smartRowDoorCode(row)}
 function smartFirstCardIdentity(text,viewportHeight){
- const rows=labHeaderRows(text);
- if(!rows.length)return null;
- // No lower-row fallback: never match a product's article number as card ID.
- const code=smartFirstRowIdentifier(rows[0]);
- return code?{code,row:rows[0],order:0,area:'first-line'}:null;
+ const table=smartTableCardIdentity(text);
+ if(table)return table;
+ const first=labHeaderRows(text)[0]||'';
+ // A restricted fallback for the user's simpler PDFs: printed card title
+ // above an equipment-only table, where no table ID row exists.
+ if(!/^(?:DÖRRKORT|DORRKORT|BESLAGSKORT|DÖRR(?:NR|NUMMER)|DORR(?:NR|NUMMER)|LITTERA|POSITION|BETECKNING|ID)\b/i.test(first)&&
+    !smartNormalizeCardLabel(first))return null;
+ const code=smartRowDoorCode(first);
+ return code?{code,row:first,order:0,area:'legacy-card-heading'}:null;
 }
 function smartExactCardText(raw){
- // A drawing match must be the whole code, not an arbitrary part of WC101.
  const key=smartNormalizeCardLabel(raw);
- return key && smartHasDoorCard(key)?key:'';
+ if(key&&smartHasDoorCard(key))return key;
+ const gs=smartRowDoorCode(raw);
+ return gs?.startsWith('GS')&&smartHasDoorCard(gs)?gs:'';
 }
 function smartFindCardFirstTextPositions(existing=[]){
  // Exact, card-driven PDF-text search. Works for WC/HVC without digits and
  // without colored backgrounds. Each occurrence retains independent coordinates.
  let found=[],seen=0;
- const cardPatterns=Object.keys(smartDoorCardIndex).filter(code=>code.length>=1&&code.length<=18).map(code=>({code,rx:new RegExp('(^|[^A-ZÅÄÖ0-9/_-])('+code.replace(/[^A-ZÅÄÖ0-9]/g,'').split('').join('[\\s/_-]*')+')(?=$|[^A-ZÅÄÖ0-9/_-])','g')}));
+ const cardPatterns=Object.keys(smartDoorCardIndex).filter(code=>code.length>=1&&code.length<=18).map(code=>{
+ const c=code.replace(/[^A-ZÅÄÖ0-9]/g,'');
+ const pieces=c.split('').join('[\\s/_-]*');
+ const token=code.startsWith('GS')?'(?:(?:WC|VC|HWC|RWC)[\\s/_-]*)?'+pieces:pieces;
+ return {code,rx:new RegExp('(^|[^A-ZÅÄÖ0-9/_-])('+token+')(?=$|[^A-ZÅÄÖ0-9/_-])','g')};
+});
  return (async()=>{
   for(let p=1;p<=scanPageLimit();p++){
    smartLoadProgress(78+Math.floor(12*(p-1)/Math.max(1,scanPageLimit())),'Matchar dörr-ID på ritningen');
@@ -2117,7 +2171,7 @@ function smartFindCardFirstTextPositions(existing=[]){
    const text=await readPageText(p),rows=groupTextRowsForAutomation(text.items);
    const matches=[];
    for(const [rowNo,row] of rows.entries()){
-    const metadataRow=/\b(?:OBJ(?:EKT)?\.?\s*(?:NR|NUMMER)?|ARTIKELNR|RITNINGSNR|MÅTT|SKALA)\b/i.test(String(row.text||''));
+    const isReference=/\b(?:OBJ(?:EKT)?\.?\s*(?:NR|NUMMER)?|ARTIKELNR|RITNINGSNR|MÅTT|SKALA)\b/i.test(String(row.text||''));
     const cells=[...(row.items||[])].filter(c=>String(c.text||'').trim()).sort((a,b)=>a.x-b.x);
     for(let start=0;start<cells.length;start++){
      // Search up to four adjacent PDF text fragments. Longer matches win so
@@ -2131,7 +2185,7 @@ function smartFindCardFirstTextPositions(existing=[]){
       const segment=cells.slice(start,end+1);
       const raw=segment.map(v=>v.text).join(' ').trim();
       const code=smartExactCardText(raw);
-      if(!code||(metadataRow&&/^\d{1,2}$/.test(code)))continue;
+      if(!code||(isReference&&/^\d{1,2}$/.test(code)))continue;
       const rect=rectForTextItems(segment,1.2);if(!rect)continue;
       matches.push({page:p,rowNo,code,rect,raw,start,end,score:code.length*15+(end-start+1)*3});
      }
@@ -2141,7 +2195,7 @@ function smartFindCardFirstTextPositions(existing=[]){
      if(raw.length<5||raw.length>90||smartExactCardText(raw))continue;
      if(/\b(?:SLUTBLECK|LÅSHUS|CYLINDER|TRYCKE|ARTIKEL|MONTERAS|ANTAL)\b/.test(raw))continue;
      for(const {code,rx} of cardPatterns){
-      if(metadataRow&&/^\d{1,2}$/.test(code))continue;
+      if(isReference&&/^\d{1,2}$/.test(code))continue;
       for(const match of raw.matchAll(rx)){
        const offset=match.index+match[1].length;
        // "WC GS10" has a contextual room prefix, not necessarily two door IDs.
@@ -2262,9 +2316,7 @@ async function smartIndexDoorCardsFirst(){
   const strongCardPattern=/(?:DÖRRKORT|DORRKORT|BESLAGSKORT|DÖRRSPECIFIKATION|EGENKONTROLL)/i.test(text.raw);
   const hasHardware=/(?:LÅSHUS|LASHUS|SLUTBLECK|CYLINDER|DAGLÅSNING|DAGLASNING|TRYCKE)/i.test(text.raw);
   const drawing=/(?:PLANRITNING|PLAN\s*RITNING|SKALA\s*1\s*:)/i.test(text.raw)&&!strongCardPattern;
-  const tableRows=groupLines(text.items).filter(x=>x.label&&x.value&&!/^[-–—.]+$/.test(String(x.value).trim()));
-  const cardWithoutTitle=!!first&&tableRows.length>=2;
-  const isCard=importedDoorCard||(!drawing&&(eligible||cardWithoutTitle||(!!first&&strongCardPattern&&hasHardware)));
+  const isCard=importedDoorCard||(!drawing&&(eligible||first?.area==='table-first-row'||(!!first&&strongCardPattern&&hasHardware)));
   if(!isCard)continue;
   delete drawingPageLevels[p]; // door cards cannot be floor plan pages
   smartDoorCardPages.add(p);

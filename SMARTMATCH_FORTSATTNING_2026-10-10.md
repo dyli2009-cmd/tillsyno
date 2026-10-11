@@ -1,3 +1,6 @@
+# TEST v36.85 – Dörrkortets första ID-rad I TABELLEN (2026-10-11)
+Tabell först efter valfri projekttext. Matcha endast tabellens första ID-rad, inklusive GS1/GS 1/WC GS1/VCGS1 samt bara 1, 2, 3, 140C, A-105. Läs inte artikelnummer längre ner. Exakt ritnings-ID, inte delfragment av 1-45-1. Begränsad kompatibilitetsreserv för gamla PDF:er med 'Dorrkort 140C' överst och bara Komponent|Produkt i tabellen. GS/Alla/Eget sökord, ritning, kontrollflöde och iOS lämnas orörda. Se SMARTMATCH_TEST_V36_85.md.
+
 # TEST v36.85 – strikt första-rads-ID (2026-10-11)
 Matcha endast dörrkortets första tryckta rad mot exakt beteckning på ritningen (1, 2, 3, 140C, 140 C, A-105, WC etc); prefixet spelar ingen roll. Inte söka bland senare utrustningsrader. Hindra ID 1 att matcha del av 1-45-1 eller 11. Dörrkort utan känd rubrik får stöd genom riktig tvåkolumnstabell. GS/Alla/Eget sökord oförändrat. Se SMARTMATCH_TEST_V36_85.md.
 
