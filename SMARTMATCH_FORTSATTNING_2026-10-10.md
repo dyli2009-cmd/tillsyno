@@ -1,3 +1,7 @@
+# TEST v36.93 – namngivet dörrkort i samma grundtabell
+
+Användaren bad om stöd för det inskickade kortet Dörrkort Teknik utan att ändra fungerande kort. Explicit Dörrkort-titel med alfabetiskt namn på 2–6 bokstäver i den första tabellcellen tillåts; TEKNIK blir ID. Tidigare GS-/siffer-ID:n och den låsta ID-källan behålls. Riktiga PDF.js-fragment, alla 15 tidigare kortfixturer och faktisk Chromium-app testade: kort ensamt indexeras korrekt; genererad ritning ger två exakta Teknik-positioner, kopplade till kortsida 2 som öppnas vid klick. Ingen verklig kundritning för det nya kortet finns ännu. Se SMARTMATCH_TEST_V36_93.md. Oförändrad godkänd DA-modul v36.92, Kontrollflöde/native iOS orörda.
+
 # Förtydligad låst tabellregel – 2026-10-11
 
 Användaren betonar att ett exempel på själva dörrkortstabellen ska läggas in för ett nytt upplägg, så att vi kan förstå tabellens uppbyggnad och översta vänstra ID-cell innan matchningen mot ritningen verifieras. Arbetsgång: lägg in tabellen → förstå och kontrollera uppbyggnaden → läs första vänstra cellens ID → matcha hela ID på ritningen. Redan verifierade upplägg återanvänds; uppladdning är inte automatisk mallinlärning. Förtydligat i [tabellregeln](SMARTMATCH_TABLE_RULE_LOCK.md) och [regelsamlingen](SMARTMATCH_FUNCTION_RULES_LOCK.md). Bara dokumentation; TEST v36.92 och automatikregeln oförändrade.

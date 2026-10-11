@@ -51,3 +51,7 @@ Ett nytt beslut dokumenteras med datum, funktion, gammal regel, ny regel, skäl,
 [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md) anger arbetsområden, isolering och versionsregler. [Fortsättningsdokumentet](SMARTMATCH_FORTSATTNING_2026-10-10.md) innehåller status och tidigare arbetspass. [TEST v36.92](SMARTMATCH_TEST_V36_92.md) redovisar implementation och verifiering av det godkända automatikflödet.
 
 Denna dokumentationsändring ändrar inte appkoden och höjer inte TEST-versionen. Låset är en dokumenterad utvecklingsregel, inte en teknisk spärr i GitHub.
+
+## Verifierat tillägg för dörrkort – TEST v36.93
+
+Samma grundtabell med sammanfogad översta cell och två utrustningskolumner har kontrollerats med `Dörrkort Teknik`. Ett tillägg i första-cell-avläsningen ger TEKNIK utan att byta ID-källa eller ändra befintliga GS-/sifferregler. Se [versionsdokumentet](SMARTMATCH_TEST_V36_93.md) och [tabellregeln](SMARTMATCH_TABLE_RULE_LOCK.md). Dörrautomatikens godkända v36.92-modul är oförändrad.

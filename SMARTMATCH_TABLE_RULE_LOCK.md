@@ -49,3 +49,9 @@ Den här regeln bestämmer **dörrkortets ID → motsvarande ritningsposition**.
 Se [samlade funktionsregler](SMARTMATCH_FUNCTION_RULES_LOCK.md) för motiven, sambandet och hur reglerna ska förklaras vid nästa genomgång.
 
 I v36.92 verifierades den verkliga sidklassningen i Chromium: Snidarens ritningssidor 1–10 utesluts från kortlistan och kortsidor 11–25 ger alla 15 korrekta ID:n. Det förbättrar skillnaden mellan ritning och kort utan att ändra ID-källan. Generell geometrisk cellidentifiering för alla tabellupplägg är fortfarande inte färdig.
+
+## 7. Verifierat namngivet kort i samma grundupplägg – TEST v36.93
+
+Användaren lade in ett exempel med översta sammanfogade cellen `Dörrkort Teknik` och två utrustningskolumner. Upplägget lästes och kontrollerades. Avläsningen utökades inom den låsta regeln så att en uttrycklig Dörrkort-rubrik med ett alfabetiskt namn på 2–6 bokstäver kan ge ID:t, här TEKNIK. Andra befintliga numeriska/GS-ID:n behåller tidigare avläsning.
+
+Den skickade kort-PDF:en är verifierad ensam i appen. En genererad testritning med två Teknik-positioner kopplas till samma kort; längre ord som Teknikrum matchas inte och klick öppnar kortet. Ingen faktisk kundritning för detta exempel har verifierats. Se [TEST v36.93](SMARTMATCH_TEST_V36_93.md). Stödet kan återanvändas för samma kontrollerade upplägg; detta är inte automatisk inlärning av nya tabellmallar.
