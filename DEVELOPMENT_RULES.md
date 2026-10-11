@@ -48,6 +48,10 @@ När Projektflöde diskuteras ska fokus ligga på Projektflöde och inga ändrin
 
 Läs **[SMARTMATCH_FORTSATTNING_2026-10-10.md](SMARTMATCH_FORTSATTNING_2026-10-10.md)** före fortsatt SmartMatch-kodning. Här finns beslut, befintlig TEST-status, återöppningstest, Dropbox-delning, olösta risker och prioriterade förbättringar. Detta är en dokumentationspost, ingen ny funktionsversion.
 
+## SmartMatch – låst tabellregel
+
+Läs **[SMARTMATCH_TABLE_RULE_LOCK.md](SMARTMATCH_TABLE_RULE_LOCK.md)** före ändringar i dörrkortsidentifiering eller ritningskoppling. Regeln är låst av användaren: identifiera tabellens celler först, läs ID från översta vänstra rutan och matcha sedan hela beteckningen mot ritningen. Nya tabellupplägg ska läsas in och verifieras med ett exempel; den låsta ID-källan ändras inte.
+
 ## SmartMatch TEST – versionsregel
 
 SmartMatch TEST är en fristående experimentversion och ska inte förväxlas med Tillsynos globala appversionsnummer.

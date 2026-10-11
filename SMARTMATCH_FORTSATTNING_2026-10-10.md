@@ -1,3 +1,7 @@
+# Låst tabellregel – användarbeslut 2026-10-11
+
+Se **[SMARTMATCH_TABLE_RULE_LOCK.md](SMARTMATCH_TABLE_RULE_LOCK.md)**. Tabellen och dess tomma celler identifieras först; översta vänstra rutan är ID-källan; därefter matchas samma hela beteckning på ritningen. Nya tabellupplägg öppnas/läses in och verifieras innan automatisk koppling betraktas som stödd. TEST v36.87 är verifierad för de 15 Snidaren-korten; generell cellidentifiering och automatiskt lärande av nya mallar är inte införda. Detta är en dokumentationsändring, ingen ny funktionsversion.
+
 # TEST v36.85 – Dörrkortets första ID-rad I TABELLEN (2026-10-11)
 Tabell först efter valfri projekttext. Matcha endast tabellens första ID-rad, inklusive GS1/GS 1/WC GS1/VCGS1 samt bara 1, 2, 3, 140C, A-105. Läs inte artikelnummer längre ner. Exakt ritnings-ID, inte delfragment av 1-45-1. Begränsad kompatibilitetsreserv för gamla PDF:er med 'Dorrkort 140C' överst och bara Komponent|Produkt i tabellen. GS/Alla/Eget sökord, ritning, kontrollflöde och iOS lämnas orörda. Se SMARTMATCH_TEST_V36_85.md.
 
