@@ -1,6 +1,6 @@
 # SmartMatch – samlade och låsta funktionsregler
 
-**Beslut 2026-10-11:** Användaren bekräftade v36.92:s objektsökning. Senare samma dag begärde användaren återställning av dörrkortskontroll och endast en GS-pil per fysisk automatik. Gällande regel är v36.99: närmaste GS med dörrautomatik enligt sitt eget dörrkort. v36.92:s närmaste-GS-utan-kort och v36.97–v36.98:s ID-prioriterade fjärrval gäller inte längre.
+**Beslut 2026-10-11:** Användaren bekräftade v36.92:s objektsökning. Senare samma dag begärde användaren återställning av dörrkortskontroll och endast en GS-pil per fysisk automatik. Gällande regel är v36.100: närmaste GS med dörrautomatik enligt sitt eget dörrkort, mätt från den fysiska DA-symbolen när den finns; annars från märkningens mittpunkt. v36.92:s närmaste-GS-utan-kort och v36.97–v36.98:s ID-prioriterade fjärrval gäller inte längre.
 
 Det här är ingången när vi återupptar utvecklingen eller användaren frågar: **”Hur tänkte vi kring den här funktionen?”** Läs den berörda regeln före ändring. Använd aktuell beslutad regel; äldre versionsanteckningar är historik.
 
@@ -8,7 +8,7 @@ Det här är ingången när vi återupptar utvecklingen eller användaren fråga
 
 | Funktion | Avläsningskälla och koppling | Gällande dokument | Status |
 | --- | --- | --- | --- |
-| Dörrautomatik | Placering → hela objektnumret → egen knapp per fysisk automatik → läs kopplat GS-dörrkort → en pil till närmaste rätta GS på samma sida | [Dörrautomatik och GS-koppling](SMARTMATCH_AUTOMATION_RULE_LOCK.md) | LÅST; v36.99 anger närmaste verifierade GS, ED100/ED200/ED250 |
+| Dörrautomatik | Placering → hela objektnumret → egen knapp per fysisk automatik → läs kopplat GS-dörrkort → en pil till närmaste rätta GS på samma sida | [Dörrautomatik och GS-koppling](SMARTMATCH_AUTOMATION_RULE_LOCK.md) | LÅST; v36.100: närmaste GS från tillhörande fysisk DA-symbol, ED100/ED200/ED250 |
 | Dörrkort, standardprofil | Identifiera tabellen → läs ID i översta vänstra cellen → matcha samma hela ID på ritningen → koppla kortet till positionen | [Tabellavläsning och dörrkort](SMARTMATCH_TABLE_RULE_LOCK.md) | LÅST; generell tolkning av alla tabellupplägg är ännu inte färdig |
 | Dörrkort, separat känt tillägg | Uttrycklig korttitel → verifierad Objekt-rad och Komponent/Produkt-tabell → samma hela ID på ritningen | [Tabellavläsning, avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md) | Tillägg enligt användarbeslut; v36.95 |
 | Protokollexport | Spara → Protokoll → endast valda protokollsidor; godkända är förvalda; inga ritningssidor eller GS-länkmenyer | [TEST v36.96](SMARTMATCH_TEST_V36_96.md) | Beslutad enligt användarens instruktion |
@@ -72,6 +72,10 @@ Se [tabellregelns avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md) och [TEST v36.94](SM
 
 Den kända titel/Objekt/Komponent-profilen räcker som kortbevis även med en utrustningsrad. Äldre klassningskrav på ytterligare Låshus-/Cylinder-ord gäller inte för den redan verifierade profilen. Profilen och den låsta standardavläsningen ändras inte. Se [TEST v36.95](SMARTMATCH_TEST_V36_95.md).
 
+
+## Snidaren GS2/GS4 – TEST v36.100
+
+PDF-sida 3 Plan 0 innehåller `200154-28-24-1` vid GS4 och `200154-28-24-2` vid GS2, båda med dörrkort ED100 (PDF-sidor 14 och 12). Appen använder en-till-en-fördelade separata DA-symboler som geometrisk ankare innan den väljer närmaste verifierade GS. Detta korrigerar fel GS4-pil för `...-2` och behåller `...-1 → GS4`. Läs [v36.100](SMARTMATCH_TEST_V36_100.md).
 
 ## Närmaste GS med dörrautomatik och kompatibel ED200 – TEST v36.99
 
