@@ -2080,6 +2080,8 @@ function smartFirstRowIdentifier(row){
  if(!raw||raw.length>100)return '';
  if(/^(?:SNIDAREN|ETAPP|PROJEKT|RITNING|PLANRITNING|STOR\s+PLANRITNING|UPPRÄTTAD|REVIDERAD|SIDAN?|PAGE|REV(?:ISION)?|DATUM|LÅSHANDLING|HANDLING|BESKRIVNING|INNEHÅLL|KUND|BESTÄLLARE|ENTREPRENÖR|ARTIKEL|FABRIKAT|LÅSHUS|SLUTBLECK|CYLINDER|TRYCKE|BESLAG|ANTAL|ANMÄRKNING|ANSVAR|KONTROLLPUNKT)\b/.test(raw))return '';
  const notId=/^(?:GS|WCWC|LOKAL|PLAN|KORT|DÖRR|DORR|DÖRRKORT|DORRKORT|SIDA|NAMN|TYP|DATUM|VERSION|STATUS|KUND|BESLAG|ANTAL|KOD|ID|PRODUKT|KOMPONENT)$/;
+ // Preserve the existing GS-first rule for first-line labels such as WC GS10.
+ const gs=smartGSInHeader(raw);if(gs)return gs;
  const direct=smartNormalizeCardLabel(raw);
  if(direct&&!notId.test(direct))return direct;
  // Prefix may say "Dörrkort", "Dorrkort", "Littera" or anything else.
