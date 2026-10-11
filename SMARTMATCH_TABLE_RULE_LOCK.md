@@ -24,6 +24,12 @@ Ritningstexten måste vara läsbar. Skannad bildtext kan kräva OCR; oläsbara e
 
 ## 4. Ett nytt tabellupplägg
 
+**Användarens förtydligande 2026-10-11: tabellens uppbyggnad är ett viktigt underlag.** När ett projekt använder ett nytt eller oprövat dörrkort ska användaren lägga in ett exempel på själva tabellen, helst som PDF. Vi ska läsa exemplet och förstå tabellens gränser, rader, kolumner, eventuella sammanfogade eller tomma celler och vilken ruta som är överst till vänster. Först därefter verifieras ID-avläsningen och matchningen mot ritningen för detta upplägg.
+
+Arbetsgången är **lägg in tabellen → förstå och kontrollera uppbyggnaden → läs ID i översta vänstra cellen → matcha hela ID på ritningen**. Koordinater hjälper oss att hitta cellen i det upplägget; de är inte ett krav på att alla framtida tabeller måste ha samma placering.
+
+Om exemplet visar att befintlig avläsning inte fungerar ska stödet rättas inom denna låsta regel och testas mot exemplet. Ett upplägg som redan är verifierat behöver inte läras om för varje kort. Att användaren lämnar ett exempel innebär inte i sig att appen automatiskt lär sig eller sparar en ny tabellmall.
+
 Vid ett nytt eller tidigare oprövat tabellupplägg ska användaren först öppna/läsa in ett dörrkort i appen. Avläsningen ska kontrolleras mot den verkliga tabellen: var den börjar, vilken cell som är överst till vänster och vilket ID som läses där.
 
 Om appen inte kan tolka upplägget ska avläsningsstödet undersökas och vid behov anpassas och testas med ett exempel innan automatisk koppling för det upplägget betraktas som fungerande. Ett nytt upplägg ändrar inte den låsta regeln om ID-källan.

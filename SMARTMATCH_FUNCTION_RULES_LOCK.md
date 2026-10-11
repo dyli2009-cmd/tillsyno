@@ -13,6 +13,8 @@ Det här är ingången när vi återupptar utvecklingen eller användaren fråga
 
 ## Två kopplingar som bygger på varandra
 
+**Tabellunderlaget kommer först:** För ett nytt eller oprövat dörrkortsupplägg lägger användaren in ett exempel på tabellen. Vi läser och kontrollerar hur den är byggd, vilka celler som finns och var översta vänstra ID-rutan ligger. Därefter verifieras avläsningen och matchningen. Redan verifierade upplägg kan återanvändas; automatisk inlärning av nya mallar är inte byggd.
+
 **Dörrkort → ritningsposition:** Kortets ID, till exempel GS10 eller 140 C, bestämmer vilken beteckning som ska hittas på ritningen. Hela beteckningen matchas; mellanslag kan normaliseras, men ID 1 får inte matcha en del av 11.
 
 **Dörrautomatik → GS-position:** Automatikens objektnummer och maskintyp kommer från dess märkning på ritningen. Varje funnen automatik får en knapp och en pil mot närmaste GS på samma sida. Den GS-positionen kan redan vara kopplad till sitt dörrkort genom den första regeln.

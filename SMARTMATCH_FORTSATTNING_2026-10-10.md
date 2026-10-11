@@ -1,3 +1,7 @@
+# Förtydligad låst tabellregel – 2026-10-11
+
+Användaren betonar att ett exempel på själva dörrkortstabellen ska läggas in för ett nytt upplägg, så att vi kan förstå tabellens uppbyggnad och översta vänstra ID-cell innan matchningen mot ritningen verifieras. Arbetsgång: lägg in tabellen → förstå och kontrollera uppbyggnaden → läs första vänstra cellens ID → matcha hela ID på ritningen. Redan verifierade upplägg återanvänds; uppladdning är inte automatisk mallinlärning. Förtydligat i [tabellregeln](SMARTMATCH_TABLE_RULE_LOCK.md) och [regelsamlingen](SMARTMATCH_FUNCTION_RULES_LOCK.md). Bara dokumentation; TEST v36.92 och automatikregeln oförändrade.
+
 # Bekräftat och låst – SmartMatch-regler 2026-10-11
 
 Användaren bekräftar att v36.92 fungerar: ”Okej, nu funkar detta”. På användarens begäran har regler och motiv samlats i [SMARTMATCH_FUNCTION_RULES_LOCK.md](SMARTMATCH_FUNCTION_RULES_LOCK.md). [SMARTMATCH_AUTOMATION_RULE_LOCK.md](SMARTMATCH_AUTOMATION_RULE_LOCK.md) låser placerings-/objektsökningen och närmaste-GS-pilen. [SMARTMATCH_TABLE_RULE_LOCK.md](SMARTMATCH_TABLE_RULE_LOCK.md) behåller översta vänstra tabellcell som dörrkortets ID-källa och länkar till sambandet mellan funktionerna. Läs dessa före fortsatt ändring eller när användaren frågar hur vi tänkt. Principer ändras bara efter ett nytt uttryckligt beslut; rättningar som återställer regeln är tillåtna inom beställd omfattning. Enbart dokumentation, appen kvar på TEST v36.92.
