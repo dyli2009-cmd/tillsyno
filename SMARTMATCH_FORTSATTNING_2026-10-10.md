@@ -1,3 +1,6 @@
+# TEST v36.75 – kopplingsinformation och renare automatikmeny (2026-10-11)
+Koppla / ändra GS visar GS-nr, fysisk position, ritsida + objekt/maskintyp/antal, även för valt men ännu inte sparat alternativ. Sidofältet visar kopplad GS, position, maskin, antal, sida. Automatikens dokumentdialog visar två huvudval: Egenkontroll dörrautomatik och SLR-dokumentmapp. Justera pil bara i positionens ⋯-meny. Hitta alla automatiker kvar hopfällt under Sök fler automatiker och i DA-gruppinställningar. Knappar kompaktare med tvåkolumnslayout. Se SMARTMATCH_TEST_V36_75.md. Isolerat TEST, v36.74 kvar, inga ändringar i Kontrollflöde/iOS.
+
 # TEST v36.74 – Ej kontrollerat alla (2026-10-11)
 En andra knapp nollställer alla resultat och punktanmärkningar på just den öppna automatiken (0 %) utan att röra andra DA, projektinformation eller GS/SLR. Den befintliga Godkänn alla är kvar. Se SMARTMATCH_TEST_V36_74.md. DA/GS-modulen v36.73 återanvänds oförändrad.
 
