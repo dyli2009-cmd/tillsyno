@@ -54,7 +54,7 @@ Ett nytt beslut dokumenteras med datum, funktion, gammal regel, ny regel, skäl,
 
 [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md) anger arbetsområden, isolering och versionsregler. [Fortsättningsdokumentet](SMARTMATCH_FORTSATTNING_2026-10-10.md) innehåller status och tidigare arbetspass. [TEST v36.92](SMARTMATCH_TEST_V36_92.md) redovisar implementation och verifiering av det godkända automatikflödet.
 
-Denna dokumentationsändring ändrar inte appkoden och höjer inte TEST-versionen. Låset är en dokumenterad utvecklingsregel, inte en teknisk spärr i GitHub.
+Beslutsdokumentet kompletterades och appkoden uppdaterades i TEST v36.97. Det här låset beskriver gällande beteenderegler, men är ingen teknisk spärr i GitHub.
 
 ## Verifierat tillägg för dörrkort – TEST v36.93
 
