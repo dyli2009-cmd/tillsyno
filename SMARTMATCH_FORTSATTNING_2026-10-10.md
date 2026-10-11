@@ -3,9 +3,13 @@
 **Senast uppdaterad:** 2026-10-10  
 **Status:** Avstämning och överlämning; **ingen ny funktionskod** i denna commit.  
 **Repo:** `dyli2009-cmd/tillsyno`  
-**Senaste TEST-kodversion:** **SmartMatch TEST v36.55** (fast mobilraster per sida, ingen automatisk detaljrendering på mobil). Nästa funktionsversion är **TEST v36.56**.  
+**Senaste TEST-kodversion:** **SmartMatch TEST v36.56** (redigerbart filnamn i Projekt-PDF- och Protokoll-sparrutan). Nästa funktionsversion är **TEST v36.57**.  
 **Fast TEST-adress:** https://dyli2009-cmd.github.io/tillsyno/project-workspace-smartmatch-test.html  
 **Viktigt:** Detta är bara Projektflöde/SmartMatch TEST; INGA ändringar i Kontrollflöde, ordinarie Dörrservice eller iOS/TestFlight utan uttryckligt nytt beslut.
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.56
+
+Filnamn-fält i sparrutan för Projekt-PDF och Protokoll, med befintligt namn som standard. Valfritt eget namn följer med filen vid sparning/delning; .pdf normaliseras automatiskt, svenska tecken och mellanslag kvar. Namnändring kräver ingen ny PDF-rendering. Syntax/namnkontroller godkända. Fysisk telefon/Dropbox-test återstår. Se [SMARTMATCH_TEST_V36_56.md](SMARTMATCH_TEST_V36_56.md).
 
 ## Uppdatering 2026-10-11: SmartMatch TEST v36.55
 
