@@ -501,17 +501,46 @@ window.SmartMatchDALink=(()=>{
   return symbols;
  }
  function automationAnchor(item){
-  const source=point(item.rect),symbols=daTextSymbolCache.get(item.page)||[];
-  if(!symbols.length)return {p:source,source:'text'};
-  const w=Math.abs(item.rect[2]-item.rect[0]),h=Math.abs(item.rect[3]-item.rect[1]);
-  const maxDistance=Math.max(40,Math.max(w,h)*1.65);
-  const ranked=symbols.map(s=>({p:s.p,d:Math.hypot(s.p[0]-source[0],s.p[1]-source[1])}))
-   .sort((a,b)=>a.d-b.d);
-  if(!ranked.length||ranked[0].d>maxDistance)return {p:source,source:'text'};
-  // If two physical DA signs are inseparable from the label, do not guess.
-  if(ranked[1]&&ranked[1].d-ranked[0].d<Math.max(6,maxDistance*.04))
-   return {p:source,source:'text'};
-  return {p:ranked[0].p,source:'da-symbol'};
+  const original=point(item.rect),symbols=daTextSymbolCache.get(item.page)||[];
+  if(!symbols.length)return {p:original,source:'text'};
+  // Match the drawing's physical DA signs to distinct nearby automation IDs.
+  // A single label can straddle two doors; the immediately closer sign may
+  // belong to the adjacent automation. Greedy one-to-one pairing prevents
+  // both ID labels from using that same sign. Unassigned IDs keep the prior
+  // text-center fallback.
+  const physical=[],sameSource=(a,b)=>{
+   if(a.page!==b.page||itemFullId(a)!==itemFullId(b))return false;
+   const ra=a.rect,rb=b.rect;
+   const overlapX=Math.max(0,Math.min(ra[2],rb[2])-Math.max(ra[0],rb[0]));
+   const overlapY=Math.max(0,Math.min(ra[3],rb[3])-Math.max(ra[1],rb[1]));
+   const minArea=Math.min(Math.abs((ra[2]-ra[0])*(ra[3]-ra[1])),
+    Math.abs((rb[2]-rb[0])*(rb[3]-rb[1])));
+   return minArea>0&&overlapX*overlapY/minArea>.45;
+  };
+  for(const o of ctx().getItems?.()||[]){
+   if(o.page!==item.page||!Array.isArray(o.rect)||o.rect.length!==4)continue;
+   if(!physical.some(x=>sameSource(x,o)))physical.push(o);
+  }
+  if(!physical.some(x=>sameSource(x,item)))physical.push(item);
+  const pairs=[];
+  for(let i=0;i<physical.length;i++){
+   const o=physical[i],p=point(o.rect),w=Math.abs(o.rect[2]-o.rect[0]),h=Math.abs(o.rect[3]-o.rect[1]);
+   const cutoff=Math.max(40,Math.max(w,h)*1.65);
+   for(let j=0;j<symbols.length;j++){
+    const q=symbols[j].p,d=Math.hypot(p[0]-q[0],p[1]-q[1]);
+    if(d<=cutoff)pairs.push({i,j,d});
+   }
+  }
+  pairs.sort((a,b)=>a.d-b.d||a.i-b.i||a.j-b.j);
+  const usedIds=new Set(),usedSigns=new Set(),owners=new Map();
+  for(const pair of pairs){
+   if(usedIds.has(pair.i)||usedSigns.has(pair.j))continue;
+   usedIds.add(pair.i);usedSigns.add(pair.j);owners.set(pair.i,pair.j);
+  }
+  const index=physical.findIndex(o=>sameSource(o,item));
+  const sign=owners.get(index);
+  if(sign===undefined)return {p:original,source:'text'};
+  return {p:symbols[sign].p,source:'da-symbol'};
  }
  // The user wants the physically NEAREST GS whose own door card contains
  // compatible door automation. Full ID/type is validation, never a reason to
