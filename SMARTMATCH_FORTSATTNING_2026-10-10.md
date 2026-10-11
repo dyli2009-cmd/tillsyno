@@ -1,3 +1,11 @@
+# TEST v36.63 – telefon prioriterar stämplar (2026-10-11)
+
+Användaren förtydligar: samma PDF på iPhone/iPad; ritningens bakgrund och linjer får vara mindre skarpa på telefon, men faktiska stämplar och projekterade kopplingar ska vara tydliga. Löpande publicering fortsatt godkänd.
+
+Ny DRAWING_IS_PHONE skiljer telefon från iPad. På telefon minskas bakgrundens budget från 1.8 miljoner till 900000 pixlar och full synlig-vy-detaljrendering stängs av. Original-PDF skärps i små utsnitt kring identifierade GS/projektpositioner och relevanta native PDF-annoteringar (inklusive Stamp). Inga påhittade etiketter. Upp till 16 synliga utsnitt med gemensam 350000-pixelbudget; upp till 90000 pixlar per utsnitt. Utsnitt väljs efter närhet till vyns mitt, cache återanvänds. Skärpning efter 1.2 sekunders vila och vid zoom >=100%. En aktiv rendering avbryts/resizas aldrig av gest; gammal bild släpps efter avslut. Cache töms vid projektstängning. iPad/desktop behåller full detaljvisning från v36.62. Isolerat mask-allokeringsskydd från v36.62 behålls. Nästa TEST v36.64.
+
+Verifierat: JS-syntax, faktisk roterad original-PDF-stämpel (former och text bevaras, crop-jämförelse med mindre rasteriseringsavvikelse vid subpixelklippning), mockad aktiv gest/stale rendering/cache/disposal. Fysisk iPhone ej testad; inget löfte att Safari-kraschen är slutligt löst. Skärpningen täcker identifierade regioner/native stamp-annoteringar; oidentifierade symboler som är platta PDF-grafikobjekt kan fortfarande ha bakgrundens upplösning. Kontrollflöde och iOS/TestFlight orörda.
+
 # TEST v36.62 – återskapad överstor bildmask vid zoom (2026-10-11)
 
 v36.61 löste inte användarens iPhone-krasch. Granskningen fann att PDF.js 3.11.174 `_createMaskCanvas` dimensionerar `fillCanvas` efter hela den zoomade masken och inte efter destinationscanvas. Ett kontrollerat test med exakt appens PDF.js och worker försöker skapa 14000 × 21000 pixlar (294 miljoner, cirka 1.18 GB RGBA) trots att utsnittet bara är 780 × 1200. Allokeringen fångas och blockeras av testets canvasFactory före minnesreservation.
