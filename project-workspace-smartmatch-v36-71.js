@@ -1107,6 +1107,8 @@ function releaseSmartExport(){
  smartExportRunId++;
  if(smartExportObjectUrl){URL.revokeObjectURL(smartExportObjectUrl);smartExportObjectUrl=null}
  smartExportBytes=null;smartExportMode=null;smartExportBytesVersion=-1;
+ // Large generated PDFs should not sit in Safari memory after closing the sheet.
+ if(smartExportCached?.data?.length>18*1024*1024){smartExportCached=null;smartExportTask=null}
  const proof=document.getElementById('smartExportProjectProof');
  if(proof){proof.hidden=true;proof.textContent=''}
  const detail=document.getElementById('smartExportFinalSize');
@@ -1162,6 +1164,7 @@ async function saveSmartWorkspaceLocally(){
  button.disabled=true;
  try{
   currentFileName=name;el.fileName.textContent=fileStem(name);el.fileName.title=name;
+  if(name!==oldName){smartExportRevision++;smartExportCached=null;smartExportTask=null}
   if(!window.SmartMatchSession?.archiveCurrentProject)throw new Error('Lokal lagring är inte tillgänglig.');
   await window.SmartMatchSession.archiveCurrentProject({keepActive:true,name});
   if(fileKey!==sourceKey)return;
@@ -1196,6 +1199,7 @@ async function prepareSmartExport(silent=false){
   try{
    const ready=await smartExportTask.promise;
    if(revision!==smartExportRevision)return prepareSmartExport(silent);
+   if(!dialog.open){if(ready.data.length>18*1024*1024)smartExportTask=null;return false}
    smartExportCached=ready;
   }catch(err){
    smartExportTask=null;console.error('[SmartMatch] PDF-export',err);
