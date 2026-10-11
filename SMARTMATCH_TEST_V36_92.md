@@ -26,3 +26,7 @@ Verifiering från repo-roten:
 Testerna kördes i en lokal Chromium-miljö med den bifogade filen, inte i användarens aktiva app eller på fysisk iPhone/iPad. Ingen ny OCR för bildbaserade automatikmärkningar är införd. Den andra ritningen har inte tillhandahållits och är inte verifierad. Inga kund-PDF-filer publiceras.
 
 Ny versionerad HTML/JS/CSS/DA-modul; tidigare versioner bevaras. Endast isolerad SmartMatch TEST. Kontrollflöde och native iOS/TestFlight orörda.
+
+## Användarbekräftelse och lås
+
+2026-10-11 bekräftade användaren: ”Okej, nu funkar detta” och bad att funktionernas regler och motiv sparas och låses. Se [samlade funktionsregler](SMARTMATCH_FUNCTION_RULES_LOCK.md), [automatikregeln](SMARTMATCH_AUTOMATION_RULE_LOCK.md) och [tabellregeln](SMARTMATCH_TABLE_RULE_LOCK.md). Bekräftelsen avser användarens provade flöde; den gör inte oprövade PDF-format eller alla enheter verifierade.

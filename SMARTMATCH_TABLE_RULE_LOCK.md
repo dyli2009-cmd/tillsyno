@@ -35,3 +35,11 @@ Målet är generell automatisk tabellavläsning, inte obligatorisk projektspecif
 TEST v36.87 hittar alla 15 dörrkorts-ID:n i användarens Snidaren-PDF vid test med appens PDF.js 3.11.174. Den nuvarande implementationen använder fortfarande text- och rubrikheuristik; generell geometrisk cellidentifiering för alla tabellupplägg är inte färdig eller garanterad.
 
 Detta dokument sparar och låser beteenderegeln. Det inför ingen ny appfunktion eller ny testversion.
+
+## 6. Samband med dörrautomatik och gemensam regelsamling
+
+Den här regeln bestämmer **dörrkortets ID → motsvarande ritningsposition**. [Automatikregeln](SMARTMATCH_AUTOMATION_RULE_LOCK.md) bestämmer **automatikens märkning → objektsökning → närmaste GS-position**. GS-positionens dörrkortskoppling gör att man kan hitta vidare till kortet, men kortets automatikrad eller modell får inte hindra automatikens knapp eller närmaste-GS-pil.
+
+Se [samlade funktionsregler](SMARTMATCH_FUNCTION_RULES_LOCK.md) för motiven, sambandet och hur reglerna ska förklaras vid nästa genomgång.
+
+I v36.92 verifierades den verkliga sidklassningen i Chromium: Snidarens ritningssidor 1–10 utesluts från kortlistan och kortsidor 11–25 ger alla 15 korrekta ID:n. Det förbättrar skillnaden mellan ritning och kort utan att ändra ID-källan. Generell geometrisk cellidentifiering för alla tabellupplägg är fortfarande inte färdig.

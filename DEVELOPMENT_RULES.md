@@ -48,6 +48,14 @@ När Projektflöde diskuteras ska fokus ligga på Projektflöde och inga ändrin
 
 Läs **[SMARTMATCH_FORTSATTNING_2026-10-10.md](SMARTMATCH_FORTSATTNING_2026-10-10.md)** före fortsatt SmartMatch-kodning. Här finns beslut, befintlig TEST-status, återöppningstest, Dropbox-delning, olösta risker och prioriterade förbättringar. Detta är en dokumentationspost, ingen ny funktionsversion.
 
+## SmartMatch – samlade och låsta funktionsregler
+
+Läs **[SMARTMATCH_FUNCTION_RULES_LOCK.md](SMARTMATCH_FUNCTION_RULES_LOCK.md)** före fortsatt SmartMatch-utveckling och när användaren frågar hur en funktion är tänkt. Den samlar gällande principer, avläsningskällor, kopplingar, motiv, verifiering och beslutshistorik.
+
+**[SMARTMATCH_AUTOMATION_RULE_LOCK.md](SMARTMATCH_AUTOMATION_RULE_LOCK.md)** låser det av användaren bekräftade v36.92-flödet: placerad märkning → sök hela objektnumret → egen knapp per fysisk träff → närmaste GS på samma sida. Dörrkortets automatikuppgifter och äldre en-till-en-krav får inte återinföras som spärr. Manuella val och sparade kontroller bevaras.
+
+Dessa beteendeprinciper ändras endast efter ett nytt uttryckligt användarbeslut. Felrättningar som återställer beslutad funktion är tillåtna inom beställd omfattning. Äldre versionsanteckningar är historik och överstyr inte aktuell låst regel.
+
 ## SmartMatch – låst tabellregel
 
 Läs **[SMARTMATCH_TABLE_RULE_LOCK.md](SMARTMATCH_TABLE_RULE_LOCK.md)** före ändringar i dörrkortsidentifiering eller ritningskoppling. Regeln är låst av användaren: identifiera tabellens celler först, läs ID från översta vänstra rutan och matcha sedan hela beteckningen mot ritningen. Nya tabellupplägg ska läsas in och verifieras med ett exempel; den låsta ID-källan ändras inte.
