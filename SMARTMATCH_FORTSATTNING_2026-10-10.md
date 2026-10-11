@@ -1,3 +1,7 @@
+# TEST v36.105 – kompakt dokumentval när man trycker på en automatik (2026-10-11)
+
+Vid tryck på t.ex. `2001-34-28-24-1` ska modalrutan endast erbjuda två sidställda knappar: **Egenkontroll dörrautomatik** (vänster) och **SLR-dokumentmapp** (höger). Den gamla statusraden `Kontrollerar GS-koppling…` i denna valmeny är borttagen. Beskrivande rad i rubriken (objekt/maskin/antal eller GS-status) döljs i dokumentvalsläget men finns kvar i särskild GS-redigering. Undermenyn `Sök fler automatiker` är inte längre synlig här, eftersom motsvarande funktion redan finns under sektioner; tekniska element är kvar dolda i DOM för att inte bryta sektionens befintliga anrop. Samma v36.104 DA-modul/GS-beräkning används. Endast separata TEST-versionerna `project-workspace-smartmatch-v36-105.{html,js,css}` och den fasta testadressen uppdaterade. Tvåknappslayout, version och JS-syntax kontrollerade, full iOS/Safari-test återstår.
+
 # TEST v36.104 – fix: tryck på automatik ska öppna Egenkontroll/SLR (2026-10-11)
 
 Användaren upptäckte att tryck på `2001-34-28-24-1` inte längre öppnade menyn. Rotorsaken bekräftades i v36.102-DA-modulen som kördes av v36.103: `refreshGsSuggestion` anropade `chooseNearestGS(o)` utan obligatoriska `linkCardCache`, vilket bröt före `showModal()`. v36.104 byter **bara** till `chooseNearestGS(o,linkCardCache)`. Isolerad DOM/JS-test med samma ID öppnade dialogen och Egenkontroll-knappen korrekt. Regressionstest och [detaljer](SMARTMATCH_TEST_V36_104.md) finns på GitHub. Testa fortfarande i riktig Safari/iPhone/iPad. Låst GS/SLR-princip oförändrad.
