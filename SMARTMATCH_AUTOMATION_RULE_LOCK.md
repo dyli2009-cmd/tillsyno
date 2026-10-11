@@ -1,7 +1,7 @@
 # SmartMatch – låst regel för dörrautomatik och GS-koppling
 
 **STATUS: LÅST enligt användarens uppdaterade beslut 2026-10-11.**
-**Gällande kopplingsregel: TEST v36.101.** Föregående godkända objektsökning och placering från v36.92 behålls, men dess rena närmaste-GS-regel ersätts av dörrkortsverifierad GS-matchning. Den tidigare regeln finns dokumenterad som historik.
+**Gällande kopplingsregel: TEST v36.101; senaste UI/verifieringsrättning TEST v36.102.** Föregående godkända objektsökning och placering från v36.92 behålls, men dess rena närmaste-GS-regel ersätts av dörrkortsverifierad GS-matchning. Den tidigare regeln finns dokumenterad som historik.
 
 Detta är den gällande beteenderegeln för dörrautomatik i SmartMatch TEST. Läs även [samlingen av funktionsregler](SMARTMATCH_FUNCTION_RULES_LOCK.md). Äldre versionsanteckningar beskriver historik; de får inte återinföra äldre kopplingskrav som strider mot detta beslut.
 
@@ -10,6 +10,8 @@ Detta är den gällande beteenderegeln för dörrautomatik i SmartMatch TEST. L�
 **En fysisk dörrautomatik får högst EN verifierad GS-koppling** och därmed ett bestämt GS-dörrkort. Detta har högre prioritet än att enbart utgå från PDF-tecknet `DA`. Tecknet från v36.100 behålls som hjälp för att hitta rätt fysisk dörr, men det är aldrig ensamt bevis. Välj bara en GS på samma ritningssida vars dörrkort anger kompatibel dörrautomatik och vars avstånd/identitet stämmer. Saknas entydig träff ska användaren koppla manuellt, inte få två pilar eller en felaktig GS.
 
 En GS får delas av flera automatiker om de hör till samma dörr. Dubbletter av *samma fysiska automatik* ska inte ge olika GS-källor: vid manuell korrigering synkroniseras länken utan att checklistor eller SLR-statusar raderas. Motstridiga gamla länkar blockerar GS-källa till SLR. Framtida SLR ska läsa dörrkortsuppgifter genom **verifierad GS → kopplad dörrkortssida**, inte rå `linkedGsId` eller ritad pil. v36.101 visar källan eller varning i SLR; automatisk dokumentdataimport finns ännu inte. Läs [v36.101-beslutet](SMARTMATCH_TEST_V36_101.md).
+
+**Synlig kontroll tillagd i v36.102:** Vid öppning av en automatik visas sparad GS och närmaste verifierade förslag. Avvikelse (t.ex. sparad GS4, föreslagen GS2) redovisas tydligt även om gamla GS var manuellt bekräftad. Teknikern väljer sedan förslaget och sparar uttryckligen. SLR läser kortbevis vid öppning och får inte använda en avvikande gammal GS som verifierad framtida dokumentkälla. [Läs v36.102](SMARTMATCH_TEST_V36_102.md).
 
 ## 1. Så använder man funktionen
 
