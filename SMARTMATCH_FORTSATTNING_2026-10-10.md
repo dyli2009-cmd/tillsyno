@@ -1,3 +1,6 @@
+# TEST v36.76 – lokal historik per exakt original-PDF (2026-10-11)
+Välj PDF -> innan skanning jämförs originalbyte med lokala arkiv -> välj sparad version, börja ny eller avbryt. Ny version får egen workspaceId och förstör inte tidigare arkiv/utkast. Senaste projekt och äldre hash-ID bevaras. Bara SmartMatch TEST. Se SMARTMATCH_TEST_V36_76.md.
+
 # TEST v36.75 – kopplingsinformation och renare automatikmeny (2026-10-11)
 Koppla / ändra GS visar GS-nr, fysisk position, ritsida + objekt/maskintyp/antal, även för valt men ännu inte sparat alternativ. Sidofältet visar kopplad GS, position, maskin, antal, sida. Automatikens dokumentdialog visar två huvudval: Egenkontroll dörrautomatik och SLR-dokumentmapp. Justera pil bara i positionens ⋯-meny. Hitta alla automatiker kvar hopfällt under Sök fler automatiker och i DA-gruppinställningar. Knappar kompaktare med tvåkolumnslayout. Se SMARTMATCH_TEST_V36_75.md. Isolerat TEST, v36.74 kvar, inga ändringar i Kontrollflöde/iOS.
 
