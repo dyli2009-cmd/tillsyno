@@ -2,7 +2,11 @@
 
 > **Viktigt före ändringar:** Läs [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md). Där finns regler för modulgränser, versionshantering och hur Kontrollflöde/Projektflöde ska hållas separerade.
 
-## SmartMatch TEST v36.101
+## SmartMatch TEST v36.102
+
+[Senaste kontrollen av GS-koppling och SLR-källa (v36.102)](SMARTMATCH_TEST_V36_102.md) visar nu sparad GS mot föreslagen GS direkt i automatikdialogen och stoppar osäker källa till SLR. Korrigerad länk måste bekräftas av teknikern. Separat TEST, ingen TestFlight-uppdatering.
+
+## Tidigare låst GS-regel v36.101
 
 Senaste separata TEST: [högst en verifierad GS per fysisk automatik – säker framtida källa för SLR](SMARTMATCH_TEST_V36_101.md). DA-symbolen från v36.100 finns kvar som positionshjälp, inte som garanti att GS är rätt. Ordinarie Kontrollflöde och iOS är oförändrade.
 
