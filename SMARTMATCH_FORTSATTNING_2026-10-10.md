@@ -1,3 +1,6 @@
+# TEST v36.80 – GS-manual och återritning, v36.79 korrigerad (2026-10-11)
+En ny DA-modul byggd om från fungerande v36.75 sedan v36.79 hade ett funktionsplaceringsfel. Läs SMARTMATCH_TEST_V36_80.md. GS manuell skrivning+ritningssida, lediga fysiska positioner, förslag, Visa GS och återritning av pilar. Känd felmatch blockerar, okända dörrkort kräver bekräftelse, sidkrav för fysisk pil bevarat. Kontrollflöde/iOS orört.
+
 # TEST v36.79 – GS skrivfält, förslag och Visa vald GS (2026-10-11)
 Koppla/ändra GS: identifierad DA → föreslagen närmaste verifierade GS med kod/position/sida; manuell GS-nummer + ritningssida; lista riktiga GS-positioner inklusive dublettkoder; Spara kräver exakt vald fysisk GS samt korrekt sida och bekräftat dörrkort; Visa flyttar ritningsvyn utan att ändra kopplingen. Vid kortcache färdig ritas sparade pilar om. Ingen avståndsgräns inom en sida. Kända fel/GS-upptagna blockeras. Se SMARTMATCH_TEST_V36_79.md. Kontrollflöde/iOS orörda.
 
