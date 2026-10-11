@@ -1,7 +1,7 @@
 # SmartMatch – låst regel för dörrautomatik och GS-koppling
 
 **STATUS: LÅST enligt användarens uppdaterade beslut 2026-10-11.**
-**Gällande kopplingsregel: TEST v36.97.** Föregående godkända objektsökning och placering från v36.92 behålls, men dess rena närmaste-GS-regel ersätts av dörrkortsverifierad GS-matchning. Den tidigare regeln finns dokumenterad som historik.
+**Gällande kopplingsregel: TEST v36.98.** Föregående godkända objektsökning och placering från v36.92 behålls, men dess rena närmaste-GS-regel ersätts av dörrkortsverifierad GS-matchning. Den tidigare regeln finns dokumenterad som historik.
 
 Detta är den gällande beteenderegeln för dörrautomatik i SmartMatch TEST. Läs även [samlingen av funktionsregler](SMARTMATCH_FUNCTION_RULES_LOCK.md). Äldre versionsanteckningar beskriver historik; de får inte återinföra äldre kopplingskrav som strider mot detta beslut.
 
