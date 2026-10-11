@@ -2,7 +2,11 @@
 
 > **Viktigt före ändringar:** Läs [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md). Där finns regler för modulgränser, versionshantering och hur Kontrollflöde/Projektflöde ska hållas separerade.
 
-## SmartMatch TEST v36.103
+## SmartMatch TEST v36.104
+
+Aktiv separat TEST: [fixad dörrklicksbugg](SMARTMATCH_TEST_V36_104.md). Tryck på dörrautomatikens markeringsruta ska nu öppna Egenkontroll-/SLR-val igen. Rotorsak i v36.103 var att GS-förslagets funktion fick `undefined` istället för dörrkortscachen. Samma GS/SLR-logik och förenklade instruktion från tidigare versioner behålls. Ordinarie app och TestFlight oförändrade.
+
+## Tidigare textförenkling v36.103
 
 Senaste separata TEST: Förenklad text i **Koppla dörrautomatik**-dialogen. Endast instruktionen "Rita en ruta kring dörrautomatikens ID. Sedan söker appen samma objekt på alla ritningssidor." visas. Funktionerna och GS/SLR-regeln från v36.102 är oförändrade. Fasta testadressen är uppdaterad.
 
