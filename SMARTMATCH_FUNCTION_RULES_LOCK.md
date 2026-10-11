@@ -1,5 +1,7 @@
 # SmartMatch – samlade och låsta funktionsregler
 
+**Senaste implementationsrättning TEST v36.102 (2026-10-11):** Det här låsta v36.101-beslutet visas nu i UI: jämför sparad GS med verifierad GS, låt tekniker manuellt spara rättning, och stoppa tveksam SLR-källa. [Se v36.102](SMARTMATCH_TEST_V36_102.md).
+
 **Senaste beslut v36.101 (2026-10-11):** En fysisk automatik får högst **en korrekt verifierad GS** som källa till exakt det tillhörande dörrkortet för framtida SLR. DA-symboler är bara positionshjälp; motstridiga gamla GS-värden får inte användas som SLR-underlag. Läs [v36.101](SMARTMATCH_TEST_V36_101.md).
 
 **Beslut 2026-10-11:** Användaren bekräftade v36.92:s objektsökning. Senare samma dag begärde användaren återställning av dörrkortskontroll och endast en GS-pil per fysisk automatik. Historisk v36.100-regel var: närmaste GS med dörrautomatik enligt sitt eget dörrkort, mätt från den fysiska DA-symbolen när den finns; annars från märkningens mittpunkt. v36.92:s närmaste-GS-utan-kort och v36.97–v36.98:s ID-prioriterade fjärrval gäller inte längre.
