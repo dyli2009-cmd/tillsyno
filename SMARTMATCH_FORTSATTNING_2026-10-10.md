@@ -1,3 +1,6 @@
+# TEST v36.77 – kompakt responsiv historik (2026-10-11)
+PDF-historikdialog och listan Senast sparade mer kompakt: dator 460px, iPad 440px, iPhone skärmbredd och vertikala tryckvänliga val, landscape maxhöjd; bra radbrytning filnamn/tid. Ingen ändring i lagringslogik. Se SMARTMATCH_TEST_V36_77.md. Kontrollflöde/iOS orörda.
+
 # TEST v36.76 – lokal historik per exakt original-PDF (2026-10-11)
 Välj PDF -> innan skanning jämförs originalbyte med lokala arkiv -> välj sparad version, börja ny eller avbryt. Ny version får egen workspaceId och förstör inte tidigare arkiv/utkast. Senaste projekt och äldre hash-ID bevaras. Bara SmartMatch TEST. Se SMARTMATCH_TEST_V36_76.md.
 
