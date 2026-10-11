@@ -3,9 +3,13 @@
 **Senast uppdaterad:** 2026-10-10  
 **Status:** Avstämning och överlämning; **ingen ny funktionskod** i denna commit.  
 **Repo:** `dyli2009-cmd/tillsyno`  
-**Senaste TEST-kodversion:** **SmartMatch TEST v36.54** (serialiserad mobilrendering, frigjorda avbrutna canvasytor och kort återställningsrad utan native popup). Nästa funktionsversion är **TEST v36.55**.  
+**Senaste TEST-kodversion:** **SmartMatch TEST v36.55** (fast mobilraster per sida, ingen automatisk detaljrendering på mobil). Nästa funktionsversion är **TEST v36.56**.  
 **Fast TEST-adress:** https://dyli2009-cmd.github.io/tillsyno/project-workspace-smartmatch-test.html  
 **Viktigt:** Detta är bara Projektflöde/SmartMatch TEST; INGA ändringar i Kontrollflöde, ordinarie Dörrservice eller iOS/TestFlight utan uttryckligt nytt beslut.
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.55
+
+Användaren bekräftar Safari-krasch även i v36.54 efter raderad historik. Mobil zoom återanvänder nu samma begränsade PDF-raster per sida; automatisk detaljrendering avstängd på mobil, permanent canvas-GPU-hint borttagen. Datorns skärpning kvar. Hög mobilzoom kan vara suddigare: verifiera först stabilitet, sedan skärpa. Mocktest: åtta mobilzoomar ger en enda PDF-rendering och ingen detaljrendering. Fysisk telefonverifiering återstår. Se [SMARTMATCH_TEST_V36_55.md](SMARTMATCH_TEST_V36_55.md).
 
 ## Uppdatering 2026-10-11: SmartMatch TEST v36.54
 
