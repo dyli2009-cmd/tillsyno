@@ -10,7 +10,7 @@ Det här är ingången när vi återupptar utvecklingen eller användaren fråga
 | --- | --- | --- | --- |
 | Dörrautomatik | Första placeringsrutans märkning → hela objektnumret söks på ritningssidorna → egen knapp per träff → pil till närmaste GS på samma sida | [Dörrautomatik och GS-koppling](SMARTMATCH_AUTOMATION_RULE_LOCK.md) | LÅST; v36.92 bekräftad av användaren |
 | Dörrkort, standardprofil | Identifiera tabellen → läs ID i översta vänstra cellen → matcha samma hela ID på ritningen → koppla kortet till positionen | [Tabellavläsning och dörrkort](SMARTMATCH_TABLE_RULE_LOCK.md) | LÅST; generell tolkning av alla tabellupplägg är ännu inte färdig |
-| Dörrkort, separat känt tillägg | Uttrycklig korttitel → verifierad Objekt-rad och Komponent/Produkt-tabell → samma hela ID på ritningen | [Tabellavläsning, avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md) | Tillägg enligt användarbeslut; v36.94 |
+| Dörrkort, separat känt tillägg | Uttrycklig korttitel → verifierad Objekt-rad och Komponent/Produkt-tabell → samma hela ID på ritningen | [Tabellavläsning, avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md) | Tillägg enligt användarbeslut; v36.95 |
 
 ## Två kopplingar som bygger på varandra
 
@@ -65,3 +65,7 @@ Samma grundtabell med sammanfogad översta cell och två utrustningskolumner har
 Profilen `card-title-object-components-v1` kräver följden Dörrkort-titel → Objekt-rad → Komponent/Produkt-tabell och läser den uttryckliga korttiteln. Den befintliga avläsningen har alltid företräde. Samma profil återanvänds för andra kort med samma uppbyggnad; inget projekt eller visst ID är hårdkodat. Korten identifieras även ensamma. Ritningskoppling kräver att de faktiska korten och ritningen finns i appens projekt.
 
 Se [tabellregelns avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md) och [TEST v36.94](SMARTMATCH_TEST_V36_94.md) för avgränsning, skäl och verifiering. Den godkända dörrautomatikmodulen v36.92 är oförändrad.
+
+## Återanvändning för korta tabeller – TEST v36.95
+
+Den kända titel/Objekt/Komponent-profilen räcker som kortbevis även med en utrustningsrad. Äldre klassningskrav på ytterligare Låshus-/Cylinder-ord gäller inte för den redan verifierade profilen. Profilen och den låsta standardavläsningen ändras inte. Se [TEST v36.95](SMARTMATCH_TEST_V36_95.md).

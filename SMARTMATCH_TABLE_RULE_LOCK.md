@@ -67,3 +67,11 @@ Befintlig avläsning har företräde och dess funktioner är oförändrade. Den 
 En tabell-PDF räcker som underlag för att lägga till och verifiera den här läsprofilen. Andra kort med samma kända upplägg och andra tydliga ID:n använder profilen utan projektspecifik kod. När de aktuella dörrkorten finns i appens projekt matchas deras hela ID mot ritningen genom befintlig sökning. Att skicka ett exempel till utvecklingsarbetet installerar inte automatiskt en runtime-mall eller lägger in filen i användarens projekt.
 
 Verifierat i den faktiska TEST v36.94-sidan i lokal Chromium: fem kort identifieras även utan ritning; den kombinerade sexsidiga filen ger 14 korrekta ritningspositioner och fem korrekta kortsidor. Kontor och Teknik på ritningen saknar kort i filen och får därför ingen kortkoppling. Tidigare 15 GS-kort, Teknik-kortet i första cellen och dörrautomatikens v36.92-beteende har regressionstestats. Se [versionsdokumentet](SMARTMATCH_TEST_V36_94.md).
+
+## 9. Kända profilen är kort även med en utrustningsrad – TEST v36.95
+
+En extra kontroll visade att v36.94 identifierade titelns ID i en kort tabell men därefter kunde sortera bort sidan eftersom den äldre kortklassningen krävde ord som Låshus eller Cylinder. Det är inte ett krav i den nya profilens verifierade uppbyggnad.
+
+v36.95 godtar därför ett kort som den kända profilen har verifierat, även när endast en utrustningsrad finns. Ingen ID-källa eller profilstruktur ändras. Standardprofilens funktioner, ritningsskydd och dörrautomatikens v36.92-modul är fortsatt oförändrade.
+
+Den faktiska v36.95-sidan har verifierats med fem kort ensamma, hela exempelprojektets 14 kopplingar och ett genererat GC2-kort med samma upplägg och bara en automatikrad. Se [TEST v36.95](SMARTMATCH_TEST_V36_95.md). TEST v36.94 behålls som tidigare snapshot.

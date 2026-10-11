@@ -1,0 +1,2681 @@
+/* TEST v20 – dörrkortskopplade positioner. */
+/* SmartMatch TEST v19: kompakt panel och saknade dörrkort. */
+/* SmartMatch TEST v18: separata CSS-resurser. */
+/* SmartMatch TEST v17 – egen CSS, påverkar inte v16. */
+/* Separat CSS för Projektflöde SmartMatch TEST v16, fristående från v14/v15. */
+/* Separat fast CSS-kopia för Söklabb. Ordinarie Projektflöde påverkas inte. */
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#203440;background:#e8eef1;--navy:#132b38;--blue:#126f9d;--line:#d1dde3;--green:#238354;--amber:#c77c13;--muted:#687d88}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden}body{display:flex;flex-direction:column;background:#e8eef1}
+button,.pwOpen{font:inherit;border:1px solid var(--line);background:#fff;color:#203440;border-radius:8px;min-height:36px;padding:6px 10px;font-weight:700}button{cursor:pointer}
+.pwHeader{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:max(8px,env(safe-area-inset-top)) 12px 8px;background:var(--navy);color:#fff}
+.pwHome{color:#fff;text-decoration:none;font-size:12px;font-weight:750}.pwTitle{min-width:0}.pwTitle strong{display:block;font-size:16px}.pwTitle small{display:block;margin-top:2px;font-size:9px;color:#bdd0da;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pwOpen{display:inline-flex;align-items:center;justify-content:center;background:#fff;border-color:#fff;color:#163746;cursor:pointer}.pwOpenLarge{background:var(--blue);border-color:var(--blue);color:#fff;padding:10px 15px}
+.pwProjectBar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 11px;background:#fff;border-bottom:1px solid var(--line)}.pwFileInfo{min-width:0}.pwFileInfo strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pwFileInfo small{display:block;margin-top:2px;color:var(--muted);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pwStats{display:flex;gap:13px;white-space:nowrap}.pwStats span{display:flex;flex-direction:column;align-items:center}.pwStats b{font-size:14px}.pwStats small{font-size:8px;color:var(--muted)}
+.pwToolbar{display:flex;align-items:center;gap:5px;padding:5px 9px;background:#f9fbfc;border-bottom:1px solid var(--line)}.pwToolbar button{min-height:32px;padding:4px 8px;font-size:11px}.pwToolbar span{font-size:10px;color:#4d6672}.pwToolbar #pwPageInfo{min-width:72px;text-align:center}.pwToolbar #pwZoomInfo{min-width:38px;text-align:center}
+.pwMain{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 250px;flex:1;min-height:0}.pwMain.sideCollapsed{grid-template-columns:minmax(0,1fr)}.pwViewer{position:relative;overflow:auto;background:#cbd5da;touch-action:none;overscroll-behavior:contain}.pwViewer.isPanning{cursor:grabbing;user-select:none}.pwViewer.noteMode{cursor:crosshair}.pwStage{position:relative;width:max-content;margin:0 auto;transform-origin:0 0}.pwStage canvas{display:block;background:#fff;box-shadow:0 4px 18px #0002}.pwDrawingNotes{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}.pwSelectionRect{position:absolute;z-index:6;border:2px dashed #0b6f9b;background:#0b6f9b1f;pointer-events:none}.pwSelectionRect[hidden]{display:none!important}.pwSelectionRect{position:absolute;z-index:6;border:2px dashed #0b6f9b;background:#0b6f9b1f;pointer-events:none}.pwSelectionRect[hidden]{display:none!important}.pwDrawingNotes .pwNoteText{font:700 12px system-ui,-apple-system,sans-serif;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;fill:#173746}.pwDrawingNotes .pwNoteArrow,.pwDrawingNotes .pwNotePreview{fill:none;stroke:#173746;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.pwDrawingNotes .pwNotePreview{stroke-dasharray:6 4;opacity:.7}.pwMarkers{position:absolute;inset:0;pointer-events:none}.pwViewer.noteMode .pwStampHit{pointer-events:none}
+.pwEmpty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;color:#294854}.pwEmpty[hidden]{display:none}.pwEmptyIcon{font-size:34px}.pwEmpty h1{margin:8px 0 5px;font-size:20px}.pwEmpty p{max-width:560px;margin:0 0 15px;line-height:1.5;color:#5d7480}.pwEmpty small{margin-top:9px;color:#788d97}
+.pwStampHit{position:absolute;pointer-events:auto;border:2px solid #0797c8;border-radius:8px;background:#0797c824;min-height:0;padding:0;box-shadow:0 0 0 1px #fff9 inset;overflow:visible}.pwStampHit:hover,.pwStampHit:focus-visible{outline:none;border-color:#005f89;background:#0797c83d;box-shadow:0 0 0 2px #fff inset,0 0 0 2px #005f8950}.pwStampHit.selected{border-color:#e24a2a;background:#e24a2a2b;box-shadow:0 0 0 2px #fff inset,0 0 0 3px #e24a2a55}.pwStampHit.bulkSelected{border-color:#7b2bbf;background:#7b2bbf2e;box-shadow:0 0 0 2px #fff inset,0 0 0 3px #7b2bbf55}.pwStampHit.bulkSelected{border-color:#7b2bbf;background:#7b2bbf2e;box-shadow:0 0 0 2px #fff inset,0 0 0 3px #7b2bbf55}.pwStampHit[data-progress]:not([data-progress="0"]){border-color:#116a99}.pwStampHit[data-progress="100"]{border-color:var(--green);background:#4b9c6d24}
+.pwProgressBadge{position:absolute;right:-7px;bottom:-8px;min-width:25px;height:19px;padding:0 4px;border-radius:999px;display:grid;place-items:center;background:#173746;color:#fff;font-size:7px;font-weight:850;box-shadow:0 1px 4px #0004}.pwStampHit[data-progress="100"] .pwProgressBadge{background:var(--green)}
+.pwSide{min-width:0;background:#fff;border-left:1px solid var(--line);overflow:auto}.pwSide[hidden]{display:none!important}.pwSideHead{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px;background:#fff;border-bottom:1px solid var(--line)}.pwSideHead span,.pwChecklistHead span{display:block;font-size:7.5px;letter-spacing:.9px;color:#7a8e98;font-weight:850}.pwSideHead strong{font-size:13px}.pwSideHead button{font-size:9px;min-height:28px;padding:3px 6px}
+.pwGroups{padding:7px}.pwGroup{border:1px solid var(--line);border-radius:9px;margin-bottom:7px;overflow:hidden}.pwGroupTitle{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 8px;background:#f6f9fa}.pwGroupTitle strong{font-size:12px}.pwGroupTitle span{font-size:9px;color:var(--muted)}.pwGroupItems{padding:4px}.pwPosition{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px;align-items:center;border:0;border-radius:6px;padding:6px;background:#fff;text-align:left}.pwPosition:hover{background:#edf5f8}.pwPosition strong{font-size:10px}.pwPosition small{display:block;margin-top:2px;font-size:8px;color:var(--muted)}.pwPosition b{font-size:9px}.pwMuted{font-size:10px;line-height:1.45;color:var(--muted)}
+.pwProtocol{width:min(1180px,calc(100vw - 20px));height:min(94dvh,980px);padding:0;border:0;border-radius:14px;overflow:hidden;color:#203440;box-shadow:0 24px 80px #0006}.pwProtocol::backdrop{background:#0a1d27b8;backdrop-filter:blur(2px)}
+.pwProtocolHeader{display:grid;grid-template-columns:auto minmax(0,1fr) 150px auto;align-items:center;gap:9px;padding:8px 10px;background:var(--navy);color:#fff}.pwProtocolHeader button{min-height:32px}.pwProtocolIdentity{min-width:0}.pwProtocolIdentity span{display:block;font-size:7px;letter-spacing:1px;color:#b9ccd6}.pwProtocolIdentity strong{display:block;font-size:15px}.pwProtocolIdentity small{display:block;font-size:9px;color:#c0d2da;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pwProtocolProgress{display:flex;align-items:center;gap:7px}.pwProtocolProgress>strong{min-width:38px;text-align:right;font-size:14px}.pwProgressTrack{height:7px;flex:1;border-radius:999px;background:#3a5360;overflow:hidden}.pwProgressTrack i{display:block;width:0;height:100%;background:#67b98b;transition:width .18s}.pwProtocolClose{font-size:20px;padding:0 9px}
+.pwProtocolBody{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(290px,.75fr);height:calc(100% - 52px);min-height:0}.pwProtocolOriginal{display:flex;flex-direction:column;min-width:0;min-height:0;background:#d5dde1;border-right:1px solid var(--line)}.pwProtocolTools{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;background:#f8fafb;border-bottom:1px solid var(--line)}.pwProtocolTools strong{font-size:11px}.pwProtocolTools div{display:flex;align-items:center;gap:4px}.pwProtocolTools button{min-height:28px;padding:3px 8px}.pwProtocolTools span{font-size:9px;min-width:37px;text-align:center}
+.pwProtocolCanvasWrap{position:relative;flex:1;min-height:0;overflow:auto;padding:10px;touch-action:none;overscroll-behavior:contain}.pwProtocolStage{width:max-content;margin:0 auto}.pwProtocolStage canvas{display:block;background:#fff;box-shadow:0 3px 14px #0003;transform-origin:0 0}.pwProtocolZoomTools{display:flex;align-items:center;gap:4px;flex-wrap:wrap}.pwProtocolZoomTools #pwProtocolFit,.pwProtocolZoomTools #pwProtocolMax{font-size:8px;font-weight:800}.pwProtocolMissing{position:absolute;inset:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#fff;border-radius:10px}.pwProtocolMissing[hidden]{display:none}.pwProtocolMissing strong{font-size:14px}.pwProtocolMissing p{max-width:360px;font-size:10px;color:var(--muted);line-height:1.45}
+.pwChecklistPane{min-width:0;overflow:auto;background:#fff;padding:10px}.pwChecklistHead{display:flex;align-items:flex-end;justify-content:space-between;gap:7px;padding-bottom:7px;border-bottom:1px solid var(--line)}.pwChecklistHead strong{font-size:12px}.pwChecklistHead small{font-size:8px;color:var(--muted)}.pwChecklistIntro{font-size:9px;line-height:1.4;color:var(--muted);margin:7px 0 9px}.pwChecklist{display:grid;gap:5px}.pwChecklistHeading{padding:7px 8px;border-radius:6px;background:#edf2f5;font-size:9px;font-weight:850;color:#314b57}.pwChecklistText{padding:4px 7px;font-size:9px;line-height:1.4;color:#536b76}.pwCheckRow{display:grid;grid-template-columns:22px minmax(0,1fr);gap:7px;align-items:flex-start;padding:7px;border:1px solid #dde5e9;border-radius:7px;background:#fff}.pwCheckRow input{width:18px;height:18px;margin:1px 0 0;accent-color:var(--green)}.pwCheckRow strong{display:block;font-size:9.5px;line-height:1.35}.pwCheckRow small{display:block;margin-top:2px;color:var(--muted);font-size:8px;line-height:1.35}.pwCheckRow.done{background:#eef7f2;border-color:#bfddca}
+@media(max-width:820px){.pwMain{grid-template-columns:1fr}.pwSide{position:absolute;right:7px;bottom:7px;width:210px;max-height:34%;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 26px #0003}.pwProtocol{width:100%;height:100dvh;max-height:none;border-radius:0}.pwProtocolBody{grid-template-columns:1fr;grid-template-rows:minmax(44%,1fr) minmax(0,46%)}.pwProtocolOriginal{border-right:0;border-bottom:1px solid var(--line)}.pwProtocolHeader{grid-template-columns:auto minmax(0,1fr) 105px auto}.pwStats{gap:7px}.pwToolbar{overflow-x:auto}.pwTitle small{display:none}}
+@media(max-width:520px){.pwHeader{grid-template-columns:auto 1fr auto;gap:6px;padding-left:7px;padding-right:7px}.pwTitle strong{font-size:13px}.pwOpen{font-size:10px;padding:5px 7px}.pwProjectBar{padding:6px 8px}.pwStats span:nth-child(2){display:none}.pwStats{gap:8px}.pwSide{width:175px}.pwProtocolHeader{grid-template-columns:auto minmax(0,1fr) 78px auto;gap:5px}.pwProtocolHeader #pwBack{font-size:9px;padding:4px 6px}.pwProtocolIdentity strong{font-size:12px}.pwProtocolProgress>strong{font-size:11px}.pwProtocolProgress .pwProgressTrack{display:none}.pwProtocolClose{font-size:18px;padding:0 6px}}
+
+/* 2.4.217: editable Projektflöde work protocol. */
+.pwChecklistHeadActions{display:flex;align-items:center;gap:6px}.pwChecklistHeadActions button{min-height:27px;padding:3px 7px;font-size:8.5px}
+.pwCheckRow{grid-template-columns:22px minmax(0,1fr) auto}.pwCheckContent{min-width:0}.pwCheckComment{display:block;margin-top:5px;padding:5px 6px;border-left:2px solid #b9cad2;background:#f6f9fa;color:#49616d;font-size:8px;line-height:1.4;font-style:normal}
+.pwCheckActions{display:flex;flex-direction:column;gap:4px}.pwCheckActions button{min-height:24px;padding:2px 5px;font-size:7.5px;font-weight:750}.pwCheckActions .pwRemoveItem{color:#8a3434}
+.pwChecklistReference{padding:7px 8px;border:1px dashed #c9d4da;border-radius:7px;background:#f8fafb}.pwChecklistReference strong{display:block;font-size:9px}.pwChecklistReference small{display:block;margin-top:2px;font-size:8px;color:var(--muted)}.pwChecklistReference em{display:block;margin-top:4px;font-size:7.5px;color:#7a6540;font-style:normal}
+.pwItemEditor{width:min(440px,calc(100vw - 24px));border:0;border-radius:12px;padding:0;color:#203440;box-shadow:0 20px 70px #0006}.pwItemEditor::backdrop{background:#0a1d2799}.pwItemEditorHead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 11px;background:var(--navy);color:#fff}.pwItemEditorHead span{display:block;font-size:7px;letter-spacing:1px;color:#bed0d9}.pwItemEditorHead strong{font-size:13px}.pwItemEditorHead button{min-height:30px;padding:1px 9px;font-size:18px}.pwItemEditorBody{display:grid;gap:9px;padding:11px}.pwItemEditorBody label{display:grid;gap:4px;font-size:9px;font-weight:800;color:#536b76}.pwItemEditorBody input,.pwItemEditorBody textarea{width:100%;border:1px solid #c8d4da;border-radius:7px;padding:8px;font:inherit;font-size:11px;color:#203440;background:#fff}.pwItemEditorBody textarea{resize:vertical;min-height:70px}.pwItemEditorActions{display:flex;justify-content:flex-end;gap:7px;padding:0 11px 11px}.pwItemEditorActions button{min-height:32px;font-size:9px}.pwItemEditorActions #pwEditSave{background:var(--navy);border-color:var(--navy);color:#fff}
+@media(max-width:520px){.pwCheckActions button{font-size:7px;padding:2px 4px}.pwItemEditor{width:calc(100vw - 14px)}}
+
+/* 2.4.219: portable project save/share. */
+.pwHeaderActions{display:flex;align-items:center;gap:6px}.pwHeaderActions button{min-height:36px;background:#1d4a60;border-color:#416778;color:#fff}.pwHeaderActions button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:520px){.pwHeaderActions{gap:4px}.pwHeaderActions button,.pwHeaderActions .pwOpen{font-size:9px;padding:5px 6px}}
+
+/* 2.4.223: faster original-protocol zoom on touch and pointer devices. */
+.pwProtocolCanvasWrap.isPinching{cursor:zoom-in}
+@media(max-width:620px){
+ .pwProtocolTools{align-items:flex-start}
+ .pwProtocolZoomTools{justify-content:flex-end}
+ .pwProtocolZoomTools button{min-height:30px}
+}
+
+/* 2.4.224: visible position overlays make PDF annotation alignment easy to verify. */
+
+/* 2.4.225: desktop wheel zoom + mouse panning for Projektflöde drawing. */
+@media(pointer:fine){.pwViewer{overscroll-behavior:contain}}
+
+/* 2.4.227: collapsible positions and save menu. */
+.pwSideHeadActions{display:flex;align-items:center;gap:4px}.pwShowPositions{position:absolute;right:9px;bottom:9px;z-index:7;min-height:34px;padding:5px 10px;border:1px solid #607985;border-radius:999px;background:#fff;color:#294854;font-weight:800;box-shadow:0 5px 18px #0003}.pwShowPositions[hidden]{display:none!important}
+.pwSaveWrap{position:relative}.pwSaveMenu{position:absolute;right:0;top:calc(100% + 5px);z-index:30;width:min(290px,80vw);padding:5px;border:1px solid #c5d2d8;border-radius:9px;background:#fff;box-shadow:0 12px 34px #0004;color:#203440}.pwSaveMenu[hidden]{display:none!important}.pwSaveMenu button{display:block;width:100%;min-height:0;padding:8px 9px;border:0;border-radius:6px;background:#fff;color:#203440;text-align:left}.pwSaveMenu button:hover,.pwSaveMenu button:focus-visible{background:#edf5f8;outline:none}.pwSaveMenu strong{display:block;font-size:10px}.pwSaveMenu small{display:block;margin-top:2px;font-size:8px;line-height:1.35;color:#607682}
+@media(max-width:820px){.pwShowPositions{right:7px;bottom:7px}.pwSideHeadActions{gap:3px}}
+@media(max-width:520px){.pwSaveMenu{position:fixed;left:7px;right:7px;top:auto;bottom:7px;width:auto}.pwSaveMenu button{padding:10px}.pwSaveMenu strong{font-size:11px}}
+
+/* 2.4.228: pinch/swipe navigation and simple drawing notes. */
+.pwToolbar #pwToolText[aria-pressed="true"],.pwToolbar #pwToolArrow[aria-pressed="true"]{background:#1d4a60;color:#fff;border-color:#1d4a60}
+@media(pointer:fine){.pwViewer{cursor:grab}.pwViewer.noteMode{cursor:crosshair}.pwStampHit{cursor:pointer}}
+
+/* 2.4.229: bulk completion and estimated-time report. */
+.pwToolbar #pwBulkSelect[aria-pressed="true"]{background:#542078;color:#fff;border-color:#542078}
+.pwBulkBar{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:15;display:flex;align-items:center;gap:6px;padding:7px 8px;border:1px solid #c8d3d8;border-radius:10px;background:#fff;box-shadow:0 10px 30px #0004}.pwBulkBar[hidden]{display:none!important}.pwBulkBar strong{font-size:10px;min-width:58px}.pwBulkBar button{min-height:30px;padding:4px 7px;font-size:9px}.pwBulkBar #pwBulkDone{background:#236844;border-color:#236844;color:#fff}
+.pwTimeDialog{width:min(760px,calc(100vw - 24px));max-height:min(88dvh,860px);padding:0;border:0;border-radius:13px;color:#203440;box-shadow:0 22px 70px #0006}.pwTimeDialog::backdrop{background:#0a1d2799}.pwTimeHead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;background:var(--navy);color:#fff}.pwTimeHead span{display:block;font-size:7px;letter-spacing:1px;color:#bed0d9}.pwTimeHead strong{font-size:15px}.pwTimeHead button{min-height:30px;padding:2px 9px;font-size:20px}.pwTimeBody{padding:11px;overflow:auto;max-height:calc(88dvh - 52px)}.pwTimeSummary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}.pwTimeSummary div{padding:9px;border:1px solid #d7e0e4;border-radius:8px;background:#f8fafb}.pwTimeSummary span{display:block;font-size:8px;color:#6e838d}.pwTimeSummary strong{display:block;margin-top:3px;font-size:16px}.pwTimeIntro{font-size:9px;line-height:1.45;color:#647983}.pwTimeRows{display:grid;gap:5px}.pwTimeRow{display:grid;grid-template-columns:minmax(120px,1fr) 82px 70px 70px 72px;gap:7px;align-items:center;padding:7px 8px;border:1px solid #dbe3e7;border-radius:7px}.pwTimeRow strong{font-size:10px}.pwTimeRow small{font-size:8px;color:#6b7f89}.pwTimeRow input{width:70px;min-height:30px;padding:3px 5px;border:1px solid #bccbd2;border-radius:6px;font-size:10px}.pwTimeRow .pwTimeStat{text-align:right;font-size:9px}
+@media(max-width:620px){.pwBulkBar{left:7px;right:7px;bottom:7px;transform:none;overflow-x:auto}.pwBulkBar strong{white-space:nowrap}.pwTimeSummary{grid-template-columns:1fr 1fr}.pwTimeRow{grid-template-columns:minmax(105px,1fr) 72px 48px 48px 62px;gap:4px}.pwTimeRow input{width:62px}}
+
+
+/* 2.4.230: professional movable drawing notes, callouts and undo/redo. */
+.pwDrawTools{display:flex;align-items:center;gap:4px;padding-left:2px;border-left:1px solid #d4dee3}
+.pwDrawTools>button{white-space:nowrap}
+.pwToolHistory{display:inline-flex;align-items:center;gap:2px;padding-left:2px}
+.pwToolbar .pwToolIcon{display:grid;place-items:center;width:34px;min-width:34px;padding:0;font-size:20px;line-height:1;font-weight:800}
+.pwToolbar .pwToolIcon:disabled{opacity:.32;cursor:default}
+.pwToolbar #pwToolText[aria-pressed="true"],.pwToolbar #pwToolCallout[aria-pressed="true"],.pwToolbar #pwToolArrow[aria-pressed="true"]{background:#1d4a60;color:#fff;border-color:#1d4a60}
+.pwDrawingNotes{z-index:5}
+.pwMarkers{z-index:4}
+.pwDrawingNotes .pwNoteText,.pwDrawingNotes .pwNoteArrow{pointer-events:none}
+.pwDrawingNotes .pwNoteText.selected{fill:#0b6f9b}
+.pwDrawingNotes .pwNoteArrow.selected{stroke:#0b6f9b;stroke-width:3.5}
+.pwDrawingNotes .pwNoteTextHit{fill:transparent;stroke:transparent;stroke-width:14px;paint-order:stroke;pointer-events:all;cursor:move;font:700 12px system-ui,-apple-system,sans-serif}
+.pwDrawingNotes .pwNoteLineHit{fill:none;stroke:transparent;stroke-width:18;pointer-events:stroke;cursor:move}
+.pwDrawingNotes .pwNoteHandle{fill:#fff;stroke:#0b6f9b;stroke-width:3;pointer-events:all;cursor:grab;filter:drop-shadow(0 1px 2px #0005)}
+.pwDrawingNotes .pwNoteHandle:active{cursor:grabbing}
+.pwDrawingNotes .pwNoteCalloutText{font-weight:800}
+@media(max-width:620px){
+ .pwDrawTools{gap:3px}
+ .pwToolbar .pwToolIcon{width:36px;min-width:36px;min-height:34px;font-size:21px}
+ .pwToolbar #pwToolCallout{min-width:72px}
+ .pwDrawingNotes .pwNoteTextHit{stroke-width:18px}
+ .pwDrawingNotes .pwNoteLineHit{stroke-width:24}
+}
+
+
+/* 2.4.231: per-point time estimates and time-weighted project progress. */
+.pwItemEditorBody label>small{font-size:7.5px;line-height:1.35;color:#7a8d96;font-weight:500}
+.pwCheckTime{display:inline-flex;align-items:center;width:max-content;margin-top:4px;padding:2px 6px;border-radius:999px;background:#edf5f8;color:#315767;font-size:7.5px;font-weight:800}
+.pwCheckTime.missing{background:#f5f1e8;color:#82662f}
+.pwTimeRow.disabled{background:#f5f6f7;opacity:.72}
+.pwTimeRow.disabled input{text-decoration:line-through}
+.pwTimeActions{display:flex;justify-content:flex-end}
+.pwTimeActions button{min-height:27px;padding:3px 6px;font-size:8px;color:#6e4242}
+.pwTimeRow.disabled .pwTimeActions button{color:#315f4b}
+@media(max-width:620px){
+ .pwTimeActions button{min-height:29px;padding:3px 5px;font-size:7.5px}
+ .pwCheckTime{font-size:7px}
+}
+
+
+/* 2.4.232: compact tool menu, image notes and editable custom time types. */
+.pwToolWrap{position:relative}
+.pwToolWrap>button.active{background:#1d4a60;color:#fff;border-color:#1d4a60}
+.pwToolMenu{position:absolute;left:0;top:calc(100% + 5px);z-index:40;width:min(260px,84vw);padding:5px;border:1px solid #c8d4da;border-radius:10px;background:#fff;box-shadow:0 12px 34px #0004}
+.pwToolMenu[hidden]{display:none!important}
+.pwToolMenu button{display:block;width:100%;min-height:0;padding:8px 9px;border:0;border-radius:7px;background:#fff;color:#203440;text-align:left}
+.pwToolMenu button:hover,.pwToolMenu button:focus-visible{background:#edf5f8;outline:none}
+.pwToolMenu button[aria-pressed="true"]{background:#e7f1f5;color:#0f4d69}
+.pwToolMenu button:disabled{opacity:.4;cursor:default}
+.pwToolMenu strong{display:block;font-size:10px}.pwToolMenu small{display:block;margin-top:2px;font-size:8px;line-height:1.35;color:#657a84}
+.pwToolMenuDivider{height:1px;margin:4px 3px;background:#dbe3e7}
+.pwToolMenu .pwToolDelete{color:#8a3434}
+.pwNoteImage{pointer-events:all;cursor:move;filter:drop-shadow(0 2px 3px #0003)}
+.pwNoteImage.selected{opacity:.96}
+.pwNoteImageFrame{fill:none;stroke:#0b6f9b;stroke-width:2;stroke-dasharray:7 4;pointer-events:none}
+.pwTimeSubhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0}
+.pwTimeSubhead .pwTimeIntro{margin:0;flex:1}
+.pwTimeSubhead button{min-height:31px;padding:4px 8px;font-size:9px;white-space:nowrap}
+.pwTimeSummaryText{margin:4px 0 9px;padding:7px 9px;border-radius:7px;background:#eef4f7;color:#45606d;font-size:9px;font-weight:750}
+.pwTimeActions{gap:4px;flex-wrap:wrap}
+.pwTimeActions .danger{color:#8a3434}
+.pwTimeTypeEditor{width:min(440px,calc(100vw - 24px));border:0;border-radius:12px;padding:0;color:#203440;box-shadow:0 20px 70px #0006}
+.pwTimeTypeEditor::backdrop{background:#0a1d2799}
+@media(max-width:620px){
+ .pwToolMenu{position:fixed;left:7px;right:7px;top:auto;bottom:7px;width:auto}
+ .pwToolMenu button{padding:10px}
+ .pwTimeSubhead{align-items:stretch;flex-direction:column}
+ .pwTimeSubhead button{width:100%}
+ .pwTimeRow{grid-template-columns:minmax(100px,1fr) 64px 46px 46px 66px}
+ .pwTimeActions{flex-direction:column;align-items:stretch}
+ .pwTimeActions button{width:100%}
+}
+
+
+/* 2.4.236: simplified and centered Projektflöde start view. */
+.pwHeader{grid-template-columns:1fr auto 1fr}
+.pwHome{justify-self:start}
+.pwTitle{text-align:center}
+.pwHeaderActions{justify-self:end}
+
+.pwStartMode .pwProjectBar,
+.pwStartMode .pwToolbar,
+.pwStartMode .pwSide,
+.pwStartMode .pwShowPositions,
+.pwStartMode .pwBulkBar{display:none!important}
+.pwStartMode .pwMain{grid-template-columns:1fr}
+.pwStartMode .pwViewer{
+ overflow:hidden;
+ background:
+  radial-gradient(circle at 50% 38%,#f8fbfc 0,#edf3f5 42%,#dce6ea 100%);
+}
+.pwStartMode .pwStage{display:none}
+.pwStartMode .pwEmpty{
+ inset:0;
+ padding:20px;
+ overflow:hidden;
+ isolation:isolate;
+ color:#173746;
+}
+.pwProjectBackdrop{
+ position:absolute;
+ inset:0;
+ z-index:-2;
+ opacity:.82;
+ pointer-events:none;
+}
+.pwProjectBackdrop svg{width:100%;height:100%}
+.pwPlanLines{fill:none;stroke:#6f8792;stroke-width:3;opacity:.18}
+.pwDoorSymbols{fill:none;stroke:#126f9d;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;opacity:.2}
+.pwProjectMarks{fill:#fff;stroke:#126f9d;stroke-width:3;opacity:.22}
+.pwProjectBackdrop:after{
+ content:"";
+ position:absolute;
+ inset:0;
+ background:
+  linear-gradient(90deg,#fff0 49.8%,#6f87920d 50%,#fff0 50.2%),
+  linear-gradient(#fff0 49.8%,#6f87920d 50%,#fff0 50.2%);
+ background-size:52px 52px;
+}
+.pwEmptyCard{
+ position:relative;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ min-width:min(320px,86vw);
+ padding:34px 38px 32px;
+ border:1px solid #cbd9df;
+ border-radius:20px;
+ background:#ffffffdd;
+ box-shadow:0 20px 55px #17374618;
+ backdrop-filter:blur(8px);
+ -webkit-backdrop-filter:blur(8px);
+}
+.pwEmptyMark{
+ display:grid;
+ place-items:center;
+ width:72px;
+ height:72px;
+ margin-bottom:12px;
+ border-radius:18px;
+ background:#edf5f8;
+ color:#173746;
+ box-shadow:inset 0 0 0 1px #d7e4e9;
+}
+.pwEmptyMark svg{width:46px;height:46px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pwEmptyCard h1{margin:0 0 20px;font-size:25px;letter-spacing:-.45px}
+.pwEmptyCard .pwOpenLarge{
+ min-height:44px;
+ padding:9px 18px;
+ border-radius:10px;
+ font-size:12px;
+ box-shadow:0 8px 20px #126f9d22;
+}
+@media(max-width:820px){
+ .pwHeader{grid-template-columns:1fr auto 1fr}
+ .pwTitle{text-align:center}
+}
+@media(max-width:520px){
+ .pwHeader{grid-template-columns:1fr auto 1fr}
+ .pwHome{font-size:10px}
+ .pwTitle strong{font-size:14px}
+ .pwHeaderActions{min-width:48px}
+ .pwStartMode .pwHeaderActions .pwSaveWrap{visibility:hidden}
+ .pwEmptyCard{min-width:min(290px,88vw);padding:28px 24px 26px;border-radius:17px}
+ .pwEmptyMark{width:64px;height:64px}
+ .pwEmptyCard h1{font-size:22px}
+}
+
+
+/* 2.4.237: Projektflöde cloned Door Automation selfcheck. */
+.pwAutomationMarker{
+ position:absolute;z-index:8;display:grid;place-items:center;pointer-events:auto;
+ min-width:28px!important;min-height:28px!important;padding:0!important;border:2px solid #176f9a!important;border-radius:50%!important;
+ background:#e8f4f8e8!important;color:#125474!important;box-shadow:0 2px 8px #0003,0 0 0 2px #fff9 inset!important;
+ font-size:9px!important;font-weight:900!important;
+}
+.pwAutomationMarker[data-progress="100"]{border-color:var(--green)!important;background:#e8f5ed!important;color:var(--green)!important}
+.pwAutomationMarker span{font-size:8px!important;color:inherit!important}
+.pwAutomationGroup{border-color:#a9cfdd}.pwAutomationGroup>.pwGroupTitle{background:#eef7fa}.pwAutomationPosition b{color:#176f9a}.pwAutomationPosition:has(b:last-child){}
+
+.pwAutomationDialog{width:min(800px,calc(100vw - 20px));max-height:min(95dvh,980px);padding:0;border:0;border-radius:14px;overflow:hidden;color:#203440;box-shadow:0 24px 80px #0006}
+.pwAutomationDialog::backdrop,.pwSelfcheckExportDialog::backdrop{background:#0a1d27b8;backdrop-filter:blur(2px)}
+.pwAutomationHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:var(--navy);color:#fff}
+.pwAutomationHead>div{min-width:0}.pwAutomationHead span{display:block;font-size:7px;letter-spacing:1px;color:#bed0d9;font-weight:850}
+.pwAutomationHead strong{display:block;font-size:16px}.pwAutomationHead small{display:block;margin-top:2px;font-size:9px;color:#c7d7df;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pwAutomationHead>button{min-height:32px;padding:1px 9px;font-size:20px}
+.pwAutomationBody{padding:10px;max-height:calc(95dvh - 54px);overflow:auto;background:#f7f9fa}
+.pwAutomationMeta,.pwAutomationProject{margin:0 0 9px;border:1px solid #d7e0e4;border-radius:9px;background:#fff;overflow:hidden}
+.pwAutomationMeta>summary,.pwAutomationProject>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:#edf2f5;cursor:pointer;font-size:10px;font-weight:800}
+.pwAutomationMeta>summary span:last-child,.pwAutomationProject>summary span:last-child{font-size:8px;color:var(--muted);font-weight:600}
+.pwAutomationMetaGrid,.pwAutomationProjectGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:9px}
+.pwAutomationMetaGrid label,.pwAutomationProjectGrid label{display:grid;gap:3px;font-size:9px;font-weight:800;color:#526974}
+.pwAutomationMetaGrid input,.pwAutomationMetaGrid select,.pwAutomationProjectGrid input{width:100%;min-height:34px;border:1px solid #c8d4da;border-radius:6px;background:#fff;padding:6px 7px;font:inherit;font-size:11px;color:#203440}
+.pwProjectLogoField{grid-column:1/-1;display:grid;gap:6px;padding:8px;border:1px dashed #cbd8de;border-radius:8px;background:#f8fafb}
+.pwProjectLogoField>span{font-size:9px;font-weight:800;color:#526974}.pwProjectLogoField>div:first-of-type{display:flex;align-items:center;gap:6px}
+.pwLogoButton{display:inline-flex;align-items:center;justify-content:center;min-height:32px;padding:5px 9px;border-radius:7px;background:var(--navy);color:#fff;font-size:9px;font-weight:800;cursor:pointer}
+.pwProjectLogoField button{min-height:32px;font-size:9px}.pwProjectLogoField small{font-size:8px;color:var(--muted)}
+#pwProjectLogoPreview img{display:block;max-width:180px;max-height:70px;object-fit:contain;background:#fff;border:1px solid #e1e7ea;border-radius:6px;padding:4px}
+
+.pwAutomationProgress{display:flex;align-items:center;gap:7px;margin:10px 0;padding:7px 8px;border:1px solid #d9e2e6;border-radius:8px;background:#fff}
+.pwAutomationProgress strong{font-size:16px}.pwAutomationProgress span{font-size:9px;color:var(--muted);flex:1}.pwAutomationProgress button{min-height:31px;padding:4px 8px;font-size:9px;background:var(--blue);border-color:var(--blue);color:#fff}
+.pwAutomationChecks{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}
+.pwAutomationCheck{padding:7px;border-top:1px solid #e6ecef;background:#fff}.pwAutomationCheck:first-child{border-top:0}
+.pwAutomationCheckHead{display:flex;gap:6px;align-items:flex-start;font-size:11px;line-height:1.3}.pwAutomationCheckHead strong{min-width:25px}.pwAutomationCheckHead span{flex:1}
+.pwAutomationChoices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-top:5px}
+.pwAutomationChoices button{min-height:30px;padding:3px 4px;font-size:9px;line-height:1.15;border-radius:5px;background:#f2f5f7}
+.pwAutomationChoices button.active[data-v="ok"]{background:#e2f2e8;border-color:#4a9770;color:#1c7147}
+.pwAutomationChoices button.active[data-v="remark"]{background:#fbe5e2;border-color:#c57168;color:#ad3630}
+.pwAutomationChoices button.active[data-v="na"]{background:#e1e7eb;border-color:#8898a3}
+.pwAutomationFault{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px;margin-top:5px;padding:6px;background:#fbf5f3;border-radius:6px}
+.pwAutomationFault select,.pwAutomationFault input{width:100%;min-height:31px;border:1px solid #d5c5c0;border-radius:5px;padding:4px 6px;font:inherit;font-size:9px;background:#fff}
+.pwAutomationNotes{display:grid;gap:4px;margin-top:9px;font-size:9px;font-weight:800;color:#526974}.pwAutomationNotes textarea{width:100%;border:1px solid #cad6dc;border-radius:7px;padding:8px;font:inherit;font-size:10px;resize:vertical;background:#fff}
+
+.pwSelfcheckExportDialog{width:min(620px,calc(100vw - 20px));max-height:min(88dvh,780px);padding:0;border:0;border-radius:13px;overflow:hidden;color:#203440;box-shadow:0 22px 70px #0006}
+.pwSelfcheckExportBody{padding:10px;background:#f8fafb;max-height:calc(88dvh - 55px);overflow:auto}
+.pwSelfcheckExportActions{display:flex;gap:6px;margin-bottom:8px}.pwSelfcheckExportActions button{min-height:31px;font-size:9px}
+.pwSelfcheckExportList{display:grid;gap:5px}.pwSelfcheckExportRow{display:grid;grid-template-columns:22px minmax(0,1fr);gap:7px;align-items:center;padding:8px;border:1px solid #d8e1e5;border-radius:8px;background:#fff;cursor:pointer}
+.pwSelfcheckExportRow input{width:17px;height:17px}.pwSelfcheckExportRow strong{display:block;font-size:10px}.pwSelfcheckExportRow small{display:block;margin-top:2px;font-size:8px;color:var(--muted)}
+.pwSelfcheckExportFooter{position:sticky;bottom:-10px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px -10px -10px;padding:9px 10px;background:#fff;border-top:1px solid #d5e0e5}
+.pwSelfcheckExportFooter span{font-size:9px;font-weight:800}.pwSelfcheckExportFooter button{background:var(--navy);border-color:var(--navy);color:#fff;font-size:9px}
+
+@media(min-width:600px){
+ .pwAutomationCheck{display:grid;grid-template-columns:minmax(0,1fr) 300px;align-items:center;gap:5px 10px}
+ .pwAutomationChoices{margin-top:0}.pwAutomationFault{grid-column:1/-1}
+}
+@media(max-width:620px){
+ .pwAutomationDialog{width:100%;height:100dvh;max-height:none;border-radius:0}
+ .pwAutomationBody{max-height:calc(100dvh - 56px)}
+ .pwAutomationMetaGrid,.pwAutomationProjectGrid{grid-template-columns:1fr 1fr;gap:5px}
+ .pwAutomationChoices button{font-size:8px;min-height:29px;padding:2px}
+ .pwAutomationFault{grid-template-columns:1fr}
+ .pwSelfcheckExportDialog{width:calc(100vw - 12px)}
+}
+
+
+/* 2.4.238: structured automation IDs, full customer data and Kundmall preview. */
+.pwAutomationMarker.structured{
+ border-radius:6px!important;
+ background:#0b6f9b12!important;
+ border:2px solid #0b6f9baa!important;
+ box-shadow:0 0 0 1px #fff8 inset!important;
+}
+.pwAutomationMarker.structured span{
+ position:absolute;
+ right:-8px;
+ top:-9px;
+ min-width:20px;
+ height:16px;
+ display:grid;
+ place-items:center;
+ padding:0 4px;
+ border-radius:999px;
+ background:#173746;
+ color:#fff!important;
+ font-size:7px!important;
+ box-shadow:0 1px 4px #0004;
+}
+.pwAutomationMarker.structured[data-progress="100"]{
+ border-color:var(--green)!important;
+ background:#4b9c6d12!important;
+}
+.pwAutomationMarker.structured[data-progress="100"] span{background:var(--green)}
+.pwViewer.noteMode .pwAutomationMarker{pointer-events:none}
+
+.pwAutomationHeadActions{display:flex;align-items:center;gap:6px}
+.pwAutomationHeadActions button{min-height:32px;font-size:9px}
+.pwAutomationHeadActions #pwAutomationPreview{background:#fff;color:#173746;border-color:#fff}
+.pwAutomationProjectGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pwAutomationProjectGrid label:nth-of-type(6),
+.pwAutomationProjectGrid label:nth-of-type(13),
+.pwAutomationProjectGrid label:nth-of-type(20){margin-top:4px}
+
+.pwAutomationPreviewDialog{
+ width:min(900px,calc(100vw - 20px));
+ height:min(94dvh,1050px);
+ padding:0;
+ border:0;
+ border-radius:14px;
+ overflow:hidden;
+ color:#203440;
+ box-shadow:0 24px 80px #0006;
+}
+.pwAutomationPreviewDialog::backdrop{background:#0a1d27c2;backdrop-filter:blur(2px)}
+.pwAutomationPreviewWrap{
+ height:calc(100% - 58px);
+ overflow:auto;
+ padding:12px;
+ background:#cfd8dc;
+ text-align:center;
+}
+.pwAutomationPreviewCanvas{
+ display:block;
+ margin:0 auto;
+ background:#fff;
+ box-shadow:0 4px 18px #0003;
+}
+@media(max-width:620px){
+ .pwAutomationProjectGrid{grid-template-columns:1fr}
+ .pwAutomationPreviewDialog{width:100%;height:100dvh;max-height:none;border-radius:0}
+ .pwAutomationPreviewWrap{height:calc(100dvh - 58px);padding:8px}
+ .pwAutomationHeadActions{gap:4px}
+ .pwAutomationHeadActions #pwAutomationPreview{font-size:8px;padding:4px 6px}
+}
+
+
+/* 2.4.240: automation positions are fully separate from GS/project positions. */
+.pwAutomationMarkers{
+ position:absolute;
+ inset:0;
+ z-index:4;
+ pointer-events:none;
+}
+.pwAutomationMarkers .pwAutomationMarker{pointer-events:auto}
+.pwViewer.noteMode .pwAutomationMarkers .pwAutomationMarker{pointer-events:none}
+
+
+/* 2.4.241: revision checklist fault selector mirrors Kontrollflöde behavior. */
+.pwAutomationFault{
+ display:flex;
+ align-items:center;
+ gap:4px;
+ grid-template-columns:none;
+}
+.pwAutomationFault select,
+.pwAutomationFault input{flex:1 1 auto;min-width:0}
+.pwAutomationFault .pwAutomationFaultBack{
+ flex:0 0 28px;
+ width:28px;
+ min-width:28px;
+ min-height:31px;
+ height:31px;
+ padding:0;
+ font-size:17px;
+}
+@media(max-width:620px){
+ .pwAutomationFault{display:flex}
+}
+
+/* Keep the drawing on its own layer while it is moved or zoomed. */
+#pwCanvas{will-change:auto}
+
+/* Endast Projektflöde test: status för hittade positioner på själva ritningen. */
+.pwStampHit[data-match="missing"]{outline:2px dashed #cb8a3a!important}
+.pwStampHit[data-match="ambiguous"]{outline:2px dashed #d18a29!important}
+.labSelectDialog{border:0;border-radius:13px;padding:20px;max-width:min(440px,92vw);color:#183549;background:#fff;box-shadow:0 16px 40px #0004}
+.labSelectDialog::backdrop{background:#0d273eaa}
+.labSelectDialog h2{font-size:20px;margin:0 0 10px}
+.labChoices{display:grid;gap:8px;margin:12px 0}
+.labChoices button{font:inherit;font-size:14px;text-align:left;padding:11px;border:1px solid #8aabbc;background:#f3f9fc;border-radius:7px}
+.labClose{padding:9px 16px;border:1px solid #a2adb7;background:white;border-radius:7px}
+
+/* Projektflöde test v4 – endast felsökningsfunktion. */
+.labDiagnosticOpen{white-space:nowrap;font-size:12px;padding:7px 10px;border:1px solid #80a8b7;border-radius:8px;background:#eaf4f8;color:#153848;cursor:pointer}
+.labDiagnosticDialog{width:min(650px,95vw);max-height:85vh;overflow:auto;border:1px solid #d0dfe5;border-radius:14px;padding:16px 18px 20px;background:#fff;color:#173347;box-shadow:0 16px 55px #0005}
+.labDiagnosticDialog::backdrop{background:#0b2638aa}
+.labDiagnosticHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.labDiagnosticHead small{font-size:10px;color:#527482;font-weight:700;letter-spacing:.08em}
+.labDiagnosticHead h2{font-size:20px;margin:4px 0 10px}
+#labDiagnosticClose{width:34px;height:34px;border-radius:8px;border:1px solid #ccd8dd;background:#fff;font-size:23px;cursor:pointer}
+.labDiagnosticIntro,.labDiagnosticFoot{font-size:12px;line-height:1.5;color:#576977;margin:5px 0 12px}
+.labDiagnosticSearch{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0}
+.labDiagnosticSearch label{font-size:12px;font-weight:600}
+.labDiagnosticSearch input{width:115px;min-width:95px;padding:9px;border-radius:8px;border:1px solid #a6bdc7;font-size:14px;text-transform:uppercase;color:#173347;background:#fff}
+.labDiagnosticSearch button{padding:9px 14px;background:#163c50;color:white;border:0;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer}
+.labDiagnosticSearch button:disabled{opacity:.5;cursor:wait}
+.labDiagnosticSummary{background:#f0f7fb;border-radius:8px;padding:10px;margin:8px 0;font-size:12px;line-height:1.6;white-space:pre-line}
+.labDiagnosticResults{display:grid;gap:7px;max-height:46vh;overflow:auto}
+.labDiagnosticHit{width:100%;border:1px solid #d5e1e5;border-left:4px solid #c88c3e;border-radius:8px;background:white;color:#233c4b;padding:10px;text-align:left;cursor:pointer;display:grid;gap:3px;font-size:12px}
+.labDiagnosticHit[data-level="found"]{border-left-color:#359c72}
+.labDiagnosticHit[data-level="error"]{border-left-color:#be553e}
+.labDiagnosticHit b{font-size:13px}
+.labDiagnosticHit small{color:#657783}
+.labDiagnosticFrame{position:absolute;pointer-events:none;z-index:70;border:3px dashed #c73a34;box-shadow:0 0 0 5px #fada4477;background:#ffe18b35;border-radius:5px}
+@media(max-width:550px){.labDiagnosticOpen{font-size:11px;padding:6px 8px}.labDiagnosticDialog{padding:14px}.labDiagnosticSearch{gap:6px}}
+
+.pwPositionTools{padding:12px;display:grid;gap:8px;border-bottom:1px solid #ccc}.pwPositionTools label{display:grid;gap:4px}.pwPositionTools input{width:100%;min-width:0;padding:8px;box-sizing:border-box}.pmRow{display:flex;flex-wrap:wrap;gap:4px;padding:4px 8px 12px}.pmRow button{padding:8px;min-height:40px}.pwPositionTools p{font-size:13px;margin:0}.pwStage.pmPlacing{cursor:crosshair;touch-action:none}
+
+.pmMarkerLabel{position:absolute;bottom:100%;left:0;background:#fff;color:#163a51;font-size:12px;padding:2px 4px;white-space:nowrap;border:1px solid #163a51}
+
+/* TEST v14 / iPhone: visible version in its own line and diagnostics below. */
+@media (max-width:620px){
+  .pwHeader{
+    grid-template-columns:44px minmax(0,1fr) 70px;
+    grid-template-rows:auto auto;
+    align-items:center;
+    gap:5px 7px;
+    padding:max(9px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left));
+  }
+  .pwHeader .pwHome{
+    grid-column:1;
+    grid-row:1;
+    justify-self:start;
+    align-self:center;
+    white-space:nowrap;
+    font-size:11px;
+  }
+  .pwHeader .pwTitle{
+    grid-column:2;
+    grid-row:1;
+    min-width:0;
+    text-align:center;
+  }
+  .pwHeader .pwTitle strong{
+    display:block;
+    font-size:clamp(11px,3.4vw,14px);
+    font-weight:750;
+    line-height:1.25;
+    overflow-wrap:normal;
+  }
+  .pwHeader .pwTitleVersion{
+    display:block;
+    margin-top:3px;
+    color:#e2f5ff;
+    font-size:12px;
+    font-weight:900;
+    line-height:1.25;
+    letter-spacing:.25px;
+    white-space:nowrap;
+  }
+  .pwHeader .pwHeaderActions{display:contents}
+  .pwHeader .pwHeaderActions .pwSaveWrap{
+    grid-column:3;
+    grid-row:1;
+    justify-self:end;
+    align-self:center;
+  }
+  .pwHeader .pwHeaderActions #labDiagnoseOpen{
+    grid-column:1 / -1;
+    grid-row:2;
+    justify-self:end;
+    align-self:center;
+    min-height:34px;
+    padding:6px 12px;
+    font-size:11px;
+    white-space:nowrap;
+  }
+  .pwStartMode .pwHeaderActions .pwSaveWrap{visibility:hidden}
+}
+
+#pwDrawingDetail[hidden]{display:none!important}
+
+.pwProtocol.pwGsCompact .pwProtocolBody{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+.pwProtocol.pwGsCompact .pwChecklistPane{display:none}
+.pwProtocolGSLayer{position:absolute;top:0;left:0;width:246px;z-index:8;pointer-events:auto}
+.pwProtocolGSLayer:empty{display:none}
+.pwProtocolGSHead{position:absolute;top:3px;left:0;background:#eaf5f9;border:1px solid #bbd3df;border-radius:8px;padding:7px;font-size:11px;font-weight:800;width:238px;color:#1a465a}
+.pwProtocolGSRow{position:absolute;left:0;width:238px;background:#fff;border:1px solid #cddfe7;border-left:3px solid #1682aa;border-radius:8px;padding:6px;display:grid;gap:5px;box-shadow:0 2px 8px #0001}
+.pwProtocolGSRow[data-done="true"]{border-left-color:#228656;background:#f4fbf5}
+.pwProtocolGSRow strong{font-size:11px;color:#234757;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pwGsChoices{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.pwGsChoices label{display:flex;align-items:center;gap:3px;white-space:nowrap;font-size:9px;color:#2a5363}
+.pwGsChoices input{margin:0;width:17px;height:17px;accent-color:#14824c;flex-shrink:0}
+.pwGsNote{display:block;font-size:10px;color:#536e7e;font-weight:750}
+.pwGsNote input{display:block;width:100%;margin-top:3px;padding:5px 6px;font-size:13px;min-height:30px;background:#fff;border:1px solid #bfd3dd;border-radius:5px}
+.pwGsLocate{font-size:10px;color:#146991;padding:3px 1px;border:0;background:transparent;text-align:left;min-height:26px}
+.pwProtocolTools{flex-wrap:wrap}.pwProtocolZoomTools{flex-wrap:nowrap;overflow-x:auto;max-width:100%;gap:3px}
+.pwProtocolZoomTools button{white-space:nowrap;flex-shrink:0}
+@media(max-width:820px){
+ .pwProtocol.pwGsCompact .pwProtocolBody{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr)}
+ .pwGsNote input{font-size:16px}
+ .pwProtocolZoomTools button{min-height:32px}
+}
+
+/* En sammanhållen grupp för samtliga positioner utan dörrkort. */
+.pwUnlinkedBundle{margin:8px 3px;padding:0 5px 5px;border:1px solid #cba76b;background:#fffaf0;border-radius:10px;overflow:hidden}
+.pwUnlinkedBundle>.pwUnlinkedHeading{display:flex;flex-direction:column;gap:3px;padding:9px 7px;cursor:pointer;list-style:none;font-size:12px;color:#704c17}
+.pwUnlinkedBundle>.pwUnlinkedHeading::-webkit-details-marker{display:none}
+.pwUnlinkedHeading strong:before{content:'▸ ';color:#8a631c}
+.pwUnlinkedBundle[open]>.pwUnlinkedHeading strong:before{content:'▾ '}
+.pwUnlinkedHeading span{font-size:10px;color:#805f35}
+.pwUnlinkedHint{margin:4px 6px 9px;font-size:10px;line-height:1.5;color:#745f42}
+.pwUnlinkedBundle>.pwGroup{margin:5px 2px;background:#fff}
+
+.pwSideHead{padding:5px 6px;gap:4px}
+.pwSideHead strong{font-size:11px}
+.pwSideHeadActions{gap:3px;flex-wrap:wrap}
+.pwSideHeadActions button{font-size:9px;min-height:29px;padding:3px 4px}
+.pwGroups{padding:4px}
+.pwPositionEditor{border-bottom:1px solid #d9e4e9}
+.pwPositionEditor>summary{list-style:none;font-size:10px;font-weight:800;padding:7px 9px;background:#f0f7fa;color:#2a6984;cursor:pointer}
+.pwPositionEditor>summary::-webkit-details-marker{display:none}
+.pwPositionEditor>summary:after{content:' ▾'}
+.pwPositionEditor[open]>summary:after{content:' ▴'}
+.pwPositionEditor .pwPositionTools{padding:6px!important;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.8fr);gap:5px!important;align-items:end}
+.pwPositionEditor .pwPositionTools label{font-size:9px;display:grid;gap:3px;min-width:0;margin:0}
+.pwPositionEditor .pwPositionTools input{width:100%;min-width:0;min-height:31px;padding:4px;font-size:12px}
+.pwPositionEditor .pwPositionTools button{min-height:31px;font-size:10px;padding:4px 5px;white-space:normal}
+.pwPositionEditor #pmHelp,.pwPositionEditor #pmCancel{grid-column:1/-1}
+.pwPositionEditor #pmHelp{font-size:9px;line-height:1.35;margin:2px 0}
+.pwGroupAccordion>.pwGroupTitle{min-height:37px;padding:5px 75px 5px 7px;gap:2px}
+.pwGroupAccordion>.pwGroupTitle strong{font-size:11px}
+.pwGroupAccordion>.pwGroupTitle span{font-size:9px}
+.pwGroup{margin-bottom:4px}
+.pwPositionLine .pwPosition{padding:5px 4px}
+.pwPositionLine .pwPosition strong{font-size:10px}
+.pwPositionLine .pwPosition small{font-size:9px}
+.pwPositionMore>summary{min-width:31px;min-height:31px;display:grid;place-items:center}
+.pwUnlinkedBundle{position:relative;padding:0 4px 5px;margin:5px 0 8px;overflow:visible}
+.pwUnlinkedBundle>.pwUnlinkedHeading{padding:8px 96px 8px 7px;min-height:50px}
+.pwUnlinkedHeading strong{font-size:12px}
+.pwUnlinkedHeading span{font-size:9px}
+.pwUnlinkedDeleteAll{position:absolute;top:9px;right:5px;padding:4px 6px;min-height:30px;font-size:9px;background:#fff8f7;color:#933f32;border:1px solid #d6a9a1;border-radius:6px}
+.pwUnlinkedBundle:not([open])>.pwUnlinkedDeleteAll{display:none}
+.pwUnlinkedBundle .pwGroupItems{padding:0 2px}
+.pwUnlinkedCode{display:flex;align-items:center;justify-content:space-between;gap:6px;background:#f8efdf;border-radius:5px;padding:4px 6px;margin:6px 0 3px}
+.pwUnlinkedCode strong{font-size:10px;color:#76531f}
+.pwUnlinkedCode span{font-size:9px;color:#8a714e}
+.pwCardManualRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px}
+.pwCardManualRow input{font-size:16px;min-width:0;padding:7px;border:1px solid #b2c8d3;border-radius:6px}
+.pwCardManualRow button{font-size:11px}
+@media(max-width:820px){.pwSide{width:min(241px,68vw);max-height:52%}}
+@media(max-width:520px){.pwSide{width:min(219px,65vw);max-height:50%}}
+
+.pwUnlinkedBundle,.pwUnlinkedHeading,.pwUnlinkedDeleteAll,.pwUnlinkedCode{display:none!important}
+.smartOnlyMatched{font-size:10px;color:#56707b}
+
+/* v21: kompakt analysdialog med textstorlek bara för denna vy. */
+.smartReportsDialog{width:min(630px,94vw);max-height:85dvh;overflow:auto;padding:10px 12px 13px}
+.smartReportsDialog .labDiagnosticHead{display:flex;align-items:center;gap:5px}
+.smartReportHeadActions{display:flex;align-items:center;gap:4px;margin-left:auto;flex-shrink:0}
+.smartReportHeadActions button{display:grid;place-items:center;min-width:32px;height:32px;font-size:12px;line-height:1;border:1px solid #bdd0da;border-radius:7px;background:#fff;color:#25475b;padding:0 4px}
+.smartReportHeadActions #labDiagnosticClose{font-size:20px;min-width:33px;height:33px;line-height:1;padding:0}
+.smartPdfPageCounts{padding:8px 9px;margin-bottom:8px;background:#f0f7fa;border-radius:7px;font-weight:800;color:#24536c;font-size:calc(12px * var(--report-font-scale,1))}
+.smartReportsDialog .labDiagnosticIntro,.smartReportsDialog .smartReportHelp{font-size:calc(10px * var(--report-font-scale,1))!important;line-height:1.5}
+.smartReportsDialog .smartReportsList summary{font-size:calc(12px * var(--report-font-scale,1))!important}
+.smartReportsDialog .smartReportsList p,.smartReportsDialog .smartReportsList span,.smartReportsDialog .smartReportsList button{font-size:calc(10px * var(--report-font-scale,1))}
+.smartReportsDialog .smartReportsList table,.smartReportsDialog .smartReportsList td,.smartReportsDialog .smartReportsList th{font-size:calc(10px * var(--report-font-scale,1))!important}
+.pwProtocolGSLayer{display:none!important}
+.pwProtocol .pwProtocolBody{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(255px,.7fr);grid-template-rows:minmax(0,1fr)}
+.pwProtocol .pwChecklistPane{display:block;overflow:auto;padding:7px}
+.pwProtocol .pwChecklistIntro{font-size:10px;margin:6px 0}
+.pwProtocol .pwChecklist{gap:4px}
+.pwProtocol .pwCheckRow{padding:5px 6px;gap:5px}
+.pwProtocol .pwCheckContent strong{font-size:11px}
+.pwProtocol .pwCheckContent small{font-size:10px}
+.pwProtocol .pwCheckActions button{font-size:9px;min-height:28px}
+@media(max-width:820px){
+ .smartReportsDialog{width:min(560px,94vw);height:auto;max-height:77dvh;border-radius:11px;padding:8px 9px}
+ .smartReportsDialog .labDiagnosticHead{position:sticky;top:-9px;z-index:12;background:#fff;padding:5px 0;align-items:center}
+ .smartReportsDialog .labDiagnosticHead h2{font-size:14px;margin:0}
+ .smartReportsDialog .labDiagnosticHead small{font-size:9px}
+ .pwProtocol .pwProtocolBody{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr)}
+ .pwProtocol.pwMobileCard .pwChecklistPane{display:none}
+ .pwProtocol.pwMobileChecks .pwProtocolOriginal{display:none}
+ .pwProtocol.pwMobileChecks .pwChecklistPane{display:block;height:100%}
+ .pwProtocol .pwProtocolTools{padding:5px 6px}
+}
+
+/* SmartMatch TEST v22: desktop control cursors, touch gestures unchanged. */
+
+/* SmartMatch TEST v22 – skrivbordsmus bara på originaldörrkortet. */
+.pwProtocolMouseHint{display:none;color:#607987;font-size:9px;line-height:1.25}
+.pwProtocolToolTitle{display:flex;flex-direction:column;gap:2px;min-width:0}
+@media(hover:hover) and (pointer:fine){
+  #pwProtocolCanvasWrap{cursor:grab;user-select:none;-webkit-user-select:none}
+  #pwProtocolCanvasWrap canvas{cursor:inherit}
+  #pwProtocolCanvasWrap.isMousePanning,#pwProtocolCanvasWrap.isMousePanning canvas{cursor:grabbing!important;user-select:none;-webkit-user-select:none}
+  .pwProtocolMouseHint{display:block}
+}
+
+
+
+/* TEST v23: granskningssteg innan delning, anpassat för dator/mobil */
+.smartExportDialog{color:#193a4b;background:#fff;border:1px solid #cbdae2;border-radius:14px;box-shadow:0 16px 55px #0005;width:min(600px,94vw);max-height:87dvh;overflow:auto;padding:15px 16px}
+.smartExportDialog::backdrop{background:#0c2234a0}
+.smartExportHeader{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.smartExportHeader small{font-weight:800;letter-spacing:.07em;color:#577888;font-size:9px}
+.smartExportHeader h2{margin:2px 0 0;font-size:17px}
+#smartExportClose{display:grid;place-items:center;flex:0 0 34px;height:34px;border-radius:8px;border:1px solid #ccd9e1;background:#fff;font-size:20px;line-height:1;padding:0;cursor:pointer}
+.smartExportIntro{font-size:12px;line-height:1.5;color:#486374;margin:10px 0}
+.smartExportSizes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 13px}
+.smartExportSizes>div{border:1px solid #d4e3eb;border-radius:10px;padding:10px;display:grid;gap:3px;min-width:0}
+.smartExportSizes small{font-size:10px;color:#647e8d}
+.smartExportSizes strong{font-size:17px;font-variant-numeric:tabular-nums;word-break:break-word}
+.smartExportModes{border:1px solid #d5e2e8;border-radius:10px;padding:8px 10px;display:grid;gap:7px}
+.smartExportModes legend{font-size:12px;font-weight:800;padding:0 5px}
+.smartExportModes label{display:flex;gap:9px;align-items:flex-start;border:1px solid #dce6eb;border-radius:8px;padding:10px;cursor:pointer}
+.smartExportModes input{margin-top:4px;accent-color:#2e748a}
+.smartExportModes label span{display:grid;gap:4px;min-width:0}
+.smartExportModes strong{font-size:12px}
+.smartExportModes small{font-size:11px;line-height:1.4;color:#59717d}
+.smartExportStatus{padding:9px;border-radius:8px;background:#ecf6fa;font-size:12px;line-height:1.45;margin:10px 0;white-space:pre-line}
+.smartExportStatus[data-level="warning"]{background:#fff3e1;color:#714319}
+.smartExportStatus[data-level="good"]{background:#edf8f0;color:#265c35}
+.smartExportActions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.smartExportActions button{border:1px solid #acc5d1;background:#fff;color:#19465b;border-radius:8px;min-height:42px;padding:8px;font-size:12px;font-weight:700;cursor:pointer}
+.smartExportActions .smartExportPrimary{background:#1a627c;color:#fff;border-color:#1a627c}
+.smartExportActions button:disabled{opacity:.48;cursor:not-allowed}
+.smartExportNote{font-size:10px;line-height:1.4;color:#667984}
+@media(max-width:520px){
+ .smartExportDialog{width:96vw;max-height:84dvh;padding:11px 12px;border-radius:11px}
+ .smartExportHeader h2{font-size:15px}
+ .smartExportIntro{font-size:11px}
+ .smartExportSizes strong{font-size:15px}
+ .smartExportActions button{min-height:41px;font-size:11px}
+}
+
+/* TEST v24: mindre knappar och kompaktare dörrkortskontroller */
+.smartCardsTools{gap:5px!important;padding:5px 8px!important;min-height:0!important}
+.smartCardsTools button,.smartCardsTools #labDiagnoseOpen,.smartCardsTools #smartAddCards{font-size:10px!important;padding:5px 8px!important;min-height:27px!important;line-height:1.2!important;border-radius:7px!important}
+.smartCardsTools #smartCardsNote{font-size:9px!important;line-height:1.3!important}
+.pwHeaderActions .pwSaveWrap > #pwSaveProject{font-size:11px!important;min-height:28px!important;padding:5px 9px!important}
+.pwSaveMenu button{padding:7px 9px!important;min-height:0!important;gap:2px!important}
+.pwSaveMenu button strong{font-size:11px!important}
+.pwSaveMenu button small{font-size:9px!important;line-height:1.2!important}
+.pwProtocolIdentity>span{font-size:9px!important}
+.pwProtocolIdentity>strong{font-size:14px!important}
+.pwProtocolIdentity>small{font-size:9px!important}
+.pwProtocol .pwProtocolTools strong{font-size:10px!important}
+.pwProtocol .pwProtocolZoomTools button{font-size:10px!important;padding:4px 6px!important}
+.pwProtocol .pwChecklistHead>div>span{font-size:8px!important}
+.pwProtocol .pwChecklistHead strong{font-size:11px!important}
+.pwProtocol .pwChecklistHeadActions{display:flex!important;flex-wrap:wrap!important;gap:4px!important;align-items:center}
+.pwProtocol .pwChecklistHeadActions button{font-size:9px!important;min-height:27px!important;padding:4px 6px!important}
+.pwProtocol .pwChecklistIntro{font-size:10px!important}
+.pwProtocol .pwCheckRow{gap:4px!important;padding:5px!important}
+.pwProtocol .pwCheckContent strong{font-size:10px!important}
+.pwProtocol .pwCheckContent small,.pwProtocol .pwCheckTime{font-size:9px!important}
+.smartExportActions{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:620px){
+ .smartCardsTools{flex-wrap:wrap;gap:4px!important}
+ .smartCardsTools #smartCardsNote{flex:1 0 100%}
+ .pwProtocol .pwChecklistHeadActions button{font-size:9px!important;padding:4px 5px!important}
+}
+
+
+/* SmartMatch TEST v25: one compact export strategy – no duplicate-card option */
+.smartCompactExportChoice{border:1px solid #c6e3d2;background:#f0f8f3;border-radius:9px;padding:11px 12px;margin:11px 0}
+.smartCompactExportChoice strong{display:flex;gap:6px;align-items:center;font-size:12px;color:#235c40}
+.smartCompactExportChoice p{margin:6px 0 0;font-size:11px;line-height:1.5;color:#365f4b}
+.smartCompactExportIcon{font-style:normal;font-weight:800;display:inline-grid;place-items:center;background:#fff;border:1px solid #8ebe9d;border-radius:50%;width:19px;height:19px}
+@media(max-width:520px){.smartCompactExportChoice{padding:8px 10px}.smartCompactExportChoice p{font-size:10px}}
+
+
+/* SmartMatch TEST v26: one-tap PDF size review in the compact tools bar. */
+.smartCardsTools #smartPdfInspect{
+ font-size:10px!important;min-height:27px!important;
+ padding:5px 8px!important;line-height:1.2!important;
+ border-radius:7px!important;white-space:nowrap!important
+}
+.smartCardsTools #smartPdfInspect:disabled{opacity:.52;cursor:not-allowed}
+.smartFileReviewMeta{display:grid;gap:5px;margin:2px 0 11px;border:1px solid #dce7ec;border-radius:9px;padding:10px 11px;background:#f7fafc}
+.smartFileReviewName{font-weight:700;font-size:11px;overflow-wrap:anywhere;color:#254a5b}
+.smartFileReviewInfo{font-size:11px;line-height:1.45;color:#486677}
+.smartFileReviewSaving{font-size:12px;line-height:1.45;font-weight:800;color:#255f47}
+.smartFileReviewSaving[data-level="warning"]{color:#925821}
+.smartFileReviewSaving[data-level="working"]{color:#355f83}
+@media(max-width:520px){
+ .smartCardsTools #smartPdfInspect{font-size:10px!important;padding:5px 7px!important}
+ .smartFileReviewMeta{padding:8px}
+ .smartFileReviewInfo,.smartFileReviewSaving{font-size:10px}
+}
+
+
+/* TEST v27: compact plan/floor name in the always-visible project header */
+.pwFileInfo{flex:1 1 auto;min-width:0}
+.pwFileHeadline{display:flex;align-items:center;gap:7px;min-width:0;max-width:100%}
+.pwFileHeadline #pwFileName{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pwPlanTag{flex:0 0 auto;max-width:min(36vw,188px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#e7f2f8;color:#174e69;border:1px solid #b6d5e6;border-radius:7px;font-size:11px;font-weight:850;line-height:1.25;padding:4px 7px;letter-spacing:.015em}
+.pwPlanTag[hidden]{display:none!important}
+@media(max-width:520px){
+ .pwProjectBar{gap:4px!important;padding:5px 6px!important}
+ .pwFileHeadline{gap:5px}
+ .pwFileHeadline #pwFileName{max-width:43vw;font-size:10px}
+ .pwPlanTag{font-size:10px;max-width:34vw;padding:3px 5px}
+ .pwStats{gap:5px!important}
+ .pwStats b{font-size:12px!important}
+ .pwStats small{font-size:7px!important}
+}
+
+
+/* TEST v29: One top-right 'Granska PDF' action. Legacy save and card-import
+   controls stay in DOM to protect existing event handlers, never in UI. */
+.pwHeaderActions .pwSaveWrap[hidden],
+.smartCardsTools #smartAddCards[hidden],
+.smartCardsTools #smartCardsNote[hidden]{display:none!important}
+.pwHeaderActions > .pwHeaderInspect{
+ display:inline-flex;align-items:center;justify-content:center;
+ min-height:31px!important;padding:6px 11px!important;
+ font-size:11px!important;font-weight:800!important;
+ letter-spacing:.01em;white-space:nowrap!important;
+ color:#fff!important;background:#17688e!important;
+ border:1px solid #71a1b9!important;border-radius:8px!important
+}
+.pwHeaderActions > .pwHeaderInspect:disabled{opacity:.45!important;cursor:not-allowed}
+.pwStartMode .pwHeaderActions > .pwHeaderInspect{visibility:hidden}
+.smartCardsTools{justify-content:flex-start}
+@media(max-width:620px){
+ .pwHeader .pwHeaderActions > .pwHeaderInspect{
+  grid-column:3;grid-row:1;justify-self:end;align-self:center;
+  min-height:31px!important;padding:5px 6px!important;font-size:10px!important;
+ }
+ .pwHeader{grid-template-columns:44px minmax(0,1fr) 88px}
+}
+@media(max-width:360px){
+ .pwHeader .pwHeaderActions > .pwHeaderInspect{font-size:9px!important;padding:5px 4px!important}
+ .pwHeader{grid-template-columns:38px minmax(0,1fr) 76px;gap:4px}
+}
+
+
+/* TEST v35: tools and page navigation above the drawing, compact project name.
+   Internal counters remain populated for analysis, not shown in work header. */
+.pwToolbar{position:relative;z-index:20;overflow:visible;flex:0 0 auto;
+ padding:5px 8px!important;min-height:37px!important;
+ gap:6px;background:#f5f9fb}
+.pwToolbarWork{display:flex;align-items:center;gap:5px;order:0;flex:0 0 auto}
+.pwToolbarNavigation{display:flex;align-items:center;gap:4px;order:1;flex:0 0 auto;margin-left:5px}
+.pwToolbarWork .pwDrawTools{order:-1;border-left:0!important;border-right:1px solid #d4dee3;padding:0 6px 0 0}
+.pwToolbar button{min-height:28px!important;padding:4px 7px!important;font-size:10px!important}
+.pwToolbar .pwToolIcon{min-width:29px!important;width:29px!important;height:29px!important;font-size:17px!important}
+.pwToolWrap{position:relative;z-index:21}
+.pwToolMenu{z-index:110!important}
+.pwProjectBar{padding:4px 9px!important;gap:4px!important;min-height:30px!important}
+.pwProjectBar .pwFileInfo{flex:1 1 auto}
+.pwProjectBar .pwStats{display:none!important}
+.pwFileHeadline{gap:6px}
+.pwFileHeadline #pwFileName{font-size:11px!important;font-weight:750;flex:0 1 auto;max-width:55vw}
+.pwProjectBar #pwPlanTag{font-size:9px!important;padding:3px 6px!important;max-width:33vw;border-radius:6px}
+.pwVisuallyHidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;
+ margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;
+ white-space:nowrap!important;border:0!important}
+@media(max-width:900px){
+ .pwToolbar{overflow-x:auto!important;overflow-y:visible!important;overscroll-behavior-x:contain;
+  scrollbar-width:thin;-webkit-overflow-scrolling:touch;justify-content:flex-start}
+ .pwToolbarWork{flex-shrink:0}
+ .pwToolbarNavigation{flex-shrink:0}
+ /* A horizontally scrollable toolbar would otherwise clip its dropdown on tablets. */
+ .pwToolMenu{position:fixed!important;left:10px!important;right:10px!important;
+  bottom:max(10px,env(safe-area-inset-bottom))!important;top:auto!important;
+  width:auto!important;max-height:68dvh;overflow-y:auto!important;z-index:1010!important}
+}
+@media(max-width:520px){
+ .pwToolbar{padding:4px 6px!important;gap:2px}
+ .pwToolbarWork,.pwToolbarNavigation{gap:3px}
+ .pwToolbar button{min-height:28px!important;padding:4px 6px!important;font-size:10px!important}
+ .pwToolbar #pwPageInfo{min-width:67px!important}
+ .pwToolbar .pwToolIcon{min-width:27px!important;width:27px!important}
+ .pwProjectBar{padding:3px 7px!important;min-height:25px!important}
+ .pwFileHeadline #pwFileName{font-size:10px!important;max-width:56vw}
+ .pwProjectBar #pwPlanTag{font-size:9px!important;padding:2px 5px!important}
+}
+
+
+/* TEST v35: compact layout: dropdown aligned below Verktyg, bottom navigation. */
+.pwToolbar{justify-content:flex-start!important;overflow-x:auto!important;overflow-y:hidden!important;gap:4px!important;padding:4px 7px!important;min-height:34px!important}
+.pwToolbarWork{display:flex!important;align-items:center!important;gap:4px!important;overflow:visible!important;flex:0 0 auto!important}
+.pwToolbarWork .pwDrawTools{order:-1!important;border-right:1px solid #d4dee3!important;padding-right:5px!important}
+.pwToolbarWork #labDiagnoseOpen{display:inline-flex!important;align-items:center!important;justify-content:center!important;white-space:nowrap!important;font-size:10px!important;min-height:26px!important;padding:3px 7px!important;border-radius:7px!important}
+.smartCardsTools{display:none!important}
+.pwProjectBar{justify-content:center!important;padding:4px 7px!important}
+.pwProjectBar .pwFileInfo{flex:0 1 auto!important;max-width:100%!important;text-align:center!important}
+.pwFileHeadline{justify-content:center!important;max-width:100%!important;margin:0 auto!important}
+.pwFileHeadline #pwFileName{max-width:48vw!important}
+.pwProjectBar #pwPlanTag{max-width:34vw!important}
+.pwToolMenu{position:fixed!important;top:0;left:0;right:auto!important;bottom:auto!important;width:min(244px,calc(100vw - 16px))!important;max-height:60dvh!important;overflow-y:auto!important;z-index:1200!important;padding:4px!important;border-radius:8px!important}
+.pwToolMenu button{padding:7px 9px!important;min-height:0!important}
+.pwToolMenu strong{font-size:11px!important}
+.pwToolMenu small{font-size:9px!important}
+.pwBottomNav{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:0 0 auto;position:relative;z-index:16;min-height:36px;padding:3px 9px max(5px,env(safe-area-inset-bottom));background:#f5f9fb;border-top:1px solid #cbd8df}
+.pwBottomPages,.pwBottomZoom{display:flex;align-items:center;gap:5px;min-width:0}
+.pwBottomNav button{display:inline-grid;place-items:center;min-height:28px;min-width:30px;padding:3px 7px;font-size:16px;font-weight:750;border-radius:7px}
+.pwBottomNav span{font-size:10px;color:#435b68;text-align:center;white-space:nowrap}
+.pwBottomNav #pwPageInfo{min-width:73px}
+.pwBottomNav #pwZoomInfo{min-width:37px}
+.pwHeaderActions > .pwHeaderInspect{min-height:27px!important;padding:4px 8px!important;font-size:10px!important;border-radius:7px!important}
+.pwStartMode .pwBottomNav{display:none!important}
+@media(max-width:520px){
+ .pwToolbar{padding:4px 6px!important}
+ .pwToolbarWork{gap:3px!important}
+ .pwToolbarWork #labDiagnoseOpen{font-size:9px!important;padding:3px 6px!important}
+ .pwBottomNav{padding-left:6px;padding-right:6px;gap:5px}
+ .pwBottomPages,.pwBottomZoom{gap:3px}
+ .pwBottomNav button{min-width:28px;padding:3px 5px}
+ .pwBottomNav #pwPageInfo{min-width:65px}
+ .pwBottomNav #pwZoomInfo{min-width:32px}
+ .pwHeaderActions > .pwHeaderInspect{min-height:27px!important;font-size:9px!important;padding:4px 7px!important}
+ .pwHeader{grid-template-columns:44px minmax(0,1fr) 52px!important}
+}
+
+
+/* SmartMatch TEST v35: page arrows/number and zoom controls centered together. */
+.pwBottomNav{justify-content:center!important;gap:12px!important}
+.pwBottomPages,.pwBottomZoom{flex:0 0 auto;gap:3px!important}
+@media(max-width:520px){
+ .pwBottomNav{justify-content:center!important;gap:9px!important}
+ .pwBottomPages,.pwBottomZoom{gap:3px!important}
+}
+
+
+/* SmartMatch TEST v35: center compact, live progress below drawing filename/floor. */
+.pwProjectBar .pwFileInfo{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important}
+.pwProjectBar .pwScanStatus{display:inline-flex;align-items:center;justify-content:center;gap:6px;max-width:88vw;margin:1px auto 0;padding:2px 8px;border-radius:999px;border:1px solid #c9dfea;background:#f2f8fb;color:#24607b;font-size:10px;font-weight:700;line-height:1.35;white-space:nowrap}
+.pwProjectBar .pwScanStatus[hidden]{display:none!important}
+.pwScanSpinner{display:inline-block;width:10px;height:10px;flex:0 0 auto;border:2px solid #b2d1e0;border-top-color:#246987;border-radius:50%;animation:pwScanRotate .8s linear infinite}
+@keyframes pwScanRotate{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.pwScanSpinner{animation:none;border-top-color:#246987}}
+@media(max-width:520px){
+ .pwProjectBar .pwScanStatus{max-width:94vw;font-size:9px;padding:2px 6px;gap:5px}
+ .pwScanSpinner{width:9px;height:9px}
+}
+
+
+/* SmartMatch TEST v35: iPad shows original door card and compact checks together. */
+@media(min-width:700px){
+ .pwProtocol .pwProtocolBody,
+ .pwProtocol.pwMobileCard .pwProtocolBody,
+ .pwProtocol.pwMobileChecks .pwProtocolBody{
+  display:grid!important;grid-template-columns:minmax(0,1.3fr) minmax(290px,.85fr)!important;
+  grid-template-rows:minmax(0,1fr)!important
+ }
+ .pwProtocol.pwMobileCard .pwChecklistPane,
+ .pwProtocol.pwMobileChecks .pwChecklistPane{display:block!important;height:100%!important}
+ .pwProtocol.pwMobileCard .pwProtocolOriginal,
+ .pwProtocol.pwMobileChecks .pwProtocolOriginal{display:flex!important}
+ .pwProtocol #pwProtocolBackToCard,
+ .pwProtocol #pwProtocolShowCard,
+ .pwProtocol #pwProtocolShowGS{display:none!important}
+ .pwProtocol .pwChecklistPane{padding:6px 7px!important}
+ .pwProtocol .pwChecklistHead{display:flex;align-items:center;flex-wrap:wrap;gap:3px;padding-bottom:4px}
+ .pwProtocol .pwChecklistHead strong{font-size:11px!important}
+ .pwProtocol .pwChecklistHead>div>span{display:none!important}
+ .pwProtocol .pwChecklistHeadActions{gap:3px!important;flex-wrap:wrap!important;justify-content:flex-start}
+ .pwProtocol .pwChecklistHeadActions button{
+  font-size:9px!important;font-weight:700!important;min-height:26px!important;padding:3px 6px!important;
+  border-radius:5px!important
+ }
+ .pwProtocol .pwChecklistHeadActions #pwChecklistMeta{font-size:9px!important}
+ .pwProtocol .pwChecklist{gap:3px!important}
+ .pwProtocol .pwCheckRow{display:grid;grid-template-columns:20px minmax(0,1fr) auto;align-items:center;
+  padding:4px 5px!important;gap:5px!important;border-radius:5px!important}
+ .pwProtocol .pwCheckRow input{width:17px;height:17px;margin:0;min-width:17px}
+ .pwProtocol .pwCheckContent strong{font-size:10px!important;line-height:1.2!important}
+ .pwProtocol .pwCheckContent small{font-size:9px!important;line-height:1.2!important;margin-top:1px}
+ .pwProtocol .pwCheckTime{display:none!important}
+ .pwProtocol .pwCheckComment{margin-top:3px!important;padding:3px 4px!important;font-size:8px!important}
+ .pwProtocol .pwCheckActions{flex-direction:row!important;gap:3px!important}
+ .pwProtocol .pwCheckActions button{
+  min-height:25px!important;font-size:8px!important;padding:2px 5px!important;border-radius:5px!important
+ }
+ .pwProtocol .pwChecklistHeading{padding:4px 6px;font-size:9px}
+ .pwProtocol .pwProtocolTools{padding:4px 5px!important}
+ .pwProtocol .pwProtocolZoomTools button{min-height:26px!important;font-size:9px!important;padding:2px 5px!important}
+ .pwProtocol .pwProtocolIdentity small{font-size:8px!important}
+}
+@media(min-width:700px) and (max-width:820px){
+ .pwProtocol .pwProtocolBody{grid-template-columns:minmax(0,1.2fr) minmax(285px,.85fr)!important}
+ .pwProtocol{width:100%!important;height:100dvh!important;max-height:none!important}
+ .pwProtocol .pwChecklistHead{align-items:flex-start}
+}
+
+
+/* SmartMatch TEST v36: DA label matching tool, door links and SLR folder, responsive. */
+.pwDAArrows{position:absolute;inset:0;pointer-events:none;z-index:7;overflow:visible}
+.pwAutomationMarker.pwDAHit{border-radius:6px!important;background:#e6f4f7ed!important;
+ border:2px solid #197ea5!important;color:#11506e!important;padding:2px 5px!important;
+ min-width:52px!important;min-height:24px!important;max-width:210px!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ box-shadow:0 1px 8px #0003!important;white-space:nowrap!important}
+.pwAutomationMarker.pwDAHit span{position:static!important;display:block!important;
+ background:transparent!important;box-shadow:none!important;width:auto!important;
+ height:auto!important;font-size:10px!important;color:inherit!important;
+ border-radius:0!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pwAutomationMarker.pwDAUnlinked{border-color:#bc8a29!important;background:#fff3ceeb!important;color:#73550c!important}
+.pwAutomationMarker.pwDAHit[data-progress="100"]{background:#e1f5e8ed!important;border-color:#29834c!important}
+.pwDADialog{border:0;border-radius:13px;padding:0;width:min(510px,calc(100vw - 20px));max-height:min(92dvh,850px);
+ overflow:hidden;color:#213f4d;box-shadow:0 20px 70px #0005}
+.pwDADialog::backdrop{background:#0a1b29b3}
+.pwDAHead{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#163e54;color:#fff;padding:12px 13px}
+.pwDAHead strong{display:block;font-size:15px}.pwDAHead small{font-size:10px;color:#c0d5df}
+.pwDAHead button{font-size:20px;color:white;background:transparent;border:0;padding:2px 8px;min-width:32px;min-height:32px}
+.pwDABody{padding:13px;display:grid;gap:11px;max-height:calc(92dvh - 60px);overflow:auto}
+.pwDABody label{display:grid;gap:5px;font-size:12px;font-weight:750}
+.pwDABody input,.pwDABody select{min-height:38px;border:1px solid #b2c9d4;border-radius:7px;padding:7px 9px;
+ background:#fff;color:#163d50;font:inherit;font-size:14px;width:100%}
+.pwDAFeedback{font-size:11px;color:#496879;line-height:1.4;min-height:28px}
+.pwDAActions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pwDAActions button{min-height:36px;padding:8px 11px;border:1px solid #b8d1dd;background:#f3f9fc;border-radius:8px;
+ font-weight:650;color:#1d5069;font-size:12px}
+.pwDAActions button:first-child{background:#176589;color:white;border-color:#176589}
+.pwDASub{font-size:11px;color:#5e7380}
+.pwDADoorChoices{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pwDADoorChoices button{padding:12px 8px;min-height:70px;background:#f4f9fb;border:1px solid #bdd9e5;border-radius:9px;
+ font-size:12px;font-weight:750;color:#1b536f}
+.pwSLRList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pwSLRSection{min-height:60px;padding:10px;text-align:left;display:flex;flex-direction:column;justify-content:center;gap:5px;
+ background:#f3f8fa;border:1px solid #cbdde4;border-radius:8px;color:#20546c}
+.pwSLRSection strong{font-size:12px}.pwSLRSection small{font-size:10px;color:#647f8a}
+.pwSLRSection.active{border-color:#1278a7;background:#e5f4fb}
+.pwAutomationHeadActions #pwDARevisionSave,.pwAutomationHeadActions #pwDAExportRevision{min-height:31px;padding:4px 8px;font-size:11px;white-space:nowrap}
+@media(max-width:540px){.pwSLRList{grid-template-columns:1fr}.pwDADoorChoices{grid-template-columns:1fr}.pwDAActions button{flex:1}}
+
+
+/* SmartMatch TEST v36.4 – release number is always visible on iPhone, iPad and desktop. */
+.pwHeader .pwReleaseLine{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;min-width:0;margin:3px 0 1px}
+.pwHeader .pwReleaseLine .pwTitleVersion{display:inline-flex;align-items:center;white-space:nowrap;margin:0;padding:2px 6px;
+ min-height:23px;background:#204b61;color:#f0fbff;border:1px solid #79a9be;border-radius:5px;font-size:11px;font-weight:800;letter-spacing:.12px}
+.pwHeader .pwRefreshBuild{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;min-height:24px!important;
+ height:24px!important;padding:2px 7px!important;border:1px solid #75a5b8!important;border-radius:6px!important;
+ color:#fff!important;background:transparent!important;font-size:10px!important;font-weight:700!important;line-height:1.1!important}
+.pwHeader .pwRefreshBuild:focus-visible{outline:2px solid #d0f3ff;outline-offset:2px}
+@media(max-width:620px){
+ .pwHeader .pwReleaseLine{justify-content:center;gap:5px}
+ .pwHeader .pwReleaseLine .pwTitleVersion{font-size:10px;min-height:22px;padding:2px 4px}
+ .pwHeader .pwRefreshBuild{min-height:22px!important;height:22px!important;padding:2px 5px!important;font-size:9px!important}
+}
+@media(max-width:360px){
+ .pwHeader .pwReleaseLine{gap:3px}
+ .pwHeader .pwReleaseLine .pwTitleVersion{font-size:9px;padding:2px 3px}
+ .pwHeader .pwRefreshBuild{font-size:9px!important;padding:1px 3px!important}
+}
+
+
+/* SmartMatch TEST v36.5: move positions without shrinking and draw a resizable text marker. */
+.pwStage.pmPlacing{cursor:crosshair!important;touch-action:none}
+.pmDragPreview{
+ position:absolute;z-index:21;pointer-events:none;display:flex;align-items:center;justify-content:center;
+ border:2px dashed #147ca7;border-radius:4px;background:#d9f2ffbf;
+ color:#165b7a;font-weight:800;line-height:1;white-space:nowrap;overflow:hidden;
+ padding:1px 3px;box-shadow:0 0 0 1px #fff7 inset
+}
+#pwMarkers .pwStampHit.pmSizedMarker{
+ background:#e8f7ff96;border:2px solid #0879ab;
+ border-radius:4px;display:flex;align-items:center;justify-content:center;
+ overflow:visible;box-sizing:border-box;
+}
+#pwMarkers .pwStampHit.pmSizedMarker .pmMarkerLabel{
+ position:absolute;inset:0;bottom:auto;left:0;
+ width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+ background:transparent;border:none;box-shadow:none;
+ color:#135b7f;font-weight:800;line-height:1;
+ padding:1px 3px;white-space:nowrap;overflow:hidden;
+ text-overflow:clip;box-sizing:border-box;
+ pointer-events:none;
+}
+#pwMarkers .pwStampHit.pmSizedMarker .pwProgressBadge{z-index:2}
+
+
+/* TEST v36.6: permit every tool, including Koppla dörrautomatik, to be tapped on a small iPhone. */
+.pwToolMenu{overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+#pwDALinkTool{background:#e9f4fa!important;border:1px solid #b4d9e8!important;border-radius:6px!important}
+#pwDALinkTool strong{color:#175d7c!important}
+
+
+/* SmartMatch TEST v36.7 – the existing GS stamp must remain visible.
+   The yellow clickable outline looks BEHIND printed text because the overlay
+   has almost no fill and never renders its own copy of the GS label. */
+#pwMarkers .pwStampHit.pmSizedMarker{
+ background:rgba(247,220,78,.08)!important;
+ border:2px solid rgba(204,153,26,.85)!important;
+ border-radius:4px!important;
+ box-shadow:none!important;
+ display:block!important;
+ padding:0!important;
+ overflow:visible!important;
+ color:transparent!important;
+}
+#pwMarkers .pwStampHit.pmSizedMarker:hover,
+#pwMarkers .pwStampHit.pmSizedMarker:focus-visible{
+ background:rgba(247,220,78,.14)!important;
+ border-color:#c38a13!important;
+ outline:2px solid rgba(204,153,26,.28);
+}
+#pwMarkers .pwStampHit.pmSizedMarker.selected{
+ border-color:#d59e20!important;
+ background:rgba(247,220,78,.13)!important;
+ box-shadow:0 0 0 2px rgba(255,240,185,.5)!important;
+}
+#pwMarkers .pwStampHit.pmSizedMarker .pmMarkerLabel{display:none!important}
+.pmDragPreview{
+ background:rgba(247,220,78,.10)!important;
+ border:2px dashed #cf9f23!important;
+ color:transparent!important;
+ box-shadow:none!important;
+}
+
+
+/* SmartMatch TEST v36.8 – detected automation labels use original PDF text,
+   with a light hit area and a small blue indicator, never duplicated numbers. */
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit{
+ display:block!important;min-width:20px!important;min-height:18px!important;max-width:none!important;
+ padding:0!important;border:1.5px solid rgba(18,117,166,.9)!important;border-radius:4px!important;
+ color:transparent!important;background:rgba(42,159,211,.07)!important;box-shadow:none!important;
+ overflow:visible!important;cursor:pointer;
+}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit:after{
+ content:'↗';position:absolute;right:-6px;top:-11px;display:grid;place-items:center;
+ height:15px;width:15px;border-radius:50%;background:#176d94;color:#fff;
+ font:900 10px/1 sans-serif;box-shadow:0 0 0 1px white;
+}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit.pwDAUnlinked:after{background:#bf8426}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit:hover,
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit:focus-visible{
+ background:rgba(33,147,202,.15)!important;
+ outline:2px solid rgba(18,117,166,.45);outline-offset:1px;
+}
+.pwDAResults{display:grid;gap:6px;max-height:min(35dvh,250px);overflow:auto;overscroll-behavior:contain}
+.pwDAResults:empty{display:none}
+.pwDAResults>strong{font-size:12px;color:#1d4559}
+.pwDAResult{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:7px;align-items:center;
+ border:1px solid #d0e1e9;border-radius:8px;background:#f7fbfd;padding:7px}
+.pwDAResult>.pwDAResultOpen{grid-column:1;grid-row:1;border:0;background:transparent;color:#135b7d;
+ font-size:12px;font-weight:800;text-align:left;min-height:24px;padding:0;overflow-wrap:anywhere}
+.pwDAResult>small{grid-column:1;grid-row:2;color:#637b87;font-size:10px}
+.pwDAResult>button:last-child{grid-column:2;grid-row:1/3;min-height:32px;border:1px solid #a7cfdf;border-radius:6px;
+ background:#eaf6fc;color:#145878;padding:5px 9px;font-weight:700;font-size:11px}
+
+
+/* SmartMatch TEST v36.10 – two-column revision form: installer left, customer right.
+   Shared project/door metadata is compact and stays above the checklist. */
+.pwRevisionData>.pwRevisionProjectBody{padding:11px;display:grid;gap:10px}
+.pwRevisionData .pwRevisionBasics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;
+ padding:10px;background:#edf5f8;border:1px solid #dae7ec;border-radius:9px}
+.pwRevisionData label{display:grid;gap:4px;min-width:0;font-size:10px;font-weight:800;color:#35586a}
+.pwRevisionData label input,
+.pwRevisionData label select{display:block;box-sizing:border-box;width:100%;min-width:0;min-height:36px;
+ border:1px solid #bfced7;border-radius:7px;background:white;color:#183c51;
+ font:500 12px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:7px 9px}
+.pwRevisionData label input[readonly]{background:#f3f8fb;border-color:#b6d7e5;color:#195f81;font-weight:800}
+.pwRevisionData .pwRevisionLocation{grid-column:span 2}
+.pwRevisionData .pwRevisionParties{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
+.pwRevisionData .pwRevisionParty{min-width:0;display:grid;align-content:start;gap:8px;
+ border:1px solid #d6e2e8;border-radius:9px;background:#fff;padding:11px}
+.pwRevisionData .pwRevisionParty h3{margin:0 0 3px;padding:0 0 9px;border-bottom:1px solid #d5e1e7;
+ color:#1c4b61;font-size:13px;line-height:1.3;font-weight:850}
+.pwRevisionData .pwRevisionInstaller h3{border-bottom-color:#84b9d0}
+.pwRevisionData .pwRevisionCustomer h3{border-bottom-color:#c6a877}
+.pwRevisionData .pwRevisionPostal{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:8px}
+.pwRevisionData .pwProjectLogoField{grid-column:auto;padding:9px;margin-top:4px}
+.pwRevisionData .pwProjectLogoField>div:first-of-type{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.pwRevisionData .pwRevisionSignature{margin-top:6px;padding-top:9px;border-top:1px dashed #d1dfe6}
+.pwRevisionData .pwRevisionAdvanced{border:1px solid #d9e5ea;border-radius:8px;background:#f9fbfc;overflow:hidden}
+.pwRevisionData .pwRevisionAdvanced>summary{cursor:pointer;list-style:none;padding:10px;
+ color:#4d6b7a;font-size:10px;font-weight:750}
+.pwRevisionData .pwRevisionAdvanced>summary::-webkit-details-marker{display:none}
+.pwRevisionData .pwRevisionAdvanced>summary:before{content:'▸ ';color:#327797}
+.pwRevisionData .pwRevisionAdvanced[open]>summary:before{content:'▾ '}
+.pwRevisionData .pwRevisionAdvancedGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 10px 10px}
+.pwRevisionData .pwRevisionLegacy[hidden]{display:none!important}
+@media(max-width:760px){
+ .pwRevisionData .pwRevisionBasics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .pwRevisionData .pwRevisionAdvancedGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+ .pwRevisionData>.pwRevisionProjectBody{padding:8px;gap:8px}
+ .pwRevisionData .pwRevisionParties{grid-template-columns:minmax(0,1fr)}
+ .pwRevisionData .pwRevisionBasics{gap:6px;padding:8px}
+ .pwRevisionData .pwRevisionParty{padding:9px}
+ .pwRevisionData label{font-size:9px}
+ .pwRevisionData label input,.pwRevisionData label select{font-size:16px;min-height:37px}
+ .pwRevisionData .pwRevisionAdvancedGrid{grid-template-columns:1fr}
+}
+
+
+/* SmartMatch TEST v36.11: compact automation actions and editable arrow tip. */
+.pwDAControlLine{position:relative;display:flex;align-items:stretch;gap:4px;width:100%;min-width:0}
+.pwDAControlLine>.pwAutomationPosition{min-width:0;flex:1 1 auto;text-align:left}
+.pwDAControlLine>.pwDAMore{flex:0 0 auto;align-self:stretch;position:relative}
+.pwDAControlLine>.pwDAMore>summary{display:grid;place-items:center;min-width:36px;min-height:38px;
+ background:#edf4f8;border:1px solid #c8dae3;border-radius:7px;cursor:pointer;
+ color:#1f546e;font-size:20px;line-height:1;list-style:none}
+.pwDAControlLine>.pwDAMore>summary::-webkit-details-marker{display:none}
+.pwDAControlLine>.pwDAMore[open]>summary{background:#dfeef5}
+.pwDAControlLine>.pwDAMore>.pmRow{position:absolute;right:0;top:100%;z-index:125;
+ display:grid;grid-template-columns:1fr;gap:3px;width:min(230px,74vw);
+ padding:5px;background:#fff;border:1px solid #cedfe8;border-radius:8px;
+ box-shadow:0 8px 25px rgba(0,0,0,.22)}
+.pwDAControlLine>.pwDAMore>.pmRow button{min-height:38px!important;width:100%;text-align:left;
+ font-size:12px!important;padding:8px 10px}
+.pwStage.pwDAMoving{cursor:crosshair!important;touch-action:none!important}
+.pwStage.pwDAMoving #pwMarkers,.pwStage.pwDAMoving #pwAutomationMarkers{pointer-events:none!important}
+.pwStage.pwDAMoving #pwMarkers button,.pwStage.pwDAMoving #pwAutomationMarkers button{pointer-events:none!important}
+.pwDAArrows.pwDAArrowEdit{z-index:35!important;pointer-events:none}
+.pwDAArrows .pwDAArrowHandle{pointer-events:all!important;cursor:grab;touch-action:none}
+.pwDAArrows .pwDAArrowHandle:active{cursor:grabbing}
+@media(max-width:560px){
+ .pwDAControlLine>.pwDAMore>summary{min-width:40px;min-height:40px}
+ .pwDAControlLine>.pwDAMore>.pmRow{min-width:190px}
+}
+
+
+/* SmartMatch TEST v36.12 – identical 3-dot button / popup for GS and DA.
+   Fixed popup lives in <body>, so an iPhone/iPad sidebar cannot clip it. */
+.pwDrawingCardGroup{overflow:visible!important;border-color:#b9d4df!important}
+.pwDrawingCardGroup>.pwGroupTitle{background:#eef6f9!important}
+.pwDrawingCardGroup .pwDrawingCodeSearch{
+ display:block;box-sizing:border-box;width:calc(100% - 12px);min-height:35px;
+ margin:6px;padding:6px 9px;border:1px solid #b7d1de;border-radius:7px;
+ background:#fff;color:#173f55;font:500 12px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+.pwDrawingCardGroup .pwDrawingCodeList{display:grid;gap:5px;padding:4px 6px 8px;min-width:0}
+.pwDrawingCardGroup .pwDrawingCodeList>[hidden]{display:none!important}
+.pwDrawingCardGroup .pwGroupAccordion{position:relative;margin:0;overflow:visible!important}
+.pwDrawingCardGroup .pwGroupAccordion>.pwGroupTitle{padding-right:77px}
+.pwDrawingCardGroup .pwMissingDrawingCard{padding:5px 7px;overflow:visible}
+.pwDrawingCardGroup .pwDrawingNoResults{padding:12px 7px;font-size:11px;text-align:center}
+.pwDrawingCardGroup .pwGroupItems,.pwAutomationGroup .pwGroupItems{overflow:visible}
+.pwDrawingCardGroup .pwPositionLine,.pwAutomationGroup .pwPositionLine{
+ display:flex!important;align-items:center;gap:4px;min-width:0;width:100%;position:relative
+}
+.pwDrawingCardGroup .pwPositionLine>.pwPosition,.pwAutomationGroup .pwPositionLine>.pwPosition{
+ flex:1 1 auto;min-width:0;width:auto;min-height:33px
+}
+.pwUnifiedMore{
+ display:grid;place-items:center;flex:0 0 31px;width:31px;height:31px;min-width:31px!important;
+ min-height:31px!important;max-height:31px;padding:0!important;margin:0!important;
+ background:#eef4f7!important;color:#214d61!important;
+ border:1px solid #cbdae2!important;border-radius:6px!important;
+ box-shadow:none!important;cursor:pointer;line-height:1!important;font-size:18px!important;font-weight:750!important
+}
+.pwUnifiedMore:hover,.pwUnifiedMore:focus-visible,.pwUnifiedMore[aria-expanded="true"]{
+ background:#deecf2!important;border-color:#91bdcf!important;outline:none
+}
+.pwUnifiedActionPopup{
+ position:fixed;z-index:2147483000;display:grid;gap:2px;box-sizing:border-box;
+ width:199px;max-width:calc(100vw - 14px);padding:6px;border:1px solid #c7d9e3;
+ border-radius:10px;background:#fff;box-shadow:0 12px 32px rgba(16,40,53,.25);
+ overflow-y:auto;max-height:calc(100dvh - 15px)
+}
+.pwUnifiedActionPopup .pwUnifiedAction{
+ box-sizing:border-box;display:block;width:100%;min-height:35px;text-align:left;
+ padding:7px 10px;border:0;border-radius:6px;background:transparent;
+ color:#243f4c;font:600 12px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ cursor:pointer
+}
+.pwUnifiedActionPopup .pwUnifiedAction:hover,.pwUnifiedActionPopup .pwUnifiedAction:focus-visible{
+ background:#e9f4f9;outline:1px solid #c2dfed
+}
+@media(max-width:620px){
+ .pwUnifiedMore{flex-basis:31px!important;width:31px!important;height:31px!important}
+ .pwDrawingCardGroup .pwDrawingCodeSearch{font-size:16px}
+ .pwUnifiedActionPopup .pwUnifiedAction{min-height:39px;font-size:13px}
+}
+
+
+/* SmartMatch TEST v36.13 – two independent foldable categories and manual GS/card link. */
+.pwDrawingCardGroup,.pwAutomationGroup{position:relative}
+.pwDrawingCardGroup > .pwGroupTitle,
+.pwAutomationGroup > .pwGroupTitle{
+ cursor:pointer;list-style:none;min-height:38px;
+ gap:5px;align-items:center;justify-content:space-between
+}
+.pwDrawingCardGroup > .pwGroupTitle::-webkit-details-marker,
+.pwAutomationGroup > .pwGroupTitle::-webkit-details-marker{display:none}
+.pwDrawingCardGroup > .pwGroupTitle strong,
+.pwAutomationGroup > .pwGroupTitle strong{min-width:0;flex:1 1 auto;font-size:11px}
+.pwDrawingCardGroup > .pwGroupTitle strong::before,
+.pwAutomationGroup > .pwGroupTitle strong::before{content:'▸';display:inline-block;margin-right:5px;color:#2c7999}
+.pwDrawingCardGroup[open] > .pwGroupTitle strong::before,
+.pwAutomationGroup[open] > .pwGroupTitle strong::before{content:'▾'}
+.pwGroupVisibility{flex:0 0 auto;font-size:9px;font-weight:650;color:#527183;white-space:nowrap}
+.pwDrawingCardGroup .pwDrawingManualAdd{
+ box-sizing:border-box;display:block;width:calc(100% - 12px);margin:7px 6px 4px;
+ min-height:34px!important;padding:6px 7px!important;border:1px solid #83bed5!important;
+ border-radius:7px!important;background:#eaf6fb!important;color:#135b7b!important;
+ font-size:10px!important;font-weight:800!important;line-height:1.35;text-align:center
+}
+.pwDrawingCardGroup .pwPositionEditor{
+ margin:4px 6px 7px;border:1px solid #cbdde6;border-radius:7px;
+ overflow:hidden;background:#f7fbfd
+}
+.pwDrawingCardGroup .pwPositionEditor>summary{min-height:30px;box-sizing:border-box;padding:8px}
+.pwDrawingCardGroup .pwPositionEditor .pwPositionTools{padding:7px!important}
+.pwDrawingCardGroup .pwPositionEditor .pwPositionTools input{min-width:0}
+.pwDAGsEdit[hidden],.pwDADoorChoices[hidden]{display:none!important}
+.pwDADoorChoices:not([hidden]){display:grid;grid-template-columns:1fr;gap:10px;padding:6px 0}
+.pwDADoorChoices button{min-height:48px!important;font-size:12px!important;font-weight:800!important;line-height:1.35}
+.pwDAEmptyState{padding:8px 6px;font-size:11px;line-height:1.4}
+@media(max-width:620px){
+ .pwDrawingCardGroup > .pwGroupTitle strong,.pwAutomationGroup > .pwGroupTitle strong{font-size:10px}
+ .pwGroupVisibility{font-size:8px}
+ .pwDrawingCardGroup .pwDrawingManualAdd{font-size:10px!important;min-height:37px!important}
+ .pwDADoorChoices button{min-height:50px!important;font-size:13px!important}
+}
+
+/* SmartMatch TEST v36.14 – compact folded-category headings. */
+.pwDrawingCardGroup > .pwGroupTitle strong,
+.pwAutomationGroup > .pwGroupTitle strong{font-size:10px;white-space:nowrap}
+.pwDrawingCardGroup > .pwGroupTitle,
+.pwAutomationGroup > .pwGroupTitle{column-gap:4px}
+.pwDrawingCardGroup > .pwGroupTitle span:not(.pwGroupVisibility),
+.pwAutomationGroup > .pwGroupTitle span:not(.pwGroupVisibility){font-size:9px;white-space:nowrap}
+.pwDAExportStatus:not([hidden]){margin:5px 12px;padding:7px 9px;border:1px solid #c5dce7;border-radius:6px;background:#f2f9fc;font-size:11px;line-height:1.4}
+@media(max-width:620px){
+ .pwDrawingCardGroup > .pwGroupTitle strong,.pwAutomationGroup > .pwGroupTitle strong{font-size:9.5px}
+ .pwDrawingCardGroup > .pwGroupTitle span:not(.pwGroupVisibility),
+ .pwAutomationGroup > .pwGroupTitle span:not(.pwGroupVisibility){font-size:8px}
+}
+
+/* SmartMatch TEST v36.15: locate an automation from the sidebar before opening its document choices. */
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit.pwDAFocused{
+ outline:3px solid #df8d1e!important;
+ outline-offset:3px!important;
+ background:rgba(255,196,79,.22)!important;
+ box-shadow:0 0 0 5px rgba(226,146,27,.18)!important;
+}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit.pwDAFocused:after{
+ background:#b66c12!important;
+ box-shadow:0 0 0 2px #fff,0 1px 5px #0003!important;
+}
+.pwDAControlLine>.pwAutomationPosition{cursor:pointer}
+
+/* SmartMatch TEST v36.16 – revision export and multipage preview. */
+.pwHeaderSendProtocols{font-size:10px!important;white-space:nowrap;padding:6px 8px!important}
+.pwAutomationDialog .pwAutomationHead,.pwAutomationPreviewDialog .pwAutomationHead{flex-wrap:wrap;gap:7px}
+.pwAutomationDialog .pwAutomationHeadActions,.pwAutomationPreviewDialog .pwAutomationHeadActions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px}
+.pwAutomationDialog .pwAutomationHeadActions button,.pwAutomationPreviewDialog .pwAutomationHeadActions button{font-size:10px;padding:6px 8px;white-space:nowrap;min-height:32px}
+.pwProtocolPreviewNav{display:flex;align-items:center;justify-content:center;gap:12px;min-height:34px;background:#f1f7fa;border-bottom:1px solid #c8dce7;color:#174154;font-size:11px}
+.pwProtocolPreviewNav button{min-width:35px;min-height:28px;font-size:18px;border:1px solid #bad1dd;background:#fff;border-radius:6px}
+.pwAutomationPreviewWrap{height:calc(100% - 98px)!important}
+.pwExportMessage:not([hidden]){margin:7px;padding:8px;font-size:11px;line-height:1.5;border:1px solid #c4dbe6;border-radius:7px;background:#edf8fd;color:#1c526e}
+.pwProtocolRecipient{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px;padding:9px;background:#fff;border:1px solid #cfdae0;border-radius:8px}
+.pwProtocolRecipient label{display:grid;gap:4px;font-weight:650;font-size:10px}
+.pwProtocolRecipient input,.pwProtocolRecipient select{width:100%;min-width:0;box-sizing:border-box;min-height:36px;border-radius:6px;border:1px solid #b6cbd5;background:#fff;padding:7px;font-size:12px}
+.pwProtocolRecipient small{grid-column:1/-1;line-height:1.4;color:#516a78;font-size:9px}
+.pwSelfcheckExportFooter{flex-wrap:wrap}
+.pwSelfcheckExportFooterButtons{display:flex;flex-wrap:wrap;gap:5px}
+.pwSelfcheckExportFooterButtons button{font-size:9px!important;padding:7px!important;min-height:32px}
+@media(max-width:620px){.pwHeaderSendProtocols{font-size:9px!important;padding:5px!important}
+.pwAutomationDialog .pwAutomationHeadActions{justify-content:flex-start;width:100%}
+.pwAutomationDialog .pwAutomationHeadActions button{font-size:9px;padding:5px 6px}
+.pwProtocolRecipient{grid-template-columns:1fr}
+.pwAutomationPreviewWrap{height:calc(100dvh - 120px)!important}}
+
+/* SmartMatch TEST v36.17: interactive GS destinations in saved & previewed protocol PDFs. */
+.pwProtocolIncludeDrawing{display:flex;align-items:flex-start;gap:8px;margin-top:10px;padding:11px;border:1px solid #bad4e0;border-radius:8px;background:#edf8fd;color:#17495e;font-size:11px;font-weight:700;line-height:1.45}
+.pwProtocolIncludeDrawing input{flex:0 0 18px;width:18px;height:18px;accent-color:#1b708f}
+.pwProtocolLinkSummary{font-size:10px;color:#466678;line-height:1.5;margin:7px 3px}
+.pwProtocolPreviewPage{position:relative;width:fit-content;height:fit-content;margin:0 auto;line-height:0}
+.pwProtocolPreviewPage canvas{margin:0!important;display:block}
+.pwProtocolPreviewLinks{position:absolute;inset:0;pointer-events:none}
+.pwProtocolPreviewLinks button{position:absolute;display:block;background:transparent;border:none;padding:0;margin:0;border-radius:3px;cursor:pointer;pointer-events:auto;min-width:4px;min-height:4px}
+.pwProtocolPreviewLinks button:hover,.pwProtocolPreviewLinks button:focus-visible{outline:2px solid #187da6;outline-offset:1px;background:rgba(60,160,203,.18)}
+.pwProtocolPreviewNav #pwProtocolPreviewZoomIn,.pwProtocolPreviewNav #pwProtocolPreviewZoomOut{font-size:12px;min-width:29px}
+#pwProtocolPreviewZoomLabel{font-size:10px;color:#3b6376;min-width:30px;text-align:center}
+
+/* SmartMatch TEST v36.18: show per-door machine type adjacent to door placement. */
+.pwRevisionData .pwRevisionMachine{grid-column:span 1}
+.pwRevisionData .pwRevisionMachine small{font-size:9px;font-weight:500;line-height:1.4;color:#567080}
+.pwRevisionData .pwRevisionMachine select{font-weight:650}
+.pwRevisionData .pwRevisionAdvancedGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:760px){
+ .pwRevisionData .pwRevisionLocation{grid-column:span 1}
+ .pwRevisionData .pwRevisionMachine{grid-column:span 1}
+}
+@media(max-width:390px){
+ .pwRevisionData .pwRevisionLocation,.pwRevisionData .pwRevisionMachine{grid-column:span 2}
+}
+
+/* TEST v36.19 – compact linked automation card + scan all from the verified first marker */
+#pwDADoorDialog{width:min(440px,95vw);max-height:94dvh;overflow-y:auto}
+#pwDADoorDialog .pwDABody{padding:10px 12px}
+#pwDADoorDialog .pwDAHead{padding:10px 12px}
+#pwDADoorDialog .pwDAHead strong{font-size:14px}
+#pwDADoorDialog .pwDAHead small{font-size:10px;line-height:1.35}
+#pwDADoorDialog .pwDADoorChoices{display:grid;gap:6px}
+#pwDADoorDialog .pwDADoorChoices>button{min-height:38px;font-size:11px;padding:7px 10px}
+#pwDADoorDialog .pwDADoorDivider{height:1px;background:#d4e2e9;margin:3px 0}
+#pwDADoorDialog .pwDABulkScan{background:#eaf5fb;border:1px solid #88b6ca;color:#165572;font-weight:800}
+#pwDADoorDialog .pwDABulkScan:disabled{opacity:.65;cursor:wait}
+#pwDADoorDialog .pwDABulkStatus:not([hidden]){font-size:10px;line-height:1.55;background:#f1f8fb;border:1px solid #bfdbe8;padding:9px;border-radius:7px;margin:3px 0}
+#pwDADoorDialog .pwDABulkResults:not([hidden]){max-height:210px;overflow:auto;display:grid;gap:4px}
+#pwDADoorDialog .pwDABulkResults>button{display:flex;justify-content:space-between;gap:6px;align-items:center;text-align:left;background:#fff;border:1px solid #d4e4eb;border-radius:6px;padding:7px 8px;font-size:10px;color:#28546a}
+#pwDADoorDialog .pwDABulkResults>button b{color:#194d67}
+#pwDADoorDialog .pwDABulkResults>button small{color:#6a8390;text-align:right}
+@media(max-width:430px){#pwDADoorDialog .pwDAHead strong{font-size:13px}#pwDADoorDialog .pwDABody{padding:8px 9px}}
+
+/* SmartMatch TEST v36.20 – compact DA group settings, clean everyday labels. */
+.pwAutomationGroup .pwDAGroupSettings{margin:4px 6px 8px;border:1px solid #d4e3eb;background:#f5fafc;border-radius:7px}
+.pwAutomationGroup .pwDAGroupSettings>summary{cursor:pointer;list-style:none;padding:8px 9px;font:750 10px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#3a687f}
+.pwAutomationGroup .pwDAGroupSettings>summary::-webkit-details-marker{display:none}
+.pwAutomationGroup .pwDAGroupSettings[open]>summary{border-bottom:1px solid #d7e5eb}
+.pwAutomationGroup .pwDAGroupSettingsControls{display:grid;gap:7px;padding:8px 9px}
+.pwAutomationGroup .pwDAGroupSettingsControls label{font-size:10px;color:#3d5a69;font-weight:700;display:grid;gap:4px}
+.pwAutomationGroup .pwDAGroupSettingsControls select{width:100%;box-sizing:border-box;min-height:33px;border:1px solid #bcd1dd;border-radius:6px;background:#fff;color:#234a5b;padding:5px;font-size:12px}
+.pwAutomationGroup .pwDAGroupSettingsControls button{min-height:34px!important;padding:7px 9px!important;border:1px solid #9ac2d5!important;border-radius:7px!important;background:#e7f4fb!important;color:#205975!important;font-size:11px!important;font-weight:750!important}
+.pwAutomationGroup .pwDAGroupSettingsControls button:disabled{opacity:.6}
+.pwAutomationGroup #pwDABulkGroupStatus:not([hidden]){margin:0;font-size:11px;font-weight:700;color:#22576f;line-height:1.45}
+#pwDADoorDialog .pwDABulkScan[hidden],#pwDADoorDialog .pwDADoorDivider[hidden]{display:none!important}
+#pwDADoorDialog .pwDABulkResults>button{display:block;text-align:left}
+#pwDADoorDialog .pwDABulkResults>button b{font-size:11px;overflow-wrap:anywhere}
+
+/* SmartMatch TEST v36.21 – familiar DA list status: gray pending, green approved, red remarks.
+   Inspection state comes from actual per-point checklist results, not saved percentages. */
+.pwAutomationGroup .pwDAControlLine>.pwAutomationPosition{
+ box-sizing:border-box;border:1px solid transparent!important;border-left-width:4px!important;
+ border-radius:8px!important;min-height:46px!important;padding:7px 9px!important;
+ transition:background-color .16s ease,border-color .16s ease
+}
+.pwAutomationGroup .pwDAControlLine>.pwAutomationPosition>span{min-width:0}
+.pwAutomationGroup .pwDAControlLine>.pwAutomationPosition strong{overflow-wrap:anywhere}
+.pwAutomationGroup .pwDAControlLine>.pwAutomationPosition b{
+ flex-shrink:0;justify-self:end;min-width:38px;text-align:center;
+ border-radius:999px;padding:5px 7px!important;font-size:10px!important;font-weight:850!important
+}
+.pwAutomationGroup .pwDAControlLine>.pwAutomationPosition[data-inspection-status="pending"]{
+ background:#f0f2f4!important;border-color:#c1cbd1!important;color:#425360!important
+}
+.pwAutomationGroup .pwDAControlLine>.pwAutomationPosition[data-inspection-status="pending"] b{
+ color:#526472!important;background:#dce2e6!important
+}
+.pwAutomationGroup .pwDAControlLine>.pwAutomationPosition[data-inspection-status="approved"]{
+ background:#e7f6ec!important;border-color:#2f9054!important;color:#1e5d37!important
+}
+.pwAutomationGroup .pwDAControlLine>.pwAutomationPosition[data-inspection-status="approved"] b{
+ color:#fff!important;background:#29864b!important
+}
+.pwAutomationGroup .pwDAControlLine>.pwAutomationPosition[data-inspection-status="remark"]{
+ background:#fff0f0!important;border-color:#c73838!important;color:#842d32!important
+}
+.pwAutomationGroup .pwDAControlLine>.pwAutomationPosition[data-inspection-status="remark"] b{
+ color:#fff!important;background:#bd343d!important
+}
+.pwAutomationGroup .pwDAControlLine>.pwAutomationPosition:hover,
+.pwAutomationGroup .pwDAControlLine>.pwAutomationPosition:focus-visible{
+ filter:brightness(.975);outline:2px solid #89acbd;outline-offset:1px
+}
+
+/* TEST v36.22 – live status in checklist and drawing, same as DA overview. */
+#pwAutomationProgressRow{border-left:4px solid #aeb9c2}
+#pwAutomationProgressRow[data-inspection-status="pending"]{background:#f0f2f4;border-left-color:#aeb9c2}
+#pwAutomationProgressRow[data-inspection-status="approved"]{background:#e7f6ec;border-left-color:#2f9054}
+#pwAutomationProgressRow[data-inspection-status="remark"]{background:#fff0f0;border-left-color:#c73838}
+#pwAutomationProgressRow[data-inspection-status="approved"] strong,#pwAutomationProgressRow[data-inspection-status="approved"] span{color:#236941}
+#pwAutomationProgressRow[data-inspection-status="remark"] strong,#pwAutomationProgressRow[data-inspection-status="remark"] span{color:#a72a32}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit[data-inspection-status="pending"]{background:#eceff2e8!important;border-color:#9caab4!important;color:#50636e!important}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit[data-inspection-status="approved"]{background:#e1f5e8ed!important;border-color:#29834c!important;color:#21623a!important}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit[data-inspection-status="remark"]{background:#ffe8e9ee!important;border-color:#be3e49!important;color:#982e36!important}
+
+/* TEST v36.23: the actual drawing is the primary progress overview.
+   Distinct outlines and small percentage labels; original PDF text remains visible. */
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit{
+ overflow:visible!important;border-style:solid!important;border-width:2px!important;
+ box-shadow:0 0 0 1px #fff9!important;
+}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit[data-inspection-status="pending"]{
+ border-color:#8796a2!important;background:rgba(132,146,158,.13)!important
+}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit[data-inspection-status="approved"]{
+ border-color:#21874b!important;background:rgba(42,166,89,.13)!important
+}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit[data-inspection-status="remark"]{
+ border-color:#c43040!important;background:rgba(204,59,69,.13)!important
+}
+/* Reuse the former corner-arrow badge as percentage; the real GS arrow is SVG. */
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit:after{
+ content:attr(data-progress) "%"!important;top:-16px!important;right:-5px!important;
+ width:auto!important;min-width:25px!important;height:17px!important;
+ box-sizing:border-box!important;padding:0 4px!important;
+ border-radius:5px!important;font:800 9px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+ display:grid!important;place-items:center!important;
+ color:#fff!important;background:#697b89!important;
+ border:1px solid #fff!important;white-space:nowrap!important;
+ box-shadow:0 1px 3px #0005!important;
+}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit[data-inspection-status="pending"]:after{background:#697b89!important}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit[data-inspection-status="approved"]:after{background:#21874b!important}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit[data-inspection-status="remark"]:after{background:#c43040!important}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit.pwDAFocused{outline:3px solid #df8d1e!important;outline-offset:3px!important}
+
+/* SmartMatch TEST v36.24: split status on drawing. Left = revision;
+   right = SLR, always gray until SLR templates are developed. */
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit{
+ --da-revision-stroke:#8796a2;
+ --da-revision-wash:rgba(132,146,158,.13);
+ --da-slr-stroke:#8796a2;
+ --da-slr-wash:rgba(132,146,158,.13);
+ border-color:transparent!important;border-width:2px!important;
+ background:linear-gradient(90deg,
+   var(--da-revision-wash) 0 50%,var(--da-slr-wash) 50% 100%)!important;
+}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit[data-inspection-status="approved"]{
+ --da-revision-stroke:#21874b;--da-revision-wash:rgba(42,166,89,.13);
+ border-color:transparent!important;
+ background:linear-gradient(90deg,
+   var(--da-revision-wash) 0 50%,var(--da-slr-wash) 50% 100%)!important;
+}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit[data-inspection-status="remark"]{
+ --da-revision-stroke:#c43040;--da-revision-wash:rgba(204,59,69,.13);
+ border-color:transparent!important;
+ background:linear-gradient(90deg,
+   var(--da-revision-wash) 0 50%,var(--da-slr-wash) 50% 100%)!important;
+}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit[data-inspection-status="pending"]{
+ --da-revision-stroke:#8796a2;--da-revision-wash:rgba(132,146,158,.13);
+ border-color:transparent!important;
+ background:linear-gradient(90deg,
+   var(--da-revision-wash) 0 50%,var(--da-slr-wash) 50% 100%)!important;
+}
+/* Separate colored frame strokes for the two halves; transparent
+   middle keeps the original PDF ID and existing GS arrow readable. */
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit::before{
+ content:""!important;position:absolute!important;inset:-2px!important;
+ z-index:1!important;pointer-events:none!important;border-radius:4px!important;
+ background:
+  linear-gradient(90deg,var(--da-revision-stroke) 0 50%,var(--da-slr-stroke) 50% 100%) top/100% 3px no-repeat,
+  linear-gradient(90deg,var(--da-revision-stroke) 0 50%,var(--da-slr-stroke) 50% 100%) bottom/100% 3px no-repeat,
+  linear-gradient(var(--da-revision-stroke),var(--da-revision-stroke)) left/3px 100% no-repeat,
+  linear-gradient(var(--da-slr-stroke),var(--da-slr-stroke)) right/3px 100% no-repeat,
+  linear-gradient(rgba(255,255,255,.65),rgba(255,255,255,.65)) center/1px 100% no-repeat!important;
+}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit::after{
+ left:-3px!important;right:auto!important;z-index:2!important;
+}
+
+/* TEST v36.25 – visible GS link lines over dense drawing backgrounds. */
+#pwDAArrows.pwDAArrows{z-index:9!important;pointer-events:none!important;overflow:visible!important}
+#pwDAArrows.pwDAArrowEdit{z-index:35!important}
+
+/* SmartMatch TEST v36.26 – feedback on real scan stages, not a fake timer. */
+.pwScanOverlay[hidden]{display:none!important}
+.pwScanOverlay{position:absolute;inset:0;z-index:85;display:flex;align-items:center;justify-content:center;
+ padding:16px;background:rgba(21,44,56,.25);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);pointer-events:auto}
+.pwScanCard{box-sizing:border-box;width:min(420px,calc(100vw - 38px));border-radius:18px;border:1px solid #bed9e3;
+ background:rgba(251,254,255,.97);box-shadow:0 18px 50px #08263445;padding:22px 21px 19px;
+ text-align:center;color:#193b4d;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.pwScanEyebrow{display:block;color:#5b7b8c;font-size:10px;font-weight:850;letter-spacing:1.2px}
+.pwScanNumber{display:block;margin:7px 0 4px;font-size:clamp(40px,8vw,57px);line-height:1.12;color:#18627f;font-weight:850;font-variant-numeric:tabular-nums}
+.pwScanPhase{display:block;font-size:13px;font-weight:750;color:#284b60}
+.pwScanProgressTrack{margin:17px 0 13px;width:100%;height:11px;overflow:hidden;border-radius:999px;background:#dbe7ec;box-shadow:inset 0 1px 2px #0002}
+.pwScanProgressBar{width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#257b9c,#2e9c83);transition:width .2s ease}
+.pwScanProgressJoke{font-size:12px;line-height:1.5;color:#365263;font-weight:650;margin:0 0 10px}
+.pwScanCard small{font-size:10px;line-height:1.4;color:#738792}
+body.pwIsScanning .pwBottomNav{pointer-events:none;opacity:.65}
+@media(max-width:560px){.pwScanOverlay{padding:10px}.pwScanCard{padding:18px 15px}}
+@media(prefers-reduced-motion:reduce){.pwScanProgressBar{transition:none}.pwScanOverlay{backdrop-filter:none;-webkit-backdrop-filter:none}}
+
+/* TEST v36.27 – shorter colleague-humour snippets. Prevent layout jumps on iPhone. */
+.pwScanProgressJoke{min-height:2.9em;display:flex;align-items:center;justify-content:center}
+
+/* TEST v36.28: stable joke and understated ETA for mobile/iPad. */
+.pwScanProgressJoke{min-height:3.2em;max-width:34ch;margin-left:auto;margin-right:auto}
+.pwScanCard .pwScanEta{display:block;margin:0 auto 5px;font-size:11px;font-weight:700;color:#216983;font-variant-numeric:tabular-nums}
+
+/* TEST v36.30 – PDF contents verification summary */
+.smartExportProjectProof{margin:6px 0;padding:8px 10px;font-size:12px;line-height:1.5;border:1px solid #a8c9bf;border-radius:8px}
+
+/* SmartMatch TEST v36.46: focused mobile navigation and compact save/protocol actions. */
+.pwHeaderSendProtocols{display:none!important}
+.pwStartMode .pwHeaderActions{display:none!important}
+.smHeaderSubtitle{display:none!important}
+.smDraftStatus{display:block;font-size:10px;font-weight:650;color:#296c52;margin-top:2px;max-width:55vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.smDraftStatus[hidden]{display:none!important}
+.smDraftStatus[data-state="error"]{color:#ab3434}
+.smSaveDialog{width:min(470px,calc(100vw - 20px));max-height:min(90dvh,760px);overflow-y:auto;padding:15px;border:0;border-radius:14px}
+.smSaveDialog .smartExportHeader{margin-bottom:8px}
+.smSaveDialog .smartExportHeader h2{font-size:17px;margin:0}
+.smSaveModes{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0 12px}
+.smSaveModes>*{min-height:38px;display:grid;place-items:center;border-radius:9px;font-size:12px;font-weight:750}
+.smModeActive{background:#e5f0f5;border:1px solid #9abccc;color:#174b63}
+.smSaveModes button{background:#fff;border:1px solid #c6d4db}
+.smSaveSummary{border:1px solid #dce5e9;border-radius:10px;padding:11px;background:#fafcfd}
+.smSaveSummary .smartFileReviewName{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.smSaveSummary .smartExportSizes{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+.smSaveSummary .smartExportSizes>div{padding:5px!important;min-width:0}
+.smSaveSummary .smartExportSizes strong{font-size:16px}
+.smSaveSummary .smartExportProjectProof{margin:8px 0 0;padding:6px;border:0;background:#ecf6f0;color:#246648;font-size:11px;line-height:1.3}
+.smSaveActions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}
+.smSaveActions #smartExportBuild{grid-column:span 2;background:#f0f6f8}
+.smSaveActions button{min-height:40px;padding:8px;font-size:11px}
+.smSaveActions .smartExportPrimary{background:#165f7e;color:#fff;border-color:#165f7e}
+.smSaveChoices{display:grid;gap:3px;margin-top:7px;padding:5px;border:1px solid #d1dde3;border-radius:9px;background:#f8fbfc}
+.smSaveChoices[hidden]{display:none!important}
+.smSaveChoices button{width:100%;min-height:37px;text-align:left;background:#fff;font-size:11px;border:0}
+.smSaveChoices button:disabled{display:none!important}
+.smSaveDialog .smartExportStatus{font-size:11px;margin:8px 0}
+.smSaveReminder{font-size:10px;line-height:1.3;color:#67808c;margin:6px 0 0}
+.smProtocolFilters{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}
+.smProtocolFilters label{font-size:11px;font-weight:700}
+.smProtocolFilters select{min-height:35px;border:1px solid #cbdce5;border-radius:8px;background:#fff;padding:5px;font-size:12px;flex:1}
+.smProtocolFilters button{min-height:33px;font-size:10px;padding:5px 7px}
+.pwSelfcheckExportRow[hidden]{display:none!important}
+.pwSelfcheckExportRow .smProtocolStatus{display:inline-block;font-size:10px;font-weight:750;border-radius:5px;padding:2px 5px;margin-top:3px}
+.smProtocolStatus[data-state="approved"]{background:#e2f3e8;color:#1b6b42}
+.smProtocolStatus[data-state="remark"]{background:#fceaea;color:#a52c2c}
+.smProtocolStatus[data-state="pending"]{background:#fff3db;color:#8b590b}
+.smProtocolMore{position:relative;font-size:10px}
+.smProtocolMore>summary{min-height:33px;display:grid;place-items:center;padding:7px;cursor:pointer}
+.smProtocolMore button{min-height:34px;width:100%}
+.smProtocolMore[open]{width:100%}
+@media(max-width:620px){
+ .pwHeader{padding:6px 8px;gap:5px}
+ .pwTitle strong{font-size:13px}
+ .pwReleaseLine{margin-top:0}
+ .pwHeaderActions>.pwHeaderInspect{font-size:11px!important;padding:6px 12px!important;min-height:34px!important}
+ .pwToolbar button{min-height:35px;font-size:10px}
+ .pwProjectBar{gap:5px;padding:5px 8px}
+ .pwFileInfo strong{font-size:11px;max-width:50vw}
+ .pwStats{gap:5px}
+ .pwStats b{font-size:11px}
+ .smDraftStatus{font-size:9px}
+ .smSaveDialog{width:calc(100vw - 14px);max-height:92dvh;padding:12px}
+ .pwSelfcheckExportFooter{gap:4px}
+ .pwSelfcheckExportFooterButtons{width:100%;display:grid;grid-template-columns:1fr 1fr}
+ .pwSelfcheckExportFooterButtons button{min-height:40px!important;font-size:11px!important}
+ .smProtocolMore{grid-column:span 2}
+}
+
+/* Hidden recipient is retained only for legacy export handlers. */
+.pwProtocolRecipient[hidden]{display:none!important}
+
+/* SmartMatch TEST v36.46: Safari/iPad tool menu is mounted under body, outside the clipped toolbar. */
+body>.pwToolMenu{position:fixed!important;display:block;z-index:2147482000!important;box-sizing:border-box;
+ background:#fff!important;border:1px solid #bdccd5;border-radius:10px!important;padding:6px!important;
+ box-shadow:0 16px 48px #001d3280;overflow-y:auto!important;overscroll-behavior:contain;
+ -webkit-overflow-scrolling:touch;touch-action:pan-y}
+body>.pwToolMenu[hidden]{display:none!important}
+body>.pwToolMenu button{width:100%;display:block;text-align:left;min-height:42px!important;
+ background:#fff;color:#1c3e50;padding:7px 10px!important;border:0;border-radius:7px}
+body>.pwToolMenu button:active{background:#e8f3f8}
+body>.pwToolMenu strong{font-size:12px!important}
+body>.pwToolMenu small{font-size:9px!important;line-height:1.25}
+.smBottomFloor{font-size:10px!important;min-width:0;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+ background:#e4f0f6;color:#16536e!important;border-radius:7px;padding:5px 7px;font-weight:750}
+.smBottomFloor[hidden]{display:none!important}
+.labDiagnosticDialog.smartReportsDialog{width:min(480px,94vw)!important;padding:9px 11px!important}
+.smartReportsDialog .smartReportsList{gap:5px!important}
+.smartReportsDialog #smartPdfPageCounts{padding:6px!important;margin:0 0 7px!important;font-size:10px!important}
+.smartReportsDialog .smartReport{padding:0 7px!important}
+.smartReportsDialog .smartReportsList summary{font-size:11px!important;padding:7px!important}
+.smartReportsDialog .smartReportsList table td,.smartReportsDialog .smartReportsList table th{font-size:9px!important;padding:4px 5px!important}
+.smartReportsDialog .smartReportHelp{display:none!important}
+#smartScanAudit[hidden]{display:none!important}
+.smRevisionSizeBar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 8px}
+.smSizeControls{display:flex;align-items:center;gap:3px;background:#fff;border:1px solid #d6e2e8;
+ border-radius:8px;padding:3px 5px;min-height:34px}
+.smSizeControls>span:first-child{font-size:10px;font-weight:800;color:#305769;margin-right:4px}
+.smSizeControls>span:nth-of-type(2){font-size:9px;min-width:30px;color:#45677a;text-align:center;font-variant-numeric:tabular-nums}
+.smSizeControls button{min-height:28px!important;min-width:30px!important;padding:3px 5px!important;
+ font-size:11px!important;border-radius:6px}
+#pwAutomationDialog{--sm-details-scale:1;--sm-checks-scale:1}
+#pwAutomationDialog .pwRevisionData label{font-size:calc(10px * var(--sm-details-scale))!important}
+#pwAutomationDialog .pwRevisionData .pwRevisionParty h3{font-size:calc(12px * var(--sm-details-scale))!important}
+#pwAutomationDialog .pwRevisionData label input,
+#pwAutomationDialog .pwRevisionData label select{font-size:calc(13px * var(--sm-details-scale))!important;
+ padding:5px 7px!important;min-width:0!important;max-width:100%!important;min-height:34px!important;height:36px;line-height:1.2}
+#pwAutomationDialog .pwRevisionData .pwRevisionBasics{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+#pwAutomationDialog .pwRevisionData .pwRevisionLocation{grid-column:1/-1!important}
+#pwAutomationDialog .pwRevisionData .pwRevisionMachine{grid-column:1/-1!important}
+#pwAutomationDialog .pwRevisionData .pwRevisionBasics>label{min-width:0;max-width:100%}
+#pwAutomationDialog .pwRevisionData input[type="date"]{min-width:0!important;width:100%;max-width:100%;padding:4px 3px!important;overflow:hidden}
+#pwAutomationDialog .pwRevisionData input[type="date"]::-webkit-date-and-time-value{text-align:left;min-width:0}
+#pwAutomationDialog .pwRevisionData input[type="date"]::-webkit-datetime-edit{min-width:0;max-width:100%;padding:0}
+#pwAutomationDialog .pwRevisionData input[type="date"]::-webkit-calendar-picker-indicator{margin:0!important;padding:1px!important}
+#pwAutomationDialog .pwAutomationCheckHead{font-size:calc(11px * var(--sm-checks-scale))!important}
+#pwAutomationDialog .pwAutomationChoices button{font-size:calc(9px * var(--sm-checks-scale))!important;
+ padding:4px 3px!important;min-height:34px!important;line-height:1.2!important}
+#pwAutomationDialog .pwAutomationNotes{font-size:calc(10px * var(--sm-checks-scale))!important}
+#pwAutomationDialog .pwAutomationProgress span,#pwAutomationDialog .pwAutomationProgress button{font-size:calc(10px * var(--sm-checks-scale))!important}
+@media(max-width:620px){
+ .smRevisionSizeBar{position:sticky;top:0;z-index:9;background:#f7f9fa;padding:5px 0;margin-top:-4px}
+ .smSizeControls{flex:1;justify-content:space-between;gap:2px;padding:3px}
+ #pwAutomationDialog .pwRevisionData label input:not([type="file"]),
+ #pwAutomationDialog .pwRevisionData label select{font-size:max(16px,calc(16px * var(--sm-details-scale)))!important}
+ #pwAutomationDialog .pwRevisionData .pwRevisionParties{gap:7px!important}
+ #pwAutomationDialog .pwRevisionData .pwRevisionParty{gap:6px!important}
+ #pwAutomationDialog .pwRevisionData .pwRevisionBasics{gap:6px!important;padding:7px!important}
+ #pwAutomationDialog .pwAutomationCheck{padding:6px!important}
+ #pwAutomationDialog .pwAutomationChoices{gap:3px!important}
+ .pwBottomNav{gap:5px!important;justify-content:center!important}
+ .pwBottomNav #pwPageInfo{min-width:58px!important}
+ .pwBottomNav #pwZoomInfo{min-width:29px!important}
+ .smBottomFloor{max-width:66px;padding:4px 5px;font-size:9px!important}
+}
+@media(max-width:390px){
+ #pwAutomationDialog .pwRevisionData .pwRevisionBasics>label:has(input[type="date"]){grid-column:1/-1!important}
+ .smRevisionSizeBar{gap:4px}
+ .smSizeControls>span:first-child{font-size:9px}
+ .smSizeControls>span:nth-of-type(2){display:none}
+ .smBottomFloor{max-width:55px}
+}
+
+/* v36.46 – anchored mobile zoom, icon-first tools and premium time overview */
+html,body{overscroll-behavior-y:none}
+.pwViewer{overscroll-behavior:contain}
+body>.pwToolMenu{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px!important;
+ width:min(354px,calc(100vw - 16px))!important;max-width:calc(100vw - 16px)!important;
+ padding:9px!important;background:#f7fafc!important;border-color:#bfd0da!important}
+body>.pwToolMenu[hidden]{display:none!important}
+body>.pwToolMenu button{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+ gap:3px!important;min-width:0!important;min-height:75px!important;padding:8px 3px!important;text-align:center!important;
+ border:1px solid #d8e3e9!important;border-radius:10px!important;background:#fff!important;color:#23485b!important}
+body>.pwToolMenu button[aria-pressed="true"]{border-color:#287b9a!important;background:#e3f2f7!important;color:#0b5b7f!important}
+body>.pwToolMenu button:disabled{opacity:.35!important}
+body>.pwToolMenu .pwToolDelete{color:#9c3f40!important}
+body>.pwToolMenu .smToolSvg{width:22px;height:22px;display:block;flex:none}
+body>.pwToolMenu .smToolLabel{font-weight:780;line-height:1.15;font-size:10px!important;letter-spacing:-.05px}
+body>.pwToolMenu .smToolHelp{display:none!important}
+.pwToolMenuDivider{display:none!important}
+.pwTimeDialog{width:min(690px,calc(100vw - 16px));max-height:92dvh;border-radius:16px;overflow:hidden;box-shadow:0 24px 70px #071e3255}
+.pwTimeHead{padding:12px 14px!important;background:#153648!important}
+.pwTimeHead strong{font-size:16px!important;letter-spacing:-.2px}
+.pwTimeHead span{font-size:8px!important;letter-spacing:1.3px}
+.pwTimeBody{padding:12px!important;background:#f3f7f9;max-height:calc(92dvh - 57px);overflow:auto}
+.pwTimeSummary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px!important}
+.pwTimeSummary>div{min-width:0;border:1px solid #dbe6eb;border-radius:11px!important;padding:10px!important;background:#fff;box-shadow:0 1px 3px #2343530b}
+.pwTimeSummary .smTimeCardPrimary{grid-row:span 2;display:flex;flex-direction:column;justify-content:center;border-color:#1e718e;background:linear-gradient(145deg,#164a65,#1a6b89)}
+.pwTimeSummary .smTimeCardPrimary span{color:#bcdde9!important}
+.pwTimeSummary .smTimeCardPrimary strong{color:#fff!important;font-size:24px!important}
+.pwTimeSummary span{font-size:9px!important;color:#607b8c}
+.pwTimeSummary strong{font-size:17px!important;line-height:1.2!important;white-space:nowrap}
+.pwTimeSubhead{margin:9px 0 7px!important;gap:8px!important}
+.pwTimeSubhead .pwTimeIntro{font-size:10px!important;line-height:1.4;color:#627e8e}
+.pwTimeSubhead #pwTimeAddType{background:#1a607e;color:#fff;border-color:#1a607e;border-radius:9px;min-height:35px;font-size:11px;padding:6px 10px}
+.pwTimeSummaryText{border-radius:8px!important;margin:6px 0!important;background:#e4eef3!important;font-size:10px!important}
+.pwTimeRows{display:grid;gap:6px!important}
+.pwTimeRow{border:1px solid #d9e6ec;border-radius:10px!important;background:#fff!important;padding:9px!important;gap:7px!important;
+ grid-template-columns:minmax(0,1fr) 68px 51px 51px 65px;box-shadow:0 1px 4px #21425308}
+.pwTimeRow>div:first-child{min-width:0}
+.pwTimeRow>div:first-child strong{font-size:11px!important;color:#1e4256}
+.pwTimeRow>div:first-child small{display:block;margin-top:3px;font-size:8px!important;color:#78909d;line-height:1.4}
+.pwTimeRow>input{height:35px!important;width:100%!important;min-width:0!important;border-radius:8px!important;
+ border:1px solid #c6d8e2!important;text-align:center;font-size:12px!important;background:#f8fbfd}
+.pwTimeRow .pwTimeStat{font-size:11px!important;font-weight:750;color:#294f63}
+.pwTimeRow .pwTimeStat small{font-size:8px!important;font-weight:550;color:#7d92a0}
+.pwTimeActions button{min-height:32px!important;border-radius:7px;padding:5px!important;font-size:9px!important;border:1px solid #cbdbe4!important;background:#f8fbfd!important}
+@media(max-width:600px){
+ body>.pwToolMenu{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px!important}
+ body>.pwToolMenu button{min-height:70px!important}
+ .pwTimeDialog{width:calc(100vw - 12px);max-height:94dvh}
+ .pwTimeBody{max-height:calc(94dvh - 55px);padding:9px!important}
+ .pwTimeSummary{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px!important}
+ .pwTimeSummary .smTimeCardPrimary{grid-row:span 2}
+ .pwTimeSummary .smTimeCardPrimary strong{font-size:22px!important}
+ .pwTimeSummary>div{padding:8px!important}
+ .pwTimeRow{grid-template-columns:minmax(0,1fr) 62px 37px 37px!important;gap:5px!important;padding:8px!important}
+ .pwTimeRow .pwTimeActions{grid-column:1/-1;flex-direction:row;justify-content:flex-end}
+ .pwTimeRow .pwTimeActions button{width:auto!important;min-height:29px!important;padding:3px 12px!important}
+ .pwTimeRow .pwTimeStat{font-size:10px!important;text-align:center}
+}
+@media(max-width:350px){
+ body>.pwToolMenu{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .pwTimeSummary .smTimeCardPrimary strong{font-size:19px!important}
+ .pwTimeRow{grid-template-columns:minmax(0,1fr) 54px 32px 32px!important}
+ .pwTimeRow .pwTimeStat{font-size:9px!important}
+}
+
+/* SmartMatch TEST v36.46: the GS position remains interactive with its
+   work-status in the list/position; exported PDF stamps are a hidden PDF layer
+   ONLY during in-app drawing rendering, not interactive annotations. */
+
+/* SmartMatch TEST v36.46 – switch projects in the same web-app tab. */
+.pwProjectBar{position:relative}
+.smFinishProject{
+ position:absolute;right:7px;top:50%;transform:translateY(-50%);z-index:2;
+ min-height:29px;padding:4px 9px;border:1px solid #bfd2da;border-radius:8px;
+ color:#214e62;background:#ecf4f7;font-size:10px;font-weight:750;white-space:nowrap;cursor:pointer
+}
+.smFinishProject:hover,.smFinishProject:focus-visible{background:#dceff6;outline:2px solid #b0d4e2}
+.pwProjectBar .pwFileInfo{padding-right:86px}
+.smFinishDialog{
+ width:min(470px,calc(100vw - 22px));max-height:90dvh;overflow:auto;padding:0;
+ border:0;border-radius:16px;color:#1c3c4d;background:#fff;box-shadow:0 22px 65px #071d2957
+}
+.smFinishDialog::backdrop{background:#0b2436a6}
+.smFinishHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 15px;background:#173e55;color:#fff}
+.smFinishHead>div{display:grid;gap:3px}
+.smFinishHead span{font-size:9px;letter-spacing:1px;color:#b7d8e6}
+.smFinishHead strong{font-size:17px}
+.smFinishHead button{border:0;background:transparent;color:#fff;font-size:25px;cursor:pointer}
+.smFinishBody{display:grid;gap:11px;padding:16px}
+.smFinishBody>strong{font-size:13px;overflow-wrap:anywhere}
+.smFinishBody>p{margin:0;font-size:12px;line-height:1.55;color:#526e7b}
+.smFinishBody>.smFinishNote{background:#f1f6f8;border:1px solid #d7e5eb;padding:10px;border-radius:9px}
+#pwFinishStatus{font-weight:700!important;color:#a04436!important}
+.smFinishActions{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end}
+.smFinishActions button{min-height:37px;padding:8px 10px;border:1px solid #c7d7df;border-radius:9px;background:#f4f8fa;color:#23485b;font-size:11px;font-weight:750}
+.smFinishActions button:disabled{opacity:.45;cursor:wait}
+.smFinishActions .smFinishPrimary{background:#136c88;color:white;border-color:#136c88}
+.smHomeStatus{font-size:10px;color:#57798a;line-height:1.4;margin:10px 0 2px!important;text-align:center}
+.smRecentProjects{width:min(100%,345px);text-align:left;padding:8px 0 0}
+.smRecentProjects>strong{display:block;font-size:10px;color:#3c6174;margin-bottom:7px}
+.smRecentList{display:grid;gap:6px;max-height:170px;overflow:auto;overscroll-behavior:contain}
+.smRecentList button{
+ display:grid;gap:3px;min-height:42px;width:100%;text-align:left;
+ border:1px solid #d3e3ea;border-radius:9px;padding:8px 10px;background:#f7fbfd;color:#21475c;cursor:pointer
+}
+.smRecentList button strong{display:block;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.smRecentList button small{display:block;font-size:9px;color:#6a8999}
+.pwEmptyCard:has(.smRecentProjects:not([hidden])){max-height:min(84dvh,520px);overflow:auto}
+@media(max-width:520px){
+ .smFinishProject{right:5px;min-height:27px;padding:4px 6px;font-size:9px}
+ .pwProjectBar .pwFileInfo{padding-right:71px}
+ .smFinishActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .smFinishActions .smFinishPrimary{grid-column:1/-1;grid-row:1;min-height:43px}
+ .smFinishActions button{font-size:10px}
+ .smFinishBody{padding:12px}
+ .smRecentList{max-height:140px}
+}
+
+/* SmartMatch TEST v36.46: clean scan screen, larger readable jokes.
+   Keep real scan stage, genuine progress percentage and bar; no guessed ETA. */
+.pwScanCard{width:min(450px,calc(100vw - 30px));padding:23px 23px 25px}
+.pwScanProgressJoke{
+ font-size:clamp(15px,2.5vw,17px)!important;
+ line-height:1.47!important;
+ font-weight:720!important;
+ max-width:38ch!important;
+ min-height:4.1em!important;
+ margin:7px auto 0!important;
+ text-wrap:pretty;
+ color:#234558!important;
+}
+@media(max-width:560px){
+ .pwScanCard{width:min(440px,calc(100vw - 26px));padding:19px 17px 21px}
+ .pwScanProgressJoke{font-size:15px!important;min-height:4.5em!important;max-width:33ch!important}
+}
+
+/* SmartMatch TEST v36.46 – uncluttered DA revision actions.
+   Legacy save/share nodes remain hidden for event-handler compatibility. */
+#pwAutomationDialog .pwAutomationHeadActions button[hidden],
+#pwAutomationPreviewDialog .pwAutomationHeadActions button[hidden]{display:none!important}
+#pwAutomationDialog .pwAutomationHeadActions{flex:0 1 auto;gap:6px}
+#pwAutomationDialog #pwDARevisionSave{background:#d8f2e3;color:#165437;border-color:#d8f2e3;font-weight:800}
+#pwAutomationDialog #pwAutomationPreview{background:#fff;color:#173746;border-color:#fff;font-weight:800}
+#pwAutomationDialog .pwAutomationCheckHead{display:flex;align-items:baseline;flex-wrap:nowrap;gap:7px;min-width:0}
+#pwAutomationDialog .pwAutomationCheckHead strong{flex:0 0 27px;min-width:27px;white-space:nowrap}
+#pwAutomationDialog .pwAutomationCheckHead span{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+@media(max-width:620px){
+ #pwAutomationDialog .pwAutomationHeadActions{width:auto;flex:0 0 auto;justify-content:flex-end}
+ #pwAutomationDialog .pwAutomationHeadActions button{min-height:32px;padding:6px 8px;font-size:10px}
+ #pwAutomationDialog .pwAutomationCheckHead{gap:5px}
+ #pwAutomationDialog .pwAutomationCheckHead strong{flex-basis:26px;min-width:26px}
+}
+
+/* SmartMatch TEST v36.46: inline drawing text editor and colored annotations. */
+.pwInlineNoteEditor[hidden]{display:none!important}
+.pwInlineNoteEditor{
+ position:absolute;z-index:60;width:min(340px,calc(100vw - 20px));max-height:min(390px,85dvh);
+ overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;
+ padding:11px;display:grid;gap:9px;border:1.5px solid #a8c7d6;border-radius:12px;
+ background:#fff;box-shadow:0 12px 40px #102d3d55;
+ color:#234d60;text-align:left;font:600 12px/1.3 system-ui,-apple-system,sans-serif
+}
+.pwInlineNoteEditor label{display:grid;gap:3px;min-width:0;font-size:10px;color:#486a7b;font-weight:800}
+.pwInlineNoteEditor textarea{
+ display:block;width:100%;min-height:57px;max-height:102px;resize:vertical;
+ border:1px solid #b7d0dd;border-radius:8px;padding:8px;background:#f8fbfd;color:#1a3a4b;
+ font:500 16px/1.3 system-ui,-apple-system,sans-serif;outline-offset:2px
+}
+.pwInlineNoteEditor select{width:100%;height:33px;padding:4px;border:1px solid #bdd1dc;border-radius:7px;background:#fff;color:#1c4052;font-size:11px}
+.pwInlineNoteEditor button{cursor:pointer;min-height:30px;border-radius:7px;font-weight:800}
+.smNoteColors{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+.smNoteColors>span{font-size:10px;color:#486a7b;font-weight:800;margin-right:3px}
+.smNoteColors .smNoteColor{height:26px;width:26px;min-height:26px;padding:0;border-radius:50%;background:var(--swatch);border:2px solid #fff;box-shadow:0 0 0 1px #a4bfc9}
+.smNoteColors .smNoteColor[aria-pressed="true"]{box-shadow:0 0 0 3px #267999;border-color:#fff}
+.smNoteColor[data-note-color="#173746"]{--swatch:#173746}
+.smNoteColor[data-note-color="#d32f2f"]{--swatch:#d32f2f}
+.smNoteColor[data-note-color="#1565c0"]{--swatch:#1565c0}
+.smNoteColor[data-note-color="#168147"]{--swatch:#168147}
+.smNoteColor[data-note-color="#8e44ad"]{--swatch:#8e44ad}
+.smNoteControls{display:flex;align-items:flex-end;gap:7px;flex-wrap:wrap}
+.smNoteControls>label{flex:1 1 75px}
+.smNoteControls .smNoteBold{flex:0 0 73px;min-height:33px;padding:5px;background:#eff5f8;border:1px solid #bfd2db;color:#244f60}
+.smNoteControls .smNoteBold[aria-pressed="true"]{background:#1b6b8e;border-color:#1b6b8e;color:white}
+.smNoteEditorActions{display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #e2ebef;padding-top:8px}
+.smNoteEditorActions button{padding:6px 12px;background:#f3f7f9;border:1px solid #c7d7df;color:#204456}
+.smNoteEditorActions #pwInlineNoteSave{background:#167599;border-color:#167599;color:#fff}
+.pwInlineNoteEditor [hidden]{display:none!important}
+.pwDrawingNotes .pwNoteText{font-family:system-ui,-apple-system,sans-serif}
+.pwDrawingNotes .pwNoteTextAreaHit{pointer-events:all;cursor:move}
+.pwDrawingNotes .pwNoteBox{pointer-events:none}
+.pwDrawingNotes .pwNoteArrow,.pwDrawingNotes .pwNoteCalloutLine{stroke-linecap:round}
+@media(max-width:620px){
+ .pwInlineNoteEditor{padding:10px;gap:7px;max-height:min(380px,70dvh)}
+ .smNoteControls>label{flex-basis:67px}
+ .smNoteEditorActions button{min-height:35px}
+}
+
+/* SmartMatch TEST v36.46: branded, accessible update choice instead of browser confirm. */
+.smRefreshDialog{
+ width:min(460px,calc(100vw - 24px));max-height:min(90dvh,720px);
+ padding:0;overflow:auto;border:1px solid #cbdde6;border-radius:16px;
+ background:#fff;color:#1b3f52;box-shadow:0 24px 76px #071d2973
+}
+.smRefreshDialog::backdrop{background:#0c283aad;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.smRefreshHeader{display:flex;align-items:center;gap:12px;padding:17px 16px;background:#173e55;color:#fff}
+.smRefreshSymbol{flex:0 0 43px;width:43px;height:43px;display:grid;place-items:center;font-size:29px;
+ border-radius:11px;border:1px solid #80bad0;background:#2d657d;color:#fff}
+.smRefreshHeader>div{flex:1;min-width:0}
+.smRefreshEyebrow{font-size:9px;font-weight:850;letter-spacing:1.1px;color:#bedbe7}
+.smRefreshHeader h2{font-size:18px;line-height:1.25;margin:4px 0 0;font-weight:800}
+.smRefreshClose{align-self:flex-start;border:0;background:transparent;color:#fff;font-size:26px;line-height:1;
+ min-width:30px;min-height:30px;cursor:pointer}
+.smRefreshBody{display:grid;gap:12px;padding:17px}
+.smRefreshBody>p{margin:0;font-size:13px;line-height:1.55;color:#4a6574}
+.smRefreshFile{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;background:#f0f6fa;border:1px solid #d5e6ed}
+.smRefreshFile>span{font-size:25px;color:#267391}
+.smRefreshFile>div{display:grid;gap:3px;min-width:0}
+.smRefreshFile small{font-size:9px;letter-spacing:.6px;font-weight:850;color:#6a8798}
+.smRefreshFile strong{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.smRefreshInfo{display:grid;gap:7px;padding:12px;border:1px solid #bbd7d2;background:#eff8f6;border-radius:10px}
+.smRefreshInfo>strong{font-size:12px;font-weight:850;color:#225e53}
+.smRefreshInfo p{margin:0;font-size:11.5px;line-height:1.58;color:#345c60}
+.smRefreshInfo b{font-weight:850}
+.smRefreshStatus{padding:10px!important;border-radius:8px;font-size:12px!important;
+ background:#fff0ee;border:1px solid #eab4ac;color:#923b31!important;font-weight:700}
+.smRefreshStatus[data-kind="working"]{color:#16526c!important;border-color:#bad9e7;background:#eef8fc}
+.smRefreshActions{display:grid;gap:8px}
+.smRefreshActions button{min-height:41px;padding:9px 12px;border-radius:9px;border:1px solid #c8d9e2;
+ font-size:12px;font-weight:800;background:#f2f7f9;color:#21536a;cursor:pointer}
+.smRefreshActions button:disabled,.smRefreshClose:disabled{opacity:.55;cursor:wait}
+.smRefreshActions .smRefreshPrimary{min-height:47px;color:#fff;background:#136f90;border-color:#136f90;font-size:13px}
+.smRefreshActions #pwRefreshCancel{background:#fff;color:#557484}
+@media(max-width:520px){
+ .smRefreshDialog{width:calc(100vw - 20px);max-height:calc(100dvh - 24px)}
+ .smRefreshHeader{padding:13px}
+ .smRefreshHeader h2{font-size:17px}
+ .smRefreshBody{padding:13px;gap:10px}
+ .smRefreshActions button{min-height:43px}
+}
+
+/* SmartMatch TEST v36.46 – compact manual DA label placement and drag crosshair. */
+#pwDALinkDialog{width:min(390px,calc(100vw - 20px));border-radius:14px}
+#pwDALinkDialog .pwDAHead{padding:11px 14px}
+#pwDALinkDialog .pwDAHead strong{font-size:15px}
+#pwDALinkDialog .pwDACompactBody{padding:15px 14px 16px;display:grid;gap:12px}
+#pwDALinkDialog .pwDACompactBody label{font-size:11px;font-weight:800;color:#37596b;gap:6px}
+#pwDALinkDialog #pwDAExample{font-size:16px;letter-spacing:.2px;min-height:44px;border-radius:9px}
+#pwDALinkDialog .pwDAPlacePrimary{width:100%;min-height:44px;padding:10px 12px;
+ border:1px solid #146987;border-radius:9px;background:#176f93;color:white;
+ font-size:13px;font-weight:850;cursor:pointer}
+#pwDALinkDialog .pwDAFeedback{min-height:0;font-size:11px;line-height:1.4;color:#a23e30}
+#pwDALinkDialog .pwDAFeedback[hidden],#pwDALinkDialog #pwDAResults[hidden]{display:none!important}
+.pwStage.pwDAManualPlacing{cursor:crosshair!important;touch-action:none!important}
+.pwStage.pwDAManualPlacing #pwMarkers,
+.pwStage.pwDAManualPlacing #pwAutomationMarkers{pointer-events:none!important}
+.pwStage.pwDAManualPlacing #pwMarkers button,
+.pwStage.pwDAManualPlacing #pwAutomationMarkers button{pointer-events:none!important}
+.pwStage .pwDAManualCross{position:absolute;left:0;top:0;z-index:55;pointer-events:none;
+ display:grid;place-items:center;width:30px;height:30px;transform:translate(-50%,-50%);
+ font:900 31px/1 sans-serif;color:#045b82;text-shadow:0 0 2px white,0 0 6px white}
+.pwStage.pwDAManualPlacing .pmDragPreview{z-index:54!important;
+ border:2px dashed #0d83b4!important;background:#caeafa5e!important;
+ font-size:clamp(9px,1.8vw,12px);color:#135d7b!important;overflow:hidden}
+.pwDAPlacementGuide{position:fixed;left:50%;transform:translateX(-50%);
+ bottom:max(16px,env(safe-area-inset-bottom));z-index:120;
+ display:flex;align-items:center;justify-content:space-between;gap:12px;
+ width:min(540px,calc(100vw - 24px));min-height:44px;
+ padding:8px 10px 8px 14px;border:1px solid #9bc6d9;border-radius:13px;
+ background:#163e55;color:white;box-shadow:0 7px 28px #061a2966;
+ font-size:11px;font-weight:700}
+.pwDAPlacementGuide span{min-width:0;line-height:1.3}
+.pwDAPlacementGuide button{flex:0 0 auto;min-height:32px;padding:6px 11px;border:1px solid #b5d9e8;border-radius:8px;
+ background:#e7f4fa;color:#18516b;font-size:11px;font-weight:850}
+@media(max-width:550px){#pwDALinkDialog{width:min(370px,calc(100vw - 24px))}
+ .pwDAPlacementGuide{font-size:10px;gap:7px;padding:7px}
+ .pwStage .pwDAManualCross{width:36px;height:36px;font-size:35px}}
+
+/* SmartMatch TEST v36.46: touch-precise DA marker placement. */
+body.pwDAManualBody{overscroll-behavior:none}
+.pwViewer.pwDAManualViewer{touch-action:none!important;overscroll-behavior:none!important}
+.pwViewer.pwDAManualViewer .pwStage,
+.pwViewer.pwDAManualViewer .pwStage canvas,
+.pwViewer.pwDAManualViewer .pwStage *{touch-action:none!important;-webkit-user-select:none;user-select:none}
+.pwStage .pwDAManualReview{
+ position:absolute;z-index:61;box-sizing:border-box;border:2px solid #0677a5;
+ background:#2db7e61b;border-radius:3px;pointer-events:none;
+ box-shadow:0 0 0 2px #fff9,0 1px 10px #072e4a35;
+}
+.pwDAManualReview .pwDAManualGrip{
+ position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;place-items:center;
+ width:48px;height:48px;max-width:100%;max-height:100%;border-radius:8px;box-sizing:border-box;
+ color:#fff;background:#116e98e6;cursor:move;touch-action:none!important;
+ font-size:18px;font-weight:900;pointer-events:auto;
+}
+.pwDAManualReview .pwDAManualHandle{
+ position:absolute;width:44px;height:44px;border-radius:50%;border:0;
+ display:grid;place-items:center;pointer-events:auto;touch-action:none!important;
+ cursor:nwse-resize;transform:translate(-50%,-50%);
+}
+.pwDAManualHandle::after{
+ content:'';display:block;width:13px;height:13px;border-radius:4px;
+ border:3px solid #0f668e;background:#fff;box-shadow:0 1px 4px #0d38526b;
+}
+.pwDAManualHandle-nw{left:0;top:0}
+.pwDAManualHandle-ne{left:100%;top:0}
+.pwDAManualHandle-sw{left:0;top:100%}
+.pwDAManualHandle-se{left:100%;top:100%}
+.pwDAPlacementGuide:has(.pwDAManualControls button:nth-child(3)){flex-wrap:wrap;justify-content:center;bottom:max(8px,env(safe-area-inset-bottom));padding:9px}
+.pwDAPlacementGuide .pwDAManualHint{flex:1 1 160px;text-align:center}
+.pwDAPlacementGuide .pwDAManualControls{display:flex;flex:1 1 auto;justify-content:center;align-items:center;gap:5px;flex-wrap:wrap}
+.pwDAPlacementGuide .pwDAManualControls button{min-height:38px;min-width:38px;padding:6px 9px;white-space:nowrap}
+.pwDAPlacementGuide .pwDAManualControls button[title="Spara positionen"]{background:#d8f4e3;border-color:#c4e8d3;color:#165938}
+@media(max-width:640px){
+ .pwDAPlacementGuide{width:calc(100vw - 16px);gap:6px}
+ .pwDAPlacementGuide .pwDAManualHint{flex-basis:100%;font-size:11px}
+ .pwDAPlacementGuide .pwDAManualControls button{min-height:43px;min-width:39px;font-size:12px}
+ .pwStage .pwDAManualCross{font-size:40px;width:44px;height:44px}
+}
+
+
+/* SmartMatch TEST v36.47 – one compact save sheet, two document types. */
+.smSaveDialog{
+ width:min(392px,calc(100vw - 16px));max-height:calc(100dvh - 26px);
+ padding:12px;border-radius:12px;
+}
+.smSaveDialog .smartExportHeader{margin-bottom:5px}
+.smSaveDialog .smartExportHeader h2{font-size:15px}
+.smSaveDialog #smartExportClose{min-height:32px;height:32px;flex-basis:32px}
+.smSaveDialog .smSaveModes{gap:5px;margin:5px 0 8px}
+.smSaveDialog .smSaveModes>*{min-height:36px;border-radius:8px;font-size:11px}
+.smSaveDialog .smSaveSummary{margin:0;padding:7px 9px;border:1px solid #d7e4ea;border-radius:8px;background:#f8fbfc}
+.smSaveDialog .smSaveSummary .smartFileReviewName{font-size:12px;display:block;max-width:100%;overflow-wrap:anywhere}
+.smSaveDialog .smartExportSizes,.smSaveDialog #smartExportProjectProof,.smSaveDialog .smSaveLegacy{display:none!important}
+.smSaveDialog .smSaveActions.smSimpleSaveActions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:9px 0 0}
+.smSaveDialog .smSaveActions.smSimpleSaveActions button{min-height:44px;font-size:11px;line-height:1.2;padding:8px 6px;border-radius:8px}
+.smSaveDialog #smartExportDownload{background:#175c78;color:#fff;border-color:#175c78}
+.smSaveDialog #smartExportShare{background:#fff;color:#17516c;border:1px solid #a8c4d1}
+.smSaveDialog .smSaveActions button:disabled{opacity:.48;cursor:wait}
+.smSaveDialog .smartExportStatus{margin:9px 0 0;padding:8px;font-size:10.5px;line-height:1.35}
+.smSaveDialog .smSaveReminder{margin:7px 0 0;font-size:9.5px;line-height:1.35;color:#667c87}
+.pwSelfcheckExportDialog{width:min(500px,calc(100vw - 16px));max-height:calc(100dvh - 26px);border-radius:12px}
+.pwSelfcheckExportDialog .pwAutomationHead{padding:8px 11px}
+.pwSelfcheckExportDialog .pwAutomationHead strong{font-size:13px}
+.pwSelfcheckExportDialog .pwSelfcheckExportBody{padding:8px 10px}
+.pwSelfcheckExportDialog .smProtocolFilters{gap:5px;margin-bottom:6px}
+.pwSelfcheckExportDialog .smProtocolFilters label{font-size:10px}
+.pwSelfcheckExportDialog .smProtocolFilters select{min-height:34px;font-size:11px}
+.pwSelfcheckExportDialog .smProtocolFilters button{min-height:34px;font-size:9.5px}
+.pwSelfcheckExportDialog .pwSelfcheckExportFooter{margin:8px -10px -8px;padding:8px 10px;gap:7px}
+.pwSelfcheckExportDialog .pwSelfcheckExportFooterButtons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;flex:1;min-width:0}
+.pwSelfcheckExportDialog .pwSelfcheckExportFooterButtons button{min-height:44px!important;font-size:11px!important;padding:7px 5px!important;border-radius:8px}
+.pwSelfcheckExportDialog #pwSelfcheckSaveLocal{background:#175c78;border-color:#175c78;color:white}
+.pwSelfcheckExportDialog #pwSelfcheckExportCreate{background:#fff;color:#17516c;border:1px solid #a8c4d1}
+.pwSelfcheckExportDialog .smSimpleLegacy[hidden]{display:none!important}
+@media(max-width:520px){
+ .smSaveDialog{width:calc(100vw - 14px);padding:11px;max-height:calc(100dvh - 18px)}
+ .pwSelfcheckExportDialog{width:calc(100vw - 12px);max-height:calc(100dvh - 16px)}
+ .pwSelfcheckExportDialog .pwSelfcheckExportFooter{align-items:center;flex-wrap:wrap}
+ .pwSelfcheckExportDialog .pwSelfcheckExportFooterButtons{width:100%;flex-basis:100%}
+ .pwSelfcheckExportDialog .pwSelfcheckExportFooter span{font-size:10px}
+}
+
+
+/* SmartMatch TEST v36.49 – simultaneous original and checks on phones.
+   These rules intentionally override the historic "show card OR checks" view,
+   without changing the normal Projektflöde, revisionsdialog or PDF exports. */
+@media(max-width:699px){
+ .pwProtocol.pwCardCompareMode[open]{
+  display:flex!important;
+  flex-direction:column!important;
+  width:100vw!important;
+  max-width:100vw!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  padding:0!important;
+  border-radius:0!important;
+  overflow:hidden!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwProtocolHeader{
+  flex:0 0 auto;
+  min-height:42px;
+  padding:5px 6px;
+  gap:4px!important;
+  grid-template-columns:auto minmax(0,1fr) auto auto!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwProtocolHeader #pwBack{font-size:9px!important;min-height:31px;padding:4px 5px!important;white-space:nowrap}
+ .pwProtocol.pwCardCompareMode .pwProtocolIdentity{min-width:0!important}
+ .pwProtocol.pwCardCompareMode .pwProtocolIdentity>span,
+ .pwProtocol.pwCardCompareMode .pwProtocolIdentity>small{display:none!important}
+ .pwProtocol.pwCardCompareMode .pwProtocolIdentity>strong{font-size:12px!important;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+ .pwProtocol.pwCardCompareMode .pwProtocolProgress{min-width:35px}
+ .pwProtocol.pwCardCompareMode .pwProtocolProgress>strong{font-size:11px!important;min-width:30px}
+ .pwProtocol.pwCardCompareMode #pwProtocolClose{min-width:31px;min-height:31px;padding:0 5px!important}
+ .pwProtocol.pwCardCompareMode .pwProtocolBody,
+ .pwProtocol.pwCardCompareMode.pwMobileCard .pwProtocolBody,
+ .pwProtocol.pwCardCompareMode.pwMobileChecks .pwProtocolBody{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  grid-template-rows:minmax(0,1fr)!important;
+  width:100%!important;
+  height:auto!important;
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow:hidden!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwProtocolOriginal,
+ .pwProtocol.pwCardCompareMode.pwMobileCard .pwProtocolOriginal,
+ .pwProtocol.pwCardCompareMode.pwMobileChecks .pwProtocolOriginal{
+  display:flex!important;
+  flex-direction:column!important;
+  width:auto!important;
+  min-width:0!important;min-height:0!important;height:100%!important;
+  border-right:1px solid #becbd2!important;
+  border-bottom:0!important;
+  overflow:hidden;
+ }
+ .pwProtocol.pwCardCompareMode .pwChecklistPane,
+ .pwProtocol.pwCardCompareMode.pwMobileCard .pwChecklistPane,
+ .pwProtocol.pwCardCompareMode.pwMobileChecks .pwChecklistPane{
+  display:block!important;
+  width:auto!important;
+  min-width:0!important;min-height:0!important;
+  height:100%!important;
+  overflow-y:auto!important;overflow-x:hidden!important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  padding:5px 5px 12px!important;
+  background:#fff;
+ }
+ .pwProtocol.pwCardCompareMode #pwProtocolShowCard,
+ .pwProtocol.pwCardCompareMode #pwProtocolShowGS,
+ .pwProtocol.pwCardCompareMode #pwProtocolBackToCard{display:none!important}
+ .pwProtocol.pwCardCompareMode .pwProtocolTools{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  gap:3px!important;
+  padding:5px 4px!important;
+  flex:0 0 auto;
+ }
+ .pwProtocol.pwCardCompareMode .pwProtocolToolTitle{display:block;min-width:0}
+ .pwProtocol.pwCardCompareMode .pwProtocolTools strong{display:block;font-size:10px!important;line-height:1.25}
+ .pwProtocol.pwCardCompareMode .pwProtocolZoomTools{
+  display:flex!important;
+  justify-content:space-between!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  gap:2px!important;
+  width:100%;max-width:100%;overflow:hidden!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwProtocolZoomTools button{
+  flex:0 0 auto;
+  min-width:27px!important;min-height:34px!important;
+  padding:3px 3px!important;
+  font-size:11px!important;
+ }
+ .pwProtocol.pwCardCompareMode #pwProtocolFit{min-width:41px!important;font-size:10px!important}
+ .pwProtocol.pwCardCompareMode #pwProtocolMax{display:none!important}
+ .pwProtocol.pwCardCompareMode #pwProtocolZoomInfo{flex:0 1 auto;min-width:23px!important;font-size:9px!important;text-align:center}
+ .pwProtocol.pwCardCompareMode .pwProtocolCanvasWrap{
+  flex:1 1 auto;
+  min-width:0!important;min-height:0!important;
+  width:100%!important;
+  overflow:auto!important;
+  padding:4px!important;
+  touch-action:none;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+ }
+ .pwProtocol.pwCardCompareMode .pwChecklistHead{
+  display:flex!important;flex-direction:column!important;
+  align-items:stretch!important;gap:3px!important;
+  padding:0 0 5px!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwChecklistHead>div>span{display:none!important}
+ .pwProtocol.pwCardCompareMode .pwChecklistHead strong{font-size:10px!important;line-height:1.2}
+ .pwProtocol.pwCardCompareMode .pwChecklistHeadActions{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  align-items:stretch!important;justify-content:stretch!important;
+  gap:3px!important;
+  width:100%;
+ }
+ .pwProtocol.pwCardCompareMode .pwChecklistHeadActions #pwChecklistMeta{
+  display:flex;align-items:center;
+  min-width:0;line-height:1.2;
+  font-size:9px!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwChecklistHeadActions button{
+  min-width:0!important;min-height:34px!important;
+  padding:4px 3px!important;
+  font-size:9px!important;
+  line-height:1.2!important;
+  white-space:normal!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwChecklist{min-width:0;gap:4px!important}
+ .pwProtocol.pwCardCompareMode .pwCheckRow{
+  display:grid!important;
+  grid-template-columns:24px minmax(0,1fr)!important;
+  grid-template-rows:auto auto!important;
+  align-items:start!important;
+  gap:3px 5px!important;
+  padding:7px 5px!important;
+  cursor:pointer;
+ }
+ .pwProtocol.pwCardCompareMode .pwCheckRow>input[type=checkbox]{
+  grid-column:1;grid-row:1;
+  margin:0!important;
+  width:22px!important;height:22px!important;
+  min-width:22px!important;min-height:22px!important;
+  cursor:pointer;
+ }
+ .pwProtocol.pwCardCompareMode .pwCheckContent{grid-column:2;grid-row:1;min-width:0;overflow-wrap:anywhere}
+ .pwProtocol.pwCardCompareMode .pwCheckContent strong{font-size:10px!important;line-height:1.3!important;overflow-wrap:anywhere}
+ .pwProtocol.pwCardCompareMode .pwCheckContent small,.pwProtocol.pwCardCompareMode .pwCheckComment{font-size:9px!important;line-height:1.3!important}
+ .pwProtocol.pwCardCompareMode .pwCheckTime{display:none!important}
+ .pwProtocol.pwCardCompareMode .pwCheckActions{
+  grid-column:2;grid-row:2;
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:wrap!important;
+  gap:3px!important;
+  min-width:0;
+ }
+ .pwProtocol.pwCardCompareMode .pwCheckActions button{
+  min-height:31px!important;
+  font-size:9px!important;
+  padding:4px 5px!important;
+  flex:1 1 auto;
+ }
+ .pwProtocol.pwCardCompareMode .pwChecklistHeading{font-size:9px!important;padding:5px!important}
+ .pwProtocol.pwCardCompareMode .pwProtocolMissing{inset:4px!important;padding:5px}
+ .pwProtocol.pwCardCompareMode .pwProtocolMissing strong{font-size:10px!important}
+ .pwProtocol.pwCardCompareMode .pwProtocolMissing p{font-size:9px!important}
+}
+@media(min-width:700px) and (max-width:1100px){
+ .pwProtocol.pwCardCompareMode .pwProtocolBody,
+ .pwProtocol.pwCardCompareMode.pwMobileCard .pwProtocolBody,
+ .pwProtocol.pwCardCompareMode.pwMobileChecks .pwProtocolBody{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  grid-template-rows:minmax(0,1fr)!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwProtocolOriginal,
+ .pwProtocol.pwCardCompareMode.pwMobileCard .pwProtocolOriginal,
+ .pwProtocol.pwCardCompareMode.pwMobileChecks .pwProtocolOriginal{display:flex!important;min-width:0!important}
+ .pwProtocol.pwCardCompareMode .pwChecklistPane,
+ .pwProtocol.pwCardCompareMode.pwMobileCard .pwChecklistPane,
+ .pwProtocol.pwCardCompareMode.pwMobileChecks .pwChecklistPane{display:block!important;min-width:0!important}
+}
+/* v36.49: a closed HTML <dialog> must NEVER be visible. Previous v36.48
+   mobile display:flex!important bypassed the browser's closed-dialog style. */
+dialog#pwProtocol:not([open]){display:none!important}
+@media(max-width:699px){
+ dialog#pwProtocol.pwCardCompareMode[open]{display:flex!important}
+ .pwProtocol.pwCardCompareMode .pwProtocolHeader{
+  padding:3px 5px!important;gap:3px!important;min-height:36px!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwProtocolHeader #pwBack{
+  min-height:27px!important;padding:2px 4px!important;font-size:8.5px!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwProtocolIdentity>strong{
+  font-size:10px!important;line-height:1.2!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwProtocolProgress>strong{font-size:10px!important}
+ .pwProtocol.pwCardCompareMode #pwProtocolClose{
+  min-width:27px!important;min-height:27px!important;font-size:18px!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwProtocolTools{padding:3px!important;gap:2px!important}
+ .pwProtocol.pwCardCompareMode .pwProtocolTools strong{font-size:9px!important}
+ .pwProtocol.pwCardCompareMode .pwProtocolZoomTools{gap:2px!important}
+ .pwProtocol.pwCardCompareMode .pwProtocolZoomTools button{
+  min-height:28px!important;min-width:25px!important;padding:2px!important;
+  font-size:10px!important;border-radius:5px!important;
+ }
+ .pwProtocol.pwCardCompareMode #pwProtocolFit{min-width:37px!important;font-size:9px!important}
+ .pwProtocol.pwCardCompareMode #pwProtocolZoomInfo{font-size:8px!important;min-width:20px!important}
+ .pwProtocol.pwCardCompareMode .pwChecklistPane{padding:4px 4px 8px!important}
+ .pwProtocol.pwCardCompareMode .pwChecklistHead{gap:2px!important;padding-bottom:3px!important}
+ .pwProtocol.pwCardCompareMode .pwChecklistHead strong{font-size:9.5px!important}
+ .pwProtocol.pwCardCompareMode .pwChecklistHeadActions{gap:2px!important}
+ .pwProtocol.pwCardCompareMode .pwChecklistHeadActions button{
+  min-height:29px!important;padding:3px 2px!important;
+  font-size:8px!important;border-radius:5px!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwChecklistHeadActions #pwChecklistMeta{font-size:8px!important}
+ .pwProtocol.pwCardCompareMode .pwChecklist{gap:3px!important}
+ .pwProtocol.pwCardCompareMode .pwCheckRow{
+  padding:4px!important;gap:2px 4px!important;border-radius:5px!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwCheckRow>input[type=checkbox]{
+  width:22px!important;height:22px!important;min-width:22px!important;min-height:22px!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwCheckContent strong{
+  font-size:9.5px!important;line-height:1.24!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwCheckContent small,
+ .pwProtocol.pwCardCompareMode .pwCheckComment{font-size:8px!important;line-height:1.2!important}
+ .pwProtocol.pwCardCompareMode .pwCheckActions{gap:2px!important}
+ .pwProtocol.pwCardCompareMode .pwCheckActions button{
+  min-height:27px!important;padding:2px 3px!important;font-size:8px!important;
+ }
+ .pwProtocol.pwCardCompareMode .pwChecklistHeading{font-size:8.5px!important;padding:3px 4px!important}
+}
+@media(min-width:700px) and (max-width:1100px){
+ .pwProtocol.pwCardCompareMode .pwProtocolTools button{font-size:9px!important}
+ .pwProtocol.pwCardCompareMode .pwCheckRow{padding:3px 4px!important}
+ .pwProtocol.pwCardCompareMode .pwCheckContent strong{font-size:9.5px!important}
+ .pwProtocol.pwCardCompareMode .pwChecklistHeadActions button{font-size:8.5px!important}
+}
+
+/* SmartMatch TEST v36.51 – denser phone chrome, readable PDF work area.
+   Keep critical checkboxes and finger targets operable; shrink visual icons
+   and type rather than rendering targets too small to tap. */
+@media(max-width:699px){
+ .pwHeader{
+  gap:3px 5px!important;
+  padding:max(5px,env(safe-area-inset-top)) max(5px,env(safe-area-inset-right)) 4px max(5px,env(safe-area-inset-left))!important;
+ }
+ .pwHeader .pwTitle strong{font-size:11px!important;line-height:1.12!important}
+ .pwHeader .pwTitleVersion{font-size:9px!important;margin-top:1px!important}
+ .pwHeader .pwHome{font-size:9px!important}
+ .pwHeader .pwOpen{font-size:9px!important;min-height:29px!important;padding:4px 6px!important}
+ .pwHeader .pwHeaderActions > .pwHeaderInspect{
+  min-height:29px!important;font-size:9px!important;
+  padding:4px 6px!important;border-radius:6px!important
+ }
+ .pwToolbar{
+  min-height:29px!important;
+  padding:2px 4px!important;
+  gap:2px!important;
+ }
+ .pwToolbarWork,.pwToolbarNavigation{gap:2px!important}
+ .pwToolbar button{
+  min-height:27px!important;
+  padding:3px 5px!important;
+  border-radius:5px!important;
+  font-size:9px!important;
+  line-height:1.1!important;
+ }
+ .pwToolbar .pwToolIcon{
+  min-width:27px!important;width:27px!important;height:27px!important;
+  font-size:15px!important;padding:0!important;
+ }
+ .pwToolbarWork #labDiagnoseOpen{
+  min-height:27px!important;padding:3px 5px!important;font-size:9px!important;
+ }
+ .pwToolMenu{width:min(225px,calc(100vw - 12px))!important;padding:3px!important}
+ .pwToolMenu button{min-height:30px!important;padding:5px 7px!important}
+ .pwToolMenu strong{font-size:10px!important}
+ .pwToolMenu small{font-size:8px!important;line-height:1.18!important}
+ .pwProjectBar{min-height:26px!important;padding:2px 5px!important}
+ .pwFileHeadline #pwFileName{font-size:9px!important;max-width:42vw!important}
+ .pwProjectBar #pwPlanTag{font-size:8px!important;padding:2px 4px!important}
+ .pwProjectBar .pwFileInfo{padding-right:96px!important}
+ .smFinishProject{
+  right:5px!important;min-height:28px!important;
+  padding:3px 6px!important;font-size:9px!important;
+  border-radius:6px!important;max-width:93px;
+  overflow:hidden;text-overflow:ellipsis;
+ }
+ .pwBottomNav{
+  min-height:31px!important;
+  gap:7px!important;
+  padding:2px 5px max(3px,env(safe-area-inset-bottom))!important;
+ }
+ .pwBottomPages,.pwBottomZoom{gap:2px!important}
+ .pwBottomNav button{
+  min-width:29px!important;min-height:29px!important;
+  padding:3px 5px!important;font-size:14px!important;
+  border-radius:6px!important;
+ }
+ .pwBottomNav span{font-size:9px!important}
+ .pwBottomNav #pwPageInfo{min-width:58px!important}
+ .pwBottomNav #pwZoomInfo{min-width:29px!important}
+ .pwSideHead{padding:4px 5px!important}
+ .pwSideHead strong{font-size:10px!important}
+ .pwSideHeadActions button{font-size:9px!important;padding:3px 5px!important;min-height:28px!important}
+ .pwGroupTitle{padding:5px 6px!important}
+ .pwGroupTitle strong{font-size:10px!important}
+ .pwGroupItems{padding:3px!important}
+ .pwPosition{padding:5px!important}
+ .pwPosition strong{font-size:9px!important}
+ .pwPosition small{font-size:8px!important}
+ .pwTimeDialog .pwTimeIntro,.pwTimeRow strong{font-size:10px}
+ .pwTimeDialog .pwTimeRow input{font-size:16px!important}
+ .smFinishDialog{width:min(350px,calc(100vw - 18px));border-radius:11px}
+ .smFinishHead{padding:9px 11px}
+ .smFinishHead strong{font-size:13px}
+ .smFinishHead button{min-height:29px;min-width:29px;font-size:19px}
+ .smFinishBody{padding:10px;gap:8px}
+ .smFinishBody>strong{font-size:11px}
+ .smFinishBody>p{font-size:10px;line-height:1.35}
+ .smFinishActions{gap:4px}
+ .smFinishActions button{min-height:34px;padding:5px 6px;font-size:9px!important}
+ .smFinishActions .smFinishPrimary{grid-column:1/-1;min-height:36px}
+}
+@media(max-width:365px){
+ .pwHeader .pwTitle strong{font-size:10px!important}
+ .pwHeader .pwTitleVersion{font-size:8.5px!important}
+ .pwFileHeadline #pwFileName{max-width:38vw!important}
+ .smFinishProject{font-size:8px!important;max-width:86px}
+ .pwToolbar button{padding:2px 4px!important;font-size:8.5px!important}
+ .pwBottomNav{gap:5px!important}
+}
+
+/* SmartMatch TEST v36.71 – local history cleanup, without altering PDFs. */
+.smRecentHead{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-bottom:6px}
+.smRecentHead>div{min-width:0;display:grid;gap:2px}
+.smRecentHead strong{font-size:10px;color:#3c6174;line-height:1.2}
+.smRecentHead small{font-size:8.5px;color:#647d8b}
+.smRecentDeleteAll{
+ flex:0 0 auto;min-height:31px;border:1px solid #cdbfc0;border-radius:7px;
+ padding:5px 8px;background:#fff;color:#844545;font-size:9px;font-weight:750;cursor:pointer
+}
+.smRecentItem{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px;align-items:stretch;min-width:0}
+.smRecentList .smRecentItem button.smRecentOpen{
+ min-width:0;width:100%;display:grid;gap:2px;text-align:left;align-content:center;
+ min-height:41px;padding:6px 8px;border-radius:7px;
+ font-size:10px;overflow:hidden
+}
+.smRecentList .smRecentItem .smRecentOpen strong{
+ font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.smRecentList .smRecentItem .smRecentOpen small{
+ font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.smRecentList .smRecentItem button.smRecentDelete{
+ display:grid!important;place-items:center;
+ flex:0 0 auto;width:auto;min-width:56px;min-height:34px;
+ border:1px solid #decacc;border-radius:7px;padding:5px 6px;
+ background:#fff7f7;color:#8f3f45;font-size:9px;font-weight:750;
+ text-align:center;cursor:pointer
+}
+.smRecentList .smRecentDelete:active,.smRecentDeleteAll:active{background:#f6e7e7}
+.smRecentList button:disabled,.smRecentDeleteAll:disabled{opacity:.5;cursor:wait}
+.smRecentExplanation{display:block;margin-top:7px;font-size:8px;line-height:1.4;color:#657e8d}
+@media(max-width:520px){
+ .smRecentProjects{width:min(100%,345px)}
+ .smRecentList{max-height:min(31dvh,220px)!important}
+ .smRecentHead strong{font-size:9.5px}
+ .smRecentDeleteAll{font-size:8.5px;padding:4px 6px;min-height:31px}
+ .smRecentItem{gap:4px}
+ .smRecentList .smRecentItem button.smRecentOpen{padding:6px 7px}
+ .smRecentList .smRecentItem button.smRecentDelete{min-width:52px;font-size:8.5px}
+}
+
+/* Optional recovery stays in the workspace without interrupting PDF opening. */
+#pwDraftRecovery{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 12px;background:#edf6fa;color:#183d50;font-size:13px}
+#pwDraftRecovery button{min-height:44px;padding:6px 12px;border:1px solid #6899ae;border-radius:8px;background:white;color:#17465b;cursor:pointer}
+
+/* Avoid permanently promoting the large, zoomed drawing canvas to a GPU layer. */
+@media(pointer:coarse){#pwCanvas,#pwDrawingDetail{box-shadow:none;will-change:auto}}
+
+.smExportFileName{display:flex;flex-direction:column;gap:5px;margin:10px 12px;font-size:13px;font-weight:600;color:#183d50}
+.smExportFileName input{box-sizing:border-box;width:100%;min-width:0;min-height:44px;padding:9px 10px;border:1px solid #a6bdc7;border-radius:8px;font-size:16px;font-weight:400;color:#183d50;background:white}
+
+
+.pwDesktopFloating .pwMain{grid-template-columns:minmax(0,1fr)!important}
+.pwDesktopFloating #pwSide{position:fixed;right:18px;top:100px;width:min(380px,calc(100vw - 32px));height:min(650px,calc(100vh - 130px));max-height:calc(100vh - 32px);z-index:80;background:white;border:1px solid #a6bdc7;border-radius:12px;box-shadow:0 8px 30px #0003;overflow:auto}
+.pwDesktopFloating #pwSide[hidden]{display:none!important}
+.pwDesktopFloating .pwFloatingDragHandle{cursor:move;touch-action:none;user-select:none}
+.pwDesktopFloating #pwSide .pwSideHead{position:sticky;top:0;background:white;z-index:2}
+.pwDesktopFloating #pwDALinkDialog{position:fixed;max-width:calc(100vw - 32px);max-height:calc(100vh - 32px)}
+
+
+/* Isolate drawing layers below the opaque positions panel on every device. */
+.pwViewer{isolation:isolate;z-index:0}
+#pwSide{position:relative;z-index:100;background:#fff;isolation:isolate}
+@media(max-width:820px){#pwSide{position:absolute;z-index:100}}
+.pwFloatingDragHandle{touch-action:none;user-select:none;-webkit-user-select:none;cursor:move}
+#pwDALinkDialog,#pwDADoorDialog{max-height:calc(100dvh - 16px);max-width:calc(100vw - 16px);overflow:auto}
+#pwAutomationDialog .pwRevisionData .pwRevisionProjectBody{padding:8px!important;gap:7px!important}
+#pwAutomationDialog .pwRevisionData .pwRevisionBasics{padding:7px!important;gap:6px!important}
+#pwAutomationDialog .pwRevisionData .pwRevisionParty{padding:8px!important;gap:6px!important}
+#pwAutomationDialog .pwRevisionData label input,#pwAutomationDialog .pwRevisionData label select{min-height:34px!important;height:34px!important;padding:5px 7px!important;font-size:calc(12px * var(--sm-details-scale,1))!important;line-height:1.25!important}
+#pwAutomationDialog .pwRevisionData input[type="date"]{appearance:none;-webkit-appearance:none;display:block;box-sizing:border-box;text-align:center;padding:5px!important}
+#pwAutomationDialog .pwRevisionData input[type="date"]::-webkit-date-and-time-value{text-align:center}
+#pwAutomationDialog .pwRevisionData input[type="date"]::-webkit-datetime-edit{display:inline-flex;align-items:center;justify-content:center}
+#pwAutomationDialog .pwRevisionData .pwRevisionParty h3{margin:0!important;padding-bottom:6px!important}
+#pwAutomationDialog .pwRevisionData .pwRevisionSignature{margin-top:2px!important;padding-top:6px!important}
+#pwAutomationDialog .pwRevisionData .pwProjectLogoField{padding:6px!important;margin-top:0!important}
+.pwSmartActionDialog{width:min(380px,calc(100vw - 24px));box-sizing:border-box;padding:16px;border:1px solid #c5d5dc;border-radius:14px;background:#fff;color:#173746;box-shadow:0 12px 40px #0003}
+.pwSmartActionDialog::backdrop{background:#17374666}
+.pwSmartActionDialog header,.pwSmartActionDialog footer{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pwSmartActionDialog header strong{font-size:17px}.pwSmartActionDialog header button{font-size:24px;border:0;background:transparent}
+.pwSmartActionDialog label{display:grid;gap:6px;font-size:12px}.pwSmartActionDialog input{width:100%;box-sizing:border-box;padding:10px;border:1px solid #b5cbd5;border-radius:8px;font-size:16px}
+.pwSmartActionDialog [hidden]{display:none!important}.pwSmartActionDialog footer{justify-content:flex-end;margin-top:16px}
+.pwSmartActionDialog footer button{padding:9px 15px;border:1px solid #b5cbd5;border-radius:8px;background:#f3f7f9}
+#pwSmartActionSave{background:#176f9b;color:#fff;border-color:#176f9b}#pwSmartActionSave.isDanger{background:#b73535;border-color:#b73535}
+#pwSmartActionError{color:#a32c2c;font-size:12px}
+
+/* Position shape changes the hit surface only; PDF labels stay untouched. */
+.pwStampHit[data-hit-shape="ellipse"]{border-radius:50%!important}
+.pwStampHit[data-hit-shape="rectangle"]{border-radius:0!important}
+.pwStampHit[data-hit-shape="rounded"]{border-radius:8px!important}
+.smExportFileName{display:flex;flex-direction:column;gap:8px;font-size:13px;font-weight:600}
+.smExportFileName input,#pwSmartActionSelect{box-sizing:border-box;width:100%;min-height:44px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;font:inherit;background:#fff;color:#172033}
+.smSimpleSaveActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+
+/* Let the scroll area shrink below its content, regardless of header wrapping. */
+#pwAutomationDialog[open]{display:flex;flex-direction:column;height:min(95dvh,980px);max-height:min(95dvh,980px);box-sizing:border-box}
+#pwAutomationDialog .pwAutomationHead{flex:0 0 auto;flex-wrap:wrap;padding:8px 10px;gap:6px}
+#pwAutomationDialog .pwAutomationHead strong{font-size:14px}
+#pwAutomationDialog .pwAutomationHeadActions{display:flex;flex-wrap:wrap;gap:5px;max-width:100%}
+#pwAutomationDialog .pwAutomationBody{flex:1 1 0;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;box-sizing:border-box;padding:8px 8px calc(16px + env(safe-area-inset-bottom,0px))}
+#pwAutomationDialog .pwAutomationNotes{flex-shrink:0;margin-top:8px;margin-bottom:8px;font-weight:400}
+#pwAutomationDialog .pwAutomationNotes textarea{box-sizing:border-box;min-height:64px;padding:6px;font-weight:400}
+#pwAutomationDialog .pwAutomationChoices{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch}
+#pwAutomationDialog .pwAutomationChoices button{min-width:0;width:100%;white-space:normal;overflow-wrap:normal;box-sizing:border-box}
+#pwAutomationDialog .pwRevisionData label,#pwAutomationDialog .pwRevisionData input,#pwAutomationDialog .pwRevisionData select{font-weight:400!important}
+#pwAutomationDialog .pwRevisionData .pwRevisionFacilityName,#pwAutomationDialog .pwRevisionData .pwRevisionIdentity,#pwAutomationDialog #pwProjectName,#pwAutomationDialog #pwAutomationFullId{font-weight:700!important}
+@media(max-width:620px){
+ #pwAutomationDialog[open]{height:100dvh;max-height:100dvh;margin:0}
+ #pwAutomationDialog .pwAutomationHeadActions{flex:1 1 100%;justify-content:flex-end}
+ #pwAutomationDialog .pwRevisionData label input:not([type="file"]),#pwAutomationDialog .pwRevisionData label select{font-size:max(16px,calc(12px * var(--sm-details-scale,1)))!important}
+}
+
+/* TEST v36.71 – compact top close, three direct save actions and online release state. */
+.pwHeaderActions .smFinishProject{position:static!important;transform:none!important;right:auto!important;top:auto!important;z-index:auto!important;max-width:none!important;display:inline-flex!important;align-items:center;gap:5px;flex-shrink:0;background:#ecf4f7!important;color:#214e62!important;font-size:10px!important;padding:5px 8px!important;min-height:28px!important}
+.pwStartMode .pwHeaderActions .smFinishProject{display:none!important}
+.pwProjectBar .pwFileInfo{padding-right:6px!important}
+.pwHeader .pwRefreshBuild[hidden]{display:none!important}
+.pwReleaseLine .pwUpdateStatus{font-size:9px;font-weight:650;color:#d0e5ec;white-space:nowrap}
+.smSaveDialog .smSaveActions.smSimpleSaveActions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important}
+.smSaveDialog .smSaveActions.smSimpleSaveActions #smartExportBuild{grid-column:auto!important;background:#175c78;color:#fff;border-color:#175c78}
+.smSaveDialog .smSaveActions.smSimpleSaveActions #smartWorkspaceSaveLocal{background:#f0f8f1}
+.smSaveDialog .smSaveActions.smSimpleSaveActions button{min-width:0!important;padding:8px 4px!important;font-size:10px!important;white-space:normal!important}
+@media(max-width:520px){.pwHeaderActions .smFinishProject{font-size:9px!important;padding:4px 5px!important;gap:3px!important}.pwHeaderActions .smFinishProject span{max-width:55px;line-height:1.05}.pwReleaseLine .pwUpdateStatus{font-size:8px}}
+
+/* v36.72 DA arrow logic isolated in module. */
+
+/* TEST v36.73: Yellow indicates only temporary DA focus; clear on drawing tap. */
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit.pwDAFocused{
+ outline:3px solid #df8d1e!important;outline-offset:3px!important;
+}
+
+/* TEST v36.74: Reset only selected door automation; compact mobile layout. */
+#pwAutomationResetAll{background:#f7fafb!important;color:#234454!important;border:1px solid #91a6b3!important}
+#pwAutomationResetAll:hover,#pwAutomationResetAll:focus-visible{background:#e8f2f6!important}
+@media(max-width:620px){
+ #pwAutomationProgressRow{flex-wrap:wrap!important;row-gap:6px!important}
+ #pwAutomationProgressRow button{flex:1 1 calc(50% - 6px);white-space:normal;line-height:1.25}
+}
+
+/* TEST v36.75 – compact primary DA choices, descriptive verified GS linkage. */
+#pwDADoorDialog .pwDABody{padding:9px 11px;gap:9px}
+#pwDADoorDialog .pwDADoorChoices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:stretch}
+#pwDADoorDialog .pwDADoorChoices>button{min-height:48px;padding:8px 9px;font-size:11px;line-height:1.35;border-radius:9px;white-space:normal}
+#pwDADoorDialog .pwDADoorChoices>.pwDABulkTools{grid-column:1/-1}
+#pwDADoorDialog .pwDABulkTools{margin-top:2px;border-top:1px solid #d8e4ea;padding-top:6px}
+#pwDADoorDialog .pwDABulkTools>summary{cursor:pointer;color:#446a7d;font-size:11px;font-weight:700;list-style:none;padding:7px 8px;border-radius:7px;background:#f0f6f9}
+#pwDADoorDialog .pwDABulkTools>summary::-webkit-details-marker{display:none}
+#pwDADoorDialog .pwDABulkTools>.pwDABulkScan{width:100%;min-height:34px;font-size:11px;margin-top:7px;padding:6px 9px}
+#pwDADoorDialog .pwDABulkTools>.pwDABulkStatus{margin-top:7px}
+#pwDADoorDialog .pwDABulkTools>.pwDABulkResults{margin-top:7px}
+#pwDADoorDialog .pwDALinkSummary{display:grid;gap:4px;padding:9px 10px;background:#edf6fa;border:1px solid #c8dce6;border-radius:8px;color:#1c5169;line-height:1.4;overflow-wrap:anywhere}
+#pwDADoorDialog .pwDALinkSummary strong{font-size:12px;font-weight:800}
+#pwDADoorDialog .pwDALinkSummary small{font-size:10px;color:#486a7c}
+#pwDADoorDialog .pwDALinkSummary[data-linked="yes"]{background:#eff8f1;border-color:#b8d9c4}
+#pwDADoorDialog .pwDAGsEdit{display:grid;gap:8px;min-width:0}
+#pwDADoorDialog .pwDAGsEdit[hidden],#pwDADoorDialog .pwDADoorChoices[hidden]{display:none!important}
+#pwDADoorDialog .pwDAActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#pwDADoorDialog .pwDAActions button{min-height:38px;padding:8px;font-size:11px;white-space:normal}
+.pwAutomationGroup .pwDAControlLine .pwAutomationPosition small{display:block;font-size:9px;line-height:1.35;white-space:normal;overflow-wrap:anywhere;margin-top:2px}
+@media(max-width:420px){
+ #pwDADoorDialog .pwDADoorChoices{gap:6px}
+ #pwDADoorDialog .pwDADoorChoices>button{padding:8px 6px;font-size:10px}
+ #pwDADoorDialog .pwDAActions{grid-template-columns:1fr}
+ #pwDADoorDialog .pwDALinkSummary small{font-size:9px}
+}
+
+/* TEST v36.76: choose saved work before reopening same original PDF */
+.smLocalVersionsDialog{width:min(490px,calc(100vw - 24px));max-height:85dvh;overflow:auto;border:1px solid #afc8d5;border-radius:12px;padding:18px;background:#fff;color:#1b3d50}
+.smLocalVersionsDialog::backdrop{background:rgba(9,31,44,.6)}
+.smLocalVersionsDialog h3{margin:0 0 9px;font-size:16px}
+.smLocalVersionsDialog p{margin:0 0 12px;font-size:12px;line-height:1.5;color:#456878}
+.smLocalVersionsList{display:grid;gap:8px}
+.smLocalVersion{display:grid;gap:3px;text-align:left;width:100%;min-height:54px;padding:10px 12px;border:1px solid #9cc4d7;border-radius:9px;background:#eef8fd;color:#154e69}
+.smLocalVersion strong{font-size:12px}.smLocalVersion small{font-size:10px;color:#4b7081}
+.smLocalVersionsActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.smLocalVersionsActions button{flex:1 1 170px;min-height:42px;padding:8px 10px;border:1px solid #b6cbd5;border-radius:8px;background:#fff;color:#23506a;font-size:11px;font-weight:700}
+
+
+/* TEST v36.77: compact adaptive history UI; no storage logic touched */
+dialog.smLocalVersionsDialog{box-sizing:border-box;width:min(450px,calc(100vw - 36px));max-width:100%;max-height:min(78dvh,650px);max-height:min(78svh,650px);margin:auto;padding:14px 15px;overflow:hidden;border-radius:12px;box-shadow:0 16px 44px #0a283740}
+dialog.smLocalVersionsDialog[open]{display:flex;flex-direction:column;gap:0}
+.smLocalVersionsDialog h3{font-size:15px;line-height:1.3;margin:0 0 5px}
+.smLocalVersionsDialog p{font-size:11.5px;line-height:1.42;margin:0 0 10px;overflow-wrap:anywhere;flex:0 0 auto}
+.smLocalVersionsList{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:1px 3px 3px 1px}
+.smLocalVersionsList .smLocalVersion{box-sizing:border-box;min-height:46px;padding:7px 10px;border-radius:8px;gap:2px;cursor:pointer}
+.smLocalVersion strong{font-size:11.5px;line-height:1.35;overflow-wrap:anywhere}
+.smLocalVersion small{font-size:10px;line-height:1.25}
+.smLocalVersionsActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px;flex:0 0 auto}
+.smLocalVersionsActions button{box-sizing:border-box;flex:initial;min-width:0;min-height:42px;padding:7px 9px;border-radius:8px;font-size:11px;line-height:1.3;cursor:pointer;overflow-wrap:anywhere}
+.smLocalVersion:focus-visible,.smLocalVersionsActions button:focus-visible,.smRecentList .smRecentItem button:focus-visible{outline:2px solid #1784ac;outline-offset:2px}
+.smRecentProjects{width:min(100%,400px);box-sizing:border-box}
+.smRecentHead{gap:8px;margin-bottom:7px}
+.smRecentHead strong{font-size:11px}
+.smRecentHead small{font-size:10px}
+.smRecentList{gap:5px;max-height:min(28dvh,230px)}
+.smRecentItem{grid-template-columns:minmax(0,1fr) auto;gap:6px}
+.smRecentList .smRecentItem button.smRecentOpen{min-height:44px;padding:7px 9px;gap:3px}
+.smRecentList .smRecentItem .smRecentOpen strong{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;white-space:normal;overflow:hidden;overflow-wrap:anywhere;font-size:11px;line-height:1.25}
+.smRecentList .smRecentItem .smRecentOpen small{font-size:10px;white-space:normal;line-height:1.2}
+.smRecentList .smRecentItem button.smRecentDelete{min-width:60px;min-height:40px;font-size:10px;padding:6px 8px}
+.smRecentDeleteAll{font-size:10px;min-height:36px;padding:6px 9px}
+.smRecentExplanation{font-size:10px;line-height:1.3}
+@media(min-width:900px){dialog.smLocalVersionsDialog{width:460px;padding:15px 17px}.smLocalVersionsList{max-height:min(45dvh,360px)}.smRecentProjects{width:min(100%,410px)}}
+@media(min-width:600px) and (max-width:899px){dialog.smLocalVersionsDialog{width:min(440px,calc(100vw - 48px));padding:15px}.smLocalVersionsList .smLocalVersion{min-height:48px}.smLocalVersionsActions button{min-height:44px;font-size:12px}.smRecentList .smRecentItem button.smRecentOpen,.smRecentList .smRecentItem button.smRecentDelete{min-height:44px}}
+@media(max-width:599px){
+ dialog.smLocalVersionsDialog{width:calc(100vw - 20px);max-height:calc(89dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));max-height:calc(89svh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));padding:12px 12px 13px;border-radius:11px}
+ .smLocalVersionsDialog h3{font-size:14px;margin-bottom:5px}
+ .smLocalVersionsDialog p{font-size:11px;line-height:1.35;margin-bottom:8px}
+ .smLocalVersionsList{gap:5px;scrollbar-gutter:auto}
+ .smLocalVersionsList .smLocalVersion{min-height:44px;padding:8px 10px}
+ .smLocalVersion strong{font-size:11px}
+ .smLocalVersionsActions{grid-template-columns:1fr;gap:6px;margin-top:9px}
+ .smLocalVersionsActions button{min-height:44px;padding:8px 10px;font-size:12px}
+ .smRecentProjects{width:min(100%,365px)}
+ .smRecentList{max-height:min(30dvh,210px)!important}
+ .smRecentList .smRecentItem button.smRecentOpen{min-height:44px;padding:7px 8px}
+ .smRecentList .smRecentItem button.smRecentDelete{min-width:59px;min-height:44px;font-size:10px}
+ .smRecentDeleteAll{min-height:39px;font-size:10px}
+}
+@media(max-height:470px) and (orientation:landscape){dialog.smLocalVersionsDialog{max-height:calc(95dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}.smLocalVersionsDialog p{margin-bottom:5px}.smLocalVersionsActions{margin-top:6px}}
+
+/* TEST v36.78: the previous pmSizedMarker rule forced rounded 4px,
+   even for manually selected ellipses. Preserve exact stamp silhouette. */
+#pwMarkers .pwStampHit[data-hit-shape="ellipse"],
+#pwMarkers .pwStampHit.pmSizedMarker[data-hit-shape="ellipse"]{border-radius:50%!important}
+#pwMarkers .pwStampHit[data-hit-shape="rectangle"],
+#pwMarkers .pwStampHit.pmSizedMarker[data-hit-shape="rectangle"]{border-radius:0!important}
+#pwMarkers .pwStampHit[data-hit-shape="rounded"],
+#pwMarkers .pwStampHit.pmSizedMarker[data-hit-shape="rounded"]{border-radius:8px!important}
+#pwMarkers .pwStampHit{background:rgba(247,220,78,.045);box-sizing:border-box}
+#pwMarkers .pwStampHit.pmSizedMarker{background:rgba(247,220,78,.045)!important}
+
+/* TEST v36.79: manual GS input and per-position verified suggestions. */
+#pwDADoorDialog .pwDAGsSuggestion{padding:9px 10px;border-radius:9px;border:1px solid #c0d9e5;background:#edf6fb;color:#194e6a;font-size:11px;font-weight:700;line-height:1.4;overflow-wrap:anywhere}
+#pwDADoorDialog .pwDAGsManualGrid{display:grid;grid-template-columns:minmax(0,1fr) 100px;gap:8px}
+#pwDADoorDialog .pwDAGsManualGrid>label{display:grid;gap:4px;min-width:0;font-size:11px}
+#pwDADoorDialog .pwDAGsManualGrid input{box-sizing:border-box;min-width:0;width:100%;min-height:42px;padding:9px;border:1px solid #a6c0cd;border-radius:7px;background:#fff;color:#173b50;font-size:16px}
+#pwDADoorDialog .pwDAGsManualFeedback{font-size:10px;line-height:1.4;color:#476c7d;margin:1px 0 0;min-height:1.3em}
+#pwDADoorDialog .pwDAGsManualMatches{display:grid;gap:5px;max-height:min(28dvh,200px);overflow-y:auto}
+#pwDADoorDialog .pwDAGsManualChoice{display:grid;gap:3px;text-align:left;min-height:46px;padding:7px 9px;border-radius:8px;border:1px solid #ccdae1;background:#f9fcfd;color:#194862}
+#pwDADoorDialog .pwDAGsManualChoice strong{font-size:11px}
+#pwDADoorDialog .pwDAGsManualChoice small{font-size:10px;line-height:1.3;color:#597282}
+#pwDADoorDialog .pwDAGsManualChoice.selected{border-color:#176f9b;background:#e3f3fb;box-shadow:inset 0 0 0 1px #176f9b}
+#pwDADoorDialog .pwDAGsManualChoice:disabled{opacity:.55;cursor:not-allowed}
+#pwDADoorDialog .pwDAActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+#pwDADoorDialog .pwDAActions #pwDAChooseOnDrawing{grid-column:1/-1}
+#pwDADoorDialog .pwDAActions button{min-height:40px;padding:7px;font-size:11px}
+@media(max-width:520px){
+ #pwDADoorDialog .pwDAGsManualGrid{grid-template-columns:minmax(0,1fr) 76px;gap:6px}
+ #pwDADoorDialog .pwDAGsManualMatches{max-height:min(24dvh,170px)}
+ #pwDADoorDialog .pwDAActions{grid-template-columns:1fr}
+ #pwDADoorDialog .pwDAActions #pwDAChooseOnDrawing{grid-column:auto}
+ #pwDADoorDialog .pwDAActions button{min-height:44px}
+}
+
+/* SmartMatch TEST v36.83 – two independent external half-outline meters. */
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit,
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit[data-inspection-status]{
+ border:0!important;box-shadow:none!important;
+ background:rgba(190,225,235,.025)!important;
+ overflow:visible!important;padding:0!important;
+ min-width:20px!important;min-height:18px!important;
+ box-sizing:border-box!important;
+}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit::before,
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit::after{content:none!important;display:none!important}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit .pwDASplitOutline{
+ position:absolute!important;left:0!important;top:0!important;
+ width:100%!important;height:100%!important;
+ display:block!important;overflow:visible!important;
+ pointer-events:none!important;z-index:2!important;
+}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit .pwDASplitLabels{
+ position:absolute!important;left:0!important;top:calc(100% + 5px)!important;
+ width:100%!important;display:grid!important;
+ grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:0!important;
+ pointer-events:none!important;z-index:2!important;background:transparent!important;
+ overflow:visible!important;box-shadow:none!important;
+}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit .pwDASplitLabels .pwDASplitLabel{
+ position:static!important;display:block!important;
+ padding:0 1px!important;width:auto!important;height:auto!important;
+ min-width:0!important;min-height:0!important;
+ border:0!important;border-radius:0!important;background:transparent!important;
+ box-shadow:none!important;color:#66747f!important;
+ font:500 6.5px/1.15 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+ white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;
+ text-align:center!important;letter-spacing:0!important;
+}
+#pwAutomationMarkers .pwAutomationMarker.pwDAHit[data-inspection-status="remark"] .pwDASplitLabel:first-child{color:#bb7524!important}
+#pwSLRDialog .pwSLRRow{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;padding:7px;border:1px solid #d5e1e6;border-radius:9px;background:#f5f9fb}
+#pwSLRDialog .pwSLRRow .pwSLRSection{min-height:34px;padding:6px 7px}
+#pwSLRDialog .pwSLRRow .pwSLRStateLabel{display:grid;gap:4px;font-size:10px;font-weight:600;color:#456477}
+#pwSLRDialog .pwSLRRow .pwSLRStateSelect{min-width:0;width:100%;min-height:35px;border-radius:6px;border:1px solid #bfd2dc;padding:5px 7px;background:#fff;color:#1d4b62;font-size:12px}
+@media(max-width:699px){
+ #pwAutomationMarkers .pwAutomationMarker.pwDAHit .pwDASplitLabels .pwDASplitLabel{font-size:6px!important}
+ #pwSLRDialog .pwSLRRow .pwSLRStateSelect{min-height:42px;font-size:14px}
+}
+
+/* TEST v36.84: compact mobile controls to select the door-card reading mode. */
+.pwDrawingCardGroup .pwCheckReadSettings{
+ display:grid;gap:5px;margin:6px 8px 8px;padding:9px 10px;min-width:0;
+ border:1px solid #c9dce5;border-radius:9px;background:#f3f9fc;
+}
+.pwCheckReadSettings>strong{font:700 11px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#1a4358}
+.pwCheckReadSettings .pwCheckReadSelect,
+.pwCheckReadSettings .pwCheckReadInput{
+ display:block;box-sizing:border-box;width:100%;min-width:0;min-height:37px;
+ background:#fff;border:1px solid #a7c4d3;border-radius:7px;padding:6px 9px;
+ color:#163f56;font-size:12px;
+}
+.pwCheckReadSettings .pwCheckReadCustom{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px}
+.pwCheckReadSettings .pwCheckReadCustom[hidden]{display:none!important}
+.pwCheckReadSettings .pwCheckReadApply{
+ border:1px solid #156e95;border-radius:7px;background:#176f98;color:#fff;
+ padding:7px 9px;min-height:37px;font-size:11px;font-weight:700;
+}
+.pwCheckReadSettings .pwCheckReadHelp{color:#5a7685;font-size:9px;line-height:1.35}
+@media(max-width:699px){
+ .pwDrawingCardGroup .pwCheckReadSettings{margin:5px 5px 7px;padding:7px}
+ .pwCheckReadSettings .pwCheckReadSelect,
+ .pwCheckReadSettings .pwCheckReadInput{min-height:42px;font-size:14px}
+ .pwCheckReadSettings .pwCheckReadApply{min-height:42px}
+}
+
+
+/* TEST v36.88: manual position form is retained for existing handlers only. */
+#pwPositionEditor[hidden]{display:none!important}
+
+

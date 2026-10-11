@@ -1,3 +1,7 @@
+# TEST v36.95 – känd profil även med en utrustningsrad (2026-10-11)
+
+Extra återanvändningstest visade att titel/Objekt/Komponent-profilens ID kunde identifieras men sidan sedan sorteras bort av äldre krav på extra Låshus/Cylinder-ord. v36.95 godtar den verifierade profilen som kortbevis. Endast denna klassningsgren är ny; profil94, första-cell-avläsning och DA92 är oförändrade. Faktiska app95-tester: fem kort ensamma, 14 kopplingar i exemplet, nytt GC2-kort med endast en automatikrad; tidigare 15 GS-kort och 17DA/17GS-pilar samt 18 sparade poster behålls. 94-snapshots kvar. Se [TEST v36.95](SMARTMATCH_TEST_V36_95.md).
+
 # TEST v36.94 – separat känt tabellupplägg (2026-10-11)
 
 Användaren vill lägga till nya kända tabellupplägg och behålla fungerande låst logik. Ny isolerad profil: Dörrkort-titel ovanför tabellen → Objekt-rad → Komponent/Produkt → utrustningsrad. Läser titelns ID enbart i det verifierade upplägget; befintlig första-cell-avläsning har företräde och är oförändrad. Samma hela-ID-sökning återanvänds. Faktiska Chromium-tester: fem kort även ensamma; med ritningen 14 positioner (140C7, VC2, WC1, HWC2, 130C2), rätt kort öppnas; Kontor/Teknik saknar kort och kopplas inte. Tidigare 15 GS-kort och Teknik-layout samt DA92:s 17 automatiker/17 GS-pilar och 18 sparade poster behålls. Se [TEST v36.94](SMARTMATCH_TEST_V36_94.md) och [tabellregel avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md). Ingen automatisk mallinlärning; kundfiler, Kontrollflöde och iOS orörda.
