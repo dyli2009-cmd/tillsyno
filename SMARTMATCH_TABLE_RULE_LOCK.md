@@ -2,7 +2,7 @@
 
 **STATUS: LÅST enligt användarens beslut 2026-10-11.**
 
-Denna regel gäller dörrkortsidentifiering i SmartMatch. Principen får endast ändras efter en uttrycklig instruktion från användaren. Låset gäller avläsningsregeln; rättningar som gör implementationen förenlig med regeln är tillåtna.
+Denna regel gäller standardprofilen för dörrkortsidentifiering i SmartMatch. Principen får endast ändras efter en uttrycklig instruktion från användaren. Låset gäller avläsningsregeln; rättningar som gör implementationen förenlig med regeln är tillåtna.
 
 ## 1. Tabellen först
 
@@ -55,3 +55,15 @@ I v36.92 verifierades den verkliga sidklassningen i Chromium: Snidarens ritnings
 Användaren lade in ett exempel med översta sammanfogade cellen `Dörrkort Teknik` och två utrustningskolumner. Upplägget lästes och kontrollerades. Avläsningen utökades inom den låsta regeln så att en uttrycklig Dörrkort-rubrik med ett alfabetiskt namn på 2–6 bokstäver kan ge ID:t, här TEKNIK. Andra befintliga numeriska/GS-ID:n behåller tidigare avläsning.
 
 Den skickade kort-PDF:en är verifierad ensam i appen. En genererad testritning med två Teknik-positioner kopplas till samma kort; längre ord som Teknikrum matchas inte och klick öppnar kortet. Ingen faktisk kundritning för detta exempel har verifierats. Se [TEST v36.93](SMARTMATCH_TEST_V36_93.md). Stödet kan återanvändas för samma kontrollerade upplägg; detta är inte automatisk inlärning av nya tabellmallar.
+
+## 8. Separat känd läsprofil – TEST v36.94
+
+**Användarbeslut 2026-10-11:** Nya tabellupplägg får läggas till som kända läsprofiler, samtidigt som den tidigare fungerande avläsningen och dörrautomatikregeln behålls. Det är ett separat tillägg för det nya upplägget; standardprofilens översta vänstra ID-cell är fortsatt låst.
+
+Exemplet visar fem kort med en uttrycklig `Dorrkort <ID>`-titel ovanför tabellen, följd av `Objekt: <beskrivning>`, sedan `Komponent | Produkt` och utrustningsrader. Här är tabellens första vänstra cell alltså Komponent, inte dörr-ID. Den nya profilen `card-title-object-components-v1` läser ID från korttiteln endast när just detta sammanhängande upplägg och dess kolumngeometri känns igen. Den väljer inte projekttext, objektbeskrivningen eller produktvärden som ID.
+
+Befintlig avläsning har företräde och dess funktioner är oförändrade. Den nya profilen används bara när den inte gav något ID. Saknad struktur, flera korttitlar, osammanhängande titeltext och tvetydiga beteckningar förblir olösta. Profilen gäller vanlig läsbar PDF-text; andra, roterade eller skannade upplägg är inte verifierade.
+
+En tabell-PDF räcker som underlag för att lägga till och verifiera den här läsprofilen. Andra kort med samma kända upplägg och andra tydliga ID:n använder profilen utan projektspecifik kod. När de aktuella dörrkorten finns i appens projekt matchas deras hela ID mot ritningen genom befintlig sökning. Att skicka ett exempel till utvecklingsarbetet installerar inte automatiskt en runtime-mall eller lägger in filen i användarens projekt.
+
+Verifierat i den faktiska TEST v36.94-sidan i lokal Chromium: fem kort identifieras även utan ritning; den kombinerade sexsidiga filen ger 14 korrekta ritningspositioner och fem korrekta kortsidor. Kontor och Teknik på ritningen saknar kort i filen och får därför ingen kortkoppling. Tidigare 15 GS-kort, Teknik-kortet i första cellen och dörrautomatikens v36.92-beteende har regressionstestats. Se [versionsdokumentet](SMARTMATCH_TEST_V36_94.md).

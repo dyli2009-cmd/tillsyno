@@ -58,7 +58,7 @@ Dessa beteendeprinciper ändras endast efter ett nytt uttryckligt användarbeslu
 
 ## SmartMatch – låst tabellregel
 
-Läs **[SMARTMATCH_TABLE_RULE_LOCK.md](SMARTMATCH_TABLE_RULE_LOCK.md)** före ändringar i dörrkortsidentifiering eller ritningskoppling. Regeln är låst av användaren: identifiera tabellens celler först, läs ID från översta vänstra rutan och matcha sedan hela beteckningen mot ritningen. Nya tabellupplägg ska läsas in och verifieras med ett exempel; den låsta ID-källan ändras inte.
+Läs **[SMARTMATCH_TABLE_RULE_LOCK.md](SMARTMATCH_TABLE_RULE_LOCK.md)** före ändringar i dörrkortsidentifiering eller ritningskoppling. Regeln är låst av användaren: identifiera tabellens celler först, läs ID från översta vänstra rutan och matcha sedan hela beteckningen mot ritningen. Nya tabellupplägg ska läsas in och verifieras med ett exempel; den låsta standardprofilens ID-källa ändras inte. Separata kända läsprofiler läggs endast till enligt ett uttryckligt användarbeslut och dokumenteras med egen ID-källa och verifiering; se tabellregelns avsnitt 8 (TEST v36.94).
 
 ## SmartMatch TEST – versionsregel
 
@@ -68,7 +68,7 @@ SmartMatch TEST är en fristående experimentversion och ska inte förväxlas me
 - Skapa nya versionsmärkta HTML-, JS- och CSS-filer för varje ny testversion (t.ex. `project-workspace-smartmatch-v36-14.html`, `.js`, `.css`). Behåll föregående version oförändrad som jämförelse/återgång.
 - Uppdatera konsekvent sidrubrik, versionsmärkning, resursreferenser, logg- och nedladdningsnamn. Använd en separat lokal lagringsnyckel för varje testversion.
 - Läs gärna tidigare testversioners inbäddade projekt-PDF-data så att tidigare arbete går att ta med till den nya versionen. Skriv däremot nytt projektformat under den nya versionen.
-- Nuvarande aktiva testversion: **TEST v36.31**. Nästa underrevision blir **TEST v36.32**.
+- Nuvarande aktiva testversion: **TEST v36.94**. Nästa underrevision blir **TEST v36.95**.
 - **En enda fast adress för SmartMatch TEST:** `project-workspace-smartmatch-test.html` på GitHub Pages. Denna fil är alltid en full kopia av senaste `project-workspace-smartmatch-vNN.html` och länkar till samma versionsmärkta JS/CSS (ingen vidarebefordran, inget iframe).
 - **Varje gång en ny TEST vNN görs måste samma commit också uppdatera `project-workspace-smartmatch-test.html`**, så användaren alltid kan använda samma bokmärke/hemskärmsikon. Öppna den fasta adressen först för att verifiera rätt testnummer.
 - TEST-versionen betyder **inte** att Tillsyno-appen eller TestFlight har uppdaterats. Publicering dit kontrolleras separat.

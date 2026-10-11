@@ -9,7 +9,8 @@ Det här är ingången när vi återupptar utvecklingen eller användaren fråga
 | Funktion | Avläsningskälla och koppling | Gällande dokument | Status |
 | --- | --- | --- | --- |
 | Dörrautomatik | Första placeringsrutans märkning → hela objektnumret söks på ritningssidorna → egen knapp per träff → pil till närmaste GS på samma sida | [Dörrautomatik och GS-koppling](SMARTMATCH_AUTOMATION_RULE_LOCK.md) | LÅST; v36.92 bekräftad av användaren |
-| Dörrkort | Identifiera tabellen → läs ID i översta vänstra cellen → matcha samma hela ID på ritningen → koppla kortet till positionen | [Tabellavläsning och dörrkort](SMARTMATCH_TABLE_RULE_LOCK.md) | LÅST; generell tolkning av alla tabellupplägg är ännu inte färdig |
+| Dörrkort, standardprofil | Identifiera tabellen → läs ID i översta vänstra cellen → matcha samma hela ID på ritningen → koppla kortet till positionen | [Tabellavläsning och dörrkort](SMARTMATCH_TABLE_RULE_LOCK.md) | LÅST; generell tolkning av alla tabellupplägg är ännu inte färdig |
+| Dörrkort, separat känt tillägg | Uttrycklig korttitel → verifierad Objekt-rad och Komponent/Produkt-tabell → samma hela ID på ritningen | [Tabellavläsning, avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md) | Tillägg enligt användarbeslut; v36.94 |
 
 ## Två kopplingar som bygger på varandra
 
@@ -45,6 +46,7 @@ Ett nytt beslut dokumenteras med datum, funktion, gammal regel, ny regel, skäl,
 | 2026-10-11 | Lås dörrkortets ID-källa till översta vänstra tabellcellen och matcha hela ID på ritningen | [Tabellregeln](SMARTMATCH_TABLE_RULE_LOCK.md) |
 | 2026-10-11 | Dörrautomatik använder placerad märkning, hela objektnumret, egen knapp per träff och närmaste GS; tidigare kortfilter och en-till-en-krav ersätts | [TEST v36.92](SMARTMATCH_TEST_V36_92.md) |
 | 2026-10-11 | Användaren bekräftar ”nu funkar detta” och låser automatikregeln samt begär denna gemensamma samling | [Automatikregeln](SMARTMATCH_AUTOMATION_RULE_LOCK.md) |
+| 2026-10-11 | Lägg till en separat känd läsprofil för det nya tabellupplägget; behåll standardprofilen och DA92 | [TEST v36.94](SMARTMATCH_TEST_V36_94.md) |
 
 ## Utveckling och fortsatt arbete
 
@@ -55,3 +57,11 @@ Denna dokumentationsändring ändrar inte appkoden och höjer inte TEST-versione
 ## Verifierat tillägg för dörrkort – TEST v36.93
 
 Samma grundtabell med sammanfogad översta cell och två utrustningskolumner har kontrollerats med `Dörrkort Teknik`. Ett tillägg i första-cell-avläsningen ger TEKNIK utan att byta ID-källa eller ändra befintliga GS-/sifferregler. Se [versionsdokumentet](SMARTMATCH_TEST_V36_93.md) och [tabellregeln](SMARTMATCH_TABLE_RULE_LOCK.md). Dörrautomatikens godkända v36.92-modul är oförändrad.
+
+## Separat känd tabellprofil – TEST v36.94
+
+**Nytt uttryckligt beslut 2026-10-11:** Lägg till kända tabellupplägg utan att ändra det som redan fungerar. Standardprofilen med ID i första vänstra cellen behåller sina regler. För ett annat verifierat upplägg kan en separat profil få en dokumenterad ID-källa som hör till just det upplägget.
+
+Profilen `card-title-object-components-v1` kräver följden Dörrkort-titel → Objekt-rad → Komponent/Produkt-tabell och läser den uttryckliga korttiteln. Den befintliga avläsningen har alltid företräde. Samma profil återanvänds för andra kort med samma uppbyggnad; inget projekt eller visst ID är hårdkodat. Korten identifieras även ensamma. Ritningskoppling kräver att de faktiska korten och ritningen finns i appens projekt.
+
+Se [tabellregelns avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md) och [TEST v36.94](SMARTMATCH_TEST_V36_94.md) för avgränsning, skäl och verifiering. Den godkända dörrautomatikmodulen v36.92 är oförändrad.

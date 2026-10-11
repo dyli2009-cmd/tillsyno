@@ -1,3 +1,7 @@
+# TEST v36.94 – separat känt tabellupplägg (2026-10-11)
+
+Användaren vill lägga till nya kända tabellupplägg och behålla fungerande låst logik. Ny isolerad profil: Dörrkort-titel ovanför tabellen → Objekt-rad → Komponent/Produkt → utrustningsrad. Läser titelns ID enbart i det verifierade upplägget; befintlig första-cell-avläsning har företräde och är oförändrad. Samma hela-ID-sökning återanvänds. Faktiska Chromium-tester: fem kort även ensamma; med ritningen 14 positioner (140C7, VC2, WC1, HWC2, 130C2), rätt kort öppnas; Kontor/Teknik saknar kort och kopplas inte. Tidigare 15 GS-kort och Teknik-layout samt DA92:s 17 automatiker/17 GS-pilar och 18 sparade poster behålls. Se [TEST v36.94](SMARTMATCH_TEST_V36_94.md) och [tabellregel avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md). Ingen automatisk mallinlärning; kundfiler, Kontrollflöde och iOS orörda.
+
 # TEST v36.93 – namngivet dörrkort i samma grundtabell
 
 Användaren bad om stöd för det inskickade kortet Dörrkort Teknik utan att ändra fungerande kort. Explicit Dörrkort-titel med alfabetiskt namn på 2–6 bokstäver i den första tabellcellen tillåts; TEKNIK blir ID. Tidigare GS-/siffer-ID:n och den låsta ID-källan behålls. Riktiga PDF.js-fragment, alla 15 tidigare kortfixturer och faktisk Chromium-app testade: kort ensamt indexeras korrekt; genererad ritning ger två exakta Teknik-positioner, kopplade till kortsida 2 som öppnas vid klick. Ingen verklig kundritning för det nya kortet finns ännu. Se SMARTMATCH_TEST_V36_93.md. Oförändrad godkänd DA-modul v36.92, Kontrollflöde/native iOS orörda.
