@@ -6235,8 +6235,8 @@ for(const id of ['pwDALinkDialog','pwDADoorDialog']){
 // Render the actual JS release only after all app initialization handlers have attached.
 const buildLabel=document.getElementById('pwBuildVersion');
 if(buildLabel){
- buildLabel.textContent='TEST v'+SMARTMATCH_RELEASE+' ✓';
- buildLabel.title='SmartMatch TEST v'+SMARTMATCH_RELEASE+' är laddad i denna webbläsare';
+ buildLabel.textContent='Version '+SMARTMATCH_RELEASE;
+ buildLabel.title='SmartMatch version '+SMARTMATCH_RELEASE+' är laddad';
  buildLabel.dataset.loadedBuild=SMARTMATCH_RELEASE;
 }
 })();
