@@ -52,3 +52,12 @@ body:not(.loginbody){background:linear-gradient(180deg,#e9f1f3 0,#f5f8f9 290px)}
 .cancelBox #cancelLicense:disabled{opacity:.65}
 .cancelBox .licenseHint{margin-top:9px;margin-bottom:0!important}
 .badge.revoked{background:#fae9e9;color:#a04f4f}
+
+/* v2.4.280: confirmation appears within the licence panel (no popup). */
+.cancelLicenseConfirm{border:1px solid #e5bdbd;border-radius:10px;background:#fff8f7;padding:13px;margin:10px 0 2px}
+.cancelLicenseConfirm strong{display:block;font-size:13px;color:#8b3030}
+.cancelLicenseConfirm p{margin:6px 0 10px;font-size:12px;overflow-wrap:anywhere;color:#765357}
+.cancelLicenseConfirm .inlineActions{display:flex;gap:9px;flex-wrap:wrap}
+.cancelLicenseConfirm .inlineActions button{flex:1 1 135px;min-height:39px;white-space:normal}
+.cancelLicenseConfirm #confirmCancelLicense{background:#a43c3c;border-color:#a43c3c;color:white;font-weight:700}
+.cancelLicenseConfirm #keepLicense{background:white;color:#315b6a}
