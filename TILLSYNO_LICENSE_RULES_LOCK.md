@@ -101,3 +101,8 @@ Behåll den enkla modellen medan den testas. Lägg inte till företagslicenser, 
 - Återställningssidan godtar en giltig personlig recovery-länk och kräver minst 12 tecken vid val av nytt lösenord. Ingen administratör behöver skicka någon länk manuellt.
 - Svaret avslöjar inte om ett visst e-postkonto finns. Lösenordsändringen tilldelar inga moduler och ändrar inte godkännande eller licenstid.
 - Supabase Authentication → URL Configuration måste tillåta `https://dyli2009-cmd.github.io/tillsyno/auth/reset-password.html` som Redirect URL. Riktig e-postleverans och iPhone/Safari-flöde måste testas av en användare med en befintlig testadress innan det förklaras helt verifierat.
+
+## 12. Återställningslänk går till rätt sida – 12 oktober 2026 (v2.4.282)
+- Vid en Supabase-recovery-länk med `type=recovery` till startsidan eller inloggningen ska användaren skickas vidare till `auth/reset-password.html` med samma tokenparametrar; vanliga inloggningar och registreringslänkar påverkas inte.
+- Återställningssidan stöder sessionslänkar i URL-fragment och recovery `token_hash` i query-parametrar. Efter verifiering ska formuläret för nytt lösenord visas utan att kräva administratör, och länktoken städas bort ur adressfältet.
+- Om redirect-URL:en inte är godkänd i Supabase Authentication → URL Configuration eller faller utanför Tillsynos domän måste den konfigurationen fortfarande åtgärdas i Supabase. Test på faktisk telefon med ett nytt mejl behövs innan end-to-end kan kallas verifierat.
