@@ -20,7 +20,7 @@
     const {data}=await auth.client.auth.getUser();
     if(!data?.user){goLogin();return}
     $('accountEmail').textContent=data.user.email||'';
-    location.replace(new URL('index.html?v=2.4.275',auth.root));return;
+    location.replace(new URL('index.html?v=2.4.276',auth.root));return;
    }else if(error?.code==='AUTH_REQUIRED'||error?.code==='LOGIN_EXPIRED'){
     goLogin();return;
    }else{
