@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const SMARTMATCH_RELEASE='36.107-SLR-TEST';
+const SMARTMATCH_RELEASE='36.108-SLR-TEST';
 let smartExportRevision=0,smartExportCached=null,smartExportTask=null,smartExportBytesVersion=-1;
 let manualPositions=[],positionEdits={},placement=null;
 // Initialize placement pointer eagerly: PDF loading must never encounter a TDZ after another initialization failure.
