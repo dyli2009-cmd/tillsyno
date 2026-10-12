@@ -21,11 +21,17 @@
    clear();throw Error('Offlineperioden är slut eller ingen inloggning finns. Anslut till internet och logga in.');
   }
   const {data,error}=await client.auth.getUser();
-  if(error||!data?.user){clear();throw Error('Logga in för att öppna Tillsyno.');}
-  if(!loginFresh(data.user.id)){clear();throw Error('Det har gått sju dagar sedan inloggningen. Logga in med ditt lösenord igen.');}
+  if(error||!data?.user){clear();const issue=Error('Logga in för att öppna Tillsyno.');issue.code='AUTH_REQUIRED';throw issue;}
+  if(!loginFresh(data.user.id)){clear();const issue=Error('Det har gått sju dagar sedan inloggningen. Logga in med ditt lösenord igen.');issue.code='LOGIN_EXPIRED';throw issue;}
   const result=await client.from('tillsyno_access').select('access_role,allowed_modules,license_expires_at').eq('user_id',data.user.id).maybeSingle();
   if(result.error)throw Error('Behörigheten kunde inte kontrolleras. Försök igen.');
-  if(!valid(result.data?.access_role)){clear();throw Error('Kontot är inte godkänt. Kontakta administratören.');}
+  if(!result.data){
+   // Authentication succeeded, but the account has no app access yet.
+   // Preserve the session so this user can see the limited waiting room.
+   clear();const issue=Error('Kontot väntar på administratörens godkännande.');
+   issue.code='PENDING_APPROVAL';throw issue;
+  }
+  if(!valid(result.data.access_role)){clear();throw Error('Kontot saknar giltig behörighet. Kontakta administratören.');}
   const row=result.data;
   if(row.access_role!=='admin'&&row.license_expires_at&&Date.parse(row.license_expires_at)<=Date.now()){
    clear();throw Error('Din licens har gått ut. Kontakta administratören för att förlänga den.');
