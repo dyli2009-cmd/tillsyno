@@ -75,6 +75,76 @@ button{font:inherit;cursor:pointer}
  .scene{border-radius:14px}
 }
 @media(prefers-reduced-motion:reduce){.scene{transition:none}}
+
+/* Shared responsive visual treatment for three isolated design-preview screens. */
+[hidden]{display:none!important}
+.frame[hidden]{display:none!important}
+.choice{appearance:none;text-align:left;color:inherit;font:inherit;cursor:pointer}
+.choice b{justify-self:end}
+.choice--tool{grid-template-columns:32px minmax(0,1fr) auto!important}
+.choice:hover,.choice:focus-visible{outline:2px solid #b6e6f5;outline-offset:2px;background:rgba(18,48,66,.94)}
+.workflow{position:absolute;inset:0;display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;color:#ebf6fb}
+.workflowHead{min-height:72px;display:grid;grid-template-columns:76px minmax(0,1fr) 90px;align-items:center;gap:10px;padding:10px 17px;background:rgba(7,23,35,.56);border-bottom:1px solid #cbe8f12d}
+.flowBack{color:#e4f3f7;border:1px solid #abc8d34a;background:#193e51a8;border-radius:8px;padding:9px 7px;min-width:0;white-space:nowrap;text-align:center;font-size:13px;font-weight:670;cursor:pointer}
+.flowBack:focus-visible{outline:2px solid #9bdff1;outline-offset:2px}
+.flowTitle{text-align:center;min-width:0}
+.flowTitle strong{display:block;font-size:17px;font-weight:750;letter-spacing:-.015em}
+.flowTitle small{display:block;font-size:10px;color:#b6d0d9;margin-top:4px;line-height:1.3}
+.flowHeadAction{justify-self:end;padding:9px 12px;white-space:nowrap;color:#193849;border-radius:8px;background:#d5eaf2;font-size:11px;font-weight:750}
+.flowTabs{min-height:45px;display:flex;align-items:stretch;justify-content:center;gap:4px;padding:6px 12px;background:#0b2a3bc4;border-bottom:1px solid #c9eaf125}
+.flowTabs span{display:grid;place-items:center;padding:6px 12px;font-size:11px;color:#abc6d2;min-width:0;white-space:nowrap;border-radius:7px}
+.flowTabs span.selected{color:#e8f8fc;background:#b7e6f528;border:1px solid #b3e2ee35;font-weight:700}
+.flowArea{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,245px);gap:13px;padding:15px;flex:1;min-height:0;overflow:hidden}
+.flowDrawing{background:#e5eef3;border:1px solid #c7d9e2;border-radius:11px;box-shadow:0 8px 30px #0003;color:#1b4054;display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+.drawingToolbar{min-height:42px;display:flex;align-items:center;justify-content:flex-start;gap:9px;padding:7px 11px;background:#f9fcfe;border-bottom:1px solid #b5cbd7;color:#456579;font-size:11px;white-space:nowrap}
+.drawingToolbar strong{font-size:11px;font-weight:740;color:#214558;overflow:hidden;text-overflow:ellipsis}
+.drawingToolbar i{flex:1}
+.drawingToolbar span{min-width:20px;text-align:center;font-style:normal}
+.drawingBlank{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:20px;text-align:center;background-image:linear-gradient(#bcd0da17 1px,transparent 1px),linear-gradient(90deg,#bcd0da17 1px,transparent 1px);background-size:32px 32px}
+.drawingBlank svg{width:60px;height:60px;fill:none;stroke:#7199ad;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
+.drawingBlank strong{font-size:19px;font-weight:750;color:#2a4b5c}
+.drawingBlank p{font-size:12px;line-height:1.55;color:#638094;max-width:300px;margin:0}
+.flowCTA{background:#164f6c;color:#fff;font-size:12px;font-weight:740;padding:11px 18px;border-radius:8px;margin-top:5px}
+.flowSide{min-height:0;overflow:auto;padding:17px 14px;border:1px solid #c2e7ef29;border-radius:11px;background:rgba(11,35,49,.72)}
+.flowSectionTag{display:block;font-weight:780;letter-spacing:.14em;font-size:9px;color:#91bdcf}
+.flowSide h2{font-size:15px;margin:9px 0 17px;font-weight:750;letter-spacing:-.02em}
+.flowItems{display:grid;gap:8px}
+.flowItems span{display:block;padding:10px 9px;border:1px solid #b5d4df35;background:#18405467;border-radius:8px;font-size:11px;color:#d5e9f2;font-weight:650;line-height:1.35}
+.flowSide p{font-size:11px;line-height:1.6;color:#9ebfcc;margin:17px 0 0}
+.statRow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #aacbd526;color:#b7d5df;font-size:11px}
+.statRow b{color:#ecf8fb;font-size:12px}
+.statRow+.flowItems{margin-top:18px}
+.flowFoot{padding:10px 15px;display:flex;justify-content:center;gap:12px;align-items:center;background:#0a2434b8;border-top:1px solid #a9cad52e;color:#c0d6e0;font-weight:690;font-size:10px}
+.flowFoot span{opacity:.36}
+@container frame (max-width:750px){
+ .flowArea{grid-template-columns:minmax(0,1fr) minmax(150px,30%);gap:9px;padding:10px}
+ .flowSide{padding:12px 10px}
+ .flowTabs{justify-content:space-around}
+ .flowTabs span{padding:7px 9px}
+}
+@container frame (max-width:520px){
+ .workflowHead{min-height:65px;grid-template-columns:58px minmax(0,1fr) 64px;gap:4px;padding:8px 9px}
+ .flowBack{font-size:12px;padding:9px 3px}
+ .flowTitle strong{font-size:15px}
+ .flowTitle small{font-size:9px}
+ .flowHeadAction{font-size:9px;padding:8px 6px}
+ .flowTabs{min-height:43px;padding:5px 4px;gap:2px}
+ .flowTabs span{font-size:9px;padding:6px 5px}
+ .flowArea{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(280px,1.6fr) minmax(165px,1fr);gap:9px;padding:9px}
+ .drawingToolbar{min-height:37px;padding:6px;gap:5px;font-size:9px}
+ .drawingToolbar strong{font-size:9px}
+ .drawingBlank svg{width:45px;height:45px}
+ .drawingBlank strong{font-size:16px}
+ .drawingBlank p{font-size:11px}
+ .drawingBlank{padding:10px;gap:7px}
+ .flowCTA{font-size:11px;padding:9px 13px}
+ .flowSide{padding:11px 12px}
+ .flowSide h2{font-size:12px;margin:5px 0 8px}
+ .flowItems{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .flowItems span{font-size:9px;padding:8px 6px}
+ .flowSide p{margin:9px 0 0;font-size:9px}
+ .flowFoot{min-height:36px;gap:6px;font-size:9px;padding:8px}
+}
 </style>
 </head>
 <body>
@@ -90,20 +160,108 @@ button{font:inherit;cursor:pointer}
  </header>
  <main class="view">
   <section class="scene" id="scene" aria-label="Förhandsvisning av Tillsynos startsida">
-   <span class="testlabel">DESIGNTEST · INTE LIVE</span>
-   <div class="frame">
+   
+   <div class="frame" id="homeScreen">
     <div class="header">
      <div class="identity"><strong>Tillsyno</strong><small>Tillsyn · kontroll · dokumentation</small></div>
-     <span class="label">DESIGN</span>
+     
     </div>
     <div class="choices">
-     <div class="choice"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h8a2 2 0 0 1 2 2v12H7a2 2 0 0 1-2-2V7"/><path d="M9 3h6v4H9zM9 11l1.5 1.5 2.5-3M9 16l1.5 1.5 2.5-3M16 11h2M16 16h2"/></svg></span><span class="copy"><strong>Kontrollflöde</strong><small>Checklistor</small></span><b>Öppna ›</b></div>
-     <div class="choice"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 5 6-2 6 3 6-3v16l-6 2-6-3-6 3zM9 3v15M15 6v15"/><circle cx="7" cy="9" r="1.6"/></svg></span><span class="copy"><strong>SmartMatch</strong><small>Ritning · dörrkort · dörrautomatik</small></span><b>Öppna ›</b></div>
-     <div class="choice choice--tool"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 5a6 6 0 0 0-7 7L3 16.7A2.6 2.6 0 0 0 6.7 20l4.6-4.7a6 6 0 0 0 7-7L15 11l-3-3z"/></svg></span><span class="copy"><strong>Ritningsverktyg</strong><small>Rensa · beskära · optimera</small></span></div>
+     <button type="button" class="choice" data-open="control" aria-label="Visa designförslag för Kontrollflöde"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h8a2 2 0 0 1 2 2v12H7a2 2 0 0 1-2-2V7"/><path d="M9 3h6v4H9zM9 11l1.5 1.5 2.5-3M9 16l1.5 1.5 2.5-3M16 11h2M16 16h2"/></svg></span><span class="copy"><strong>Kontrollflöde</strong><small>Checklistor</small></span><b>Öppna ›</b></button>
+     <button type="button" class="choice" data-open="smart" aria-label="Visa designförslag för SmartMatch"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 5 6-2 6 3 6-3v16l-6 2-6-3-6 3zM9 3v15M15 6v15"/><circle cx="7" cy="9" r="1.6"/></svg></span><span class="copy"><strong>SmartMatch</strong><small>Ritning · dörrkort · dörrautomatik</small></span><b>Öppna ›</b></button>
+     <button type="button" class="choice choice--tool" data-open="tools" aria-label="Visa designförslag för Ritningsverktyg"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 5a6 6 0 0 0-7 7L3 16.7A2.6 2.6 0 0 0 6.7 20l4.6-4.7a6 6 0 0 0 7-7L15 11l-3-3z"/></svg></span><span class="copy"><strong>Ritningsverktyg</strong><small>Rensa · beskära · optimera</small></span><b>Öppna ›</b></button>
     </div>
     <div class="account">Mitt konto ▾</div>
    </div>
-   <div class="footerlabel" id="dimensions">RESPONSIV DESIGN · UTAN BAKGRUNDSIKONER</div>
+   
+
+   <section class="workflow" id="controlScreen" data-screen="control" hidden aria-label="Designförslag för Kontrollflöde">
+    <header class="workflowHead">
+     <button class="flowBack" type="button" data-back aria-label="Till startsidan">‹ <span>Hem</span></button>
+     <div class="flowTitle"><strong>Kontrollflöde</strong><small>En ritning · valfria protokoll</small></div>
+     <span class="flowHeadAction">Spara PDF</span>
+    </header>
+    <nav class="flowTabs" aria-label="Kontrollflödets vyer">
+     <span class="selected">Ritning</span><span>Översikt</span><span>Protokoll</span><span>Projekt</span>
+    </nav>
+    <div class="flowArea">
+     <section class="flowDrawing">
+      <div class="drawingToolbar"><span>‹</span><strong>Ingen ritning</strong><span>›</span><i></i><span>−</span><span>100 %</span><span>+</span></div>
+      <div class="drawingBlank">
+       <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 8h29l9 9v39H14zM43 8v12h9M21 31h24M21 39h18M21 47h11"/></svg>
+       <strong>Välj en ritning</strong>
+       <p>Här öppnas projektets PDF-ritning och markeringar.</p>
+       <span class="flowCTA">Öppna PDF</span>
+      </div>
+     </section>
+     <aside class="flowSide">
+      <span class="flowSectionTag">KONTROLLPUNKTER</span>
+      <h2>Välj protokoll</h2>
+      <div class="flowItems"><span>＋ Revision dörrautomatik</span><span>＋ Egenkontroll</span><span>＋ Revision lås</span><span>＋ Passer</span><span>＋ Branddetektor</span></div>
+      <p>Kontrollpunkter och projektdata visas här när en ritning har öppnats.</p>
+     </aside>
+    </div>
+    <div class="flowFoot">Ritning <span>·</span> Dörrar <span>·</span> Protokoll <span>·</span> Projekt</div>
+   </section>
+   <section class="workflow" id="smartScreen" data-screen="smart" hidden aria-label="Designförslag för SmartMatch">
+    <header class="workflowHead">
+     <button class="flowBack" type="button" data-back aria-label="Till startsidan">‹ <span>Hem</span></button>
+     <div class="flowTitle"><strong>SmartMatch</strong><small>Projektflöde</small></div>
+     <span class="flowHeadAction">Spara</span>
+    </header>
+    <nav class="flowTabs" aria-label="SmartMatch arbetsvyer">
+     <span class="selected">Ritning</span><span>Dörrkort</span><span>DA Egenkontroll</span>
+    </nav>
+    <div class="flowArea">
+     <section class="flowDrawing">
+      <div class="drawingToolbar"><strong>Ingen projektfil</strong><i></i><span>Passa</span><span>−</span><span>100 %</span><span>+</span></div>
+      <div class="drawingBlank">
+       <svg viewBox="0 0 64 64" aria-hidden="true"><path d="m9 13 16-5 15 6 15-6v42l-15 6-15-6-16 6zM25 8v42M40 14v42M14 27h6M44 29h6"/></svg>
+       <strong>Projektets ritning</strong>
+       <p>Här visas GS-positioner, dörrautomatik och kopplade dörrkort.</p>
+       <span class="flowCTA">Lägg till ritning</span>
+      </div>
+     </section>
+     <aside class="flowSide">
+      <span class="flowSectionTag">SMARTMATCH</span>
+      <h2>Projektöversikt</h2>
+      <div class="statRow"><span>GS-positioner</span><b>0</b></div>
+      <div class="statRow"><span>Dörrkort</span><b>0</b></div>
+      <div class="statRow"><span>Egenkontroller</span><b>0 %</b></div>
+      <div class="flowItems"><span>＋ Lägg till dörrkort</span><span>＋ Hitta automatiker</span></div>
+      <p>Ritningen är fortsatt ljus så att stämplar och pilar syns tydligt.</p>
+     </aside>
+    </div>
+    <div class="flowFoot">Ritning <span>·</span> Dörrkort <span>·</span> Egenkontroller</div>
+   </section>
+   <section class="workflow" id="toolsScreen" data-screen="tools" hidden aria-label="Designförslag för Ritningsverktyg">
+    <header class="workflowHead">
+     <button class="flowBack" type="button" data-back aria-label="Till startsidan">‹ <span>Hem</span></button>
+     <div class="flowTitle"><strong>Ritningsverktyg</strong><small>Rensa · beskära · optimera</small></div>
+     <span class="flowHeadAction">Spara PDF</span>
+    </header>
+    <nav class="flowTabs" aria-label="Verktyg">
+     <span class="selected">Ritning</span><span>Rensa</span><span>Beskär</span><span>Optimera</span>
+    </nav>
+    <div class="flowArea">
+     <section class="flowDrawing">
+      <div class="drawingToolbar"><strong>Ingen PDF öppnad</strong><i></i><span>−</span><span>100 %</span><span>+</span></div>
+      <div class="drawingBlank">
+       <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 8h28l8 8v40H14zM42 8v10h8M21 30h22M21 37h22M21 44h13M39 43l7 7M46 43l-7 7"/></svg>
+       <strong>Öppna ritning</strong>
+       <p>Rensa, beskära och optimera PDF direkt i arbetsvyn.</p>
+       <span class="flowCTA">Välj PDF</span>
+      </div>
+     </section>
+     <aside class="flowSide">
+      <span class="flowSectionTag">PDF-VERKTYG</span>
+      <h2>Bearbeta ritning</h2>
+      <div class="flowItems"><span>⌫ Rensa markeringar</span><span>⌗ Beskär sidor</span><span>↘ Optimera storlek</span><span>↶ Ångra</span></div>
+      <p>Samma lugna mörkblå ram. Arbetsytan för PDF är ljus och lätt att läsa.</p>
+     </aside>
+    </div>
+    <div class="flowFoot">Öppna PDF <span>·</span> Bearbeta <span>·</span> Spara</div>
+   </section>
   </section>
  </main>
  <footer class="note">
@@ -112,13 +270,26 @@ button{font:inherit;cursor:pointer}
  </footer>
 </div>
 <script>
+
 (function(){
- const lab=document.getElementById("lab"),scene=document.getElementById("scene");
- const buttons=Array.from(document.querySelectorAll("[data-size]"));
- buttons.forEach(btn=>btn.addEventListener("click",()=>{
+ const lab=document.getElementById('lab');
+ const home=document.getElementById('homeScreen');
+ const screens=Array.from(document.querySelectorAll('.workflow[data-screen]'));
+ const sizeButtons=Array.from(document.querySelectorAll('[data-size]'));
+ function showScreen(mode){
+  const target=screens.find(sc=>sc.dataset.screen===mode);
+  if(mode!=='home'&&!target)return;
+  home.hidden=mode!=='home';
+  screens.forEach(sc=>{sc.hidden=sc!==target;});
+  document.getElementById('scene').setAttribute('aria-label',mode==='home'?'Tillsynos startsida':target.getAttribute('aria-label'));
+ }
+ sizeButtons.forEach(btn=>btn.addEventListener('click',()=>{
   lab.dataset.mode=btn.dataset.size;
-  buttons.forEach(b=>b.setAttribute("aria-pressed",String(b===btn)));
+  sizeButtons.forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));
  }));
+ document.querySelectorAll('[data-open]').forEach(btn=>btn.addEventListener('click',()=>showScreen(btn.dataset.open)));
+ document.querySelectorAll('[data-back]').forEach(btn=>btn.addEventListener('click',()=>showScreen('home')));
+ showScreen('home');
 })();
 </script>
 </body>
