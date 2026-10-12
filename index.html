@@ -38,7 +38,76 @@ html[data-auth-pending] body{visibility:hidden}
 #appHome .homeToolsIcon{width:32px!important;height:32px!important}
 #appHome .homeToolsLink strong{font-size:13px!important;font-weight:700!important}
 #appHome .homeChoice small,#appHome .homeToolsLink small{font-size:11px!important;line-height:1.4!important;margin-top:4px!important;color:rgba(242,248,251,.80)!important}
-</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.286"></script><script src="auth/guard.js?v=2.4.286" defer></script></head><body data-view="drawing" class="homeMode">
+
+/* v2.4.287 – approved clean navy home design, shared web/iOS.
+   Visual styling only: existing hrefs, auth, licensing and module flows are unchanged. */
+#appHome{
+ isolation:isolate!important;
+ background:#0c2535!important;
+ background-image:radial-gradient(ellipse at 52% 42%,rgba(39,83,102,.29),transparent 65%),linear-gradient(145deg,#112f42 0%,#0b2637 52%,#091e2b 100%)!important;
+ background-size:cover!important;background-repeat:no-repeat!important;
+}
+#appHome::before,#appHome::after{
+ content:"";position:absolute;pointer-events:none;z-index:0;width:20%;height:22%;opacity:.53;
+}
+#appHome::before{right:6%;top:11%;border-right:1px solid #b8dfed36;border-top:1px solid #b8dfed36}
+#appHome::after{left:6%;bottom:10%;border-left:1px solid #b8dfed28;border-bottom:1px solid #b8dfed28}
+#appHome .homeAmbient,#appHome .homeCctvCue,#appHome .homeBackdropIcons{display:none!important}
+#appHome .homeShell{
+ position:relative!important;z-index:2!important;
+ width:min(400px,100%)!important;max-width:100%!important;
+ padding:18px 12px!important;background:transparent!important;border:0!important;
+ border-radius:0!important;box-shadow:none!important;
+}
+#appHome .homeBrand{justify-content:center!important;gap:10px!important;margin-bottom:17px!important}
+#appHome .homeBrand strong{color:#f5fbfe!important;font-size:23px!important;font-weight:770!important;letter-spacing:-.035em!important;text-shadow:none!important}
+#appHome .homeTagline{color:#c0d8e3!important;font-size:10px!important;text-shadow:none!important;letter-spacing:.02em!important}
+#appHome .homeBrand>span{font-size:10px!important;padding:4px 6px!important;border-radius:5px!important;background:#193c4c8a!important;border:1px solid #bcdfeb42!important}
+#appHome .homeChoices,#appHome .homeTools{
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+ width:min(350px,100%)!important;max-width:350px!important;
+ margin-left:auto!important;margin-right:auto!important;gap:9px!important;
+}
+#appHome .homeChoice,#appHome .homeToolsLink{
+ display:grid!important;grid-template-columns:32px minmax(0,1fr) auto!important;align-items:center!important;
+ justify-content:stretch!important;text-align:left!important;
+ gap:10px!important;width:100%!important;max-width:100%!important;
+ min-height:64px!important;padding:9px 11px!important;margin:0!important;
+ border:1px solid #d4ebf143!important;border-radius:10px!important;
+ color:#f1f9fc!important;background:#0b2537b9!important;
+ box-shadow:0 7px 23px #0015203b!important;backdrop-filter:blur(8px)!important;
+ -webkit-backdrop-filter:blur(8px)!important;
+}
+#appHome .homeChoice:hover,#appHome .homeToolsLink:hover,#appHome .homeChoice:focus-visible,#appHome .homeToolsLink:focus-visible{
+ background:#184153dd!important;border-color:#d5f2fa77!important;
+}
+#appHome .homeChoiceIcon,#appHome .homeToolsIcon{
+ display:grid!important;place-items:center!important;box-sizing:border-box!important;
+ width:32px!important;height:32px!important;min-width:32px!important;
+ border:0!important;border-radius:8px!important;background:#c9eaf315!important;color:#e0f4fa!important;
+}
+#appHome .homeChoiceIcon svg,#appHome .homeToolsIcon svg{width:21px!important;height:21px!important}
+#appHome .homeChoice strong,#appHome .homeToolsLink strong{font-size:13px!important;font-weight:730!important;color:#f3fbfd!important;line-height:1.3!important;text-shadow:none!important}
+#appHome .homeChoice small,#appHome .homeToolsLink small{font-size:11px!important;color:#b9d5df!important;line-height:1.3!important;margin-top:3px!important}
+#appHome .homeChoice b,#appHome .homeToolsLink b{display:block!important;justify-self:end!important;font:720 11px/1.3 system-ui!important;white-space:nowrap!important;color:#deeff6!important}
+#appHome .homeTools{margin-top:9px!important;padding:0!important;border:0!important}
+#appHome .homeToolsLink{min-height:53px!important}
+#appHome .homeProfile,#appHome .homeAccount{width:min(350px,100%)!important;max-width:350px!important;margin:12px auto 0!important}
+#appHome .homeProfile>summary{background:#0a293bc2!important;border:1px solid #daedf13d!important;border-radius:10px!important;font-size:11px!important;min-height:41px!important}
+#appHome .homeAccount{background:#0a293bc2!important;border:1px solid #daedf13d!important;border-radius:10px!important;padding:9px!important;gap:7px!important}
+#appHome .homeAccount a,#appHome .homeAccount button{font-size:10px!important}
+@media(max-width:620px){
+ #appHome{padding:max(16px,env(safe-area-inset-top)) 11px max(16px,env(safe-area-inset-bottom))!important}
+ #appHome .homeShell{width:min(355px,100%)!important;padding:12px 4px!important}
+ #appHome .homeBrand{margin-bottom:14px!important}
+ #appHome .homeBrand strong{font-size:21px!important}
+ #appHome .homeChoice,#appHome .homeToolsLink{min-height:60px!important;padding:8px 9px!important;border-radius:10px!important;gap:8px!important}
+ #appHome .homeToolsLink{min-height:50px!important}
+ #appHome::before,#appHome::after{opacity:.28}
+}
+@media(max-height:500px){#appHome{overflow-y:auto!important;align-items:safe center!important}}
+
+</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.287"></script><script src="auth/guard.js?v=2.4.287" defer></script></head><body data-view="drawing" class="homeMode">
 <section id="appHome" class="appHome" aria-label="Välj arbetsläge">
   <div class="homeAmbient" aria-hidden="true">
     <span class="homeAmbientItem homeAmbientCctv"><svg viewBox="0 0 64 64"><path d="M10 19h29l10 9-10 9H10z"/><path d="M39 28h12l7 5"/><path d="M23 37v11"/><path d="M15 49h20"/></svg><small>CCTV</small></span>
@@ -49,7 +118,7 @@ html[data-auth-pending] body{visibility:hidden}
     <span class="homeAmbientItem homeAmbientFire"><svg viewBox="0 0 64 64"><path d="M34 9c2 11-7 14-3 24 2 5 8 6 10 1 2 6 2 12-2 17-7 8-23 5-27-6-3-9 2-17 9-23 0 8 4 11 8 10-3-11 8-14 5-27z"/></svg></span>
   </div>
   <div class="homeShell">
-    <div class="homeBrand"><div><strong>Tillsyno</strong><small class="homeTagline">Tillsyn · kontroll · dokumentation</small></div><span>v2.4.286</span></div>
+    <div class="homeBrand"><div><strong>Tillsyno</strong><small class="homeTagline">Tillsyn · kontroll · dokumentation</small></div><span>v2.4.287</span></div>
     <div class="homeChoices">
       <a class="homeChoice" href="all-in-one.html?v=2.4.256">
         <span class="homeChoiceIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h8a2 2 0 0 1 2 2v12H7a2 2 0 0 1-2-2V7"/><path d="M9 3h6v4H9z"/><path d="m9 11 1.4 1.4L13 9.8M9 16l1.4 1.4L13 14.8M15 11h2M15 16h2"/></svg></span>
@@ -66,6 +135,7 @@ html[data-auth-pending] body{visibility:hidden}
       <a class="homeToolsLink" href="drawing-tools.html?v=2.4.266">
         <span class="homeToolsIcon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></svg></span>
         <span><strong>Ritningsverktyg</strong><small>Rensa · beskära · optimera</small></span>
+        <b>Öppna ›</b>
       </a>
     </div>
     <details class="homeProfile" id="homeProfile">
