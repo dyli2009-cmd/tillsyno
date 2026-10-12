@@ -44,6 +44,14 @@ Regler:
 
 När Projektflöde diskuteras ska fokus ligga på Projektflöde och inga ändringar göras i Kontrollflöde om användaren inte uttryckligen först låser upp Kontrollflödet.
 
+## Inloggning, modulbehörigheter och licenser – beslutad regel
+
+Läs **[TILLSYNO_LICENSE_RULES_LOCK.md](TILLSYNO_LICENSE_RULES_LOCK.md)** före ändringar i inloggning, användarhantering, modulbehörigheter, licenstid eller offlineverifiering.
+
+**Beslut 12 oktober 2026:** Administratören tilldelar moduler och licenstid. En verifierad användare kan arbeta offline i högst den resterande delen av sju dagar från senaste inloggning/kontroll, även om licensen löper ut under offlineperioden. Vid ny onlinekontroll gäller licensens riktiga slutdatum direkt; efter sju dagar krävs ny inloggning. Senare företags- och betallicenser ska inte byggas utan nytt beslut.
+
+Detta är en låst funktionsregel och får inte ändras som bieffekt av annat arbete.
+
 ## Fortsättning från senaste arbetspasset
 
 Läs **[SMARTMATCH_FORTSATTNING_2026-10-10.md](SMARTMATCH_FORTSATTNING_2026-10-10.md)** före fortsatt SmartMatch-kodning. Här finns beslut, befintlig TEST-status, återöppningstest, Dropbox-delning, olösta risker och prioriterade förbättringar. Detta är en dokumentationspost, ingen ny funktionsversion.
