@@ -16,8 +16,9 @@
  form.addEventListener('submit',async event=>{
   event.preventDefault();const button=form.querySelector('button');button.disabled=true;show('Loggar in…');
   try{
-   const fields=new FormData(form),{error}=await auth.client.auth.signInWithPassword({email:String(fields.get('email')||'').trim(),password:String(fields.get('password')||'')});
-   if(error)throw Error('Fel e-postadress eller lösenord.');
+   const fields=new FormData(form),{data,error}=await auth.client.auth.signInWithPassword({email:String(fields.get('email')||'').trim(),password:String(fields.get('password')||'')});
+   if(error||!data?.user)throw Error('Fel e-postadress eller lösenord.');
+   auth.markLogin(data.user.id);
    await enter();
   }catch(error){auth.clear();await auth.client.auth.signOut({scope:'local'});show(error.message||'Det gick inte att logga in.');}
   finally{button.disabled=false;}
