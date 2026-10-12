@@ -1,5 +1,11 @@
-<!doctype html><html lang="sv" data-auth-pending><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#132b38"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Tillsyno"><meta name="format-detection" content="telephone=no"><link rel="manifest" href="manifest.webmanifest?v=2.4.3"><link rel="apple-touch-icon" sizes="180x180" href="icon-180.png?v=2.4.3"><link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2.4.3"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Tillsyno</title><script src="home-bg-data.js?v=2.4.217"></script><link rel="stylesheet" href="style.css?v=2.4.251"><link rel="stylesheet" href="customer-preview-pager.css?v=2.4.217"><script src="vendor/pdf.min.js"></script><script src="vendor/jspdf.umd.min.js"></script><script src="vendor/pdf-lib.min.js"></script><style>
-/* v2.4.281: account panel drops below the trigger without reflow or page scrolling. */
+<!doctype html><html lang="sv" data-auth-pending><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#132b38"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Tillsyno"><meta name="format-detection" content="telephone=no"><link rel="manifest" href="manifest.webmanifest?v=2.4.3"><link rel="apple-touch-icon" sizes="180x180" href="icon-180.png?v=2.4.3"><link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2.4.3"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Tillsyno</title><script>(function(){try{
+  var fragment=new URLSearchParams(location.hash.slice(1)),query=new URLSearchParams(location.search);
+  if(fragment.get('type')!=='recovery'&&query.get('type')!=='recovery')return;
+  var target=new URL('auth/reset-password.html',location.href);
+  target.search=location.search;target.hash=location.hash;
+  location.replace(target.href);
+ }catch(_){}})();</script><script src="home-bg-data.js?v=2.4.217"></script><link rel="stylesheet" href="style.css?v=2.4.251"><link rel="stylesheet" href="customer-preview-pager.css?v=2.4.217"><script src="vendor/pdf.min.js"></script><script src="vendor/jspdf.umd.min.js"></script><script src="vendor/pdf-lib.min.js"></script><style>
+/* v2.4.282: account panel drops below the trigger without reflow or page scrolling. */
 #appHome{overflow:hidden!important;align-items:center!important}
 @media(max-height:480px){#appHome{overflow-y:auto!important;align-items:safe center!important}}
 html[data-auth-pending] body{visibility:hidden}
@@ -26,7 +32,7 @@ html[data-auth-pending] body{visibility:hidden}
 .homeProfileMenu a,.homeProfileMenu button{box-sizing:border-box;display:flex;align-items:center;gap:11px;width:100%;padding:10px 11px;text-align:left;border:0;border-radius:8px;background:transparent;color:#eef7fa;text-decoration:none;font:650 12px system-ui;cursor:pointer}
 .homeProfileMenu a:hover,.homeProfileMenu button:hover,.homeProfileMenu a:focus-visible,.homeProfileMenu button:focus-visible{background:#ffffff17;outline:none}
 @media(max-width:620px){#tillsynoWaitingNotice,.homeProfile{width:min(315px,88vw)}}
-</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.281"></script><script src="auth/guard.js?v=2.4.281" defer></script></head><body data-view="drawing" class="homeMode">
+</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.282"></script><script src="auth/guard.js?v=2.4.282" defer></script></head><body data-view="drawing" class="homeMode">
 <section id="appHome" class="appHome" aria-label="Välj arbetsläge">
   <div class="homeAmbient" aria-hidden="true">
     <span class="homeAmbientItem homeAmbientCctv"><svg viewBox="0 0 64 64"><path d="M10 19h29l10 9-10 9H10z"/><path d="M39 28h12l7 5"/><path d="M23 37v11"/><path d="M15 49h20"/></svg><small>CCTV</small></span>
@@ -37,7 +43,7 @@ html[data-auth-pending] body{visibility:hidden}
     <span class="homeAmbientItem homeAmbientFire"><svg viewBox="0 0 64 64"><path d="M34 9c2 11-7 14-3 24 2 5 8 6 10 1 2 6 2 12-2 17-7 8-23 5-27-6-3-9 2-17 9-23 0 8 4 11 8 10-3-11 8-14 5-27z"/></svg></span>
   </div>
   <div class="homeShell">
-    <div class="homeBrand"><div><strong>Tillsyno</strong><small class="homeTagline">Tillsyn · kontroll · dokumentation</small></div><span>v2.4.281</span></div>
+    <div class="homeBrand"><div><strong>Tillsyno</strong><small class="homeTagline">Tillsyn · kontroll · dokumentation</small></div><span>v2.4.282</span></div>
     <div class="homeChoices">
       <a class="homeChoice" href="all-in-one.html?v=2.4.256">
         <span class="homeChoiceIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h8a2 2 0 0 1 2 2v12H7a2 2 0 0 1-2-2V7"/><path d="M9 3h6v4H9z"/><path d="m9 11 1.4 1.4L13 9.8M9 16l1.4 1.4L13 14.8M15 11h2M15 16h2"/></svg></span>
@@ -109,7 +115,7 @@ html[data-auth-pending] body{visibility:hidden}
 <button id="mobileOverview"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 5h3v3H5zM11 6.5h8M5 11h3v3H5zM11 12.5h8M5 17h3v3H5zM11 18.5h8"/></svg></span><span class="navLabel">Dörrar</span></button>
 <button id="mobileProtocol"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h8M9 3h6v3H9zM7 5H5v16h14V5h-2"/><path d="m8 13 2 2 5-5"/></svg></span><span class="navLabel">Protokoll</span></button>
 <button id="settingsBtn"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V7l8-4 8 4v13H4Z"/><path d="M8 10h2M14 10h2M8 14h2M14 14h2M10 20v-3h4v3"/></svg></span><span class="navLabel">Projekt</span></button>
-</nav><script src="ui-text-scale.js?v=2.4.217"></script><script src="drawing-annotations.js?v=2.4.217"></script><script src="session-history.js?v=2.4.217"></script><script src="app.js?v=2.4.256"></script><script src="reports.js?v=2.4.217"></script><script src="v2.js?v=2.4.217"></script><script src="customer-preview-pager.js?v=2.4.217"></script><script src="drawing-transfer.js?v=2.4.217"></script><script src="offline.js?v=2.4.281"></script>
+</nav><script src="ui-text-scale.js?v=2.4.217"></script><script src="drawing-annotations.js?v=2.4.217"></script><script src="session-history.js?v=2.4.217"></script><script src="app.js?v=2.4.256"></script><script src="reports.js?v=2.4.217"></script><script src="v2.js?v=2.4.217"></script><script src="customer-preview-pager.js?v=2.4.217"></script><script src="drawing-transfer.js?v=2.4.217"></script><script src="offline.js?v=2.4.282"></script>
 </body></html>
 
 
