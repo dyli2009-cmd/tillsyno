@@ -58,6 +58,11 @@
   }catch(error){
    if(!navigator.onLine){showDenied(error.message);return;}
    const auth=window.TillsynoAuth;
+   if(error?.code==='PENDING_APPROVAL'){
+    // Do not render any work area while the account is awaiting approval.
+    location.replace(new URL('auth/pending.html',auth?.root||new URL('./',location.href)));
+    return;
+   }
    const login=new URL('auth/login.html',auth?.root||new URL('./',location.href));
    login.searchParams.set('next',location.pathname+location.search);
    location.replace(login);
