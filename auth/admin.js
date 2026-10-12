@@ -56,6 +56,9 @@
     $('licenseUntil').min=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Stockholm',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
     $('cancelLicense').disabled=user.status==='revoked';
     $('cancelLicense').textContent=user.status==='revoked'?'Licens redan avslutad':'Avsluta licens nu';
+    $('cancelLicenseConfirm').hidden=true;
+    $('cancelLicense').setAttribute('aria-expanded','false');
+    $('cancelLicensePerson').textContent='Licensen för '+user.email+' avslutas vid nästa onlinekontroll. Kontot sparas.';
     $('licenseError').hidden=true;
     document.querySelectorAll('#licenseForm input[name="modules"]').forEach(c=>c.checked=(user.modules||[]).includes(c.value));
     $('licenseDialog').showModal();return;
@@ -91,15 +94,28 @@
  });
  $('licenseDays').addEventListener('change',()=>{if($('licenseDays').value)$('licenseUntil').value='';});
  $('licenseUntil').addEventListener('input',()=>{if($('licenseUntil').value)$('licenseDays').value='';});
- $('cancelLicense').addEventListener('click',async()=>{
+ const hideCancelConfirmation=()=>{
+  $('cancelLicenseConfirm').hidden=true;
+  $('cancelLicense').setAttribute('aria-expanded','false');
+ };
+ $('cancelLicense').addEventListener('click',()=>{
   if(busy||!editingUser||editingUser.status==='revoked')return;
-  if(!window.confirm('Avsluta licensen för '+editingUser.email+'? Kontot sparas, men åtkomsten spärras vid nästa onlinekontroll.'))return;
-  busy=true;$('cancelLicense').disabled=true;$('licenseError').hidden=true;
+  const willOpen=$('cancelLicenseConfirm').hidden;
+  $('cancelLicenseConfirm').hidden=!willOpen;
+  $('cancelLicense').setAttribute('aria-expanded',String(willOpen));
+ });
+ $('keepLicense').addEventListener('click',hideCancelConfirmation);
+ $('licenseDialog').addEventListener('close',()=>{hideCancelConfirmation();editingUser=null;});
+ $('confirmCancelLicense').addEventListener('click',async()=>{
+  if(busy||!editingUser||editingUser.status==='revoked')return;
+  const user=editingUser;
+  busy=true;$('confirmCancelLicense').disabled=true;$('licenseError').hidden=true;
   try{
-   const result=await window.TillsynoAuth.admin('cancelLicense',{userId:editingUser.id});
+   const result=await window.TillsynoAuth.admin('cancelLicense',{userId:user.id});
+   hideCancelConfirmation();
    $('licenseDialog').close();notice(result.message);
   }catch(error){$('licenseError').textContent=error.message;$('licenseError').hidden=false;}
-  finally{busy=false;$('cancelLicense').disabled=false;await load();}
+  finally{busy=false;$('confirmCancelLicense').disabled=false;await load();}
  });
  $('extendLicense').addEventListener('click',async()=>{
   if(busy||!editingUser)return;
