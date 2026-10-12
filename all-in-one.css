@@ -963,3 +963,33 @@ body.allInOneApp .allProtocolActions a{min-height:36px;border-radius:8px;color:#
  body.allInOneApp .allProtocolChoices label{min-height:62px;padding:10px}
  body.allInOneApp .allProtocolActions{padding:11px}
 }
+
+/* v2.4.289: high contrast for Hem and Ritningsverktyg inside the dark
+   Kontrollflöde folder picker. Override older white-button rules. */
+body.allInOneApp .allProtocolDialog .allProtocolActions a.allProtocolHome,
+body.allInOneApp .allProtocolDialog .allProtocolActions a.allProtocolDrawingTool{
+ background:#163e53!important;
+ color:#f6fcff!important;
+ border:1px solid #9ac5d7!important;
+ text-decoration:none!important;
+ box-shadow:none!important;
+ opacity:1!important;
+}
+body.allInOneApp .allProtocolDialog .allProtocolActions a.allProtocolHome svg,
+body.allInOneApp .allProtocolDialog .allProtocolActions a.allProtocolDrawingTool svg{
+ color:#f6fcff!important;
+ stroke:#f6fcff!important;
+ fill:none!important;
+}
+body.allInOneApp .allProtocolDialog .allProtocolActions a.allProtocolHome span,
+body.allInOneApp .allProtocolDialog .allProtocolActions a.allProtocolDrawingTool span{
+ color:#f6fcff!important;
+}
+body.allInOneApp .allProtocolDialog .allProtocolActions a.allProtocolHome:hover,
+body.allInOneApp .allProtocolDialog .allProtocolActions a.allProtocolDrawingTool:hover,
+body.allInOneApp .allProtocolDialog .allProtocolActions a.allProtocolHome:focus-visible,
+body.allInOneApp .allProtocolDialog .allProtocolActions a.allProtocolDrawingTool:focus-visible{
+ background:#225872!important;
+ border-color:#d1edf8!important;
+ outline-offset:2px;
+}
