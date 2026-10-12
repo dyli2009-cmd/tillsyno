@@ -1,6 +1,6 @@
 # Tillsyno – beslutad regel för användare, behörighet och licens
 **Beslutad:** 12 oktober 2026
-**Status:** Gällande överenskommelse, första enkla versionen (webb: v2.4.271).
+**Status:** Gällande överenskommelse, första enkla versionen (webb: v2.4.272).
 **Ändra inte dessa principer utan nytt uttryckligt beslut från användaren.**
 
 ## 1. En gemensam ingång
@@ -49,12 +49,13 @@ Detta är den särskilt överenskomna kompromissen för servicetekniker utan int
 - `allowed_modules` och `license_expires_at` per konto.
 - Admingränssnitt för att skapa användare med licenstid/moduler, redigera, förlänga, spärra och återaktivera.
 - Webbläsarguard och sjudagarskrav; lokal offlineåtkomst kräver tidigare verifiering.
+- Självregistrering via `auth/register.html`; registrerade användare saknar åtkomstrad tills administratör godkänner dem. E-postbekräftelse och val av moduler/licenstid kontrolleras server-side i `tillsyno-admin`.
 - Serverfunktionen har åtgärderna `list`, `add`, `approve`, `remove`, `link`, `update`, `extend`.
 
 **Ej färdigställt/verifierat:**
 - Riktiga end-to-end-tester på iPhone/iPad med både admin och medlemskonto, inkl. offline och licensutgång.
 - Spegling och publicering av motsvarande ändringar i aktuell iOS/TestFlight-build.
-- Självregistrering/"Ansök om konto" + väntande ansökningar; detta var en diskuterad framtida funktion, **inte** implementerad ännu.
+- Registrering med namn, e-post och eget lösenord via "Registrera", följd av väntande ansökan. Inget konto får modulbehörighet eller licens före adminbeslut; e-postbekräftelse krävs innan godkännande. Admin väljer moduler och 2/7/30/365 dagar vid godkännande. Publicerat för webben i v2.4.272. Verifiera alltid med verklig testanvändare före produktionsbruk.
 - Företag som köper ett paket och chefer som fördelar moduler, betalning, priser, licenspaket, flera företagsadministratörer: **framtida möjlighet, inte byggt nu**.
 - GitHub Pages är statisk/offentlig hosting. Klientbaserad HTML-spärr gör inte källkoden eller lokala PDF-filer hemliga. För stark företagssekretess behövs autentiserad hosting, säker lokal lagring och bättre offlinelicenser.
 
