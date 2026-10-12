@@ -25,7 +25,22 @@ if(cat==="CE-skylt"&&/\.(png|jpe?g)$/i.test(names[cat]||""))return bytes.slice()
 const pdf=await PDFLib.PDFDocument.load(bytes.slice(),{ignoreEncryption:true,updateMetadata:false});
 const values=saved(i,cat).fields||{},defaults=auto(i);
 for(const f of pdf.getForm().getFields()){const name=f.getName(),k=kind(f),v=values[name]??defaults[name];if(v===undefined)continue;
-try{if(k==="text")f.setText(String(v??""));else if(k==="check"){if(v===true)f.check();else f.uncheck()}else if((k==="radio"||k==="choice")&&v&&f.getOptions().includes(v))f.select(v);else if(k==="radio"||k==="choice")f.clear()}catch(_){}}
+try{if(cat==="Riskanalys"&&name==="4.6.1")continue;if(k==="text")f.setText(String(v??""));else if(k==="check"){if(v===true)f.check();else f.uncheck()}else if((k==="radio"||k==="choice")&&v&&f.getOptions().includes(v))f.select(v);else if(k==="radio"||k==="choice")f.clear()}catch(_){}}
+if(cat==="Riskanalys"&&pdf.getPageCount()===5){
+ const rfields=saved(i,cat).fields||{},opts=[
+ [1,"4.6.1",[[231,325.8,"Hög Val 1"],[231,344.2,"Hög Val 2"],[231,374.9,"Låg Val 1"],[231,571.3,"Låg Val 2"],[231,638.4,"Låg Val 3"]]],
+ [2,"4.6.2",[[230.9,101.2,"Hög Val 1"],[230.9,119.9,"Hög Val 2"],[230.9,238.8,"Låg Val 2"],[230.9,305.4,"Låg Val 3"]]]
+ ];
+ try{const radio=pdf.getForm().getRadioGroup("4.6.1");radio.clear();}catch(_){}
+ for(const [pageIndex,key,positions] of opts){
+ const chosen=String(rfields[key]||"").replace(/[#]20/g," ").replace(/[#]F6/gi,"ö").replace(/[#]E5/gi,"å");
+ if(!chosen)continue;
+ const found=positions.find(pos=>pos[2]===chosen||pos[2].toLowerCase()===chosen.toLowerCase());
+ if(found){const pg=pdf.getPages()[pageIndex];
+ pg.drawText("X",{x:found[0]+2,y:pg.getHeight()-found[1]-9.5,size:9.5,color:PDFLib.rgb(0,0,0)});
+ }
+ }
+}
 if(cat==="Riskanalys"&&saved(i,cat).signature){const pg=pdf.getPages()[4];if(pg){try{const im=await pdf.embedPng(saved(i,cat).signature);pg.drawImage(im,{x:140.5,y:pg.getHeight()-619.8,width:198.5,height:35.8})}catch(err){throw Error("Kunde inte lägga in signaturen: "+err.message)}}}
 return new Uint8Array(await pdf.save({useObjectStreams:true}));}
 function setup(){if($("slrFlowTestDialog"))return;
@@ -52,7 +67,7 @@ const url=URL.createObjectURL(new Blob([b],{type:mime})),w=window.open(url,"_bla
 if(!w){const a=elm("a");a.href=url;a.download=safe(cat)+"-"+safe(item.id)+(img?".png":".pdf");a.click()}setTimeout(()=>URL.revokeObjectURL(url),120000);}
 catch(err){announce("Kunde inte visa dokumentet: "+err.message,true)}}
 async function editDocBasic(cat){
-$("slrFields").replaceChildren();$("slrEditHeading").textContent=cat+" · "+(item.sourceText||item.objectNo||item.id);
+$("slrFields").className="";$("slrFields").replaceChildren();$("slrEditHeading").textContent=cat+" · "+(item.sourceText||item.objectNo||item.id);
 const p=await PDFLib.PDFDocument.load(templates[cat].slice(),{ignoreEncryption:true,updateMetadata:false});
 const fields=p.getForm().getFields(),values=saved(item,cat).fields||{},defaults=auto(item),id=item.id;
 for(const f of fields){const name=f.getName(),k=kind(f);if(!k)continue;const l=elm("label",name);let input;
