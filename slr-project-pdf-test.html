@@ -60,6 +60,7 @@ button:disabled{opacity:.4;cursor:not-allowed}.primary{background:#17759d;font-w
 <script>
 (function(){
 'use strict';
+if(window.pdfjsLib?.GlobalWorkerOptions)pdfjsLib.GlobalWorkerOptions.workerSrc='vendor/pdf.worker.min.js';
 const $=id=>document.getElementById(id);
 const categories=['Riskanalys','Beskrivning av maskin','Loggbok','Tillverkarens försäkran','Försäkringscertifikat','Godkännande','Produktlista','Egenkontroll','Egenkontroll – brukaransvarig','CE-skylt'];
 let source=null,originName='',doors=[],selection=0,templateBytes={},templateNames={},answers={},docRefs={},manifest=null,stamp=0,pendingCategory='',lastSaved=null;
@@ -102,6 +103,7 @@ const existing=projectState(doc);let previewData={};
 try{previewData=JSON.parse(meta(doc,'TillsynoSLRPreviewData'))||{}}catch(_){}
 source=b;originName=file.name;manifest=existing;doors=Array.isArray(existing.automationItems)&&existing.automationItems.length?existing.automationItems.map(d=>({...d,id:String(d.id)})):
 Array.isArray(previewData.doors)&&previewData.doors.length?previewData.doors:demoDoors();
+const totalAutomations=doors.length;if(totalAutomations>3)doors=doors.slice(0,3);
 selection=0;templateBytes={};templateNames={};answers=previewData.answers||{};docRefs=previewData.docRefs||{};lastSaved=null;
 if(previewData.templateRefs&&Object.keys(previewData.templateRefs).length){
 let pdf=null;try{
@@ -111,7 +113,7 @@ const a=attachments[attachmentName];if(a?.content){templateBytes[cat]=new Uint8A
 }
 }finally{try{await pdf?.destroy()}catch(_){}}
 }
-$('projectInfo').textContent=file.name+' · '+doc.getPageCount()+' ursprungliga sidor · '+doors.length+' automatiker'+(!existing.automationItems?.length?' (test-ID)':' (SmartMatch-ID)');
+$('projectInfo').textContent=file.name+' · '+doc.getPageCount()+' ursprungliga sidor · '+doors.length+' automatiker'+(!existing.automationItems?.length?' (test-ID)':' (SmartMatch-ID; högst 3 automatiker i testet)');
 ui();notice('Projektet öppnat. '+Object.keys(templateBytes).length+' SLR-mallar hittades i filen.','good');
 }
 function filename(cat,id){return ('slr-'+safeId(cat)+'-'+safeId(id)+'.pdf').slice(0,120);}
