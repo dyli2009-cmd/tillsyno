@@ -63,3 +63,9 @@ Detta är den särskilt överenskomna kompromissen för servicetekniker utan int
 Behåll den enkla modellen medan den testas. Lägg inte till företagslicenser, betalning, avancerade roller eller ändrade offlinevillkor utan att användaren uttryckligen beslutar det. Vid fortsatt arbete med konton, licenser eller moduler ska detta dokument läsas tillsammans med `DEVELOPMENT_RULES.md` och aktuell serverkod.
 
 **Kortform att komma ihåg:** *Admin bestämmer moduler och antal licensdagar. Appen fungerar offline i högst 7 dagar från godkänd inloggning/kontroll. Online kontrolleras licensen direkt. Efter 7 dagar krävs ny inloggning. Företagslicenser väntar till senare.*
+
+## 7. Självregistrering v2.4.272 – säkerhetskontroller som återstår
+- Registreringsflödet och admin-godkännandet är incheckat på GitHub; ett fullständigt realtest med separat användarkonto och e-postbekräftelse återstår.
+- Kontrollera att **Confirm email** är påslaget i Supabase Auth och att GitHub Pages-adressen för inloggning är tillåten som redirect URL. Enbart förekomst av `email_confirmed_at` räcker inte som verifiering av projektets konfiguration.
+- Supabase Security Advisor varnade 2026-10-12 för att **Leaked Password Protection** är avstängt. Aktivera skyddet innan bredare användning och överväg CAPTCHA för att minska massregistrering.
+- GitHub Pages publiceringsstatus och iPhone/Safari-end-to-end har inte kunnat kontrolleras här; dessa testas separat.
