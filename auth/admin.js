@@ -23,7 +23,8 @@
     const b=button(user.status==='pending'?'Godkänn':'Återaktivera','approve');
     if(user.status==='pending'&&!user.emailVerified){b.disabled=true;b.title='E-postadressen måste bekräftas först.';}
    }
-   else{button('Redigera licens','license');button('Ny länk','link');button('Ta bort','remove','secondary danger');}
+   else{button('Redigera licens','license');button('Ny länk','link');}
+   if(!user.protected)button('Radera konto','delete','secondary danger');
    row.append(actions);$('users').append(row);
   }
   $('empty').hidden=filtered.length>0;$('empty').textContent=query?'Ingen användare matchar din sökning.':'Inga användare hittades.';
@@ -37,7 +38,7 @@
  }
  async function execute(action,user){
   if(busy)return;busy=true;render();
-  try{const result=await window.TillsynoAuth.admin(action,{userId:user.id});notice(result.message);if(result.link)showLink(result);}
+  try{const result=await window.TillsynoAuth.admin(action,action==='delete'?{userId:user.id,confirmEmail:user.email}:{userId:user.id});notice(result.message);if(result.link)showLink(result);}
   catch(error){notice(error.message,'error');}
   finally{busy=false;await load();}
  }
@@ -56,7 +57,7 @@
     document.querySelectorAll('#licenseForm input[name="modules"]').forEach(c=>c.checked=(user.modules||[]).includes(c.value));
     $('licenseDialog').showModal();return;
    }
-   if(action==='remove'){pendingRemove=user;$('confirmText').textContent='Ta bort åtkomsten för '+user.email+'? Personen kan godkännas igen senare.';$('confirmDialog').showModal();return;}
+   if(action==='delete'){pendingRemove=user;$('confirmDeleteEmail').value='';$('confirmRemove').disabled=true;$('confirmText').textContent='Radera '+user.email+' permanent från Tillsyno och Supabase? Konto och licens tas bort, men lokalt sparade PDF-filer påverkas inte. Personen kan registrera samma e-postadress på nytt och måste godkännas igen.';$('confirmDialog').showModal();return;}
   await execute(action,user);
  }
  $('addUser').addEventListener('click',()=>{$('addForm').reset();$('addError').hidden=true;$('addDialog').showModal();});
@@ -102,7 +103,9 @@
   }catch(error){$('licenseError').textContent=error.message;$('licenseError').hidden=false;}
   finally{busy=false;$('extendLicense').disabled=false;await load();}
  });
- $('confirmRemove').addEventListener('click',()=>{const user=pendingRemove;pendingRemove=null;$('confirmDialog').close();if(user)void execute('remove',user);});
+ $('confirmDeleteEmail').addEventListener('input',()=>{$('confirmRemove').disabled=!pendingRemove||$('confirmDeleteEmail').value.trim().toLowerCase()!==pendingRemove.email.toLowerCase();});
+ $('confirmRemove').addEventListener('click',()=>{const user=pendingRemove;if(!user||$('confirmDeleteEmail').value.trim().toLowerCase()!==user.email.toLowerCase())return;pendingRemove=null;$('confirmDialog').close();$('confirmDeleteEmail').value='';void execute('delete',user);});
+ $('confirmDialog').addEventListener('close',()=>{pendingRemove=null;$('confirmDeleteEmail').value='';$('confirmRemove').disabled=true;});
  document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>{const dialog=$(b.dataset.close);dialog.close();if(dialog.id==='linkDialog')$('inviteLink').value='';}));
  $('linkDialog').addEventListener('close',()=>{$('inviteLink').value=''});
  $('copyLink').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('inviteLink').value);$('copyStatus').textContent='Länken är kopierad.';}catch(_){$('inviteLink').focus();$('inviteLink').select();$('copyStatus').textContent='Markera länken och välj Kopiera.';}});
