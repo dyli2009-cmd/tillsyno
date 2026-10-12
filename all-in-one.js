@@ -10,6 +10,35 @@
 
  let active=new Set(),awaitingFile=false;
 
+ // Folder navigation affects only the picker presentation. Protocol IDs, checked
+ // state, PDF input handling and the original checklist runtime remain unchanged.
+ const groups=[...dialog.querySelectorAll('.allProtocolGroup')],
+  back=document.getElementById('allFolderBack'),
+  title=document.getElementById('allProtocolTitle'),
+  lead=document.getElementById('allProtocolLead');
+ function showFolders(){
+  dialog.dataset.stage='folders';
+  groups.forEach(group=>{group.open=false});
+  back.hidden=true;
+  title.textContent='Välj område';
+  lead.textContent='Öppna en mapp för att välja checklistor.';
+ }
+ function showFolder(group){
+  groups.forEach(g=>{g.open=g===group});
+  dialog.dataset.stage='folder';
+  back.hidden=false;
+  title.textContent=group.querySelector('summary strong').textContent.trim();
+  lead.textContent='Kryssa i ett eller flera protokoll och fortsätt till ritningen.';
+ }
+ groups.forEach(group=>{
+  group.querySelector('summary').addEventListener('click',event=>{
+   event.preventDefault();
+   if(dialog.dataset.stage==='folders')showFolder(group);
+  });
+ });
+ back.addEventListener('click',showFolders);
+
+
  function itemTypes(){
   try{return new Set((typeof items!=='undefined'&&Array.isArray(items)?items:[]).map(o=>o?.type).filter(x=>TYPES.includes(x)))}
   catch(_){return new Set()}
@@ -28,7 +57,7 @@
   active=new Set();
   write();
   dialog.querySelectorAll('input[type=checkbox][value]').forEach(cb=>cb.checked=false);
-  dialog.querySelectorAll('.allProtocolGroup').forEach(group=>group.open=false);
+  showFolders();
   refresh();
   if(!dialog.open)dialog.showModal()
  }
@@ -45,7 +74,7 @@
 
  apply.onclick=applyPicker;
  dialog.addEventListener('change',e=>{if(e.target.matches('input[type=checkbox][value]'))refresh()});
- dialog.addEventListener('cancel',e=>e.preventDefault());
+ dialog.addEventListener('cancel',e=>{e.preventDefault();if(dialog.dataset.stage==='folder')showFolders()});
 
  const returnFromCancelledFilePicker=()=>{
   if(!awaitingFile)return;
