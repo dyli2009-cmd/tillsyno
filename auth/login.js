@@ -8,7 +8,7 @@
   if(!next)return fallback;
   try{
    const target=new URL(next,auth.root),relative=target.pathname.slice(auth.root.pathname.length);
-   if(target.protocol===auth.root.protocol&&target.host===auth.root.host&&target.pathname.startsWith(auth.root.pathname)&&['index.html','project-workspace-smartmatch-test.html','auth/admin.html',''].includes(relative))return target;
+   if(target.protocol===auth.root.protocol&&target.host===auth.root.host&&target.pathname.startsWith(auth.root.pathname)&&(relative===''||relative==='index.html'||relative==='auth/admin.html'||(relative.endsWith('.html')&&!relative.startsWith('auth/'))))return target;
   }catch(_){}
   return fallback;
  }

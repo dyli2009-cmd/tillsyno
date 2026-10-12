@@ -12,7 +12,9 @@
     // Local work remains available after the short-lived JWT expires offline.
     // This cache never authorizes a server request; the API always rechecks the user and role.
     let saved;try{saved=JSON.parse(localStorage.getItem(key)||'null')}catch(_){}
-    if(saved?.userId&&valid(saved.role))return {...saved,offline:true};
+    const age=Date.now()-Number(saved?.verifiedAt);
+    if(saved?.userId&&valid(saved.role)&&Number.isFinite(age)&&age>=0&&age<=7*24*60*60*1000)return {...saved,offline:true};
+    clear();
    }
    throw Error('Anslut till internet och logga in först.');
   }
