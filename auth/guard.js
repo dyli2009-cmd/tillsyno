@@ -10,7 +10,20 @@
  };
  let running=false;
  const isHome=()=>location.pathname.endsWith('/')||location.pathname.endsWith('/index.html');
- // A pending account may view the real home page, but has no module access.
+ // Keep unlicensed cards visible but not clickable.
+ function lockHomeLink(el){
+  if(el.hasAttribute('href')){el.dataset.originalHref=el.getAttribute('href');el.removeAttribute('href');}
+  el.setAttribute('data-tillsyno-module-locked','');
+  el.setAttribute('aria-disabled','true');el.setAttribute('tabindex','-1');
+  const action=el.querySelector('b');
+  if(action&&!action.dataset.originalAction){action.dataset.originalAction=action.textContent;action.textContent='🔒 Låst';}
+ }
+ function setProfile(label,details=''){
+  const title=document.querySelector('#appHome [data-account-role]');
+  if(title)title.textContent=label;
+  const note=document.querySelector('#appHome [data-account-license]');
+  if(note){note.textContent=details;note.hidden=!details;}
+ }
  function restoreHomeLinks(){
   document.documentElement.removeAttribute('data-tillsyno-waiting');
   const box=document.getElementById('tillsynoWaitingNotice');
@@ -18,6 +31,7 @@
   document.querySelectorAll('#appHome [data-original-href]').forEach(el=>{
    el.setAttribute('href',el.dataset.originalHref);
    delete el.dataset.originalHref;
+   el.removeAttribute('data-tillsyno-module-locked');
    el.removeAttribute('aria-disabled');el.removeAttribute('tabindex');
    const action=el.querySelector('[data-original-action]');
    if(action){action.textContent=action.dataset.originalAction;delete action.dataset.originalAction;}
@@ -25,7 +39,7 @@
  }
  function renderWaitingHome(auth){
   if(!isHome()){
-   location.replace(new URL('index.html?v=2.4.275',auth.root));
+   location.replace(new URL('index.html?v=2.4.276',auth.root));
    return;
   }
   // The existing Tillsyno start page remains visible. No PDF or work module
@@ -34,6 +48,7 @@
   document.body.classList.add('homeMode');
   window.TillsynoCurrentAccess=null;
   document.getElementById('tillsynoLicenseState')?.remove();
+  setProfile('Väntar på godkännande');
   document.querySelectorAll('[data-admin-only]').forEach(el=>el.hidden=true);
   document.querySelectorAll('[data-logout]').forEach(el=>{
    if(!el.dataset.boundLogout){
@@ -41,25 +56,16 @@
     el.addEventListener('click',()=>void auth.logout());
    }
   });
-  document.querySelectorAll('#appHome .homeChoice, #appHome .homeToolsLink').forEach(el=>{
-   if(el.hasAttribute('href')){el.dataset.originalHref=el.getAttribute('href');el.removeAttribute('href');}
-   el.setAttribute('aria-disabled','true');el.setAttribute('tabindex','-1');
-   const action=el.querySelector('b');
-   if(action&&!action.dataset.originalAction){action.dataset.originalAction=action.textContent;action.textContent='🔒 Låst';}
-  });
+  document.querySelectorAll('#appHome .homeChoice, #appHome .homeToolsLink').forEach(lockHomeLink);
   let box=document.getElementById('tillsynoWaitingNotice');
   if(!box){
    box=document.createElement('section');box.id='tillsynoWaitingNotice';
    box.setAttribute('role','status');box.setAttribute('aria-live','polite');
-   box.style.cssText='background:#fff7e9;border:1px solid #efd7aa;border-radius:13px;padding:14px;margin:4px 0 17px;color:#664f21;font:14px/1.55 system-ui';
    const heading=document.createElement('strong');heading.textContent='Kontot väntar på godkännande';
-   heading.style.cssText='display:block;font-size:16px;margin-bottom:4px';
    const content=document.createElement('p');
-   content.textContent='Du är inloggad och kan se startsidan. Kontakta administratören för att få tillgång till SmartMatch, Kontrollflöde och Ritningsverktyg.';
-   content.style.cssText='margin:0 0 12px;color:#6e5b38';
+   content.textContent='Modulerna är låsta tills administratören godkänner.';
    const check=document.createElement('button');check.id='tillsynoCheckApproval';check.type='button';
-   check.textContent='Kontrollera godkännande';
-   check.style.cssText='background:#173c4b;color:white;border:0;border-radius:9px;padding:10px 14px;font:600 13px system-ui;cursor:pointer';
+   check.textContent='Uppdatera status';
    check.addEventListener('click',()=>void start());
    box.append(heading,content,check);
    (document.querySelector('#appHome .homeChoices')||document.querySelector('#appHome .homeShell'))?.before(box);
@@ -97,19 +103,17 @@
    document.querySelectorAll('[data-admin-only]').forEach(el=>el.hidden=access.role!=='admin');
    document.querySelectorAll('[data-account-email]').forEach(el=>el.textContent=access.email);
    document.querySelectorAll('[data-logout]').forEach(el=>{if(!el.dataset.boundLogout){el.dataset.boundLogout='1';el.addEventListener('click',()=>void auth.logout())}});
-   if(location.pathname.endsWith('/')||location.pathname.endsWith('index.html')){
-    document.querySelectorAll('a[href]').forEach(el=>{
-     const href=el.getAttribute('href')||'';
+   if(isHome()){
+    // Only granted modules are interactive; other cards remain visibly locked.
+    document.querySelectorAll('#appHome .homeChoice, #appHome .homeToolsLink').forEach(el=>{
+     const href=el.getAttribute('href')||el.dataset.originalHref||'';
      const target=/drawing-tools/i.test(href)?'drawing':/smartmatch|project-workspace|project-flow/i.test(href)?'smartmatch':/all-in-one|security.html/i.test(href)?'control':null;
-     if(target&&!auth.permitted(access,target))el.hidden=true;
+     if(target&&!auth.permitted(access,target))lockHomeLink(el);
     });
-    if(!document.getElementById('tillsynoLicenseState')){
-     const tag=document.createElement('p');tag.id='tillsynoLicenseState';
-     tag.style.cssText='text-align:center;font:12px system-ui;color:#aecbd6;margin:10px auto 5px;padding:0 15px';
-     const days=access.expiresAt?Math.max(0,Math.ceil((Date.parse(access.expiresAt)-Date.now())/86400000)):null;
-     tag.textContent=access.role==='admin'?'Administratör · full tillgång':(days===null?'Licens aktiv':access.offline?'Offline · licensens giltighet kontrolleras vid nästa anslutning':days+' dagar kvar på licensen')+' · Ny inloggning senast inom 7 dagar';
-     (document.querySelector('.homeAccount')||document.querySelector('.homeShell')||document.body).append(tag);
-    }
+    document.getElementById('tillsynoLicenseState')?.remove();
+    const days=access.expiresAt?Math.max(0,Math.ceil((Date.parse(access.expiresAt)-Date.now())/86400000)):null;
+    const detail=access.role==='admin'?'':days===null?'Licens aktiv':access.offline?'Offline · licens kontrolleras vid nästa anslutning':days+' dagar kvar på licensen';
+    setProfile(access.role==='admin'?'Administration · Full tillgång':'Användare',detail);
    }
    document.documentElement.removeAttribute('data-auth-pending');
    window.dispatchEvent(new CustomEvent('tillsyno-authorized',{detail:access}));
