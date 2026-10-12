@@ -8,7 +8,7 @@
   file=document.getElementById('securityFile');
  if(!dialog||!apply||!file)return;
 
- let active=new Set(),awaitingFile=false;
+ let active=new Set();
 
  // Folder navigation affects only the picker presentation. Protocol IDs, checked
  // state, PDF input handling and the original checklist runtime remain unchanged.
@@ -68,21 +68,12 @@
   write();
   refresh();
   dialog.close();
-  awaitingFile=true;
-  setTimeout(()=>file.click(),40)
+  // File selection is manual: the drawing view has an "Öppna PDF" button.
  }
 
  apply.onclick=applyPicker;
  dialog.addEventListener('change',e=>{if(e.target.matches('input[type=checkbox][value]'))refresh()});
  dialog.addEventListener('cancel',e=>{e.preventDefault();if(dialog.dataset.stage==='folder')showFolders()});
-
- const returnFromCancelledFilePicker=()=>{
-  if(!awaitingFile)return;
-  awaitingFile=false;
-  openPicker();
- };
- file.addEventListener('change',()=>{awaitingFile=false},{capture:true});
- file.addEventListener('cancel',returnFromCancelledFilePicker);
 
  // Keep protocol types detected in an imported PDF active.
  refresh();
