@@ -18,7 +18,7 @@
    location.replace(destination());
   }catch(error){
    // Signed in, but not yet licensed: keep the valid session and show a safe start page.
-   if(error?.code==='PENDING_APPROVAL'){location.replace(new URL('auth/pending.html',auth.root));return;}
+   if(error?.code==='PENDING_APPROVAL'){location.replace(new URL('index.html',auth.root));return;}
    throw error;
   }
  }
