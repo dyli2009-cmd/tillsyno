@@ -896,3 +896,70 @@ body.allInOneApp #securityOverview .overviewHead{
 .visibilityChoices input{width:20px;height:20px;flex:0 0 20px;accent-color:#238354}
 .drawingVisibilityDialog p{font-size:12px;color:#647b7d;margin:16px 0}
 .drawingVisibilityDialog [data-done]{width:100%;background:#173b42;color:white}
+
+
+/* Tillsyno 2.4.288 – approved folder-first dark navy Kontrollflöde picker.
+   Scoped exclusively to the picker: PDF canvas, checklist panels and export retain their styles. */
+body.allInOneApp .allProtocolDialog{
+ width:min(480px,calc(100vw - 20px));max-height:min(90dvh,760px);
+ padding:0;border:1px solid #cde8f04b;border-radius:15px;
+ background:radial-gradient(ellipse at 53% 42%,#24506355,transparent 62%),linear-gradient(145deg,#112f42,#091e2c);
+ color:#eef8fb;box-shadow:0 25px 70px #0009;
+}
+body.allInOneApp .allProtocolDialog::backdrop{background:#041622c9}
+body.allInOneApp .allProtocolHead{
+ display:flex;align-items:center;justify-content:center;gap:10px;
+ background:transparent;color:#f0f8fc;text-align:center;padding:23px 18px 12px;
+}
+body.allInOneApp .allFolderHeading{flex:1;min-width:0}
+body.allInOneApp .allProtocolHead .eyebrow{color:#a7ccdc;letter-spacing:.13em;font-size:10px}
+body.allInOneApp .allProtocolHead h2{margin:7px 0 5px;color:#f3fbfd;font-size:23px;line-height:1.18;letter-spacing:-.03em}
+body.allInOneApp .allProtocolLead{margin:0;color:#b8d3df;font-size:11px;line-height:1.5}
+body.allInOneApp #allFolderBack{
+ flex:0 0 auto;min-width:0;min-height:34px;padding:7px 9px;
+ background:#183c4da8;border:1px solid #b6dbe64b;color:#eaf7fa;
+ font:700 11px system-ui;border-radius:8px;cursor:pointer;
+}
+body.allInOneApp #allFolderBack[hidden]{display:none!important}
+body.allInOneApp .allProtocolChoices{max-height:min(55dvh,470px);padding:13px 16px 10px;gap:9px}
+body.allInOneApp .allProtocolGroup{
+ background:#0b293ac9;border:1px solid #b9d9e449;border-radius:11px;
+ box-shadow:0 8px 20px #00162227;
+}
+body.allInOneApp .allProtocolGroup>summary{
+ min-height:67px;padding:14px 15px;align-items:center;cursor:pointer;
+}
+body.allInOneApp .allProtocolGroup>summary strong{color:#f1f9fc;font-size:14px;font-weight:730}
+body.allInOneApp .allProtocolGroup>summary small{color:#b5d1dd;font-size:10px}
+body.allInOneApp .allProtocolGroup>summary::after{content:'›';color:#c9e6f0;font-size:24px;transform:none}
+body.allInOneApp .allProtocolGroup[open]>summary::after{transform:none}
+body.allInOneApp .allProtocolDialog[data-stage="folders"] .allProtocolChildren{display:none!important}
+body.allInOneApp .allProtocolDialog[data-stage="folder"] .allProtocolGroup:not([open]){display:none!important}
+body.allInOneApp .allProtocolDialog[data-stage="folder"] .allProtocolGroup>summary{display:none!important}
+body.allInOneApp .allProtocolDialog[data-stage="folder"] .allProtocolGroup[open]{border:0;background:none;box-shadow:none}
+body.allInOneApp .allProtocolDialog[data-stage="folder"] .allProtocolChildren{display:grid!important;gap:9px;padding:0}
+body.allInOneApp .allProtocolChoices label{
+ min-height:65px;padding:12px;align-items:center;border:1px solid #c2dfe849;border-radius:10px;
+ background:#0b2b3cc9;color:#ebf8fb;
+}
+body.allInOneApp .allProtocolChoices label:has(input:checked){background:#1c4a5fd9;border-color:#a7dbe8}
+body.allInOneApp .allProtocolChoices label strong{color:#f3f9fc;font-size:12px}
+body.allInOneApp .allProtocolChoices label small{color:#b5d0db;font-size:10px;line-height:1.35}
+body.allInOneApp .allProtocolChoices input{accent-color:#a8dfea;width:21px;height:21px}
+body.allInOneApp .allProtocolActions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;padding:13px 16px 17px;border-top:1px solid #bddce42c}
+body.allInOneApp .allProtocolActions #allProtocolApply{
+ border:0;border-radius:8px;min-height:40px;padding:10px 12px;
+ color:#123548;background:#d9edf5;font:750 12px/1.2 system-ui;
+}
+body.allInOneApp .allProtocolActions #allProtocolApply:disabled{opacity:.42;cursor:not-allowed}
+body.allInOneApp .allProtocolDialog[data-stage="folders"] #allProtocolApply{display:none!important}
+body.allInOneApp .allProtocolActions a{min-height:36px;border-radius:8px;color:#e8f6fa}
+@media(max-width:600px){
+ body.allInOneApp .allProtocolDialog{width:calc(100vw - 16px)}
+ body.allInOneApp .allProtocolHead{padding:20px 12px 10px}
+ body.allInOneApp .allProtocolHead h2{font-size:21px}
+ body.allInOneApp .allProtocolChoices{padding:12px 11px 10px}
+ body.allInOneApp .allProtocolGroup>summary{min-height:64px;padding:12px}
+ body.allInOneApp .allProtocolChoices label{min-height:62px;padding:10px}
+ body.allInOneApp .allProtocolActions{padding:11px}
+}
