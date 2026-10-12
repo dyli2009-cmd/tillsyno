@@ -12,3 +12,8 @@ dialog{max-height:90dvh;overflow-y:auto}
 .extendRow{display:flex;align-items:center;gap:10px}.extendRow select{flex:1}
 .badge.expired{background:#ffefdd;color:#995a19}
 @media(max-width:650px){dialog{max-height:92dvh}.extendRow{flex-wrap:wrap}.actions .secondary{padding:9px 10px}}
+
+/* Registrering och administratörens godkännande */
+.loginhelp a.signupLink{display:inline-block;color:#fff;background:#2c667b;border:1px solid #588595;padding:8px 15px;border-radius:9px;font-size:14px;font-weight:750;margin:8px}
+.loginhelp a:not(.signupLink){color:#d8ecf5;text-decoration:underline;text-underline-offset:3px}
+#approvalDialog .dialogbody p{margin-top:4px}
