@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tillsyno · SLR testflöde</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#09172b;color:#f1f6fc}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(155deg,#0a1a33,#102c4c 60%,#081729);min-height:100vh}button,input,select{font:inherit}
+header{padding:20px max(20px,calc((100vw - 1060px)/2));display:flex;gap:16px;align-items:center;justify-content:space-between;border-bottom:1px solid #36536d}
+.brand{font-size:1.3rem;font-weight:800;letter-spacing:.02em}.minor{font-size:.78rem;color:#a9bfd4;font-weight:500}main{max-width:1060px;margin:auto;padding:20px 20px 48px}
+h1{font-size:clamp(1.5rem,4vw,2.15rem);margin:8px 0 4px}h2{font-size:1.1rem;margin:0 0 14px}p{line-height:1.5;color:#bbccdd}section{border:1px solid #42637e;border-radius:16px;padding:20px;background:#10283ff0;margin:18px 0;box-shadow:0 8px 25px #0613274d}
+.flag{border:1px solid #6a8ba0;color:#e4f4fc;background:#1b3c51;padding:5px 10px;border-radius:99px;font-size:.74rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+label{display:block;color:#c1d6e8;font-size:.92rem}input[type=file]{display:block;width:100%;padding:12px;border:1px dashed #7898b0;border-radius:10px;margin-top:10px;background:#0c2135;color:#eef6fc}
+input[type=text],select{display:block;width:100%;padding:11px 12px;background:#071b2e;color:#fff;border:1px solid #5b7b95;border-radius:9px;margin:8px 0 0}
+button{padding:11px 16px;background:#1c5481;color:white;border:1px solid #79add6;border-radius:10px;cursor:pointer}
+button:disabled{opacity:.4;cursor:not-allowed}.primary{background:#17759d;font-weight:700}.ghost{background:#1a3148}.small{font-size:.83rem;padding:8px 12px}
+#notice{padding:12px 16px;border-radius:10px;border:1px solid #527a95;background:#153750;margin:15px 0;min-height:46px;line-height:1.5}
+#notice[data-type=error]{background:#54242e;border-color:#b37479}
+#notice[data-type=good]{background:#184e45;border-color:#53a090}
+#doors{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px}
+.door{width:100%;text-align:left;min-height:75px;border-color:#426687;background:#0b2239}
+.door.active{background:#195275;border:2px solid #a3dfff}
+.docrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #34536c}
+.docrow:last-child{border:0}.docmeta{min-width:0}.docmeta strong{display:block}.docmeta span{display:block;font-size:.8rem;color:#adcadb;margin-top:4px}
+.docactions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+#inputDoc{display:none}.hint{font-size:.85rem;color:#adbdce}.number{font-variant-numeric:tabular-nums}
+@media(max-width:650px){.grid,.controls{grid-template-columns:1fr}.docrow{align-items:flex-start;flex-direction:column}.docactions{justify-content:flex-start}header{padding:16px 20px}section{padding:17px}}
+</style>
+<script src="vendor/pdf-lib.min.js"></script>
+<script src="vendor/pdf.min.js"></script>
+</head>
+<body>
+<header><div><div class="brand">TILLSYNO <span class="minor">SLR</span></div><div class="minor">Separat test – påverkar inte ordinarie app</div></div><span class="flag">TEST · 1</span></header>
+<main>
+<h1>SLR-dokument inuti projekt-PDF</h1>
+<p>Öppna en projekt-PDF, lägg till en SLR-mall en gång och arbeta med varje automatik separat. Dokumenten sparas som dolda PDF-bilagor – inga extra ritningssidor. All filhantering sker i din webbläsare.</p>
+<div id="notice" aria-live="polite">Börja med att välja en projekt-PDF från din enhet.</div>
+<section><h2>1. Öppna projekt</h2>
+<label>Projekt-PDF från Tillsyno eller valfri ritning<input id="inputProject" type="file" accept="application/pdf,.pdf"></label>
+<p class="hint">Har projekt-PDF:en redan SmartMatch-positioner hämtas deras ID automatiskt. En vanlig PDF får två tydligt märkta testautomatiker.</p>
+<div id="projectInfo" class="hint"></div></section>
+<section><h2>2. Välj dörrautomatik</h2><div id="doors"><p>Öppna en projekt-PDF först.</p></div></section>
+<section><h2>3. SLR-dokumentmapp</h2>
+<p id="selectedInfo" class="hint">Välj en dörrautomatik.</p>
+<div id="documents"></div>
+<input id="inputDoc" type="file" accept="application/pdf,.pdf,image/*">
+<div class="controls">
+<label>Risknivå för vald automatik (väljs manuellt)<select id="risk"><option value="">Ej bedömd</option><option value="high">Hög risk</option><option value="low">Låg risk</option></select></label>
+<label>Plats i byggnaden för vald automatik<input id="location" type="text" placeholder="Hämtas från dörrkort om den finns"></label>
+</div>
+<p class="hint">När du väljer en PDF-mall används den för alla automatiker, men varje automatik får egna uppgifter och bedömningar. Ifyllda riskkryss i den importerade mallen nollställs i riskanalyskopiorna.</p>
+</section>
+<section><h2>4. Spara och öppna igen</h2>
+<div class="row"><button id="save" class="primary" disabled>Spara ny projekt-PDF med SLR</button><button id="verify" class="ghost" disabled>Kontrollera PDF i minnet</button></div>
+<p class="hint">Efter att PDF-filen sparats: välj den igen i steg 1. Kontrollera sedan att riskanalys och andra dokument finns under rätt automatik. Spara alltid filen på en plats du själv väljer, exempelvis Filer på iPhone.</p>
+</section>
+</main>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const categories=['Riskanalys','Beskrivning av maskin','Loggbok','Tillverkarens försäkran','Försäkringscertifikat','Godkännande','Produktlista','Egenkontroll','Egenkontroll – brukaransvarig','CE-skylt'];
+let source=null,originName='',doors=[],selection=0,templateBytes={},templateNames={},answers={},docRefs={},manifest=null,stamp=0,pendingCategory='',lastSaved=null;
+function notice(text,type){$('notice').textContent=text;$('notice').dataset.type=type||'';}
+const labelDoor=(d,i)=>d.sourceText||[d.objectNo,d.modelCode,d.serialNumber].filter(Boolean).join('-')||('Automatik '+(i+1));
+function getAnswer(id){if(!answers[id])answers[id]={risk:'',location:''};return answers[id];}
+function selected(){return doors[selection];}
+function safeId(s){return String(s).replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,64);}
+function decode(raw){try{return raw?.decodeText?.()||raw?.asString?.()||'';}catch(_){return '';}}
+function meta(doc,name){return decode(doc.catalog.get(PDFLib.PDFName.of(name)));}
+function demoDoors(){return [{id:'demo-da-001',objectNo:'TEST-DA-001',location:'Plan 1',sourceText:'TEST-DA-001'},{id:'demo-da-002',objectNo:'TEST-DA-002',location:'Plan 2',sourceText:'TEST-DA-002'}];}
+function ui(){
+const holder=$('doors');holder.replaceChildren();
+doors.forEach((d,i)=>{const b=document.createElement('button');b.className='door'+(i===selection?' active':'');b.type='button';
+const title=document.createElement('strong');title.textContent=labelDoor(d,i);const subtitle=document.createElement('div');subtitle.className='minor';subtitle.textContent='Automatik '+(i+1)+' · '+(d.location||'plats saknas');
+b.append(title,subtitle);b.onclick=()=>{selection=i;ui()};holder.appendChild(b)});
+const door=selected();$('selectedInfo').textContent=door?'Vald automatik: '+labelDoor(door,selection)+' · eget ID: '+door.id:'Välj projekt först';
+const list=$('documents');list.replaceChildren();
+categories.forEach(category=>{
+const row=document.createElement('div');row.className='docrow';const info=document.createElement('div');info.className='docmeta';
+const name=document.createElement('strong');name.textContent=category;const status=document.createElement('span');
+status.textContent=templateBytes[category]?'Mall vald: '+(templateNames[category]||category)+(docRefs[door?.id]?.[category]?' · finns sparad i PDF':' · kopia skapas vid sparande'):'Ingen mall vald';
+info.append(name,status);const actions=document.createElement('div');actions.className='docactions';
+const load=document.createElement('button');load.type='button';load.className='small';load.textContent=templateBytes[category]?'Byt fil':'Öppna fil';load.disabled=!door;load.onclick=()=>{
+pendingCategory=category;$('inputDoc').accept=category==='CE-skylt'?'application/pdf,.pdf,image/*':'application/pdf,.pdf';
+$('inputDoc').click();};
+const open=document.createElement('button');open.type='button';open.className='small ghost';open.textContent='Visa dokument';open.disabled=!templateBytes[category]||!door;open.onclick=()=>void preview(category);
+actions.append(load,open);row.append(info,actions);list.appendChild(row);
+});
+const a=door?getAnswer(door.id):{risk:'',location:''};$('risk').value=a.risk||'';$('risk').disabled=!door;
+$('location').value=a.location||door?.location||'';$('location').disabled=!door;
+$('save').disabled=!source||!Object.keys(templateBytes).length;$('verify').disabled=!lastSaved;
+}
+function projectState(doc){let raw=meta(doc,'TillsynoSmartMatchV36Data')||meta(doc,'TillsynoSmartMatchV30Data');try{return JSON.parse(raw)||{}}catch(_){return {}}}
+async function loadProject(file){
+if(!window.PDFLib||!window.pdfjsLib)throw Error('PDF-bibliotek saknas. Kontrollera internetanslutningen.');
+const b=new Uint8Array(await file.arrayBuffer());
+const doc=await PDFLib.PDFDocument.load(b.slice(),{ignoreEncryption:true,updateMetadata:false});
+const existing=projectState(doc);let previewData={};
+try{previewData=JSON.parse(meta(doc,'TillsynoSLRPreviewData'))||{}}catch(_){}
+source=b;originName=file.name;manifest=existing;doors=Array.isArray(existing.automationItems)&&existing.automationItems.length?existing.automationItems.map(d=>({...d,id:String(d.id)})):
+Array.isArray(previewData.doors)&&previewData.doors.length?previewData.doors:demoDoors();
+selection=0;templateBytes={};templateNames={};answers=previewData.answers||{};docRefs=previewData.docRefs||{};lastSaved=null;
+if(previewData.templateRefs&&Object.keys(previewData.templateRefs).length){
+let pdf=null;try{
+pdf=await pdfjsLib.getDocument({data:b.slice()}).promise;const attachments=await pdf.getAttachments()||{};
+for(const [cat,attachmentName] of Object.entries(previewData.templateRefs)){
+const a=attachments[attachmentName];if(a?.content){templateBytes[cat]=new Uint8Array(a.content);templateNames[cat]=previewData.templateNames?.[cat]||attachmentName;}
+}
+}finally{try{await pdf?.destroy()}catch(_){}}
+}
+$('projectInfo').textContent=file.name+' · '+doc.getPageCount()+' ursprungliga sidor · '+doors.length+' automatiker'+(!existing.automationItems?.length?' (test-ID)':' (SmartMatch-ID)');
+ui();notice('Projektet öppnat. '+Object.keys(templateBytes).length+' SLR-mallar hittades i filen.','good');
+}
+function filename(cat,id){return ('slr-'+safeId(cat)+'-'+safeId(id)+'.pdf').slice(0,120);}
+function projectValue(name){
+const m=manifest?.projectMeta||{};
+if(name==='Beställare företagsnamn')return m.customer;
+if(name==='Beställare adress')return m.address;
+if(name==='Beställarepostnummer/ort')return [m.postalCode,m.postalCity].filter(Boolean).join(' ');
+if(name==='Beställare kontaktperson')return m.contact;
+if(name==='Beställare telefonnummer')return m.phone;
+if(name==='Offertnummer/Ordernummer')return m.order;
+if(name==='4.7 Företag')return m.company;
+if(name==='4.7 Namn')return m.technician;
+if(name==='4.7 Telefonnummer')return m.companyPhone;
+return '';
+}
+async function documentFor(category,door){
+const bytes=templateBytes[category];if(!bytes)throw Error('Ingen mall för '+category);
+if(category!=='Riskanalys')return bytes.slice();
+const pdf=await PDFLib.PDFDocument.load(bytes.slice(),{ignoreEncryption:true,updateMetadata:false});const form=pdf.getForm();
+for(const field of form.getFields()){try{
+if(field instanceof PDFLib.PDFTextField)field.setText('');
+else if(field instanceof PDFLib.PDFCheckBox)field.uncheck();
+else if(field instanceof PDFLib.PDFRadioGroup)field.clear();
+else if(field instanceof PDFLib.PDFDropdown||field instanceof PDFLib.PDFOptionList)field.clear();
+}catch(_){}}
+const a=getAnswer(door.id);
+const mappings={'Objekt':door.objectNo||'', 'Dörrnummer, beteckning':door.sourceText||[door.objectNo,door.modelCode,door.serialNumber].filter(Boolean).join('-'),
+ 'Plats i byggnaden':a.location||door.location||''};
+for(const f of form.getFields()){
+if(f instanceof PDFLib.PDFTextField){const value=mappings[f.getName()]??projectValue(f.getName());if(value)try{f.setText(String(value))}catch(_){}}
+}
+if(a.risk){try{const risk=form.getRadioGroup('4.4 Risknivå');const v=risk.getOptions().find(o=>a.risk==='high'?/hög/i.test(o):/låg/i.test(o));if(v)risk.select(v)}catch(_){}}
+return new Uint8Array(await pdf.save({useObjectStreams:true}));
+}
+async function preview(category){
+try{
+const d=selected(),data=await documentFor(category,d);
+const mime=category==='CE-skylt'&&templateNames[category]?.match(/\.(png|jpg|jpeg)$/i)?'image/'+(/png/i.test(templateNames[category])?'png':'jpeg'):'application/pdf';
+const url=URL.createObjectURL(new Blob([data],{type:mime}));
+const opened=window.open(url,'_blank');if(!opened){const a=document.createElement('a');a.href=url;a.download=filename(category,d.id);a.click();}
+setTimeout(()=>URL.revokeObjectURL(url),60000);
+notice('Dokument för '+labelDoor(d,selection)+' öppnat. Riskvärden för andra automatiker påverkas inte.','good');
+}catch(err){notice('Kunde inte visa: '+err.message,'error')}
+}
+async function saveProject(){
+$('save').disabled=true;notice('Skapar SLR-bilagor och verifierar att originalritningen har samma antal sidor…');
+try{
+const pdf=await PDFLib.PDFDocument.load(source.slice(),{ignoreEncryption:true,updateMetadata:false});
+const before=pdf.getPageCount(),token=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7);
+const refs={},items={};let attached=0;
+for(const [category,data] of Object.entries(templateBytes)){
+const ext=/\.(png|jpg|jpeg)$/i.test(templateNames[category]||'')?RegExp.$1.toLowerCase():'pdf';
+const ref='slr-test-mall-'+safeId(category)+'-'+token+'.'+ext;refs[category]=ref;
+await pdf.attach(data,ref,{mimeType:ext==='pdf'?'application/pdf':ext==='png'?'image/png':'image/jpeg',description:'SLR gemensam mall – '+category});attached++;
+}
+for(const d of doors){
+items[d.id]={};
+for(const category of Object.keys(templateBytes)){
+const data=await documentFor(category,d);const ext=/\.(png|jpg|jpeg)$/i.test(templateNames[category]||'')?RegExp.$1.toLowerCase():'pdf';
+const ref='slr-test-'+safeId(d.id)+'-'+safeId(category)+'-'+token+'.'+ext;
+await pdf.attach(data,ref,{mimeType:ext==='pdf'?'application/pdf':ext==='png'?'image/png':'image/jpeg',description:'SLR '+category+' · '+labelDoor(d,doors.indexOf(d))});
+items[d.id][category]=ref;attached++;
+}
+}
+pdf.catalog.set(PDFLib.PDFName.of('TillsynoSLRPreviewData'),PDFLib.PDFHexString.fromText(JSON.stringify({schema:1,createdAt:new Date().toISOString(),doors,answers,templateRefs:refs,templateNames,docRefs:items})));
+const finished=new Uint8Array(await pdf.save({useObjectStreams:true}));
+const check=await PDFLib.PDFDocument.load(finished.slice(),{updateMetadata:false});
+if(check.getPageCount()!==before||!meta(check,'TillsynoSLRPreviewData'))throw Error('Kunde inte verifiera sparad PDF.');
+// Validate attachments with the same browser reader used when reopening.
+let reader=null;try{reader=await pdfjsLib.getDocument({data:finished.slice()}).promise;
+const at=await reader.getAttachments()||{};if(Object.values(refs).some(name=>!at[name]))throw Error('En eller flera bilagor saknas efter sparande.');}
+finally{try{await reader?.destroy()}catch(_){}}
+lastSaved=finished;docRefs=items;$('verify').disabled=false;
+const fileName=originName.replace(/\.pdf$/i,'')+'-SLR-TEST.pdf';
+const file=new File([finished],fileName,{type:'application/pdf'});
+if(navigator.share&&/iPhone|iPad|iPod/.test(navigator.userAgent||'')){
+try{await navigator.share({files:[file]});notice('SLR-PDF verifierad: '+attached+' bilagor, '+before+' ursprungliga sidor. Välj Spara i Filer i delningsmenyn.','good');return}
+catch(e){if(e?.name==='AbortError'){notice('PDF skapad och verifierad, men delningen avbröts. Tryck Spara igen för att välja plats.','error');return}}
+}
+const url=URL.createObjectURL(file);const a=document.createElement('a');a.href=url;a.download=fileName;a.click();setTimeout(()=>URL.revokeObjectURL(url),90000);
+notice('SLR-PDF skapad: '+attached+' bilagor, '+before+' ursprungliga sidor. Öppna den nedladdade PDF:en igen i steg 1.','good');
+}catch(e){console.error(e);notice('Sparandet misslyckades: '+e.message,'error')}
+finally{$('save').disabled=false;ui();}
+}
+$('inputProject').addEventListener('change',async e=>{if(!e.target.files?.[0])return;try{await loadProject(e.target.files[0])}catch(err){console.error(err);notice('Kunde inte öppna PDF: '+err.message,'error')}e.target.value='';});
+$('inputDoc').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{
+if(f.size>20*1024*1024)throw Error('Testet tillåter max 20 MB per mall.');
+const type=pendingCategory,bytes=new Uint8Array(await f.arrayBuffer());
+if(type!=='CE-skylt'&&!f.name.toLowerCase().endsWith('.pdf'))throw Error('Välj en PDF-fil.');
+if(f.name.toLowerCase().endsWith('.pdf'))await PDFLib.PDFDocument.load(bytes.slice(),{ignoreEncryption:true});
+templateBytes[type]=bytes;templateNames[type]=f.name;lastSaved=null;
+notice(type+' vald som mall för alla '+doors.length+' automatiker. Varje dörr får egen kopia vid sparandet.','good');ui();
+}catch(err){notice('Filen kunde inte läggas till: '+err.message,'error')}e.target.value='';});
+$('risk').addEventListener('change',e=>{const d=selected();if(d){getAnswer(d.id).risk=e.target.value;lastSaved=null;$('verify').disabled=true;notice('Risknivån ändrad bara för '+labelDoor(d,selection)+'.','good')}});
+$('location').addEventListener('change',e=>{const d=selected();if(d){getAnswer(d.id).location=e.target.value;lastSaved=null;$('verify').disabled=true;}});
+$('save').addEventListener('click',()=>void saveProject());
+$('verify').addEventListener('click',async()=>{if(!lastSaved)return;try{const f=new File([lastSaved],originName.replace(/\.pdf$/i,'')+'-SLR-TEST.pdf',{type:'application/pdf'});await loadProject(f);notice('Intern återöppning lyckades. Dokument och automatiker hittades igen i projekt-PDF:en.','good')}catch(e){notice('Återöppning misslyckades: '+e.message,'error')}});
+ui();if(!window.PDFLib||!window.pdfjsLib)notice('PDF-biblioteket kunde inte laddas – försök uppdatera sidan.','error');
+})();
+</script>
+</body></html>
