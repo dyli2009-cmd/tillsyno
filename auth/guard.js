@@ -33,6 +33,7 @@
   document.documentElement.setAttribute('data-tillsyno-waiting','');
   document.body.classList.add('homeMode');
   window.TillsynoCurrentAccess=null;
+  document.getElementById('tillsynoLicenseState')?.remove();
   document.querySelectorAll('[data-admin-only]').forEach(el=>el.hidden=true);
   document.querySelectorAll('[data-logout]').forEach(el=>{
    if(!el.dataset.boundLogout){
