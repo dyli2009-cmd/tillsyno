@@ -25,7 +25,7 @@ if(cat==="CE-skylt"&&/\.(png|jpe?g)$/i.test(names[cat]||""))return bytes.slice()
 const pdf=await PDFLib.PDFDocument.load(bytes.slice(),{ignoreEncryption:true,updateMetadata:false});
 const values=saved(i,cat).fields||{},defaults=auto(i);
 for(const f of pdf.getForm().getFields()){const name=f.getName(),k=kind(f),v=values[name]??defaults[name];if(v===undefined)continue;
-try{if(cat==="Riskanalys"&&name==="4.6.1")continue;if(k==="text")f.setText(String(v??""));else if(k==="check"){if(v===true)f.check();else f.uncheck()}else if((k==="radio"||k==="choice")&&v&&f.getOptions().includes(v))f.select(v);else if(k==="radio"||k==="choice")f.clear()}catch(_){}}
+try{if(cat==="Riskanalys"&&name==="4.6.1")continue;if(k==="text")f.setText(String(v??""));else if(k==="check"){if(v===true)f.check();else f.uncheck()}else if((k==="radio"||k==="choice")&&v){const option=f.getOptions().find(o=>slrDecode(o)===slrDecode(v));if(option)f.select(option);else f.clear()}else if(k==="radio"||k==="choice")f.clear()}catch(_){}}
 if(cat==="Riskanalys"&&pdf.getPageCount()===5){
  const rfields=saved(i,cat).fields||{},opts=[
  [1,"4.6.1",[[231,325.8,"Hög Val 1"],[231,344.2,"Hög Val 2"],[231,374.9,"Låg Val 1"],[231,571.3,"Låg Val 2"],[231,638.4,"Låg Val 3"]]],
@@ -83,8 +83,38 @@ $("slrEditHeading").scrollIntoView({block:"start",behavior:"smooth"});
 /* TEST: SLR form follows the original PDF across five scrollable pages. */
 let slrEditorRevision=0;
 function slrDirty(obj,cat){if(!obj.slrDocuments)obj.slrDocuments={};obj.slrDocuments[cat]={...(obj.slrDocuments[cat]||{}),status:"doing"};bridge?.save?.();bridge?.redraw?.();}
+
+let slrPageZoom=1;
+function slrDecode(v){return String(v??"").replace(/#([0-9A-F]{2})/gi,(_,h)=>String.fromCharCode(parseInt(h,16)))}
+function slrChoiceText(name,val){
+ const lookup={
+  "4.6.1":["Hög risk: heltäckande säkerhetssensor","Hög risk: säkerhetsmatta","Låg risk: säkerhetssensor","Låg risk: begränsad rörelseenergi","Låg risk: säkerhetsmatta"],
+  "4.6.2":["Hög risk: heltäckande säkerhetssensor","Hög risk: säkerhetsmatta","Låg risk: begränsad rörelseenergi","Låg risk: säkerhetsmatta"],
+  "4.6.3":["Integrerat mekaniskt klämskydd","Eftermonterat mekaniskt klämskydd","Elektrisk skyddsanordning övervakar klämrisk","Separat elektrisk skyddsanordning"],
+  "4.6.4":["Glas uppfyller personsäkerhet","Dörren ej glasad"],
+  "4.6.6":["Kontrastmarkering av glasdörr","Dörren ej glasad"],
+  "4.6.9":["Stickproppsanslutning","Tvåpolig arbetsbrytare","Tvåpolig säkerhetsbrytare"],
+  "4.6.11":["Godkänd för brandskyddande dörr","Ej tillämpligt: ej brandcellsgräns"],
+  "4.6.12":["Plats för impulsgivare finns","Stolpe eller annan lösning behövs"],
+  "4.6.13":["Inga övriga risker identifierade","Kvarstående risker identifierade"]
+ };
+ const v=slrDecode(val);
+ if(name==="4.4 Risknivå")return v||"Risknivå";
+ if(name==="Antal dörrblad"||name==="Antal maskindrivna")return name+" – "+v;
+ if(name.startsWith("4.3 Objektsorientering")){
+  const names=["Offentlig lokal","Kommersiell lokal","Privat bostad","Övrigt","Förskola/skola","Övrig skolverksamhet","Vårdinrättning","Äldreboende","Kontor","Butik","Restaurang","Annan miljö"];
+  const n=parseInt(name.match(/\d+$/)?.[0],10);return names[n-1]||name;
+ }
+ const values=lookup[name],m=v.match(/Val\s*(\d+)/i);
+ if(values&&m){let idx=Number(m[1])-1;if(/Låg/i.test(v))idx+=name==="4.6.2"?1:2;return values[idx]||name+" – "+v}
+ return [name,v].filter(Boolean).join(" – ");
+}
+function slrDrawChoice(b,chosen){b.classList.toggle("is-chosen",!!chosen);b.textContent=chosen?"✕":"";b.setAttribute("aria-pressed",String(!!chosen))}
+function slrShowChoice(text,selected,pageNumber){
+ const n=$("slrChoiceFeedback");if(n)n.textContent=(selected?"Markerat: ":"Avmarkerat: ")+text+" · sida "+pageNumber;
+}
 function slrStyles(){if($("slrOriginalStyle"))return;const elStyle=elm("style");elStyle.id="slrOriginalStyle";
-elStyle.textContent="#slrFlowTestDialog #slrFields.slrOriginalPages{display:flex;flex-direction:column;gap:14px;align-items:center;margin:10px 0 24px}.slrOriginalPage{position:relative;flex-shrink:0;background:#fff;border:1px solid #b7cbd5;box-shadow:0 3px 9px #153b5233;overflow:hidden}.slrOriginalPage canvas{display:block}.slrOverlayText{position:absolute;box-sizing:border-box;z-index:2;padding:0 2px;border:1px solid transparent!important;border-radius:0!important;background:#ffffffe0!important;color:#142333;min-height:0!important;font-family:Arial,sans-serif}.slrOverlayText:focus{outline:2px solid #188bc5!important;z-index:6}.slrOverlayTick{position:absolute;z-index:3;padding:0!important;margin:0!important;display:grid;place-items:center;border:0!important;border-radius:0!important;background:transparent!important;color:#0c1721!important;font-family:Arial,sans-serif;font-weight:900;cursor:pointer}.slrOverlayTick:focus-visible{outline:2px solid #0277aa!important}.slrSignatureOnPdf{position:absolute;z-index:5;margin:0!important;padding:1px!important;border:1px dashed #83a9bf!important;border-radius:2px!important;background:#eaf5f9aa!important;font-size:10px!important;overflow:hidden;color:#163e55!important}.slrSignatureDlg{width:min(760px,95vw);border:1px solid #88a8ba;border-radius:10px;background:#f8fbff;padding:14px}.slrSignatureDlg::backdrop{background:#06192dbb}.slrSignatureDlg canvas{width:100%;height:175px;touch-action:none;background:white;border:1px solid #92afc0;display:block;margin:12px 0}.slrSignatureDlg button{padding:8px;margin:4px;border:1px solid #8badbe;border-radius:6px}.slrPdfTip{font-size:12px;line-height:1.5;width:100%;border:1px solid #b7d2df;border-radius:7px;padding:9px;background:#e7f2f8;box-sizing:border-box}@media(max-width:650px){#slrFlowTestDialog main{padding:8px}#slrFlowTestDialog #slrFields.slrOriginalPages{gap:9px}.slrSignatureDlg canvas{height:150px}}";
+elStyle.textContent="#slrFlowTestDialog #slrFields.slrOriginalPages{display:flex;flex-direction:column;gap:14px;align-items:center;margin:10px 0 24px}.slrOriginalPage{position:relative;flex-shrink:0;background:#fff;border:1px solid #b7cbd5;box-shadow:0 3px 9px #153b5233;overflow:hidden}.slrOriginalPage canvas{display:block}.slrOverlayText{position:absolute;box-sizing:border-box;z-index:2;padding:0 2px;border:1px solid transparent!important;border-radius:0!important;background:#ffffffe0!important;color:#142333;min-height:0!important;font-family:Arial,sans-serif}.slrOverlayText:focus{outline:2px solid #188bc5!important;z-index:6}.slrOverlayTick{position:absolute;z-index:4;box-sizing:border-box;padding:0!important;margin:0!important;display:grid;place-items:center;border:1px solid #346d8b!important;border-radius:3px!important;background:#fffffff5!important;color:#123f5c!important;font-family:Arial,sans-serif;font-weight:900;cursor:pointer;line-height:1!important;touch-action:manipulation}.slrOverlayTick.is-chosen{border:2px solid #006aa3!important;background:#bfe8ff!important;color:#003e5d!important;box-shadow:0 0 0 2px #168dca55!important}.slrOverlayTick:focus-visible{outline:2px solid #0277aa!important;outline-offset:2px}.slrChoiceInfo{position:sticky;top:0;z-index:12;box-sizing:border-box;width:100%;padding:9px;color:#174867;background:#e4f5ff;border:1px solid #69b2d4;border-radius:7px;font-size:12px;font-weight:750;line-height:1.4}.slrZoomOptions{width:100%;display:flex;gap:5px;align-items:center;flex-wrap:wrap}.slrZoomOptions button{margin:0!important;min-height:32px!important;padding:6px 11px!important}.slrZoomOptions button[aria-pressed=true]{border:2px solid #0075aa!important;background:#def3ff!important}.slrOriginalPages.slrZoomWide{align-items:flex-start!important}.slrSignatureOnPdf{position:absolute;z-index:5;margin:0!important;padding:1px!important;border:1px dashed #83a9bf!important;border-radius:2px!important;background:#eaf5f9aa!important;font-size:10px!important;overflow:hidden;color:#163e55!important}.slrSignatureDlg{width:min(760px,95vw);border:1px solid #88a8ba;border-radius:10px;background:#f8fbff;padding:14px}.slrSignatureDlg::backdrop{background:#06192dbb}.slrSignatureDlg canvas{width:100%;height:175px;touch-action:none;background:white;border:1px solid #92afc0;display:block;margin:12px 0}.slrSignatureDlg button{padding:8px;margin:4px;border:1px solid #8badbe;border-radius:6px}.slrPdfTip{font-size:12px;line-height:1.5;width:100%;border:1px solid #b7d2df;border-radius:7px;padding:9px;background:#e7f2f8;box-sizing:border-box}@media(max-width:650px){#slrFlowTestDialog main{padding:8px}#slrFlowTestDialog #slrFields.slrOriginalPages{gap:9px}.slrSignatureDlg canvas{height:150px}}";
 document.head.append(elStyle);}
 function slrOpenSign(obj,cat,button){
  const d=elm("dialog");d.className="slrSignatureDlg";d.append(elm("strong","Signera riskanalys · "+(obj.sourceText||obj.objectNo||obj.id)));
@@ -100,9 +130,9 @@ function slrOpenSign(obj,cat,button){
 async function editDoc(cat){
  if(cat!=="Riskanalys")return editDocBasic(cat);
  const current=item;if(!current||!templates[cat])return;
- const revision=++slrEditorRevision;slrStyles();const host=$("slrFields");host.replaceChildren();host.className="slrOriginalPages";
+ const revision=++slrEditorRevision;slrStyles();const host=$("slrFields");host.replaceChildren();host.className="slrOriginalPages";host.classList.toggle("slrZoomWide",slrPageZoom>1);
  $("slrEditHeading").textContent="4. Riskanalys Svängdörr · "+(current.sourceText||current.objectNo||current.id);
- const info=elm("div","Fyll i direkt på SLR:s originalsidor. Scrolla ned för nästa avsnitt. Kund- och dörruppgifter hämtas från projektet; varje automatik får egna riskval.");info.className="slrPdfTip";host.append(info);
+ const info=elm("div","Fyll i direkt på SLR:s originalsidor. Scrolla ned för nästa avsnitt. Kund- och dörruppgifter hämtas från projektet; varje automatik får egna riskval.");info.className="slrPdfTip";host.append(info);const controls=elm("div");controls.className="slrZoomOptions";controls.append(elm("strong","Förstoring:"));for(const [label,mult] of [["Anpassa",1],["1,5×",1.5],["2×",2]]){const b=elm("button",label);b.type="button";b.setAttribute("aria-pressed",String(slrPageZoom===mult));b.onclick=()=>{if(slrPageZoom!==mult){slrPageZoom=mult;void editDoc(cat)}};controls.append(b)}host.append(controls);const status=elm("div","Tryck på en kryssruta. Här visas vilket alternativ du har markerat.");status.id="slrChoiceFeedback";status.className="slrChoiceInfo";host.append(status);
  const storedValues=saved(current,cat).fields||{},defaultValues=auto(current);
  let document=null;
  try{
@@ -111,7 +141,7 @@ async function editDoc(cat){
    if(item!==current||slrEditorRevision!==revision)return;
    const p=await document.getPage(pi+1),v0=p.getViewport({scale:1});
    const width=Math.min(685,Math.max(245,window.innerWidth-44),Math.max(245,host.clientWidth-8));
-   const factor=width/v0.width,vp=p.getViewport({scale:factor});
+   const factor=width/v0.width*slrPageZoom,vp=p.getViewport({scale:factor});
    const page=elm("div");page.className="slrOriginalPage";page.style.cssText="width:"+vp.width+"px;height:"+vp.height+"px";
    const canvas=elm("canvas");const dpr=Math.min(window.devicePixelRatio||1,1.5);
    canvas.width=Math.round(vp.width*dpr);canvas.height=Math.round(vp.height*dpr);
@@ -134,14 +164,24 @@ async function editDoc(cat){
      const radio=!!an.radioButton,key=pi===2&&name==="4.6.1"?"4.6.2":name;
      const index=radioCounters[key]||0;radioCounters[key]=index+1;
      const opt=String(an.buttonValue||an.exportValue||"");
-     const val=radio?(opt||String(index+1)):"";
-     const checked=radio?storedValues[key]===val:storedValues[key]===true;
-     const btn=elm("button",checked?"✕":"");btn.type="button";btn.className="slrOverlayTick";
-     const ww=Math.max(19,w),hh=Math.max(19,h);btn.style.cssText="left:"+(left-(ww-w)/2)+"px;top:"+(top-(hh-h)/2)+"px;width:"+ww+"px;height:"+hh+"px;font-size:"+Math.max(12,15*factor)+"px";
-     btn.dataset.field=key;btn.dataset.value=val;btn.setAttribute("aria-label",key+(radio?" "+val:""));btn.title=btn.getAttribute("aria-label");btn.setAttribute("aria-pressed",String(checked));
-     btn.onclick=()=>{if(item!==current)return;const values=saved(current,cat).fields;
-      if(radio){values[key]=val;for(const other of page.querySelectorAll(".slrOverlayTick"))if(other.dataset.field===key){const on=other.dataset.value===val;other.textContent=on?"✕":"";other.setAttribute("aria-pressed",String(on))}}
-      else{values[name]=!(values[name]===true);btn.textContent=values[name]?"✕":"";btn.setAttribute("aria-pressed",String(values[name]))}
+     const val=radio?slrDecode(opt||String(index+1)):"";
+     const checked=radio?slrDecode(storedValues[key])===val:storedValues[key]===true;
+     const btn=elm("button");btn.type="button";btn.className="slrOverlayTick";
+     // Close rows are only about 13 PDF points apart. Cap hit area to avoid hitting the next choice.
+     const sameColumn=annotations.filter(q=>q!==an&&q.subtype==="Widget"&&q.fieldType==="Btn"&&q.rect)
+       .map(q=>vp.convertToViewportRectangle(q.rect))
+       .filter(r=>Math.abs((r[0]+r[2])/2-(left+w/2))<Math.max(10,18*factor));
+     const nearest=sameColumn.reduce((d,r)=>Math.min(d,Math.abs((r[1]+r[3])/2-(top+h/2))),Infinity);
+     const ww=Math.max(12,Math.min(20,w+6)),hh=Math.max(7,Math.min(20,h+5,nearest-1.1));
+     btn.style.cssText="left:"+(left-(ww-w)/2)+"px;top:"+(top-(hh-h)/2)+"px;width:"+ww+"px;height:"+hh+"px;font-size:"+Math.max(10,Math.min(17,hh-1))+"px";
+     const desc=slrChoiceText(key,radio?val:"");
+     btn.dataset.field=key;btn.dataset.value=val;btn.setAttribute("aria-label",desc);btn.title=desc;
+     slrDrawChoice(btn,checked);
+     btn.onclick=()=>{if(item!==current)return;const values=saved(current,cat).fields;let chosen;
+      if(radio){values[key]=val;chosen=true;
+       for(const other of page.querySelectorAll(".slrOverlayTick"))if(other.dataset.field===key)slrDrawChoice(other,other.dataset.value===val)}
+      else{values[name]=!(values[name]===true);chosen=values[name];slrDrawChoice(btn,chosen)}
+      slrShowChoice(desc,chosen,pi+1);
       slrDirty(current,cat);
      };page.append(btn);
     }
