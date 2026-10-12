@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c2332">
+<title>Tillsyno – Checklistor designprov</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;color:#f1f7f9;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:#061622;min-height:100svh;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer}
+.lab{width:min(1540px,100%);margin:auto;padding:18px clamp(12px,2vw,28px) 28px}
+.labhead{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:17px}
+.labhead h1{margin:0;font-size:17px;line-height:1.4;font-weight:720;letter-spacing:-.015em}
+.labhead p{margin:5px 0 0;color:#adcad5;font-size:12px;line-height:1.55}
+.options{display:flex;align-items:center;gap:4px;padding:4px;border:1px solid #7da1b647;border-radius:12px;background:#0d2738}
+.options button{border:0;background:none;color:#bed5de;font-size:12px;font-weight:670;border-radius:8px;padding:10px 12px;transition:background .15s,color .15s}
+.options button[aria-pressed="true"]{background:#d5ebf5;color:#123243}
+.options button:focus-visible{outline:2px solid #93dbf2;outline-offset:2px}
+.view{display:flex;justify-content:center;overflow:hidden;padding:4px 0 16px}
+.scene{position:relative;isolation:isolate;overflow:hidden;width:min(1200px,100%);height:750px;max-height:82svh;min-height:610px;container:frame / inline-size;border-radius:18px;border:1px solid #aacbd13b;box-shadow:0 24px 65px #0008;transition:width .3s ease,height .3s ease;background:
+ radial-gradient(ellipse at 55% 38%,rgba(34,82,103,.25),transparent 63%),
+ linear-gradient(145deg,#102f41 0%,#0b2636 46%,#091f2d 100%)}
+.scene::before{content:"";position:absolute;pointer-events:none;top:12%;right:6%;width:23%;height:26%;border-top:1px solid rgba(185,227,239,.14);border-right:1px solid rgba(185,227,239,.14);border-radius:0 5px 0 0}
+.scene::after{content:"";position:absolute;pointer-events:none;bottom:11%;left:6%;width:23%;height:25%;border-bottom:1px solid rgba(185,227,239,.10);border-left:1px solid rgba(185,227,239,.10);border-radius:0 0 0 5px}
+.lab[data-mode="phone"] .scene{width:min(390px,100%);height:780px;max-height:none}
+.lab[data-mode="tablet"] .scene{width:min(820px,100%);height:900px;max-height:none}
+.lab[data-mode="desktop"] .scene{width:min(1200px,100%);height:750px;max-height:none}
+.testlabel{position:absolute;top:22px;left:50%;translate:-50% 0;white-space:nowrap;color:#a9c5d0;font-size:9px;font-weight:750;letter-spacing:.18em}
+.frame{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:54px 18px}
+.header{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.identity strong{display:block;font-size:23px;font-weight:750;letter-spacing:-.035em;line-height:1.2}
+.identity small{display:block;font-size:10px;color:#b9d2db;line-height:1.5;letter-spacing:.025em;margin-top:4px}
+.header .label{font-size:10px;padding:4px 7px;border:1px solid #b5d0dd5a;border-radius:5px;background:#18394b94;color:#dbeef5}
+.choices{display:grid;gap:9px;width:min(350px,100%)}
+.choice{height:64px;width:100%;display:grid;align-items:center;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;padding:9px 11px;border:1px solid rgba(208,232,241,.24);border-radius:10px;background:rgba(11,32,46,.74);box-shadow:0 6px 24px #0002;backdrop-filter:blur(7px)}
+.choice .ico{display:grid;place-items:center;width:32px;height:32px;color:#e6f6fa;border-radius:8px;background:#cceef014}
+.choice svg{height:20px;width:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.copy{min-width:0}
+.copy strong{display:block;font-weight:720;font-size:13px;line-height:1.3}
+.copy small{display:block;margin-top:3px;font-size:11px;line-height:1.3;color:#c3d5df}
+.choice b{font-size:10px;white-space:nowrap;font-weight:690}
+.choice--tool{grid-template-columns:32px minmax(0,1fr);height:53px;background:rgba(10,29,42,.54)}
+.account{width:min(350px,100%);margin-top:12px;text-align:center;padding:12px;border:1px solid #cee9f233;background:#0c28389b;border-radius:10px;font-size:11px;font-weight:700}
+.footerlabel{position:absolute;bottom:20px;left:15px;right:15px;text-align:center;color:#a2c2cf8e;font-size:9px;letter-spacing:.12em}
+.note{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;max-width:1200px;margin:auto;color:#a7c0cd;font-size:12px;line-height:1.5}
+.note strong{color:#e8f3f7}
+@container frame (max-width:610px){
+ .scene::before{width:21%;height:18%;top:8%;right:8%;opacity:.6}
+ .scene::after{width:21%;height:18%;bottom:8%;left:8%;opacity:.6}
+ .frame{padding:36px 17px}
+ .header{margin-bottom:17px;gap:8px}
+ .identity strong{font-size:21px}
+ .identity small{font-size:9px}
+ .choices,.account{max-width:315px}
+ .choice{height:60px;gap:8px;padding:8px 9px}
+ .choice--tool{height:50px}
+ .copy strong{font-size:13px}
+ .copy small{font-size:10px}
+}
+@container frame (max-width:350px){
+ .identity strong{font-size:19px}
+ .choices,.account{max-width:100%}
+ .choice{grid-template-columns:30px minmax(0,1fr) auto;gap:7px;padding:7px 8px}
+ .choice--tool{grid-template-columns:30px minmax(0,1fr)}
+ .choice .ico{width:30px;height:30px}
+ .copy small{font-size:9.5px}
+}
+@media(max-width:680px){
+ .lab{padding:12px 9px 20px}
+ .labhead h1{font-size:15px}
+ .options{width:100%;overflow:auto}
+ .options button{flex:1;white-space:nowrap;padding:10px 7px;font-size:11px}
+ .scene{border-radius:14px}
+}
+@media(prefers-reduced-motion:reduce){.scene{transition:none}}
+
+/* Shared responsive visual treatment for three isolated design-preview screens. */
+[hidden]{display:none!important}
+.frame[hidden]{display:none!important}
+.choice{appearance:none;text-align:left;color:inherit;font:inherit;cursor:pointer}
+.choice b{justify-self:end}
+.choice--tool{grid-template-columns:32px minmax(0,1fr) auto!important}
+.choice:hover,.choice:focus-visible{outline:2px solid #b6e6f5;outline-offset:2px;background:rgba(18,48,66,.94)}
+.workflow{position:absolute;inset:0;display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;color:#ebf6fb}
+.workflowHead{min-height:72px;display:grid;grid-template-columns:76px minmax(0,1fr) 90px;align-items:center;gap:10px;padding:10px 17px;background:rgba(7,23,35,.56);border-bottom:1px solid #cbe8f12d}
+.flowBack{color:#e4f3f7;border:1px solid #abc8d34a;background:#193e51a8;border-radius:8px;padding:9px 7px;min-width:0;white-space:nowrap;text-align:center;font-size:13px;font-weight:670;cursor:pointer}
+.flowBack:focus-visible{outline:2px solid #9bdff1;outline-offset:2px}
+.flowTitle{text-align:center;min-width:0}
+.flowTitle strong{display:block;font-size:17px;font-weight:750;letter-spacing:-.015em}
+.flowTitle small{display:block;font-size:10px;color:#b6d0d9;margin-top:4px;line-height:1.3}
+.flowHeadAction{justify-self:end;padding:9px 12px;white-space:nowrap;color:#193849;border-radius:8px;background:#d5eaf2;font-size:11px;font-weight:750}
+.flowTabs{min-height:45px;display:flex;align-items:stretch;justify-content:center;gap:4px;padding:6px 12px;background:#0b2a3bc4;border-bottom:1px solid #c9eaf125}
+.flowTabs span{display:grid;place-items:center;padding:6px 12px;font-size:11px;color:#abc6d2;min-width:0;white-space:nowrap;border-radius:7px}
+.flowTabs span.selected{color:#e8f8fc;background:#b7e6f528;border:1px solid #b3e2ee35;font-weight:700}
+.flowArea{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,245px);gap:13px;padding:15px;flex:1;min-height:0;overflow:hidden}
+.flowDrawing{background:#e5eef3;border:1px solid #c7d9e2;border-radius:11px;box-shadow:0 8px 30px #0003;color:#1b4054;display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+.drawingToolbar{min-height:42px;display:flex;align-items:center;justify-content:flex-start;gap:9px;padding:7px 11px;background:#f9fcfe;border-bottom:1px solid #b5cbd7;color:#456579;font-size:11px;white-space:nowrap}
+.drawingToolbar strong{font-size:11px;font-weight:740;color:#214558;overflow:hidden;text-overflow:ellipsis}
+.drawingToolbar i{flex:1}
+.drawingToolbar span{min-width:20px;text-align:center;font-style:normal}
+.drawingBlank{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:20px;text-align:center;background-image:linear-gradient(#bcd0da17 1px,transparent 1px),linear-gradient(90deg,#bcd0da17 1px,transparent 1px);background-size:32px 32px}
+.drawingBlank svg{width:60px;height:60px;fill:none;stroke:#7199ad;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
+.drawingBlank strong{font-size:19px;font-weight:750;color:#2a4b5c}
+.drawingBlank p{font-size:12px;line-height:1.55;color:#638094;max-width:300px;margin:0}
+.flowCTA{background:#164f6c;color:#fff;font-size:12px;font-weight:740;padding:11px 18px;border-radius:8px;margin-top:5px}
+.flowSide{min-height:0;overflow:auto;padding:17px 14px;border:1px solid #c2e7ef29;border-radius:11px;background:rgba(11,35,49,.72)}
+.flowSectionTag{display:block;font-weight:780;letter-spacing:.14em;font-size:9px;color:#91bdcf}
+.flowSide h2{font-size:15px;margin:9px 0 17px;font-weight:750;letter-spacing:-.02em}
+.flowItems{display:grid;gap:8px}
+.flowItems span{display:block;padding:10px 9px;border:1px solid #b5d4df35;background:#18405467;border-radius:8px;font-size:11px;color:#d5e9f2;font-weight:650;line-height:1.35}
+.flowSide p{font-size:11px;line-height:1.6;color:#9ebfcc;margin:17px 0 0}
+.statRow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #aacbd526;color:#b7d5df;font-size:11px}
+.statRow b{color:#ecf8fb;font-size:12px}
+.statRow+.flowItems{margin-top:18px}
+.flowFoot{padding:10px 15px;display:flex;justify-content:center;gap:12px;align-items:center;background:#0a2434b8;border-top:1px solid #a9cad52e;color:#c0d6e0;font-weight:690;font-size:10px}
+.flowFoot span{opacity:.36}
+@container frame (max-width:750px){
+ .flowArea{grid-template-columns:minmax(0,1fr) minmax(150px,30%);gap:9px;padding:10px}
+ .flowSide{padding:12px 10px}
+ .flowTabs{justify-content:space-around}
+ .flowTabs span{padding:7px 9px}
+}
+@container frame (max-width:520px){
+ .workflowHead{min-height:65px;grid-template-columns:58px minmax(0,1fr) 64px;gap:4px;padding:8px 9px}
+ .flowBack{font-size:12px;padding:9px 3px}
+ .flowTitle strong{font-size:15px}
+ .flowTitle small{font-size:9px}
+ .flowHeadAction{font-size:9px;padding:8px 6px}
+ .flowTabs{min-height:43px;padding:5px 4px;gap:2px}
+ .flowTabs span{font-size:9px;padding:6px 5px}
+ .flowArea{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(280px,1.6fr) minmax(165px,1fr);gap:9px;padding:9px}
+ .drawingToolbar{min-height:37px;padding:6px;gap:5px;font-size:9px}
+ .drawingToolbar strong{font-size:9px}
+ .drawingBlank svg{width:45px;height:45px}
+ .drawingBlank strong{font-size:16px}
+ .drawingBlank p{font-size:11px}
+ .drawingBlank{padding:10px;gap:7px}
+ .flowCTA{font-size:11px;padding:9px 13px}
+ .flowSide{padding:11px 12px}
+ .flowSide h2{font-size:12px;margin:5px 0 8px}
+ .flowItems{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .flowItems span{font-size:9px;padding:8px 6px}
+ .flowSide p{margin:9px 0 0;font-size:9px}
+ .flowFoot{min-height:36px;gap:6px;font-size:9px;padding:8px}
+}
+
+.ctrlLayout{flex:1;min-height:0;display:grid;place-items:center;padding:22px}
+.ctrlPanel{width:min(390px,100%)}
+.ctrlPanel>small{display:block;color:#9dc5d3;font-size:10px;font-weight:800;letter-spacing:.15em;margin:0 0 13px}
+.ctrlPanel h2{font-size:clamp(22px,3.4cqw,31px);margin:0 0 23px;letter-spacing:-.035em}
+.ctrlOptions{display:grid;gap:11px}
+.ctrlOption{appearance:none;width:100%;min-height:71px;display:flex;align-items:center;justify-content:space-between;text-align:left;gap:13px;padding:13px 17px;border:1px solid #d6eef35a;border-radius:11px;background:#0c2b3bba;color:#eff9fc;cursor:pointer}
+.ctrlOption:hover,.ctrlOption:focus-visible{outline:2px solid #b5e7f4;background:#205063}
+.ctrlOption strong{font:720 14px/1.3 system-ui}
+.ctrlOption small{display:block;margin-top:5px;font-size:11px;color:#aacbd8;font-weight:500}
+.ctrlOption b{font-size:24px;font-weight:400;color:#c2e4ee}
+.ctrlBack{border:0;color:#c2e0eb;padding:7px 0;margin:0 0 25px;background:none;cursor:pointer;font:700 12px system-ui}
+.ctrlSelected{padding:23px;border:1px solid #d6eef33e;border-radius:11px;background:#163b4b9a;line-height:1.7;font-size:13px}
+.ctrlSelected small{font-size:11px;color:#afcdda}
+@container frame (max-width:520px){.ctrlLayout{padding:19px}.ctrlPanel h2{font-size:24px}.ctrlOption{min-height:63px;padding:11px 12px}.ctrlOption strong{font-size:13px}}
+</style>
+</head>
+<body>
+<div class="lab" id="lab" data-mode="auto">
+ <header class="labhead">
+  <div><h1>Tillsyno · Checklisteflöde</h1><p>Öppna Kontrollflöde och testa valet Dörrautomatik → checklista.</p></div>
+  <nav class="options" aria-label="Välj förhandsvisningsstorlek">
+   <button type="button" data-size="auto" aria-pressed="true">Automatisk</button>
+   <button type="button" data-size="phone" aria-pressed="false">iPhone</button>
+   <button type="button" data-size="tablet" aria-pressed="false">iPad</button>
+   <button type="button" data-size="desktop" aria-pressed="false">Dator</button>
+  </nav>
+ </header>
+ <main class="view">
+  <section class="scene" id="scene" aria-label="Förhandsvisning av Tillsynos startsida">
+   
+   <div class="frame" id="homeScreen">
+    <div class="header">
+     <div class="identity"><strong>Tillsyno</strong><small>Tillsyn · kontroll · dokumentation</small></div>
+     
+    </div>
+    <div class="choices">
+     <button type="button" class="choice" data-open="control" aria-label="Visa designförslag för Kontrollflöde"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h8a2 2 0 0 1 2 2v12H7a2 2 0 0 1-2-2V7"/><path d="M9 3h6v4H9zM9 11l1.5 1.5 2.5-3M9 16l1.5 1.5 2.5-3M16 11h2M16 16h2"/></svg></span><span class="copy"><strong>Kontrollflöde</strong><small>Checklistor</small></span><b>Öppna ›</b></button>
+     <button type="button" class="choice" data-open="smart" aria-label="Visa designförslag för SmartMatch"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 5 6-2 6 3 6-3v16l-6 2-6-3-6 3zM9 3v15M15 6v15"/><circle cx="7" cy="9" r="1.6"/></svg></span><span class="copy"><strong>SmartMatch</strong><small>Ritning · dörrkort · dörrautomatik</small></span><b>Öppna ›</b></button>
+     <button type="button" class="choice choice--tool" data-open="tools" aria-label="Visa designförslag för Ritningsverktyg"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 5a6 6 0 0 0-7 7L3 16.7A2.6 2.6 0 0 0 6.7 20l4.6-4.7a6 6 0 0 0 7-7L15 11l-3-3z"/></svg></span><span class="copy"><strong>Ritningsverktyg</strong><small>Rensa · beskära · optimera</small></span><b>Öppna ›</b></button>
+    </div>
+    <div class="account">Mitt konto ▾</div>
+   </div>
+   
+
+   <section class="workflow" id="controlScreen" data-screen="control" hidden aria-label="Kontrollflöde checklistor">
+<header class="workflowHead"><button class="flowBack" type="button" data-back>‹ Hem</button><div class="flowTitle"><strong>Kontrollflöde</strong><small>Checklistor</small></div><span></span></header>
+<div class="ctrlLayout">
+  <div class="ctrlPanel" data-stage="categories">
+    <small>CHECKLISTOR</small><h2>Välj område</h2>
+    <button class="ctrlOption" type="button" data-step="automation"><span><strong>Dörrautomatik</strong><small>Revision · egenkontroll · lås</small></span><b>›</b></button>
+  </div>
+  <div class="ctrlPanel" data-stage="automation" hidden>
+    <button class="ctrlBack" type="button" data-step="categories">‹ Checklistor</button>
+    <small>DÖRRAUTOMATIK</small><h2>Välj checklista</h2>
+    <div class="ctrlOptions">
+      <button class="ctrlOption" type="button" data-check="Revision dörrautomatik"><strong>Revision dörrautomatik</strong><b>›</b></button>
+      <button class="ctrlOption" type="button" data-check="Egenkontroll dörrautomatik"><strong>Egenkontroll dörrautomatik</strong><b>›</b></button>
+      <button class="ctrlOption" type="button" data-check="Revision lås"><strong>Revision lås</strong><b>›</b></button>
+    </div>
+  </div>
+  <div class="ctrlPanel" data-stage="selected" hidden>
+    <button class="ctrlBack" type="button" data-step="automation">‹ Dörrautomatik</button>
+    <small>VALD CHECKLISTA</small><h2 id="selectedChecklist">Revision dörrautomatik</h2>
+    <div class="ctrlSelected">Nästa steg: öppna en ritning och börja kontrollen.<br><small>Det här är bara ett designprov. Ingen PDF öppnas.</small></div>
+  </div>
+</div>
+</section>
+<section class="workflow" id="smartScreen" data-screen="smart" hidden aria-label="Designförslag för SmartMatch">
+    <header class="workflowHead">
+     <button class="flowBack" type="button" data-back aria-label="Till startsidan">‹ <span>Hem</span></button>
+     <div class="flowTitle"><strong>SmartMatch</strong><small>Projektflöde</small></div>
+     <span class="flowHeadAction">Spara</span>
+    </header>
+    <nav class="flowTabs" aria-label="SmartMatch arbetsvyer">
+     <span class="selected">Ritning</span><span>Dörrkort</span><span>DA Egenkontroll</span>
+    </nav>
+    <div class="flowArea">
+     <section class="flowDrawing">
+      <div class="drawingToolbar"><strong>Ingen projektfil</strong><i></i><span>Passa</span><span>−</span><span>100 %</span><span>+</span></div>
+      <div class="drawingBlank">
+       <svg viewBox="0 0 64 64" aria-hidden="true"><path d="m9 13 16-5 15 6 15-6v42l-15 6-15-6-16 6zM25 8v42M40 14v42M14 27h6M44 29h6"/></svg>
+       <strong>Projektets ritning</strong>
+       <p>Här visas GS-positioner, dörrautomatik och kopplade dörrkort.</p>
+       <span class="flowCTA">Lägg till ritning</span>
+      </div>
+     </section>
+     <aside class="flowSide">
+      <span class="flowSectionTag">SMARTMATCH</span>
+      <h2>Projektöversikt</h2>
+      <div class="statRow"><span>GS-positioner</span><b>0</b></div>
+      <div class="statRow"><span>Dörrkort</span><b>0</b></div>
+      <div class="statRow"><span>Egenkontroller</span><b>0 %</b></div>
+      <div class="flowItems"><span>＋ Lägg till dörrkort</span><span>＋ Hitta automatiker</span></div>
+      <p>Ritningen är fortsatt ljus så att stämplar och pilar syns tydligt.</p>
+     </aside>
+    </div>
+    <div class="flowFoot">Ritning <span>·</span> Dörrkort <span>·</span> Egenkontroller</div>
+   </section>
+   <section class="workflow" id="toolsScreen" data-screen="tools" hidden aria-label="Designförslag för Ritningsverktyg">
+    <header class="workflowHead">
+     <button class="flowBack" type="button" data-back aria-label="Till startsidan">‹ <span>Hem</span></button>
+     <div class="flowTitle"><strong>Ritningsverktyg</strong><small>Rensa · beskära · optimera</small></div>
+     <span class="flowHeadAction">Spara PDF</span>
+    </header>
+    <nav class="flowTabs" aria-label="Verktyg">
+     <span class="selected">Ritning</span><span>Rensa</span><span>Beskär</span><span>Optimera</span>
+    </nav>
+    <div class="flowArea">
+     <section class="flowDrawing">
+      <div class="drawingToolbar"><strong>Ingen PDF öppnad</strong><i></i><span>−</span><span>100 %</span><span>+</span></div>
+      <div class="drawingBlank">
+       <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 8h28l8 8v40H14zM42 8v10h8M21 30h22M21 37h22M21 44h13M39 43l7 7M46 43l-7 7"/></svg>
+       <strong>Öppna ritning</strong>
+       <p>Rensa, beskära och optimera PDF direkt i arbetsvyn.</p>
+       <span class="flowCTA">Välj PDF</span>
+      </div>
+     </section>
+     <aside class="flowSide">
+      <span class="flowSectionTag">PDF-VERKTYG</span>
+      <h2>Bearbeta ritning</h2>
+      <div class="flowItems"><span>⌫ Rensa markeringar</span><span>⌗ Beskär sidor</span><span>↘ Optimera storlek</span><span>↶ Ångra</span></div>
+      <p>Samma lugna mörkblå ram. Arbetsytan för PDF är ljus och lätt att läsa.</p>
+     </aside>
+    </div>
+    <div class="flowFoot">Öppna PDF <span>·</span> Bearbeta <span>·</span> Spara</div>
+   </section>
+  </section>
+ </main>
+ <footer class="note">
+  <span><strong>Enklare meny:</strong> Kontrollflöde → Checklistor → Dörrautomatik → Välj checklista.</span>
+  <span>Den riktiga Tillsyno-startsidan är oförändrad.</span>
+ </footer>
+</div>
+<script>
+
+(function(){
+ const lab=document.getElementById('lab');
+ const home=document.getElementById('homeScreen');
+ const screens=Array.from(document.querySelectorAll('.workflow[data-screen]'));
+ const sizeButtons=Array.from(document.querySelectorAll('[data-size]'));
+ function showScreen(mode){
+  const target=screens.find(sc=>sc.dataset.screen===mode);
+  if(mode!=='home'&&!target)return;
+  home.hidden=mode!=='home';
+  screens.forEach(sc=>{sc.hidden=sc!==target;});
+  document.getElementById('scene').setAttribute('aria-label',mode==='home'?'Tillsynos startsida':target.getAttribute('aria-label'));
+ }
+ sizeButtons.forEach(btn=>btn.addEventListener('click',()=>{
+  lab.dataset.mode=btn.dataset.size;
+  sizeButtons.forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));
+ }));
+ document.querySelectorAll('[data-open]').forEach(btn=>btn.addEventListener('click',()=>showScreen(btn.dataset.open)));
+ document.querySelectorAll('[data-back]').forEach(btn=>btn.addEventListener('click',()=>showScreen('home')));
+function stage(name){document.querySelectorAll('[data-stage]').forEach(el=>{el.hidden=el.dataset.stage!==name;});}
+ document.querySelectorAll('[data-step]').forEach(b=>b.addEventListener('click',()=>stage(b.dataset.step)));
+ document.querySelectorAll('[data-check]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('selectedChecklist').textContent=b.dataset.check;stage('selected');}));
+ document.querySelector('[data-open="control"]').addEventListener('click',()=>stage('categories'));
+ showScreen('home');
+})();
+</script>
+</body>
+</html>
