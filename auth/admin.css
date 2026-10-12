@@ -44,3 +44,11 @@ body:not(.loginbody){background:linear-gradient(180deg,#e9f1f3 0,#f5f8f9 290px)}
 .moduleGroup .checkRow input{flex:0 0 19px;width:19px;height:19px;margin:0;padding:0;accent-color:#176b88}
 .moduleGroup .checkRow:has(input:checked){border-color:#73a6b6;background:#e9f5f7;color:#174f65}
 @media(max-width:650px){.owner{margin-top:13px;padding:8px 10px}.stats{gap:7px}.stat{padding:12px 10px}.moduleGroup .checkRow{padding:9px 10px}}
+
+/* v2.4.279: compact custom expiry and explicit licence cancellation. */
+#licenseUntil{color:#17333f;min-height:44px}
+.cancelBox{border-top:1px solid #e5edef;padding-top:16px}
+.cancelBox #cancelLicense{width:100%;min-height:42px;border-color:#e2c0c0;background:#fff8f7;color:#a33b3b;font-weight:750}
+.cancelBox #cancelLicense:disabled{opacity:.65}
+.cancelBox .licenseHint{margin-top:9px;margin-bottom:0!important}
+.badge.revoked{background:#fae9e9;color:#a04f4f}
