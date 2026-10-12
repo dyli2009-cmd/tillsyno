@@ -1,7 +1,7 @@
-/* v2.4.276: Offline works silently without an on-screen readiness label. */
+/* v2.4.277: Offline works silently without an on-screen readiness label. */
 (()=>{
  'use strict';
- const VERSION='2.4.276';
+ const VERSION='2.4.277';
  const run=async()=>{
   document.getElementById('tillsynoOfflineStatus')?.remove();
   if(!('serviceWorker' in navigator))return;
