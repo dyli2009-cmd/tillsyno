@@ -1,0 +1,14 @@
+# Tillsyno v2.4.269 – inloggning och enkel användaradministration (2026-10-12)
+
+Startsidan och aktiva SmartMatch-adressen kontrollerar Supabase-inloggning och aktuell tillsyno_access-roll. Admin ser Användare på startsidan. Den nya responsiva adminsidan har lista/sökning, status, skapa konto + personlig lösenordslänk, godkänn/återaktivera, ny länk och ta bort åtkomst. Ingen e-post skickas automatiskt. Ägarkonton kan inte ändras genom denna sida. Borttagning återkallar medlemsposten och spärrar Auth-kontot; kontot kan återaktiveras utan att radera projekt.
+
+Serverfunktionen tillsyno-admin verifierar JWT via getUser, kontrollerar session_id mot auth.sessions genom en server-only SECURITY INVOKER-RPC och läser aktuell adminroll från databasen. verify_jwt=false används eftersom dessa kontroller genomförs i funktionen och det nya nyckelformatet stöds. Servernycklar finns enbart i Supabases miljö. Behörighetstabellen är RLS-skyddad; klienter får bara SELECT på sin egen rad, aldrig ändra roller eller TRUNCATE. Migrationerna restrict_tillsyno_access_writes och verify_tillsyno_admin_sessions är applicerade, SQL finns under auth/.
+
+Offline: redan verifierad användare kan fortsätta lokalt; offlinekopia av behörigheten är endast en lokal UX-spärr och används aldrig för serverbehörighet. Borttagen åtkomst upptäcks vid nästa onlinekontroll. Adminåtgärder kräver alltid internet. Supabase-klienten är versionslåst till 2.49.10 och levereras lokalt/offline. PDF-innehåll och lokal historik berörs inte.
+
+Avgränsning: GitHub Pages serverar fortfarande publika statiska filer. En klientbaserad inloggningsspärr gör inte kodfiler eller gamla direkta HTML-länkar privata. Kontrollflödeslåset är inte upplåst; Kontrollflödets HTML/JS/checklistor och tidigare SmartMatch-snapshots är oförändrade. Startsida och aktiv SmartMatch gateas. Verkligt privat distribution kräver separat skyddad hosting. Admin-API och behörighetsdata skyddas på servern.
+
+Verifiering: tests/tillsyno-admin-auth.cjs testar saknad/felaktig session, avslutad adminsession, nekad medlem, CORS, listning, skyddat ägarkonto, godkännande, borttagning, återaktivering, inbjudnings-/återställningslänkar, dubbletter, indatavalidering, serveravslag trots offlinecache och säkra next-omdirigeringar. Livefunktionsanrop utan token/felaktig token nekas 401 och fel Origin 403. DB-behörigheter/RLS och ägarens adminroll verifierade. Inga verkliga nya konton/länkar eller mejl skapades i verifieringen. Fullt interaktivt admin-test med användarens session och fysisk Safari/iOS återstår. iOS-filer och buildversion speglas; TestFlight-status verifieras separat.
+
+Säkerhetsrådgivaren har en befintlig varning om avstängt skydd mot läckta lösenord; inga tabell-/RLS-varningar. Inställningen kräver separat Auth-konfiguration och ändrades inte här.
+
