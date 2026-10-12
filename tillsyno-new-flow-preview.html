@@ -139,7 +139,7 @@ button{font:inherit;cursor:pointer}
 <div class="brand"><div><strong>Tillsyno</strong><small>Tillsyn · kontroll · dokumentation</small></div></div>
 <div class="homeLinks">
 <button type="button" class="homeLink" data-go="folders"><svg viewBox="0 0 24 24"><use href="#check"/></svg><span><strong>Kontrollflöde</strong><small>Checklistor</small></span><b>Öppna ›</b></button>
-<button type="button" class="homeLink" data-go="smart" data-file-now><svg viewBox="0 0 24 24"><use href="#map"/></svg><span><strong>SmartMatch</strong><small>Ritning · dörrkort · dörrautomatik</small></span><b>Öppna ›</b></button>
+<button type="button" class="homeLink" data-go="smart"><svg viewBox="0 0 24 24"><use href="#map"/></svg><span><strong>SmartMatch</strong><small>Ritning · dörrkort · dörrautomatik</small></span><b>Öppna ›</b></button>
 <button type="button" class="homeLink toolsLink" data-go="tools"><svg viewBox="0 0 24 24"><use href="#edit"/></svg><span><strong>Ritningsverktyg</strong><small>Rensa · beskära · optimera</small></span><b>Öppna ›</b></button>
 </div><div class="fakeAccount">Mitt konto ▾</div></section>
 <section class="scene" data-screen="folders" hidden>
@@ -207,7 +207,7 @@ document.querySelectorAll("[data-folder]").forEach(b=>b.addEventListener("click"
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>{
 const dest=b.dataset.go;scene(dest);
 if(dest==="protocols")refresh();
-if(b.hasAttribute("data-file-now"))document.getElementById("smartInput").click();
+// SmartMatch opens at Välj projektfil; the user presses Välj PDF-fil.
 }));
 buttons.forEach(b=>b.addEventListener("click",()=>{root.dataset.device=b.dataset.device;buttons.forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));}));
 document.getElementById("toDrawing").addEventListener("click",()=>{
