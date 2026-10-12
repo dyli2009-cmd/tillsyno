@@ -1222,7 +1222,10 @@ window.SmartMatchDALink=(()=>{
  }
  async function openSLR(o){
   if(!o)return;
-  if(window.SmartMatchSLRTest?.open)return window.SmartMatchSLRTest.open(o,ctx(),verifiedSLRSource(o));
+  if(window.SmartMatchSLRTest?.open){
+   try{await prepareLinkCards()}catch(err){console.warn('[SLR test] Dörrkortsläsning',err)}
+   return window.SmartMatchSLRTest.open(o,ctx(),verifiedSLRSource(o));
+  }
   const sourceDisplay=$('pwSLRSource');
   if(sourceDisplay)sourceDisplay.textContent='Kontrollerar GS-koppling och dörrkort…';
   if(!$('pwSLRDialog').open)$('pwSLRDialog').showModal();
