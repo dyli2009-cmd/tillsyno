@@ -114,7 +114,7 @@ function slrShowChoice(text,selected,pageNumber){
  const n=$("slrChoiceFeedback");if(n)n.textContent=(selected?"Markerat: ":"Avmarkerat: ")+text+" · sida "+pageNumber;
 }
 function slrStyles(){if($("slrOriginalStyle"))return;const elStyle=elm("style");elStyle.id="slrOriginalStyle";
-elStyle.textContent="#slrFlowTestDialog #slrFields.slrOriginalPages{display:flex;flex-direction:column;gap:14px;align-items:center;margin:10px 0 24px}.slrOriginalPage{position:relative;flex-shrink:0;background:#fff;border:1px solid #b7cbd5;box-shadow:0 3px 9px #153b5233;overflow:hidden}.slrOriginalPage canvas{display:block}.slrOverlayText{position:absolute;box-sizing:border-box;z-index:2;padding:0 2px;border:1px solid transparent!important;border-radius:0!important;background:#ffffffe0!important;color:#142333;min-height:0!important;font-family:Arial,sans-serif}.slrOverlayText:focus{outline:2px solid #188bc5!important;z-index:6}.slrOverlayTick{position:absolute;z-index:4;box-sizing:border-box;padding:0!important;margin:0!important;display:grid;place-items:center;border:1px solid #346d8b!important;border-radius:3px!important;background:#fffffff5!important;color:#123f5c!important;font-family:Arial,sans-serif;font-weight:900;cursor:pointer;line-height:1!important;touch-action:manipulation}.slrOverlayTick.is-chosen{border:2px solid #006aa3!important;background:#bfe8ff!important;color:#003e5d!important;box-shadow:0 0 0 2px #168dca55!important}.slrOverlayTick:focus-visible{outline:2px solid #0277aa!important;outline-offset:2px}.slrChoiceInfo{position:sticky;top:0;z-index:12;box-sizing:border-box;width:100%;padding:9px;color:#174867;background:#e4f5ff;border:1px solid #69b2d4;border-radius:7px;font-size:12px;font-weight:750;line-height:1.4}.slrZoomOptions{width:100%;display:flex;gap:5px;align-items:center;flex-wrap:wrap}.slrZoomOptions button{margin:0!important;min-height:32px!important;padding:6px 11px!important}.slrZoomOptions button[aria-pressed=true]{border:2px solid #0075aa!important;background:#def3ff!important}.slrOriginalPages.slrZoomWide{align-items:flex-start!important}.slrSignatureOnPdf{position:absolute;z-index:5;margin:0!important;padding:1px!important;border:1px dashed #83a9bf!important;border-radius:2px!important;background:#eaf5f9aa!important;font-size:10px!important;overflow:hidden;color:#163e55!important}.slrSignatureDlg{width:min(760px,95vw);border:1px solid #88a8ba;border-radius:10px;background:#f8fbff;padding:14px}.slrSignatureDlg::backdrop{background:#06192dbb}.slrSignatureDlg canvas{width:100%;height:175px;touch-action:none;background:white;border:1px solid #92afc0;display:block;margin:12px 0}.slrSignatureDlg button{padding:8px;margin:4px;border:1px solid #8badbe;border-radius:6px}.slrPdfTip{font-size:12px;line-height:1.5;width:100%;border:1px solid #b7d2df;border-radius:7px;padding:9px;background:#e7f2f8;box-sizing:border-box}@media(max-width:650px){#slrFlowTestDialog main{padding:8px}#slrFlowTestDialog #slrFields.slrOriginalPages{gap:9px}.slrSignatureDlg canvas{height:150px}}";
+elStyle.textContent="#slrFlowTestDialog #slrFields.slrOriginalPages{display:flex;flex-direction:column;gap:14px;align-items:center;margin:10px 0 24px}.slrOriginalPage{position:relative;flex-shrink:0;background:#fff;border:1px solid #b7cbd5;box-shadow:0 3px 9px #153b5233;overflow:hidden}.slrOriginalPage canvas{display:block}.slrOverlayText{position:absolute;z-index:3;box-sizing:border-box;display:block;min-width:0!important;min-height:0!important;margin:0!important;padding:0 2px!important;border:0!important;border-radius:0!important;background:transparent!important;color:#152733!important;font-family:Arial,Helvetica,sans-serif!important;font-weight:400!important;box-shadow:none!important;appearance:none!important;-webkit-appearance:none!important;resize:none}.slrOverlayText:focus{outline:1px solid #0b87c0!important;outline-offset:0!important;background:#ffffffef!important;z-index:6}.slrOverlayTick{position:absolute;z-index:4;box-sizing:border-box;display:grid;place-items:center;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:#17242d!important;font-family:Arial,sans-serif;font-weight:700;cursor:pointer;line-height:1!important;touch-action:manipulation;box-shadow:none!important;appearance:none!important;-webkit-appearance:none!important}.slrOverlayTick.is-chosen{border:0!important;background:transparent!important;color:#0c1820!important;box-shadow:none!important;font-weight:900!important}.slrOverlayTick:focus-visible{outline:2px solid #0277aa!important;outline-offset:2px}.slrChoiceInfo{position:sticky;top:0;z-index:12;box-sizing:border-box;width:100%;padding:9px;color:#174867;background:#e4f5ff;border:1px solid #69b2d4;border-radius:7px;font-size:12px;font-weight:750;line-height:1.4}.slrZoomOptions{width:100%;display:flex;gap:5px;align-items:center;flex-wrap:wrap}.slrZoomOptions button{margin:0!important;min-height:32px!important;padding:6px 11px!important}.slrZoomOptions button[aria-pressed=true]{border:2px solid #0075aa!important;background:#def3ff!important}.slrOriginalPages.slrZoomWide{align-items:flex-start!important}.slrSignatureOnPdf{position:absolute;z-index:5;margin:0!important;padding:1px!important;border:1px dashed #83a9bf!important;border-radius:2px!important;background:#eaf5f9aa!important;font-size:10px!important;overflow:hidden;color:#163e55!important}.slrSignatureDlg{width:min(760px,95vw);border:1px solid #88a8ba;border-radius:10px;background:#f8fbff;padding:14px}.slrSignatureDlg::backdrop{background:#06192dbb}.slrSignatureDlg canvas{width:100%;height:175px;touch-action:none;background:white;border:1px solid #92afc0;display:block;margin:12px 0}.slrSignatureDlg button{padding:8px;margin:4px;border:1px solid #8badbe;border-radius:6px}.slrPdfTip{font-size:12px;line-height:1.5;width:100%;border:1px solid #b7d2df;border-radius:7px;padding:9px;background:#e7f2f8;box-sizing:border-box}@media(max-width:650px){#slrFlowTestDialog main{padding:8px}#slrFlowTestDialog #slrFields.slrOriginalPages{gap:9px}.slrSignatureDlg canvas{height:150px}}";
 document.head.append(elStyle);}
 function slrOpenSign(obj,cat,button){
  const d=elm("dialog");d.className="slrSignatureDlg";d.append(elm("strong","Signera riskanalys · "+(obj.sourceText||obj.objectNo||obj.id)));
@@ -127,12 +127,56 @@ function slrOpenSign(obj,cat,button){
  const actions=elm("div");
  for(const [label,fn] of [["Rensa",()=>x.clearRect(0,0,c.width,c.height)],["Avbryt",()=>d.close()],["Spara signatur",()=>{const img=c.toDataURL("image/png");saved(obj,cat).signature=img;slrDirty(obj,cat);button.replaceChildren();const picture=elm("img");picture.src=img;picture.style.cssText="width:100%;height:100%;object-fit:contain";button.append(picture);d.close();announce("Signatur sparad för denna dörr. Spara projekt-PDF när du är klar.");}]]){const btn=elm("button",label);btn.type="button";btn.onclick=fn;actions.append(btn)}d.append(actions);document.body.append(d);d.addEventListener("close",()=>d.remove(),{once:true});d.showModal();
 }
-async function editDoc(cat){
+
+function slrZoomTo(cat,newZoom,sourcePage,focusY){
+ const main=$("slrFlowTestDialog")?.querySelector("main");
+ const pages=Array.from($("slrFields")?.querySelectorAll(".slrOriginalPage")||[]);
+ if(!sourcePage&&pages.length){
+  const mid=main.getBoundingClientRect().top+main.clientHeight/2;
+  sourcePage=pages.find(pg=>pg.getBoundingClientRect().bottom>=mid)||pages[0];
+ }
+ const rect=sourcePage?.getBoundingClientRect();
+ const y=Number.isFinite(focusY)?focusY:(main?.getBoundingClientRect().top||0)+(main?.clientHeight||0)/2;
+ const anchor=rect?{index:Number(sourcePage.dataset.slrPageIndex),ratio:Math.max(0,Math.min(1,(y-rect.top)/Math.max(1,rect.height))),y}:null;
+ const next=Math.max(1,Math.min(3.5,Math.round(newZoom*100)/100));
+ if(Math.abs(slrPageZoom-next)<0.02)return;
+ slrPageZoom=next;
+ void editDoc(cat,anchor);
+}
+function slrEnablePinch(page,cat){
+ let start=null,scale=1,focus=0;
+ const distance=touches=>Math.hypot(touches[0].clientX-touches[1].clientX,touches[0].clientY-touches[1].clientY);
+ page.addEventListener("touchstart",event=>{
+  if(event.touches.length!==2)return;
+  start={distance:Math.max(20,distance(event.touches)),zoom:slrPageZoom};
+  focus=(event.touches[0].clientY+event.touches[1].clientY)/2;
+  scale=1;
+ },{passive:true});
+ page.addEventListener("touchmove",event=>{
+  if(!start||event.touches.length!==2)return;
+  if(event.cancelable)event.preventDefault();
+  focus=(event.touches[0].clientY+event.touches[1].clientY)/2;
+  const requestedZoom=Math.max(1,Math.min(3.5,start.zoom*distance(event.touches)/start.distance));
+  scale=requestedZoom/start.zoom;
+  page.style.transformOrigin="50% 50%";
+  page.style.transform="scale("+scale+")";
+  page.style.zIndex="10";
+ },{passive:false});
+ const finish=event=>{
+  if(!start||event.touches.length>=2)return;
+  const next=Math.max(1,Math.min(3.5,start.zoom*scale));
+  start=null;page.style.transform="";page.style.zIndex="";
+  slrZoomTo(cat,next,page,focus);
+ };
+ page.addEventListener("touchend",finish,{passive:true});
+ page.addEventListener("touchcancel",()=>{start=null;page.style.transform="";page.style.zIndex=""},{passive:true});
+}
+async function editDoc(cat,zoomAnchor=null){
  if(cat!=="Riskanalys")return editDocBasic(cat);
  const current=item;if(!current||!templates[cat])return;
  const revision=++slrEditorRevision;slrStyles();const host=$("slrFields");host.replaceChildren();host.className="slrOriginalPages";host.classList.toggle("slrZoomWide",slrPageZoom>1);
  $("slrEditHeading").textContent="4. Riskanalys Svängdörr · "+(current.sourceText||current.objectNo||current.id);
- const info=elm("div","Fyll i direkt på SLR:s originalsidor. Scrolla ned för nästa avsnitt. Kund- och dörruppgifter hämtas från projektet; varje automatik får egna riskval.");info.className="slrPdfTip";host.append(info);const controls=elm("div");controls.className="slrZoomOptions";controls.append(elm("strong","Förstoring:"));for(const [label,mult] of [["Anpassa",1],["1,5×",1.5],["2×",2]]){const b=elm("button",label);b.type="button";b.setAttribute("aria-pressed",String(slrPageZoom===mult));b.onclick=()=>{if(slrPageZoom!==mult){slrPageZoom=mult;void editDoc(cat)}};controls.append(b)}host.append(controls);const status=elm("div","Tryck på en kryssruta. Här visas vilket alternativ du har markerat.");status.id="slrChoiceFeedback";status.className="slrChoiceInfo";host.append(status);
+ const info=elm("div","Fyll i direkt på SLR:s originalsidor. Scrolla ned för nästa avsnitt. Kund- och dörruppgifter hämtas från projektet; varje automatik får egna riskval.");info.className="slrPdfTip";host.append(info);const controls=elm("div");controls.className="slrZoomOptions";controls.append(elm("strong","Förstoring:"));for(const [label,mult] of [["Anpassa",1],["1,5×",1.5],["2×",2]]){const b=elm("button",label);b.type="button";b.setAttribute("aria-pressed",String(slrPageZoom===mult));b.onclick=()=>slrZoomTo(cat,mult);controls.append(b)}host.append(controls);const status=elm("div","Tryck på en kryssruta. Här visas vilket alternativ du har markerat.");status.id="slrChoiceFeedback";status.className="slrChoiceInfo";host.append(status);
  const storedValues=saved(current,cat).fields||{},defaultValues=auto(current);
  let document=null;
  try{
@@ -142,10 +186,10 @@ async function editDoc(cat){
    const p=await document.getPage(pi+1),v0=p.getViewport({scale:1});
    const width=Math.min(685,Math.max(245,window.innerWidth-44),Math.max(245,host.clientWidth-8));
    const factor=width/v0.width*slrPageZoom,vp=p.getViewport({scale:factor});
-   const page=elm("div");page.className="slrOriginalPage";page.style.cssText="width:"+vp.width+"px;height:"+vp.height+"px";
+   const page=elm("div");page.className="slrOriginalPage";page.dataset.slrPageIndex=String(pi);page.style.cssText="width:"+vp.width+"px;height:"+vp.height+"px";
    const canvas=elm("canvas");const dpr=Math.min(window.devicePixelRatio||1,1.5);
    canvas.width=Math.round(vp.width*dpr);canvas.height=Math.round(vp.height*dpr);
-   canvas.style.cssText="width:"+vp.width+"px;height:"+vp.height+"px";page.append(canvas);host.append(page);
+   canvas.style.cssText="width:"+vp.width+"px;height:"+vp.height+"px";page.append(canvas);host.append(page);slrEnablePinch(page,cat);
    await p.render({canvasContext:canvas.getContext("2d",{alpha:false}),viewport:vp,transform:[dpr,0,0,dpr,0,0]}).promise;
    const annotations=await p.getAnnotations({intent:"display"}),radioCounters={};
    for(const an of annotations){
@@ -156,7 +200,7 @@ async function editDoc(cat){
     if(an.fieldType==="Tx"){
      const ctrl=elm(an.multiLine?"textarea":"input");if(!an.multiLine)ctrl.type="text";
      ctrl.className="slrOverlayText";ctrl.value=storedValues[name]??defaultValues[name]??"";
-     ctrl.style.cssText="left:"+left+"px;top:"+top+"px;width:"+w+"px;height:"+h+"px;font-size:"+Math.max(10,12*factor)+"px";
+     ctrl.style.cssText="left:"+left+"px;top:"+top+"px;width:"+w+"px;height:"+h+"px;font-size:"+Math.max(6.5,10*factor)+"px;line-height:"+h+"px;padding:0 "+Math.max(1,1.6*factor)+"px!important";
      ctrl.title=name;ctrl.setAttribute("aria-label",name);
      ctrl.addEventListener("input",()=>{if(item!==current)return;saved(current,cat).fields[name]=ctrl.value;slrDirty(current,cat)});
      page.append(ctrl);
@@ -172,8 +216,8 @@ async function editDoc(cat){
        .map(q=>vp.convertToViewportRectangle(q.rect))
        .filter(r=>Math.abs((r[0]+r[2])/2-(left+w/2))<Math.max(10,18*factor));
      const nearest=sameColumn.reduce((d,r)=>Math.min(d,Math.abs((r[1]+r[3])/2-(top+h/2))),Infinity);
-     const ww=Math.max(12,Math.min(20,w+6)),hh=Math.max(7,Math.min(20,h+5,nearest-1.1));
-     btn.style.cssText="left:"+(left-(ww-w)/2)+"px;top:"+(top-(hh-h)/2)+"px;width:"+ww+"px;height:"+hh+"px;font-size:"+Math.max(10,Math.min(17,hh-1))+"px";
+     const ww=Math.max(14,Math.min(22,w+6)),hh=Math.max(6,Math.min(18,h+2,nearest-1.5));
+     btn.style.cssText="left:"+(left-(ww-w)/2)+"px;top:"+(top-(hh-h)/2)+"px;width:"+ww+"px;height:"+hh+"px;font-size:"+Math.max(7,Math.min(13,10.5*factor))+"px";
      const desc=slrChoiceText(key,radio?val:"");
      btn.dataset.field=key;btn.dataset.value=val;btn.setAttribute("aria-label",desc);btn.title=desc;
      slrDrawChoice(btn,checked);
@@ -191,7 +235,11 @@ async function editDoc(cat){
     const img=saved(current,cat).signature;if(img){b.replaceChildren();const picture=elm("img");picture.src=img;picture.style.cssText="width:100%;height:100%;object-fit:contain";b.append(picture)}
     b.onclick=()=>slrOpenSign(current,cat,b);page.append(b)}
   }
-  $("slrEditHeading").scrollIntoView({block:"start",behavior:"smooth"});
+  if(zoomAnchor){
+   const target=host.querySelector('.slrOriginalPage[data-slr-page-index="'+zoomAnchor.index+'"]');
+   const scrollMain=$("slrFlowTestDialog").querySelector("main");
+   if(target&&scrollMain)scrollMain.scrollTop+=target.getBoundingClientRect().top+target.getBoundingClientRect().height*zoomAnchor.ratio-zoomAnchor.y;
+  }else $("slrEditHeading").scrollIntoView({block:"start",behavior:"smooth"});
   announce("SLR visas sida för sida i originalordning. Dina val sparas separat för varje dörrautomatik.");
  }catch(err){announce("Kunde inte visa SLR-sidorna: "+err.message,true)}
  finally{try{await document?.destroy()}catch(_){}}
