@@ -87,3 +87,11 @@ Behåll den enkla modellen medan den testas. Lägg inte till företagslicenser, 
 - Startsidan har Kontrollera godkännande och Logga ut. När admin har valt moduler och licenstid får medlemmen använda sina tilldelade moduler utan ny registrering. `auth/pending.html` är endast en äldre reservlänk och leder tillbaka till startsidan.
 - Väntande konton får ingen offlinebehörighet. Tidigare beslutad sjudagarsregel för godkända användare ändras inte.
 - Webbversion 2.4.275. Test med verkligt väntande konto på riktig webbläsare återstår.
+
+
+## 10. Kompakt startsida och modulval – 12 oktober 2026 (v2.4.276)
+- Hem: kompakt kontomeny med kontoikon, Användare endast för admin, och Logga ut. Kontoroll och eventuell licenstid visas i menyn; e-post ligger inte öppet på startsidan.
+- Väntande konto: statusfältet är smalt som modulkorten och alla tre moduler är låsta.
+- Vid godkännande väljer admin aktivt vilka moduler som öppnas. Inga kryss är förvalda. Övriga moduler syns men är låsta; direktlänkar prövas fortfarande av autentiseringskontrollen.
+- Texten "Redo för offline" visas inte på startsidan. Service Worker och offlinecachen fortsätter att fungera.
+- Inga ändringar i Kontrollflödets interna arbetslogik, formulär, ritningsvy eller PDF-export.
