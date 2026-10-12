@@ -71,7 +71,7 @@ export function makeHandler(clientFactory, getEnv) {
    if(typeof body.userId!=='string'||!body.userId.match(/^[0-9a-f-]{36}$/i))return reply({error:'Välj en användare.'},400);
    const target=checked(await admin.auth.admin.getUserById(body.userId))?.user;
    if(!target)return reply({error:'Användaren finns inte.'},404);
-   const targetAccess=checked(await admin.from('tillsyno_access').select('access_role').eq('user_id',target.id).maybeSingle());
+   const targetAccess=checked(await admin.from('tillsyno_access').select('access_role,license_expires_at').eq('user_id',target.id).maybeSingle());
    if(target.id===identity.user.id||targetAccess?.access_role==='admin')return reply({error:'Ägarkontot kan inte ändras här.'},409);
    if(body.action==='remove'){
     // Revoke access first. Existing JWTs cannot bypass the subsequent role check.
