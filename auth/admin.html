@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="sv" data-auth-pending>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><title>Användare – Tillsyno</title>
-<link rel="stylesheet" href="admin.css?v=2.4.274"><style>html[data-auth-pending] body{visibility:hidden}</style>
-<script src="../vendor/supabase-2.49.10.min.js"></script><script src="../auth-config.js"></script><script src="client.js?v=2.4.274"></script><script src="guard.js?v=2.4.274" defer></script><script src="admin.js?v=2.4.274" defer></script></head>
+<link rel="stylesheet" href="admin.css?v=2.4.275"><style>html[data-auth-pending] body{visibility:hidden}</style>
+<script src="../vendor/supabase-2.49.10.min.js"></script><script src="../auth-config.js"></script><script src="client.js?v=2.4.275"></script><script src="guard.js?v=2.4.275" defer></script><script src="admin.js?v=2.4.275" defer></script></head>
 <body data-require-role="admin">
 <header class="topbar"><a class="brand" href="../index.html">Tillsyno<small>Administration</small></a><nav class="toplinks"><a href="../index.html">Till appen</a><button type="button" data-logout>Logga ut</button></nav></header>
 <main class="shell"><div class="heading"><div><span class="eyebrow">Ditt arbetslag</span><h1>Användare</h1><p>Hantera vem som kan använda Tillsyno.</p></div><div class="owner"><strong>Administratör</strong><span data-account-email></span></div></div>
@@ -11,7 +11,7 @@
 <section class="panel" aria-labelledby="listHeading"><div class="panelhead"><div><h2 id="listHeading">Ditt team</h2><p>Godkänn nya registreringar, lägg till kollegor och styr åtkomsten.</p></div><button id="addUser" class="primary" type="button">＋ Lägg till</button></div>
 <div class="filterbar"><input id="search" class="search" type="search" placeholder="Sök namn eller e-post" aria-label="Sök användare"><button id="refresh" class="secondary" type="button" aria-label="Uppdatera användarlistan">↻</button></div>
 <ul id="users" class="userlist" aria-label="Användare"></ul><p id="empty" class="empty">Hämtar användare…</p></section>
-<div class="footer"><span>Ägarkontot är skyddat mot borttagning.</span><span>v2.4.274</span></div></main>
+<div class="footer"><span>Ägarkontot är skyddat mot borttagning.</span><span>v2.4.275</span></div></main>
 <dialog id="addDialog" aria-labelledby="addTitle"><div class="dialoghead"><h2 id="addTitle">Lägg till användare</h2><button class="close" type="button" data-close="addDialog" aria-label="Stäng">×</button></div><form id="addForm" class="dialogbody"><p>Användaren väljer sitt lösenord via en personlig länk som du kan kopiera och dela.</p><label for="name">Namn</label><input id="name" name="name" autocomplete="name" maxlength="100" placeholder="Förnamn och efternamn"><label for="email">E-post</label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required placeholder="namn@företag.se"><fieldset class="moduleGroup"><legend>Moduler</legend>
 <label class="checkRow"><input type="checkbox" name="modules" value="smartmatch" checked> SmartMatch</label>
 <label class="checkRow"><input type="checkbox" name="modules" value="control" checked> Kontrollflöde</label>
