@@ -1,4 +1,10 @@
 <!doctype html>
-<html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><title>Logga in – Tillsyno</title><link rel="stylesheet" href="admin.css?v=2.4.281"></head>
+<html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><title>Logga in – Tillsyno</title><script>(function(){try{
+  var fragment=new URLSearchParams(location.hash.slice(1)),query=new URLSearchParams(location.search);
+  if(fragment.get('type')!=='recovery'&&query.get('type')!=='recovery')return;
+  var target=new URL('reset-password.html',location.href);
+  target.search=location.search;target.hash=location.hash;
+  location.replace(target.href);
+ }catch(_){}})();</script><link rel="stylesheet" href="admin.css?v=2.4.282"></head>
 <body class="loginbody"><main class="loginshell"><div class="brand loginbrand">Tillsyno<small>Tillsyn · kontroll · dokumentation</small></div><section class="logincard"><h1>Välkommen tillbaka</h1><p>Logga in med ditt personliga konto.</p><form id="login"><label for="email">E-post</label><input id="email" type="email" name="email" autocomplete="username" required placeholder="namn@företag.se"><label for="password">Lösenord</label><input id="password" type="password" name="password" autocomplete="current-password" required><button class="primary" type="submit">Logga in</button></form><p id="message" class="notice" role="status" aria-live="polite" hidden></p></section><p class="loginhelp">Ny på Tillsyno? <a class="signupLink" href="register.html">Registrera</a><br><a href="forgot-password.html">Glömt lösenord?</a></p></main>
-<script src="../vendor/supabase-2.49.10.min.js"></script><script src="../auth-config.js"></script><script src="client.js?v=2.4.281"></script><script src="login.js?v=2.4.281"></script></body></html>
+<script src="../vendor/supabase-2.49.10.min.js"></script><script src="../auth-config.js"></script><script src="client.js?v=2.4.282"></script><script src="login.js?v=2.4.282"></script></body></html>
