@@ -27,3 +27,5 @@ När låset är aktivt:
 2026-10-08, Tillsyno v2.4.255: användaren beställde att avstå från sparad ritning och själv namnge separat PDF-kopia. Denna avgränsade beställning tillåter ändringen; protokollinnehåll och PDF-layout är kvar. Kontrollflöde är låst igen efter ändringen.
 
 2026-10-08, Tillsyno v2.4.256: användaren beställde att ta bort erbjudandet om sparad ritning och knappen Inte nu. Det vanliga PDF-valet används. Beställningen tillåter denna avgränsade ändring; Kontrollflöde är låst igen efter ändringen.
+
+2026-10-12, Tillsyno v2.4.288: användaren godkände uttryckligen upplåsning enbart för designändringen i protokollväljaren. En mörkblå mappvy visar Dörrautomatik / Lås, Säkerhetsservice och Brand var för sig; ett eller flera befintliga protokoll väljs före ritningen. Inga kontrollpunkter, PDF-funktioner eller ritningsvyer ändrades. **Kontrollflödet är LÅST igen efter denna ändring.**
