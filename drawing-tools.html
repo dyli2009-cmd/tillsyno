@@ -10,7 +10,15 @@
 <link rel="stylesheet" href="drawing-tools.css?v=2.4.266">
 <script src="vendor/pdf.min.js"></script>
 <script src="vendor/pdf-lib.min.js"></script>
-</head>
+<style>
+/* Tillsyno v2.4.287 – same calm navy design at the drawing tool entry, workspace unchanged. */
+.toolIntro{background:radial-gradient(ellipse at 60% 25%,#274f6080,transparent 65%),linear-gradient(140deg,#102f42,#092130)!important;border:1px solid #c4e5ed40!important;color:#edf8fb!important;box-shadow:0 12px 28px #00172330!important}
+.toolIntro .eyebrow{color:#94c5d6!important}
+.toolIntro h1{color:#f1f9fc!important}
+.toolIntro p{color:#b8d3df!important}
+.toolIntro .openBtn{background:#d9edf5!important;color:#13394c!important;border-color:#bedde8!important;font-weight:750!important}
+@media(max-width:620px){.toolIntro{padding:13px!important}}
+</style></head>
 <body>
 <header class="toolHeader">
  <a href="./" class="backBtn">‹ Hem</a>
@@ -20,7 +28,7 @@
   <button id="toolsToggle" type="button" aria-controls="toolPanel" aria-expanded="false" disabled>Verktyg</button>
   <button id="savePdf" class="primary" type="button" disabled>Spara PDF</button>
  </div>
- <span class="version">v2.4.266</span>
+ <span class="version">v2.4.287</span>
 </header>
 
 <main class="toolShell">
