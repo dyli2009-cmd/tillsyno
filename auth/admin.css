@@ -21,3 +21,26 @@ dialog{max-height:90dvh;overflow-y:auto}
 /* Registrering v2.4.273 */
 .passwordHelper{display:block;width:100%;margin-top:10px;text-align:center}
 .logincard .passwordHint{font-size:12px;color:#627984;margin-top:8px;line-height:1.45}
+
+/* v2.4.276: compact, polished administrator UI without changing existing actions. */
+body:not(.loginbody){background:linear-gradient(180deg,#e9f1f3 0,#f5f8f9 290px)}
+.topbar{background:linear-gradient(115deg,#102d3a,#1a4758);border-bottom:1px solid #ffffff21;box-shadow:0 8px 28px #0a26301c}
+.topbar .brand small{letter-spacing:1px;text-transform:none;font-size:10px}
+.toplinks a,.toplinks button{border-color:#ffffff40;background:#ffffff0c}
+.shell{max-width:1030px}
+.heading{align-items:center}
+.heading .eyebrow{color:#32788a}
+.heading h1{letter-spacing:-1.1px}
+.heading p{max-width:430px}
+.owner{border:1px solid #dbe7eb;background:#ffffffb5;padding:11px 14px;border-radius:12px}
+.stats{gap:11px}
+.stat{border:1px solid #d6e4e8;box-shadow:0 5px 18px #112e3b0a}
+.stat strong{color:#174c60}
+.panel{border-color:#d5e3e7;box-shadow:0 16px 42px #0f2f3b0d}
+.panelhead{background:linear-gradient(110deg,#fff,#f6fafb)}
+.panelhead h2{font-size:18px}
+.moduleGroup{background:#f7fafb;display:grid;gap:7px}
+.moduleGroup .checkRow{display:flex;align-items:center;gap:11px;margin:0!important;padding:10px 12px;border:1px solid #dae6eb;border-radius:9px;background:#fff;cursor:pointer;font-size:13px}
+.moduleGroup .checkRow input{flex:0 0 19px;width:19px;height:19px;margin:0;padding:0;accent-color:#176b88}
+.moduleGroup .checkRow:has(input:checked){border-color:#73a6b6;background:#e9f5f7;color:#174f65}
+@media(max-width:650px){.owner{margin-top:13px;padding:8px 10px}.stats{gap:7px}.stat{padding:12px 10px}.moduleGroup .checkRow{padding:9px 10px}}
