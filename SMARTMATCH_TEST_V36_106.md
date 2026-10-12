@@ -1,0 +1,6 @@
+# SmartMatch v36.106 / Tillsyno v2.4.268 – ritningsnoteringar synliga i projekt-PDF (2026-10-12)
+
+Text, text med pil, pil och foto från Verktyg exporteras nu som synligt innehåll på ritningssidorna vid Spara PDF eller delning av projekt-PDF. Redigerbara drawingNotes ligger kvar i projektets metadata. Endast exporterade, indexerade noteringsströmmar tas bort och ersätts vid nästa sparning; den rena arbetskopian tar bort detta lager före visning så att redigerbara överlägg inte dubbleras. Originalritningen behåller sitt vektorinnehåll. Bilder behåller proportioner och text behåller svenska tecken/färg/ram/bakgrund; endast små textrutor rasteriseras. Alla fyra sidrotationer och förskjuten CropBox hanteras.
+
+Verifiering: verklig PDF-lib/Canvas-körning av hela build/verify-kedjan, 16 noteringar, återexport, flytt/borttagning, återläsning av metadata, rensad arbetskopia och oberoende Poppler-rendering granskade. Test: tests/smartmatch-drawing-notes-pdf-v36-106.cjs. Browserpaketet kunde inte laddas i miljön; fysisk Safari/iPhone/iPad-verifiering kvar. Samma exportkod speglas till iOS med dess project-vendor-worker bibehållen. TestFlight-publicering verifieras separat. Protokollsexporten innehåller fortsatt endast valda protokoll. GS-/dörrkort-/Kontrollflödeslogik oförändrad. Föregående v36.105 bevarad.
+
