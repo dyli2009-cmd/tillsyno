@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#091d2b">
+<title>Tillsyno – bakgrundsförslag</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#eaf5f8;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;min-height:100svh;background:#071621;background-image:radial-gradient(ellipse at 50% 0%,#173747 0%,#071621 68%);-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer}
+.lab{max-width:1500px;margin:auto;padding:16px clamp(12px,2vw,26px) 30px}
+.labhead{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.labhead h1{font-size:16px;font-weight:750;line-height:1.3;margin:0}
+.labhead p{margin:4px 0 0;color:#aec8d5;font-size:12px;line-height:1.4}
+.switch{display:flex;gap:4px;border:1px solid #5d7b8c66;border-radius:12px;padding:4px;background:#112b3b}
+.switch button{border:0;border-radius:8px;background:transparent;color:#c2d8e1;padding:9px 12px;font-size:12px;font-weight:650}
+.switch button[aria-pressed="true"]{background:#daf4fd;color:#103247}
+.stagewrap{display:flex;align-items:flex-start;justify-content:center;overflow-x:hidden;padding:4px 0 14px}
+.stage{width:min(1200px,100%);height:min(770px,max(620px,76svh));position:relative;overflow:hidden;border:1px solid #709aab80;border-radius:20px;isolation:isolate;container:scene / inline-size;background:#0d2939;box-shadow:0 25px 80px #0008;transition:width .35s ease,height .35s ease}
+.lab[data-mode="phone"] .stage{width:min(390px,100%);height:780px;max-height:none}
+.lab[data-mode="tablet"] .stage{width:min(820px,100%);height:920px;max-height:none}
+.lab[data-mode="desktop"] .stage{width:min(1200px,100%);height:760px;max-height:none}
+.stage::before{content:"";position:absolute;inset:0;z-index:-2;background:radial-gradient(ellipse at 14% 24%,#307b9452,transparent 37%),radial-gradient(ellipse at 87% 72%,#227e9852,transparent 38%),radial-gradient(ellipse at 50% 56%,#102637 0%,#0c2636 49%,#081b29 100%)}
+.stage::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,#5cadc009 1px,transparent 1px),linear-gradient(0deg,#5cadc009 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(90deg,#0009,transparent 48%,#0009)}
+.topline{position:absolute;top:14px;left:18px;right:18px;display:flex;align-items:center;justify-content:space-between;z-index:5;pointer-events:none}
+.topline .sample{font-size:9px;letter-spacing:.18em;font-weight:750;color:#cde6ed9e}
+.topline .resolution{font-size:10px;font-weight:700;color:#cce8ef8a}
+.halo{position:absolute;z-index:0;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,84%);height:425px;border-radius:50%;background:radial-gradient(ellipse at center,#0a2435c7 0%,#09233390 51%,transparent 75%);pointer-events:none}
+.mark{position:absolute;z-index:1;left:var(--dx);top:var(--dy);width:clamp(76px,10cqw,128px);text-align:center;transform:translate(-50%,-50%) rotate(var(--tilt,0deg));color:#c1ebf1;opacity:.38;pointer-events:none;filter:drop-shadow(0 0 13px #81dff418);animation:floaty 8s ease-in-out infinite alternate}
+.mark:nth-child(2n){animation-duration:11s;animation-delay:-3s}
+.mark svg{display:block;margin:auto;width:65%;aspect-ratio:1;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+.mark small{display:block;font-size:clamp(8px,.95cqw,11px);line-height:1.25;letter-spacing:.095em;font-weight:700;margin-top:7px;text-transform:uppercase}
+@keyframes floaty{from{translate:0 -3px}to{translate:0 5px}}
+.mark--camera{--dx:8%;--dy:15%;--tx:9%;--ty:12%;--px:12%;--py:12%;--tilt:-6deg}
+.mark--reader{--dx:92%;--dy:15%;--tx:90%;--ty:12%;--px:88%;--py:12%;--tilt:6deg}
+.mark--motor{--dx:8%;--dy:38%;--tx:8%;--ty:36%;--px:12%;--py:28%;--tilt:-3deg}
+.mark--closer{--dx:92%;--dy:38%;--tx:92%;--ty:36%;--px:88%;--py:28%;--tilt:3deg}
+.mark--lock{--dx:9%;--dy:64%;--tx:8%;--ty:62%;--px:12%;--py:45%;--tilt:4deg}
+.mark--door{--dx:91%;--dy:64%;--tx:92%;--ty:62%;--px:88%;--py:45%;--tilt:-5deg}
+.mark--handle{--dx:24%;--dy:85%;--tx:17%;--ty:84%;--px:12%;--py:61%;--tilt:-5deg}
+.mark--smoke{--dx:76%;--dy:85%;--tx:83%;--ty:84%;--px:88%;--py:61%;--tilt:5deg}
+.mark--pir{--dx:29%;--dy:14%;--tx:28%;--ty:10%;--px:12%;--py:77%;--tilt:5deg}
+.mark--glass{--dx:71%;--dy:14%;--tx:72%;--ty:10%;--px:88%;--py:77%;--tilt:-5deg}
+.mark--magnet{--dx:29%;--dy:70%;--tx:28%;--ty:71%;--px:12%;--py:91%;--tilt:4deg}
+.mark--fire{--dx:71%;--dy:70%;--tx:72%;--ty:71%;--px:88%;--py:91%;--tilt:-4deg}
+.demo{position:absolute;z-index:4;top:50%;left:50%;transform:translate(-50%,-50%);width:min(350px,calc(100% - 110px));color:#f8fcfe}
+.brand{display:flex;justify-content:center;align-items:center;gap:12px;margin:0 0 18px;text-align:left;text-shadow:0 2px 14px #000a}
+.brand strong{font-size:26px;font-weight:760;letter-spacing:.015em;display:block}
+.brand small{display:block;color:#c1dce7;font-size:10px;letter-spacing:.06em;white-space:nowrap}
+.brand .version{font-size:10px;color:#cde7ef;border:1px solid #ffffff4a;padding:3px 7px;border-radius:5px;background:#071e30b9;white-space:nowrap}
+.choices{display:grid;gap:9px}
+.choice{height:64px;min-height:0;border-radius:11px;display:grid;grid-template-columns:32px minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px 12px;background:#091d2db9;border:1px solid #c6edf544;box-shadow:0 12px 26px #0004;backdrop-filter:blur(13px)}
+.choice svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;color:#e5f7fc;background:#e1f7fd18;padding:5px;border-radius:8px}
+.choice .copy{min-width:0}
+.choice strong{display:block;font-size:13px;line-height:1.25;font-weight:720}
+.choice small{display:block;color:#c2d5dc;font-size:11px;line-height:1.3;margin-top:3px}
+.choice b{font-size:10px;white-space:nowrap}
+.choice--tool{height:54px;margin-top:1px;grid-template-columns:32px minmax(0,1fr);background:#071b2ca8}
+.account{text-align:center;border:1px solid #d2edf64f;border-radius:8px;background:#071d2e9c;padding:12px;margin:11px auto 0;width:100%;font-size:11px;font-weight:650;backdrop-filter:blur(12px)}
+.bottomnote{position:absolute;bottom:13px;left:15px;right:15px;text-align:center;color:#c5e1eb98;font-size:9px;letter-spacing:.08em}
+.explanation{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:0 auto;max-width:1200px;color:#acc7d2;font-size:11px;line-height:1.5}
+@container scene (min-width:601px) and (max-width:999px){
+ .mark{left:var(--tx);top:var(--ty);width:clamp(68px,11cqw,100px);opacity:.42}
+ .demo{width:min(350px,calc(100% - 210px))}
+}
+@container scene (max-width:600px){
+ .mark{left:var(--px);top:var(--py);width:58px;opacity:.44}
+ .mark svg{width:48px}
+ .mark small{font-size:7px;letter-spacing:.025em;line-height:1.1;margin-top:2px}
+ .halo{width:100%;height:490px;top:50%;background:radial-gradient(ellipse at center,#092638 0%,#092638ed 47%,transparent 80%)}
+ .demo{width:min(300px,calc(100% - 58px))}
+ .brand{gap:8px;margin-bottom:13px}
+ .brand strong{font-size:21px}
+ .brand small{font-size:8px}
+ .brand .version{font-size:9px}
+ .choice{height:60px;grid-template-columns:30px minmax(0,1fr) auto;padding:7px 9px;gap:8px}
+ .choice--tool{height:49px}
+ .choice strong{font-size:13px}
+ .choice small{font-size:10px}
+ .choice b{font-size:9px}
+ .account{padding:10px}
+ .topline{left:12px;right:12px;top:12px}
+ .bottomnote{font-size:8px}
+}
+@container scene (max-width:340px){
+ .mark{width:49px;opacity:.38}
+ .mark svg{width:42px}
+ .mark small{font-size:6px}
+ .demo{width:calc(100% - 44px)}
+ .brand small{white-space:normal}
+}
+@media(max-width:680px){
+ .lab{padding:12px 10px 22px}
+ .labhead{align-items:flex-start}
+ .labhead h1{font-size:15px}
+ .switch{width:100%;overflow:auto}
+ .switch button{flex:1;white-space:nowrap;padding:9px 7px;font-size:11px}
+ .stage{border-radius:16px}
+}
+@media(prefers-reduced-motion:reduce){.mark{animation:none}.stage{transition:none}}
+</style>
+</head>
+<body>
+<div class="lab" id="lab" data-mode="auto">
+  <header class="labhead">
+    <div><h1>Tillsyno · Bakgrundsförslag</h1><p>Separat designprov. Din nuvarande startsida ändras inte.</p></div>
+    <nav class="switch" aria-label="Förhandsgranska skärmstorlek">
+      <button type="button" data-size="auto" aria-pressed="true">Automatisk</button>
+      <button type="button" data-size="phone" aria-pressed="false">iPhone</button>
+      <button type="button" data-size="tablet" aria-pressed="false">iPad</button>
+      <button type="button" data-size="desktop" aria-pressed="false">Dator</button>
+    </nav>
+  </header>
+  <div class="stagewrap">
+    <section class="stage" id="stage" aria-label="Responsiv design för Tillsynos startsida">
+      <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">
+        <defs>
+          <symbol id="camera" viewBox="0 0 64 64"><rect x="9" y="19" width="34" height="22" rx="3"/><path d="M43 24 55 17v26L43 36M24 41v8M15 50h27M17 26h15M18 33h8"/><circle cx="36" cy="30" r="2"/></symbol>
+          <symbol id="reader" viewBox="0 0 64 64"><rect x="18" y="6" width="29" height="52" rx="6"/><path d="M25 16h15M25 23h15M25 45h15M22 33a11 11 0 0 1 11-11M27 37a6 6 0 0 1 6-6"/><circle cx="34" cy="49" r="2"/></symbol>
+          <symbol id="motor" viewBox="0 0 64 64"><path d="M9 13h46v13H9zM16 13v13M47 13v13M21 32h22M32 26v6M12 51c11 0 14-13 20-18 6 5 9 18 20 18M8 56h48"/><circle cx="32" cy="33" r="3"/></symbol>
+          <symbol id="closer" viewBox="0 0 64 64"><rect x="7" y="22" width="32" height="12" rx="3"/><path d="M15 22v-8h9M39 28h7l8-16M15 34v9M36 34v9M6 47h52M46 28l6 5M52 33h7"/><circle cx="46" cy="28" r="2"/></symbol>
+          <symbol id="lock" viewBox="0 0 64 64"><rect x="13" y="27" width="38" height="30" rx="5"/><path d="M21 27V17a11 11 0 0 1 22 0v10"/><circle cx="32" cy="40" r="4"/><path d="M32 44v6"/></symbol>
+          <symbol id="door" viewBox="0 0 64 64"><path d="M12 57V7h40v50M19 55V13h26v42M8 57h48M37 32h3"/><circle cx="39" cy="33" r="2"/><path d="M45 14 52 7"/></symbol>
+          <symbol id="handle" viewBox="0 0 64 64"><rect x="12" y="9" width="14" height="46" rx="5"/><path d="M26 33h24a7 7 0 0 0 7-7v-3H27M19 17v9M19 42v5"/><circle cx="19" cy="34" r="3"/></symbol>
+          <symbol id="smoke" viewBox="0 0 64 64"><path d="M11 31c0-9 10-17 21-17s21 8 21 17l-5 7H16zM19 38c1 8 25 8 26 0M19 31h26M23 26h18"/><path d="M32 48v9M23 50l-3 6M41 50l3 6"/></symbol>
+          <symbol id="pir" viewBox="0 0 64 64"><rect x="18" y="8" width="28" height="41" rx="12"/><path d="M24 26c1-10 15-10 16 0M24 31h16M25 37h14M25 49l-4 7M39 49l4 7"/><circle cx="32" cy="17" r="2"/></symbol>
+          <symbol id="glass" viewBox="0 0 64 64"><path d="M10 10h44v44H10zM32 10v44M10 31h44M28 23l8 7-5 6 6 9M26 36l-9 7"/><circle cx="45" cy="19" r="3"/></symbol>
+          <symbol id="magnet" viewBox="0 0 64 64"><rect x="9" y="13" width="18" height="40" rx="3"/><rect x="39" y="19" width="14" height="28" rx="2"/><path d="M31 18v28M27 28h12M14 21h8M14 46h8"/></symbol>
+          <symbol id="fire" viewBox="0 0 64 64"><rect x="13" y="9" width="38" height="46" rx="5"/><path d="M23 18h18M21 45h22M33 22c-2 7-9 10-6 16 3 6 13 5 13-2 0-4-5-6-4-12-3 4-6 6-6 10"/><circle cx="32" cy="51" r="1"/></symbol>
+          <symbol id="checklist" viewBox="0 0 32 32"><path d="M11 5h14v23H7V7h4M11 4h10v5H11zM11 15l2 2 4-4M11 22l2 2 4-4M20 16h3M20 23h3"/></symbol>
+          <symbol id="map" viewBox="0 0 32 32"><path d="m4 6 8-3 8 3 8-3v23l-8 3-8-3-8 3V6zM12 3v23M20 6v23"/><circle cx="9" cy="11" r="2"/></symbol>
+          <symbol id="tool" viewBox="0 0 32 32"><path d="M18 4a7 7 0 0 0-8 9L4 20a4 4 0 0 0 6 6l7-7a7 7 0 0 0 9-8l-4 4-4-2-2-4z"/></symbol>
+        </defs>
+      </svg>
+      <div class="topline"><span class="sample">DESIGNPROV · EJ AKTIV STARTSIDA</span><span class="resolution" id="resolution">Responsiv</span></div>
+      <div class="mark mark--camera"><svg><use href="#camera"/></svg><small>CCTV</small></div>
+      <div class="mark mark--reader"><svg><use href="#reader"/></svg><small>Passerläsare</small></div>
+      <div class="mark mark--motor"><svg><use href="#motor"/></svg><small>Dörrautomatik</small></div>
+      <div class="mark mark--closer"><svg><use href="#closer"/></svg><small>Dörrstängare</small></div>
+      <div class="mark mark--lock"><svg><use href="#lock"/></svg><small>Lås</small></div>
+      <div class="mark mark--door"><svg><use href="#door"/></svg><small>Dörr</small></div>
+      <div class="mark mark--handle"><svg><use href="#handle"/></svg><small>Handtag</small></div>
+      <div class="mark mark--smoke"><svg><use href="#smoke"/></svg><small>Branddetektor</small></div>
+      <div class="mark mark--pir"><svg><use href="#pir"/></svg><small>Larmdetektor</small></div>
+      <div class="mark mark--glass"><svg><use href="#glass"/></svg><small>Glaskross</small></div>
+      <div class="mark mark--magnet"><svg><use href="#magnet"/></svg><small>Magnetkontakt</small></div>
+      <div class="mark mark--fire"><svg><use href="#fire"/></svg><small>Brandlarm</small></div>
+      <div class="halo"></div>
+      <div class="demo" aria-label="Exempel på Tillsynos knappar">
+        <div class="brand"><div><strong>Tillsyno</strong><small>Tillsyn · kontroll · dokumentation</small></div><span class="version">DESIGN</span></div>
+        <div class="choices">
+          <div class="choice"><svg><use href="#checklist"/></svg><span class="copy"><strong>Kontrollflöde</strong><small>Checklistor</small></span><b>Öppna ›</b></div>
+          <div class="choice"><svg><use href="#map"/></svg><span class="copy"><strong>SmartMatch</strong><small>Ritning · dörrkort · dörrautomatik</small></span><b>Öppna ›</b></div>
+          <div class="choice choice--tool"><svg><use href="#tool"/></svg><span class="copy"><strong>Ritningsverktyg</strong><small>Rensa · beskära · optimera</small></span></div>
+        </div>
+        <div class="account">Mitt konto&nbsp; ▾</div>
+      </div>
+      <div class="bottomnote">EXEMPEL · SYMBOLERNA ANPASSAS AUTOMATISKT EFTER SKÄRMBREDDEN</div>
+    </section>
+  </div>
+  <footer class="explanation">
+    <span>Lås · Dörr · Dörrautomatik · Dörrstängare · Handtag · Läsare · CCTV · Branddetektor · Larmdetektor · Glaskross · Magnetkontakt · Brandlarm</span>
+    <span>Ingen inloggning behövs för att se designprovet. Inga appfunktioner påverkas.</span>
+  </footer>
+</div>
+<script>
+(function(){
+ var lab=document.getElementById('lab'),stage=document.getElementById('stage'),resolution=document.getElementById('resolution');
+ var buttons=[].slice.call(document.querySelectorAll('[data-size]'));
+ buttons.forEach(function(btn){btn.addEventListener('click',function(){
+  lab.dataset.mode=btn.dataset.size;
+  buttons.forEach(function(other){other.setAttribute('aria-pressed',String(other===btn));});
+ });});
+ function update(){resolution.textContent=Math.round(stage.getBoundingClientRect().width)+' × '+Math.round(stage.getBoundingClientRect().height);}
+ if('ResizeObserver' in window)new ResizeObserver(update).observe(stage);
+ addEventListener('resize',update);update();
+})();
+</script>
+</body>
+</html>
