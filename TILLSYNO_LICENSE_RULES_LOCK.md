@@ -95,3 +95,9 @@ Behåll den enkla modellen medan den testas. Lägg inte till företagslicenser, 
 - Vid godkännande väljer admin aktivt vilka moduler som öppnas. Inga kryss är förvalda. Övriga moduler syns men är låsta; direktlänkar prövas fortfarande av autentiseringskontrollen.
 - Texten "Redo för offline" visas inte på startsidan. Service Worker och offlinecachen fortsätter att fungera.
 - Inga ändringar i Kontrollflödets interna arbetslogik, formulär, ritningsvy eller PDF-export.
+
+## 11. Självservice för glömt lösenord – 12 oktober 2026 (v2.4.281)
+- Inloggningen visar **Glömt lösenord?**, med en separat sida där personen anger sin e-postadress och begär en Supabase Auth-återställningslänk.
+- Återställningssidan godtar en giltig personlig recovery-länk och kräver minst 12 tecken vid val av nytt lösenord. Ingen administratör behöver skicka någon länk manuellt.
+- Svaret avslöjar inte om ett visst e-postkonto finns. Lösenordsändringen tilldelar inga moduler och ändrar inte godkännande eller licenstid.
+- Supabase Authentication → URL Configuration måste tillåta `https://dyli2009-cmd.github.io/tillsyno/auth/reset-password.html` som Redirect URL. Riktig e-postleverans och iPhone/Safari-flöde måste testas av en användare med en befintlig testadress innan det förklaras helt verifierat.
