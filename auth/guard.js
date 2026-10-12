@@ -10,13 +10,19 @@
  };
  let running=false;
  const showDenied=(msg)=>{
-  document.body.replaceChildren();
+  // Never destroy an open project or in-memory PDF when the offline grace period ends.
+  let overlay=document.getElementById('tillsynoAccessDenied');
+  if(!overlay){
+   overlay=document.createElement('div');overlay.id='tillsynoAccessDenied';
+   overlay.style.cssText='position:fixed;inset:0;z-index:2147483647;background:#102d3a;overflow:auto;padding:16px;display:grid;place-items:center';
+   document.body.append(overlay);
+  }
   const panel=document.createElement('main');
-  panel.style.cssText='font:16px system-ui;max-width:480px;margin:12vh auto;padding:28px;background:#f4f8fa;border-radius:15px;color:#183847';
+  panel.style.cssText='font:16px system-ui;width:min(460px,100%);padding:28px;background:#f4f8fa;border-radius:15px;color:#183847';
   const h=document.createElement('h2');h.textContent='Åtkomst saknas';
   const p=document.createElement('p');p.textContent=msg;
-  const a=document.createElement('a');a.href=new URL('index.html',window.TillsynoAuth.root);a.textContent='Till startsidan';
-  panel.append(h,p,a);document.body.append(panel);
+  const a=document.createElement('a');a.href=new URL('auth/login.html',window.TillsynoAuth?.root||new URL('./',location.href));a.textContent='Logga in';
+  panel.append(h,p,a);overlay.replaceChildren(panel);
   document.documentElement.removeAttribute('data-auth-pending');
  };
  const start=async()=>{
@@ -28,6 +34,7 @@
    if(document.body.dataset.requireRole==='admin'&&access.role!=='admin'){showDenied('Endast administratören får öppna sidan.');return;}
    const module=moduleForPage();
    if(!auth.permitted(access,module)){showDenied('Den här modulen ingår inte i din tilldelade behörighet.');return;}
+   document.getElementById('tillsynoAccessDenied')?.remove();
    window.TillsynoCurrentAccess=access;
    document.querySelectorAll('[data-admin-only]').forEach(el=>el.hidden=access.role!=='admin');
    document.querySelectorAll('[data-account-email]').forEach(el=>el.textContent=access.email);
