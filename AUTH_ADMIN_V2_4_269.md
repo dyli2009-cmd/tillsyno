@@ -12,3 +12,6 @@ Verifiering: tests/tillsyno-admin-auth.cjs testar saknad/felaktig session, avslu
 
 Säkerhetsrådgivaren har en befintlig varning om avstängt skydd mot läckta lösenord; inga tabell-/RLS-varningar. Inställningen kräver separat Auth-konfiguration och ändrades inte här.
 
+
+## v2.4.270 – alla webbadresser skyddas
+Samtliga 140 HTML-sidor i webbrotens senaste version har nu hanterats: 18 aktiva sidor har autentiseringskontroll och 122 gamla/onödiga HTML-adresser skickar vidare till den skyddade startsidan. Kontrollflöde, Säkerhetsservice, SmartMatch, projektflöde, ritningsverktyg och portalvyer kan inte öppnas normalt utan godkänt konto. Offlinegranten upphör efter 7 dagar från senaste online-verifiering, men att spärra någon under offlinearbete går inte att kontrollera förrän enheten åter är online. Adminåtgärder verifieras alltid hos Supabase. GitHub Pages är fortfarande offentlig statisk hosting och ger INTE hemliga källfiler eller krypterad projektlagring. Versionsnummer och SW-cache har samordnats till 2.4.270. Legacy-versionernas tidigare funktioner finns kvar i Git-historiken/backup före låsningen.
