@@ -26,14 +26,19 @@
  <select name="licenseDays" id="licenseDays">
   <option value="">Behåll nuvarande slutdatum</option><option value="2">2 dagar</option><option value="7">7 dagar</option><option value="30">30 dagar</option><option value="365">1 år</option>
  </select>
- <p class="licenseHint">Om du väljer en tid här börjar den räknas från idag.</p>
+ <p class="licenseHint">Snabbvalen räknas från idag.</p>
+ <label for="licenseUntil">Eget slutdatum (valfritt)</label>
+ <input id="licenseUntil" name="licenseUntil" type="date" autocomplete="off">
+ <p class="licenseHint">Du kan välja eller skriva ett datum i stället för snabbvalen. Licensen gäller till och med valt datum, svensk tid.</p>
  <p id="licenseError" role="alert" class="notice error" hidden></p>
  <button id="saveLicense" class="primary" type="submit">Spara behörighet</button>
  </form>
  <div class="dialogbody extendBox"><label for="extendDays">Förläng befintlig licens</label>
  <div class="extendRow"><select id="extendDays"><option value="2">2 dagar</option><option value="7">7 dagar</option><option value="30" selected>30 dagar</option><option value="365">1 år</option></select><button id="extendLicense" type="button" class="secondary">Förläng</button></div>
  <p class="licenseHint">Lägger dagar till nuvarande slutdatum, eller från idag om tiden redan gått ut.</p>
- </div></dialog>
+ </div>
+ <div class="dialogbody cancelBox"><button id="cancelLicense" class="secondary danger" type="button">Avsluta licens nu</button><p class="licenseHint">Stoppar åtkomsten när appen kontrollerar behörigheten online. Kontot finns kvar och kan få ny licens.</p></div>
+ </dialog>
 <dialog id="approvalDialog" aria-labelledby="approvalTitle"><div class="dialoghead"><h2 id="approvalTitle">Godkänn registrering</h2><button class="close" type="button" data-close="approvalDialog" aria-label="Stäng">×</button></div>
 <form id="approvalForm" class="dialogbody"><p id="approvalPerson"></p>
 <p>Markera endast de moduler personen ska få öppna. Övriga fortsätter vara låsta.</p>
