@@ -156,15 +156,22 @@ async function editDoc(cat){
  }catch(err){announce("Kunde inte visa SLR-sidorna: "+err.message,true)}
  finally{try{await document?.destroy()}catch(_){}}
 }
-async function saveTo(doc,payload){await loadTemplates();const enabled=Object.keys(templates);if(!enabled.length)return;
-const items=Array.isArray(payload?.automationItems)?payload.automationItems:[],count=items.length*enabled.length;
-if(count>180)throw Error("SLR-testet begränsar PDF-export till 180 dokumentkopior; välj färre mallar.");
-const prefix="slrtest-"+Date.now().toString(36),refs={},each={};
-for(const cat of enabled){const ext=(names[cat]?.match(/\.(png|jpe?g)$/i)?.[1]||"pdf").toLowerCase(),fn=prefix+"-mall-"+safe(cat)+"."+ext;
-refs[cat]=fn;await doc.attach(templates[cat],fn,{mimeType:ext==="pdf"?"application/pdf":ext==="png"?"image/png":"image/jpeg",description:"SLR gemensam projektmall"});}
-for(const o of items){each[o.id]={};for(const cat of enabled){const ext=(names[cat]?.match(/\.(png|jpe?g)$/i)?.[1]||"pdf").toLowerCase(),fn=prefix+"-"+safe(o.id)+"-"+safe(cat)+"."+ext;
-await doc.attach(await compose(cat,o),fn,{mimeType:ext==="pdf"?"application/pdf":ext==="png"?"image/png":"image/jpeg",description:"SLR "+cat+" för "+(o.sourceText||o.id)});each[o.id][cat]=fn;}}
-doc.catalog.set(PDFLib.PDFName.of("TillsynoSLRTestManifest"),PDFLib.PDFHexString.fromText(JSON.stringify({schema:1,templates:refs,each,names})));
+async function saveTo(doc,payload){
+ await loadTemplates();
+ const enabled=Object.keys(templates);if(!enabled.length)return;
+ const prefix="slrtest-"+Date.now().toString(36),refs={},each={};
+ for(const cat of enabled){
+  const ext=(names[cat]?.match(/\.(png|jpe?g)$/i)?.[1]||"pdf").toLowerCase();
+  const fn=prefix+"-mall-"+safe(cat)+"."+ext;
+  refs[cat]=fn;
+  await doc.attach(templates[cat],fn,{mimeType:ext==="pdf"?"application/pdf":ext==="png"?"image/png":"image/jpeg",description:"SLR-projektmall. Individuella uppgifter sparas per automatik i projektet."});
+ }
+ for(const o of Array.isArray(payload?.automationItems)?payload.automationItems:[]){
+  each[o.id]={};
+  for(const cat of enabled)each[o.id][cat]=refs[cat];
+ }
+ doc.catalog.set(PDFLib.PDFName.of("TillsynoSLRTestManifest"),
+  PDFLib.PDFHexString.fromText(JSON.stringify({schema:2,templates:refs,each,names,storage:"shared-templates-and-per-door-fields"})));
 }
 async function verify(data,expected){
  if(!Object.keys(templates).length)return;
