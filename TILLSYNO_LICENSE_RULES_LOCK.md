@@ -1,6 +1,6 @@
 # Tillsyno – beslutad regel för användare, behörighet och licens
 **Beslutad:** 12 oktober 2026
-**Status:** Gällande överenskommelse, första enkla versionen (webb: v2.4.272).
+**Status:** Gällande överenskommelse, första enkla versionen (webb: v2.4.273).
 **Ändra inte dessa principer utan nytt uttryckligt beslut från användaren.**
 
 ## 1. En gemensam ingång
@@ -69,3 +69,14 @@ Behåll den enkla modellen medan den testas. Lägg inte till företagslicenser, 
 - Kontrollera att **Confirm email** är påslaget i Supabase Auth och att GitHub Pages-adressen för inloggning är tillåten som redirect URL. Enbart förekomst av `email_confirmed_at` räcker inte som verifiering av projektets konfiguration.
 - Supabase Security Advisor varnade 2026-10-12 för att **Leaked Password Protection** är avstängt. Aktivera skyddet innan bredare användning och överväg CAPTCHA för att minska massregistrering.
 - GitHub Pages publiceringsstatus och iPhone/Safari-end-to-end har inte kunnat kontrolleras här; dessa testas separat.
+
+## 8. Permanent kontoradering och ny registrering – beslut 12 oktober 2026
+- På adminsidan ska **Radera konto** ta bort användaren permanent i Supabase Auth (hard delete), inklusive dess `tillsyno_access`-rad via foreign-key `ON DELETE CASCADE`, så att användaren försvinner från adminsidan.
+- Administratören måste bekräfta vilken e-postadress som ska raderas. Administratörskonton får inte raderas via användarlistan.
+- En raderad e-postadress ska kunna användas för en helt ny registrering. Det tidigare godkännandet eller licensen återkommer **inte** automatiskt.
+- Registreringskedjan ska vara: Registrera namn/e-post/lösenord → e-postbekräftelse → Väntande på administrationssidan → admin väljer moduler och licenstid → tillgång.
+- **Confirm email måste vara påslaget i Supabase Auth** för att verifieringsmejl faktiskt ska krävas. Detta kan inte bekräftas av bara frontend-koden. Kontrollera vid verkligt test.
+- Äldre cachad admin-UI som anropar `remove` stoppas server-side med ett uppdateringsmeddelande för att undvika förväxling med permanent radering.
+- Kontoradering tar inte automatiskt bort lokala arbets-PDF:er, andra enheters cachade material eller plattformens säkerhetskopior. Tidigare verifierad offlineåtkomst följer den avtalade sju dagars kompromissen tills nästa kontroll.
+- Registreringsmeddelandet får inte hävda att en bekräftelselänk är skickad när Supabase returnerar ett neutralt svar på en redan registrerad adress.
+- Versionen för dessa UI-ändringar är **v2.4.273**. Riktig e-postleverans och användardrivna flödet ska fortfarande provas end-to-end.
