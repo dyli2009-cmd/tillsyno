@@ -1,6 +1,6 @@
 /* App installation and a truthful offline readiness indicator. */
 (()=>{
- const VERSION='2.4.271';
+ const VERSION='2.4.272';
  const run=async()=>{
   const host=document.querySelector('.homeShell')||document.querySelector('.headerDetails')||document.querySelector('.appHeader');if(!host)return;
   const status=document.createElement('small');status.id='tillsynoOfflineStatus';status.setAttribute('role','status');status.style.cssText='display:block;font:inherit;font-size:12px;line-height:1.5;margin-top:8px;color:inherit;opacity:.85';host.appendChild(status);
