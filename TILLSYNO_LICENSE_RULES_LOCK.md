@@ -1,6 +1,6 @@
 # Tillsyno – beslutad regel för användare, behörighet och licens
 **Beslutad:** 12 oktober 2026
-**Status:** Gällande överenskommelse, första enkla versionen (webb: v2.4.274).
+**Status:** Gällande överenskommelse, första enkla versionen (webb: v2.4.275).
 **Ändra inte dessa principer utan nytt uttryckligt beslut från användaren.**
 
 ## 1. En gemensam ingång
@@ -83,7 +83,7 @@ Behåll den enkla modellen medan den testas. Lägg inte till företagslicenser, 
 
 ## 9. Inloggat men ännu inte godkänt konto – 12 oktober 2026
 - Användaren får logga in efter e-postbekräftelse, innan admin har godkänt kontot.
-- Före godkännande visas enbart välkomstsidan auth/pending.html. SmartMatch, Kontrollflöde och Ritningsverktyg är låsta även via direktlänk.
-- Sidan har Kontrollera åtkomst och Logga ut. När admin har valt moduler och licenstid kan användaren gå vidare utan ny registrering.
+- Före godkännande visas Tillsynos **vanliga startsida** (`index.html`), med statusmeddelande att kontot inte är godkänt och alla tre modulval synliga men låsta. En direktlänk till en skyddad modul leder tillbaka till startsidan.
+- Startsidan har Kontrollera godkännande och Logga ut. När admin har valt moduler och licenstid får medlemmen använda sina tilldelade moduler utan ny registrering. `auth/pending.html` är endast en äldre reservlänk och leder tillbaka till startsidan.
 - Väntande konton får ingen offlinebehörighet. Tidigare beslutad sjudagarsregel för godkända användare ändras inte.
-- Webbversion 2.4.274. Test med verkligt väntande konto återstår.
+- Webbversion 2.4.275. Test med verkligt väntande konto på riktig webbläsare återstår.
