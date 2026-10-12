@@ -50,7 +50,7 @@ button:disabled{opacity:.4;cursor:not-allowed}.primary{background:#17759d;font-w
 <label>Risknivå för vald automatik (väljs manuellt)<select id="risk"><option value="">Ej bedömd</option><option value="high">Hög risk</option><option value="low">Låg risk</option></select></label>
 <label>Plats i byggnaden för vald automatik<input id="location" type="text" placeholder="Hämtas från dörrkort om den finns"></label>
 </div>
-<p class="hint">När du väljer en PDF-mall används den för alla automatiker, men varje automatik får egna uppgifter och bedömningar. Ifyllda riskkryss i den importerade mallen nollställs i riskanalyskopiorna.</p>
+<p class="hint">När du väljer en PDF-mall används den för alla automatiker, men varje automatik får egna uppgifter och bedömningar. Ifyllda riskkryss och gamla fristående signaturanteckningar rensas i riskanalysmallen. Använd en osignerad PDF-mall för skarpa dokument.</p>
 </section>
 <section><h2>4. Spara och öppna igen</h2>
 <div class="row"><button id="save" class="primary" disabled>Spara ny projekt-PDF med SLR</button><button id="verify" class="ghost" disabled>Kontrollera PDF i minnet</button></div>
@@ -130,6 +130,26 @@ if(name==='4.7 Namn')return m.technician;
 if(name==='4.7 Telefonnummer')return m.companyPhone;
 return '';
 }
+async function cleanRiskTemplate(original){
+const pdf=await PDFLib.PDFDocument.load(original.slice(),{ignoreEncryption:true,updateMetadata:false});
+const form=pdf.getForm();
+for(const field of form.getFields()){try{
+if(field instanceof PDFLib.PDFTextField)field.setText('');
+else if(field instanceof PDFLib.PDFCheckBox)field.uncheck();
+else if(field instanceof PDFLib.PDFRadioGroup)field.clear();
+else if(field instanceof PDFLib.PDFDropdown||field instanceof PDFLib.PDFOptionList)field.clear();
+}catch(_){}}
+for(const page of pdf.getPages()){
+const arr=page.node.Annots?.();if(!arr)continue;
+const keep=[];
+for(let i=0;i<arr.size();i++){
+const ref=arr.get(i),entry=pdf.context.lookup(ref);
+if(entry instanceof PDFLib.PDFDict&&entry.get(PDFLib.PDFName.of('Subtype'))?.toString()==='/Widget')keep.push(ref);
+}
+page.node.set(PDFLib.PDFName.of('Annots'),pdf.context.obj(keep));
+}
+return new Uint8Array(await pdf.save({useObjectStreams:true}));
+}
 async function documentFor(category,door){
 const bytes=templateBytes[category];if(!bytes)throw Error('Ingen mall för '+category);
 if(category!=='Riskanalys')return bytes.slice();
@@ -205,7 +225,7 @@ if(f.size>20*1024*1024)throw Error('Testet tillåter max 20 MB per mall.');
 const type=pendingCategory,bytes=new Uint8Array(await f.arrayBuffer());
 if(type!=='CE-skylt'&&!f.name.toLowerCase().endsWith('.pdf'))throw Error('Välj en PDF-fil.');
 if(f.name.toLowerCase().endsWith('.pdf'))await PDFLib.PDFDocument.load(bytes.slice(),{ignoreEncryption:true});
-templateBytes[type]=bytes;templateNames[type]=f.name;lastSaved=null;
+templateBytes[type]=type==='Riskanalys'?await cleanRiskTemplate(bytes):bytes;templateNames[type]=f.name;lastSaved=null;
 notice(type+' vald som mall för alla '+doors.length+' automatiker. Varje dörr får egen kopia vid sparandet.','good');ui();
 }catch(err){notice('Filen kunde inte läggas till: '+err.message,'error')}e.target.value='';});
 $('risk').addEventListener('change',e=>{const d=selected();if(d){getAnswer(d.id).risk=e.target.value;lastSaved=null;$('verify').disabled=true;notice('Risknivån ändrad bara för '+labelDoor(d,selection)+'.','good')}});
