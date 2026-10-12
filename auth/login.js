@@ -12,7 +12,16 @@
   }catch(_){}
   return fallback;
  }
- async function enter(){await auth.verify({allowOffline:true});location.replace(destination());}
+ async function enter(){
+  try{
+   await auth.verify({allowOffline:true});
+   location.replace(destination());
+  }catch(error){
+   // Signed in, but not yet licensed: keep the valid session and show a safe start page.
+   if(error?.code==='PENDING_APPROVAL'){location.replace(new URL('auth/pending.html',auth.root));return;}
+   throw error;
+  }
+ }
  form.addEventListener('submit',async event=>{
   event.preventDefault();const button=form.querySelector('button');button.disabled=true;show('Loggar in…');
   try{
