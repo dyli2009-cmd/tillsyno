@@ -14,7 +14,7 @@
 <meta http-equiv="Expires" content="0">
 <title>Kontrollflöde – Tillsyno</title>
 <link rel="stylesheet" href="style.css?v=2.4.251">
-<link rel="stylesheet" href="security.css?v=2.4.256"><link rel="stylesheet" href="security-compact.css?v=2.4.215"><link rel="stylesheet" href="all-in-one.css?v=2.4.256">
+<link rel="stylesheet" href="security.css?v=2.4.256"><link rel="stylesheet" href="security-compact.css?v=2.4.215"><link rel="stylesheet" href="all-in-one.css?v=2.4.288">
 <script src="vendor/pdf.min.js"></script>
 <script src="vendor/jspdf.umd.min.js"></script>
 <script src="vendor/pdf-lib.min.js"></script>
@@ -124,13 +124,18 @@
 </dialog>
 
 
-<dialog id="allProtocolDialog" class="allProtocolDialog" aria-labelledby="allProtocolTitle">
+<dialog id="allProtocolDialog" class="allProtocolDialog" data-stage="folders" aria-labelledby="allProtocolTitle">
   <div class="allProtocolHead">
-    <div><span class="eyebrow">KONTROLLFLÖDE</span><h2 id="allProtocolTitle">Välj kontroller för dagens arbete</h2><p class="allProtocolLead">Kombinera de områden du behöver i samma flöde.</p></div>
+    <button id="allFolderBack" type="button" class="allFolderBack" hidden aria-label="Tillbaka till mappar">‹ Mappar</button>
+    <div class="allFolderHeading">
+      <span class="eyebrow">KONTROLLFLÖDE</span>
+      <h2 id="allProtocolTitle">Välj område</h2>
+      <p class="allProtocolLead" id="allProtocolLead">Öppna en mapp för att välja checklistor.</p>
+    </div>
   </div>
   <div class="allProtocolChoices">
     <details class="allProtocolGroup">
-      <summary><span><strong>Dörrautomatik / Lås</strong><small>Välj protokoll</small></span></summary>
+      <summary><span><strong>Dörrautomatik / Lås</strong><small>Revision · egenkontroll · lås</small></span></summary>
       <div class="allProtocolChildren">
         <label><input type="checkbox" value="automation"><span><strong>Checklista revision dörrautomatik</strong><small>Befintlig revisionschecklista · 18 kontrollpunkter</small></span></label>
         <label><input type="checkbox" value="automation_selfcheck"><span><strong>Egenkontroll dörrautomatik</strong><small>Provisorisk egenkontroll · punkterna justerar vi senare</small></span></label>
@@ -146,7 +151,7 @@
       </div>
     </details>
     <details class="allProtocolGroup">
-      <summary><span><strong>Brand</strong><small>Provisoriska brandprotokoll</small></span></summary>
+      <summary><span><strong>Brand</strong><small>Brandcentral · detektorer · branddörr</small></span></summary>
       <div class="allProtocolChildren">
         <label><input type="checkbox" value="fire_panel"><span><strong>Brandcentral</strong><small>Provisorisk checklista</small></span></label>
         <label><input type="checkbox" value="fire_detector"><span><strong>Branddetektorer</strong><small>Provisorisk checklista</small></span></label>
@@ -157,7 +162,7 @@
   <div class="allProtocolActions">
     <a class="allProtocolDrawingTool" href="drawing-tools.html" aria-label="Öppna Ritningsverktyg"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></svg><span>Ritningsverktyg</span></a>
     <a class="allProtocolHome" href="./" aria-label="Hem"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></svg><span>Hem</span></a>
-    <button id="allProtocolApply" type="button" class="primary">Fortsätt till PDF</button>
+    <button id="allProtocolApply" type="button" class="primary">Fortsätt till ritning</button>
   </div>
 </dialog>
 
@@ -215,7 +220,7 @@
 </nav>
 <script src="ui-text-scale.js?v=2.4.215"></script><script src="drawing-annotations.js?v=2.4.215"></script>
 <script src="session-history.js?v=2.4.215"></script>
-<script>window.DOORSERVICE_APP_MODE="all-in-one";</script><script src="offline-work.js?v=2.4.256"></script><script src="security.js?v=2.4.256"></script><script src="legacy-door-import.js?v=2.4.215"></script><script src="all-in-one.js?v=2.4.252"></script>
+<script>window.DOORSERVICE_APP_MODE="all-in-one";</script><script src="offline-work.js?v=2.4.256"></script><script src="security.js?v=2.4.256"></script><script src="legacy-door-import.js?v=2.4.215"></script><script src="all-in-one.js?v=2.4.288"></script>
 <script src="drawing-transfer.js?v=2.4.215"></script>
 <script src="offline.js?v=2.4.256"></script>
 </body></html>
