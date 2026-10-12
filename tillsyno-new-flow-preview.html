@@ -116,6 +116,10 @@ button{font:inherit;cursor:pointer}
 }
 @media(max-width:680px){.app{padding:10px}.previewBar{align-items:flex-start}.screenSizes{width:100%}.screenSizes button{flex:1;padding:9px 5px;font-size:10px}.stage{border-radius:13px}}
 @media(prefers-reduced-motion:reduce){.stage{transition:none}}
+
+/* Ritningen får hela arbetsytan. Inga protokollpaneler vid sidan om. */
+.drawWorkspace.drawingOnly{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important;width:min(1150px,100%)}
+.drawWorkspace.drawingOnly>.paper{height:100%;min-height:0}
 </style></head>
 <body><div class="app" id="app" data-device="auto">
 <header class="previewBar"><div><strong>Tillsyno – designförslag</strong><small>Separat, klickbar förhandsvisning. Inga ändringar görs i den riktiga appen.</small></div>
@@ -152,11 +156,11 @@ button{font:inherit;cursor:pointer}
 <div class="protocolList" id="protocolList"></div><button type="button" class="action" id="toDrawing" disabled>Fortsätt till ritning ›</button><div class="smallstatus" id="selectionStatus" aria-live="polite">Välj minst ett protokoll.</div>
 </div></div><footer class="breadcrumb">Kontrollflöde <span>›</span> <span id="folderCrumb">Dörrautomatik &amp; Lås</span> <span>›</span> Protokoll</footer></section>
 <section class="scene" data-screen="drawing" hidden>
-<header class="sceneHead"><button type="button" class="back" data-go="protocols">‹ Protokoll</button><div><h1>Kontrollflöde</h1><small>Ritning och valda protokoll</small></div><span></span></header>
-<div class="sceneMain"><div class="drawWorkspace"><div class="paper"><div class="paperBar"><strong id="drawingFileName">Ingen ritning vald</strong><span>100 %</span></div>
-<div class="blankPdf" id="drawingEmpty"><svg viewBox="0 0 48 48"><use href="#pdf"/></svg><strong>Öppna ritning</strong><p>Dina valda protokoll följer med hit. När du öppnar en PDF kan du börja kontrollen.</p><button type="button" class="fileButton" data-control-pdf>Öppna PDF</button></div>
+<header class="sceneHead"><button type="button" class="back" data-go="protocols">‹ Protokoll</button><div><h1>Kontrollflöde</h1><small>Ritning</small></div><span></span></header>
+<div class="sceneMain"><div class="drawWorkspace drawingOnly"><div class="paper"><div class="paperBar"><strong id="drawingFileName">Ingen ritning vald</strong><span>100 %</span></div>
+<div class="blankPdf" id="drawingEmpty"><svg viewBox="0 0 48 48"><use href="#pdf"/></svg><strong>Öppna ritning</strong><p>Öppna en PDF-ritning för att börja arbeta med checklistorna, precis som tidigare.</p><button type="button" class="fileButton" data-control-pdf>Öppna PDF</button></div>
 <iframe class="previewPdf" id="drawingPdf" title="Ritning i förhandsvisning" hidden></iframe></div>
-<aside class="aux"><h3>Valda protokoll</h3><p>Det här följer med till ritningen.</p><div class="chips" id="selectedChips"></div></aside>
+
 </div></div><footer class="breadcrumb">Välj protokoll <span>›</span> Ritning</footer></section>
 <section class="scene" data-screen="smart" hidden>
 <header class="sceneHead"><button type="button" class="back" data-go="home">‹ Hem</button><div><h1>SmartMatch</h1><small>Projektflöde</small></div><span></span></header>
@@ -207,8 +211,7 @@ if(b.hasAttribute("data-file-now"))document.getElementById("smartInput").click()
 }));
 buttons.forEach(b=>b.addEventListener("click",()=>{root.dataset.device=b.dataset.device;buttons.forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));}));
 document.getElementById("toDrawing").addEventListener("click",()=>{
-const box=document.getElementById("selectedChips");box.replaceChildren();
-selections[category].forEach(label=>{const chip=document.createElement("span");chip.className="chip";chip.textContent=label;box.append(chip);});
+// Keep selected checklists in state. They are not shown in a separate drawing sidebar.
 scene("drawing");
 });
 function fileUrl(input,which){
