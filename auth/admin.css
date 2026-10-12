@@ -17,3 +17,7 @@ dialog{max-height:90dvh;overflow-y:auto}
 .loginhelp a.signupLink{display:inline-block;color:#fff;background:#2c667b;border:1px solid #588595;padding:8px 15px;border-radius:9px;font-size:14px;font-weight:750;margin:8px}
 .loginhelp a:not(.signupLink){color:#d8ecf5;text-decoration:underline;text-underline-offset:3px}
 #approvalDialog .dialogbody p{margin-top:4px}
+
+/* Registrering v2.4.273 */
+.passwordHelper{display:block;width:100%;margin-top:10px;text-align:center}
+.logincard .passwordHint{font-size:12px;color:#627984;margin-top:8px;line-height:1.45}
