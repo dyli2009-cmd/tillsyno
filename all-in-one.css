@@ -993,3 +993,80 @@ body.allInOneApp .allProtocolDialog .allProtocolActions a.allProtocolDrawingTool
  border-color:#d1edf8!important;
  outline-offset:2px;
 }
+
+/* Tillsyno 2.4.290 – reduced glare across ALL folders and protocol choices.
+   Scope only the picker; the drawing/PDF/checklists are not restyled. */
+body.allInOneApp .allProtocolDialog .allProtocolHead{
+ justify-content:flex-start!important;
+ align-items:center!important;
+ gap:9px!important;
+}
+body.allInOneApp .allProtocolDialog .allProtocolHead>.allFolderHeading{
+ width:auto!important;flex:1 1 auto!important;min-width:0!important;
+}
+body.allInOneApp .allProtocolDialog #allFolderBack{
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ flex:0 0 auto!important;
+ width:auto!important;
+ max-width:fit-content!important;
+ min-width:0!important;
+ min-height:29px!important;
+ height:29px!important;
+ white-space:nowrap!important;
+ font:550 10px/1 system-ui!important;
+ letter-spacing:0!important;
+ padding:5px 8px!important;
+ color:#c5d7e0!important;
+ background:#143445!important;
+ border:1px solid #7f9eae80!important;
+ border-radius:7px!important;
+ box-shadow:none!important;
+}
+body.allInOneApp .allProtocolDialog #allFolderBack[hidden]{display:none!important}
+body.allInOneApp .allProtocolDialog .allProtocolHead h2{
+ color:#d3e2e8!important;
+ font-weight:590!important;
+ font-size:20px!important;
+ text-shadow:none!important;
+}
+body.allInOneApp .allProtocolDialog .allProtocolHead .eyebrow{
+ color:#a0b6c0!important;font-weight:550!important;
+}
+body.allInOneApp .allProtocolDialog .allProtocolLead{
+ color:#9fb6c0!important;font-weight:400!important;
+}
+body.allInOneApp .allProtocolDialog .allProtocolGroup>summary strong{
+ color:#cddde4!important;
+ font-size:13px!important;
+ font-weight:560!important;
+ text-shadow:none!important;
+}
+body.allInOneApp .allProtocolDialog .allProtocolGroup>summary small{
+ color:#9fb8c3!important;font-weight:400!important;
+}
+body.allInOneApp .allProtocolDialog .allProtocolGroup>summary::after{
+ color:#a9c6d1!important;
+}
+body.allInOneApp .allProtocolDialog .allProtocolChoices label strong{
+ color:#d0dfe6!important;
+ font-weight:550!important;
+ font-size:12px!important;
+ text-shadow:none!important;
+}
+body.allInOneApp .allProtocolDialog .allProtocolChoices label small{
+ color:#9eb8c3!important;font-weight:400!important;
+}
+body.allInOneApp .allProtocolDialog .allProtocolChoices label:has(input:checked) strong{
+ color:#dfecf1!important;
+ font-weight:620!important;
+}
+@media(max-width:600px){
+ body.allInOneApp .allProtocolDialog .allProtocolHead{gap:7px!important}
+ body.allInOneApp .allProtocolDialog .allProtocolHead h2{font-size:17px!important}
+ body.allInOneApp .allProtocolDialog #allFolderBack{
+  min-height:28px!important;height:28px!important;
+  padding:4px 7px!important;font-size:10px!important;
+ }
+}
