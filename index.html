@@ -1,12 +1,29 @@
-<!doctype html><html lang="sv" data-auth-pending><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#132b38"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Tillsyno"><meta name="format-detection" content="telephone=no"><link rel="manifest" href="manifest.webmanifest?v=2.4.3"><link rel="apple-touch-icon" sizes="180x180" href="icon-180.png?v=2.4.3"><link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2.4.3"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Tillsyno</title><script src="home-bg-data.js?v=2.4.217"></script><link rel="stylesheet" href="style.css?v=2.4.251"><link rel="stylesheet" href="customer-preview-pager.css?v=2.4.217"><script src="vendor/pdf.min.js"></script><script src="vendor/jspdf.umd.min.js"></script><script src="vendor/pdf-lib.min.js"></script><style>html[data-auth-pending] body{visibility:hidden}.homeAccount{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:9px;margin-top:22px;font:12px system-ui;color:#bad0d9}.homeAccount a,.homeAccount button{font:inherit;color:#eaf5f9;background:#ffffff0b;border:1px solid #ffffff25;border-radius:8px;padding:8px 12px}.homeAccount span{max-width:100%;overflow-wrap:anywhere}[data-admin-only][hidden]{display:none!important}
-html[data-tillsyno-waiting] #appHome .homeChoice,
-html[data-tillsyno-waiting] #appHome .homeToolsLink{
- opacity:.56;cursor:not-allowed;pointer-events:none;filter:grayscale(.3);
-}
-html[data-tillsyno-waiting] #appHome .homeToolsLink::after{content:'🔒 Låst';font:600 12px system-ui;white-space:nowrap;margin-left:5px}
-html[data-tillsyno-waiting] #appHome .homeChoice:focus,
-html[data-tillsyno-waiting] #appHome .homeToolsLink:focus{outline:none}
-</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.275"></script><script src="auth/guard.js?v=2.4.275" defer></script></head><body data-view="drawing" class="homeMode">
+<!doctype html><html lang="sv" data-auth-pending><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#132b38"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Tillsyno"><meta name="format-detection" content="telephone=no"><link rel="manifest" href="manifest.webmanifest?v=2.4.3"><link rel="apple-touch-icon" sizes="180x180" href="icon-180.png?v=2.4.3"><link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2.4.3"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Tillsyno</title><script src="home-bg-data.js?v=2.4.217"></script><link rel="stylesheet" href="style.css?v=2.4.251"><link rel="stylesheet" href="customer-preview-pager.css?v=2.4.217"><script src="vendor/pdf.min.js"></script><script src="vendor/jspdf.umd.min.js"></script><script src="vendor/pdf-lib.min.js"></script><style>
+html[data-auth-pending] body{visibility:hidden}
+[data-admin-only][hidden],[hidden]{display:none!important}
+#appHome [data-tillsyno-module-locked]{opacity:.53;cursor:not-allowed;pointer-events:none;filter:grayscale(.35)}
+#appHome .homeToolsLink[data-tillsyno-module-locked]::after{content:'🔒 Låst';font:600 11px system-ui;white-space:nowrap;margin-left:auto}
+#appHome [data-tillsyno-module-locked]:focus{outline:none}
+#tillsynoWaitingNotice{box-sizing:border-box;width:min(350px,100%);background:rgba(9,30,41,.84);border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:9px 11px;margin:0 auto 10px;color:#f2f7fa;font:12px/1.4 system-ui;box-shadow:0 10px 25px #08182033;backdrop-filter:blur(12px)}
+#tillsynoWaitingNotice strong{display:block;font:700 13px/1.3 system-ui;margin-bottom:3px}
+#tillsynoWaitingNotice p{margin:0 0 8px;color:#d3e3e9;font:11px/1.45 system-ui}
+#tillsynoCheckApproval{background:#d5e9f1;color:#153847;border:0;border-radius:7px;padding:6px 10px;font:700 11px system-ui;cursor:pointer}
+.homeProfile{box-sizing:border-box;position:relative;width:min(350px,100%);margin:12px auto 0;z-index:10;color:#e9f3f6;font:12px system-ui}
+.homeProfile>summary{min-height:39px;display:flex;justify-content:center;align-items:center;gap:9px;padding:7px 13px;list-style:none;cursor:pointer;border:1px solid #ffffff40;border-radius:10px;background:rgba(9,31,43,.62);box-shadow:0 9px 20px #07192330;backdrop-filter:blur(12px);font-weight:700;user-select:none}
+.homeProfile>summary::-webkit-details-marker{display:none}
+.homeProfile>summary::marker{content:''}
+.homeProfile>summary:hover,.homeProfile[open]>summary{background:rgba(20,55,70,.85)}
+.homeProfile>summary:focus-visible{outline:2px solid #c8edf7;outline-offset:3px}
+.homeProfileChevron{font-size:16px;line-height:1;transition:transform .15s}
+.homeProfile[open] .homeProfileChevron{transform:rotate(180deg)}
+.homeProfileMenu{position:absolute;bottom:calc(100% + 7px);left:0;right:0;z-index:30;padding:8px;border:1px solid #ffffff35;border-radius:12px;background:rgba(11,34,45,.97);box-shadow:0 15px 38px #03111c77;display:grid;gap:5px;backdrop-filter:blur(18px)}
+.homeProfileStatus{display:grid;gap:3px;padding:9px 10px 11px;border-bottom:1px solid #ffffff2b;margin-bottom:4px;text-align:left}
+.homeProfileStatus strong{font-size:12px}
+.homeProfileStatus small{font-size:10.5px;color:#b5cdd7}
+.homeProfileMenu a,.homeProfileMenu button{box-sizing:border-box;display:flex;align-items:center;gap:11px;width:100%;padding:10px 11px;text-align:left;border:0;border-radius:8px;background:transparent;color:#eef7fa;text-decoration:none;font:650 12px system-ui;cursor:pointer}
+.homeProfileMenu a:hover,.homeProfileMenu button:hover,.homeProfileMenu a:focus-visible,.homeProfileMenu button:focus-visible{background:#ffffff17;outline:none}
+@media(max-width:620px){#tillsynoWaitingNotice,.homeProfile{width:min(315px,88vw)}}
+</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.276"></script><script src="auth/guard.js?v=2.4.276" defer></script></head><body data-view="drawing" class="homeMode">
 <section id="appHome" class="appHome" aria-label="Välj arbetsläge">
   <div class="homeAmbient" aria-hidden="true">
     <span class="homeAmbientItem homeAmbientCctv"><svg viewBox="0 0 64 64"><path d="M10 19h29l10 9-10 9H10z"/><path d="M39 28h12l7 5"/><path d="M23 37v11"/><path d="M15 49h20"/></svg><small>CCTV</small></span>
@@ -17,7 +34,7 @@ html[data-tillsyno-waiting] #appHome .homeToolsLink:focus{outline:none}
     <span class="homeAmbientItem homeAmbientFire"><svg viewBox="0 0 64 64"><path d="M34 9c2 11-7 14-3 24 2 5 8 6 10 1 2 6 2 12-2 17-7 8-23 5-27-6-3-9 2-17 9-23 0 8 4 11 8 10-3-11 8-14 5-27z"/></svg></span>
   </div>
   <div class="homeShell">
-    <div class="homeBrand"><div><strong>Tillsyno</strong><small class="homeTagline">Tillsyn · kontroll · dokumentation</small></div><span>v2.4.275</span></div>
+    <div class="homeBrand"><div><strong>Tillsyno</strong><small class="homeTagline">Tillsyn · kontroll · dokumentation</small></div><span>v2.4.276</span></div>
     <div class="homeChoices">
       <a class="homeChoice" href="all-in-one.html?v=2.4.256">
         <span class="homeChoiceIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h8a2 2 0 0 1 2 2v12H7a2 2 0 0 1-2-2V7"/><path d="M9 3h6v4H9z"/><path d="m9 11 1.4 1.4L13 9.8M9 16l1.4 1.4L13 14.8M15 11h2M15 16h2"/></svg></span>
@@ -36,7 +53,17 @@ html[data-tillsyno-waiting] #appHome .homeToolsLink:focus{outline:none}
         <span><strong>Ritningsverktyg</strong><small>Rensa · beskära · optimera</small></span>
       </a>
     </div>
-    <div class="homeAccount"><span data-account-email></span><a href="auth/admin.html" data-admin-only hidden>Användare</a><button type="button" data-logout>Logga ut</button></div>
+    <details class="homeProfile" id="homeProfile">
+      <summary aria-label="Öppna kontomenyn" title="Mitt konto">
+        <svg viewBox="0 0 24 24" aria-hidden="true" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20v-1.4A6.6 6.6 0 0 1 11.6 12h.8a6.6 6.6 0 0 1 6.6 6.6V20"/></svg>
+        <span>Mitt konto</span><span class="homeProfileChevron" aria-hidden="true">⌄</span>
+      </summary>
+      <div class="homeProfileMenu">
+        <div class="homeProfileStatus"><strong data-account-role>Kontostatus</strong><small data-account-license hidden></small></div>
+        <a href="auth/admin.html" data-admin-only hidden><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="3"/><path d="M2 19v-1a6 6 0 0 1 12 0v1M17 7h5M19.5 4.5v5M16 17h6"/></svg> Användare</a>
+        <button type="button" data-logout><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 4H4v16h6M15 8l4 4-4 4M8 12h11"/></svg> Logga ut</button>
+      </div>
+    </details>
   </div>
 </section>
 <header class="appHeader">
@@ -79,7 +106,7 @@ html[data-tillsyno-waiting] #appHome .homeToolsLink:focus{outline:none}
 <button id="mobileOverview"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 5h3v3H5zM11 6.5h8M5 11h3v3H5zM11 12.5h8M5 17h3v3H5zM11 18.5h8"/></svg></span><span class="navLabel">Dörrar</span></button>
 <button id="mobileProtocol"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h8M9 3h6v3H9zM7 5H5v16h14V5h-2"/><path d="m8 13 2 2 5-5"/></svg></span><span class="navLabel">Protokoll</span></button>
 <button id="settingsBtn"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V7l8-4 8 4v13H4Z"/><path d="M8 10h2M14 10h2M8 14h2M14 14h2M10 20v-3h4v3"/></svg></span><span class="navLabel">Projekt</span></button>
-</nav><script src="ui-text-scale.js?v=2.4.217"></script><script src="drawing-annotations.js?v=2.4.217"></script><script src="session-history.js?v=2.4.217"></script><script src="app.js?v=2.4.256"></script><script src="reports.js?v=2.4.217"></script><script src="v2.js?v=2.4.217"></script><script src="customer-preview-pager.js?v=2.4.217"></script><script src="drawing-transfer.js?v=2.4.217"></script><script src="offline.js?v=2.4.275"></script>
+</nav><script src="ui-text-scale.js?v=2.4.217"></script><script src="drawing-annotations.js?v=2.4.217"></script><script src="session-history.js?v=2.4.217"></script><script src="app.js?v=2.4.256"></script><script src="reports.js?v=2.4.217"></script><script src="v2.js?v=2.4.217"></script><script src="customer-preview-pager.js?v=2.4.217"></script><script src="drawing-transfer.js?v=2.4.217"></script><script src="offline.js?v=2.4.276"></script>
 </body></html>
 
 
