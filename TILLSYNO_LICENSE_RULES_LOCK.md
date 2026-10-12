@@ -1,6 +1,6 @@
 # Tillsyno – beslutad regel för användare, behörighet och licens
 **Beslutad:** 12 oktober 2026
-**Status:** Gällande överenskommelse, första enkla versionen (webb: v2.4.273).
+**Status:** Gällande överenskommelse, första enkla versionen (webb: v2.4.274).
 **Ändra inte dessa principer utan nytt uttryckligt beslut från användaren.**
 
 ## 1. En gemensam ingång
@@ -80,3 +80,10 @@ Behåll den enkla modellen medan den testas. Lägg inte till företagslicenser, 
 - Kontoradering tar inte automatiskt bort lokala arbets-PDF:er, andra enheters cachade material eller plattformens säkerhetskopior. Tidigare verifierad offlineåtkomst följer den avtalade sju dagars kompromissen tills nästa kontroll.
 - Registreringsmeddelandet får inte hävda att en bekräftelselänk är skickad när Supabase returnerar ett neutralt svar på en redan registrerad adress.
 - Versionen för dessa UI-ändringar är **v2.4.273**. Riktig e-postleverans och användardrivna flödet ska fortfarande provas end-to-end.
+
+## 9. Inloggat men ännu inte godkänt konto – 12 oktober 2026
+- Användaren får logga in efter e-postbekräftelse, innan admin har godkänt kontot.
+- Före godkännande visas enbart välkomstsidan auth/pending.html. SmartMatch, Kontrollflöde och Ritningsverktyg är låsta även via direktlänk.
+- Sidan har Kontrollera åtkomst och Logga ut. När admin har valt moduler och licenstid kan användaren gå vidare utan ny registrering.
+- Väntande konton får ingen offlinebehörighet. Tidigare beslutad sjudagarsregel för godkända användare ändras inte.
+- Webbversion 2.4.274. Test med verkligt väntande konto återstår.
