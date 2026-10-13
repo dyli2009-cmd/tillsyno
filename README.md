@@ -1,5 +1,9 @@
 # dorrservice
 
+## Separat SLR TEST v36.125
+
+Gemensamma dörruppgifter från riskanalys till egenkontroll, kort dörrbeteckning (sista numret) och fullständigt Maskin-ID. 50 % kräver besvarade huvudval; 100 % kräver manuell mappkontroll per dörr. Se [specifikation och verifiering](SMARTMATCH_SLR_TEST_V36_125.md). Fast testadress `smartmatch-slr-test.html`; ordinarie app och iOS är oförändrade.
+
 ## Separat SLR TEST v36.124
 
 Sju mappkontroller med procent, Ändra standard för Med glas/Utan glas, Ändra endast denna dörrautomatik, gemensam dörrsignatur och Visa PDF i scrollbart visningsfönster. Se [specifikation](SMARTMATCH_SLR_TEST_V36_124.md). Fast testadress `smartmatch-slr-test.html`; ordinarie app och iOS är oförändrade.
@@ -45,4 +49,5 @@ Se [senaste implementerade spar- och uppdateringsflödet](SMARTMATCH_TEST_V36_71
 - [Samarbete för flera tekniker, automatisk dörrlåsning, offlinearbete, konflikter och Dropbox/Google Drive/OneDrive](SMARTMATCH_SAMARBETE_OFFLINE_PLAN.md) – planeringsdokument, inte implementerat.
 
 Deploy trigger: 2.4.82
+
 

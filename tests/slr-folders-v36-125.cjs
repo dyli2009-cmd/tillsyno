@@ -1,0 +1,109 @@
+const fs=require('fs'),path=require('path'),assert=require('assert');
+const runtime=process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES||'/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules';
+const PDFLib=require(path.join(runtime,'pdf-lib')),JSZip=require(path.join(runtime,'jszip'));
+class Element{
+ constructor(tag){this.tagName=tag;this.children=[];this.dataset={};this.style={};this.hidden=false;this.events={};this.textContent='';this.attributes={};this.classList={add:()=>{},remove:()=>{},toggle:()=>{}};}
+ append(...nodes){for(const n of nodes){if(n.parentElement)n.parentElement.children.splice(n.parentElement.children.indexOf(n),1);this.children.push(n);n.parentElement=this;}}
+ after(node){const p=this.parentElement;if(node.parentElement)node.parentElement.children.splice(node.parentElement.children.indexOf(node),1);p.children.splice(p.children.indexOf(this)+1,0,node);node.parentElement=p;}
+ replaceChildren(...nodes){this.children=[];this.append(...nodes);}
+ addEventListener(n,fn){this.events[n]=fn;}setAttribute(n,v){this.attributes[n]=v;}scrollIntoView(){}close(){this.open=false;}
+}
+const body=new Element('body'),head=new Element('head'),walk=e=>[e,...e.children.flatMap(walk)];
+const document={body,head,createElement:tag=>new Element(tag),querySelectorAll:s=>s==='[data-slr-edit]'?walk(body).filter(e=>e.dataset.slrEdit):[],getElementById:id=>walk(body).find(e=>e.id===id)||null};
+const node=(tag,id,parent=body)=>{const e=new Element(tag);e.id=id;parent.append(e);return e;};
+const dialog=node('dialog','slrFlowTestDialog'),main=node('main','main',dialog),root=node('div','slrTestDocRows',main),editor=node('section','slrEditor',main);editor.hidden=true;
+node('h3','slrEditHeading',editor);node('div','slrFields',editor);node('p','slrStatusText',main);node('button','slrDoneDoor',main);
+node('select','slrDoorProfile',main);node('small','slrDoorProfileCaption',main);node('button','slrSaveProfileChecks',main);node('button','slrResetDoorChecks',main);
+const window={JSZip},png='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+function attachments(pdf){const result={},N=PDFLib.PDFName.of,names=pdf.catalog.lookupMaybe(N('Names'),PDFLib.PDFDict)?.lookupMaybe(N('EmbeddedFiles'),PDFLib.PDFDict)?.lookupMaybe(N('Names'),PDFLib.PDFArray);if(!names)return result;for(let i=0;i<names.size();i+=2){const name=names.get(i).decodeText(),spec=pdf.context.lookup(names.get(i+1)),stream=spec.lookup(N('EF'),PDFLib.PDFDict).lookup(N('F'));result[name]={content:PDFLib.decodePDFRawStream(stream).decode()};}return result;}
+const pdfjsLib={getDocument:({data})=>({promise:PDFLib.PDFDocument.load(data).then(pdf=>({getAttachments:async()=>attachments(pdf),destroy:async()=>{}}))})};
+const source=fs.readFileSync(path.join(__dirname,'../smartmatch-slr-test-module-v36-125.js'),'utf8').replace('await flattenDocument(pdf);','if(!window.keepEditable)await flattenDocument(pdf);').replace('window.SmartMatchSLRTest=',`window.probe={cats,saved,compose,slrEffectiveFields,slrCaptureProfile,slrDirty,slrComplete,slrStoreSignatureImage,slrOpenSign,slrApplySignature,slrToggleReviewed,slrFolderPercent,slrSignatureFor,slrWriteField,slrInspectChoices,slrChoiceProgress,slrDoorNumber,auto,draw,slrMountEditor,slrCloseEditor,slrSetDoorProfile,slrResetCurrentDoor,set:(obj,b)=>{item=obj;bridge=b;},setScope:v=>{slrEditScope=v;},templates:v=>{templates=v;templatesLoaded=true;for(const c of Object.keys(v))names[c]='template.pdf';},products:v=>productFiles=v,photo:(id,v)=>doorPhotos[id]=v,completed:()=>completedDoors,loadTemplates};window.SmartMatchSLRTest=`);
+new Function('window','document','PDFLib','pdfjsLib',source)(window,document,PDFLib,pdfjsLib);
+const api=window.SmartMatchSLRTest,p=window.probe;
+const a={id:'door-a',objectNo:'20-01-54-7-8',modelCode:'24',serialNumber:'1',slrDocuments:{}},b={id:'door-b',objectNo:'20-01-54-7-8',modelCode:'24',serialNumber:'11',slrDocuments:{}},c={id:'door-c',objectNo:'20-01-54-7-8',modelCode:'24',serialNumber:'12',slrDocuments:{}};
+const bridge={getItems:()=>[a,b,c],getProjectMeta:()=>({projectName:'Testprojekt',company:'Testbolag'}),save(){},redraw(){}};
+window.SmartMatchDALink={getSLRSource:()=>({gs:{code:'GS1'},cardPage:1})};
+async function formTemplate(){const doc=await PDFLib.PDFDocument.create(),page=doc.addPage([595,842]),f=doc.getForm();for(const [i,name]of ['Maskin ID','Installationsdatum','Sensor','Kommentar'].entries())f.createTextField(name).addToPage(page,{x:40,y:730-i*45,width:200,height:20});f.createCheckBox('Kryss').addToPage(page,{x:300,y:700,width:12,height:12});return new Uint8Array(await doc.save());}
+(async()=>{
+ const template=await formTemplate(),blank={};for(const cat of p.cats)if(!['Produktlista','CE-skylt'].includes(cat))blank[cat]=template;p.templates(blank);p.set(a,bridge);
+ assert.equal(p.cats.length,7);assert(!p.cats.includes('Godkännande'));assert.equal(p.cats[6],'CE-skylt');
+ const entry=p.saved(a,'Riskanalys');entry.fields={Sensor:'Flatscan',Installationsdatum:'2026-10-13',Kryss:true,Kommentar:'Standardtext','Maskin ID':'SHOULD NOT COPY'};
+ p.slrSetDoorProfile('glass');await p.slrCaptureProfile();assert.equal(api.payload().profiles.glass.Riskanalys.Sensor,'Flatscan');assert.equal(api.payload().profiles.glass.Riskanalys.Installationsdatum,'2026-10-13');assert(!('Maskin ID' in api.payload().profiles.glass.Riskanalys));
+ p.set(b,bridge);p.slrSetDoorProfile('glass');assert.equal(p.slrEffectiveFields(b,'Riskanalys').Sensor,'Flatscan');assert.equal(p.slrEffectiveFields(b,'Riskanalys').Installationsdatum,'2026-10-13');
+ p.saved(b,'Riskanalys').fields.Installationsdatum='2026-10-16';p.slrDirty(b,'Riskanalys');assert.equal(p.slrEffectiveFields(b,'Riskanalys').Installationsdatum,'2026-10-16');assert.equal(p.slrEffectiveFields(a,'Riskanalys').Installationsdatum,'2026-10-13');assert.equal(p.slrEffectiveFields(b,'Riskanalys').Sensor,'Flatscan');
+ p.saved(b,'Riskanalys').fields.Kryss=false;p.saved(b,'Riskanalys').fields.Kommentar='';assert.equal(p.slrEffectiveFields(b,'Riskanalys').Kryss,false);assert.equal(p.slrEffectiveFields(b,'Riskanalys').Kommentar,'');
+ p.set(c,bridge);p.slrSetDoorProfile('noGlass');p.saved(c,'Riskanalys').fields.Sensor='Utan glas sensor';await p.slrCaptureProfile();assert.equal(p.slrEffectiveFields(a,'Riskanalys').Sensor,'Flatscan');assert.equal(p.slrEffectiveFields(c,'Riskanalys').Sensor,'Utan glas sensor');
+ window.keepEditable=true;p.set(b,bridge);let out=await PDFLib.PDFDocument.load(await p.compose('Riskanalys',b));assert.equal(out.getForm().getTextField('Maskin ID').getText(),'20-01-54-7-8-24-11');assert.equal(out.getForm().getTextField('Sensor').getText(),'Flatscan');assert.equal(out.getForm().getTextField('Installationsdatum').getText(),'2026-10-16');assert(!out.getForm().getCheckBox('Kryss').isChecked());
+ const ref=p.slrStoreSignatureImage(png),button=new Element('button');p.slrOpenSign(b,'Loggbok',button);assert.equal(p.saved(b,'Loggbok').signature,ref);assert(!p.saved(a,'Loggbok').signature);assert.equal(Object.keys(api.payload().signatureLibrary).length,1);assert.equal(p.slrSignatureFor(b,'Riskanalys'),ref);assert.equal(p.slrSignatureFor(b,'Egenkontroll'),ref);assert(!p.slrSignatureFor(a,'Egenkontroll'));
+ p.draw();assert.equal(root.children.length,7);assert(root.children.every(e=>e.tagName==='details'));assert(root.children.every(e=>e.children[0].tagName==='summary'));
+ p.slrMountEditor('Riskanalys');assert.equal(editor.parentElement.dataset.slrCategory,'Riskanalys');p.slrCloseEditor();assert(editor.hidden);
+ assert.equal(api.getProgress(a),7);assert.notEqual(api.getProgress(b),100);p.set(a,bridge);await p.slrComplete();assert.equal(api.getProgress(a),7);assert(document.getElementById('slrStatusText').textContent.includes('Produktlista'));
+ const doc=await PDFLib.PDFDocument.create();doc.addPage([595,842]).drawText('Produktlista fixture');const product=new Uint8Array(await doc.save());p.products(Object.fromEntries([a,b].map(o=>[o.id,{bytes:product,format:'two-columns-v1',gsCode:'GS1',cardPage:1,designation:o.id,rowCount:1}])));
+ p.photo(a.id,{name:'CE-skylt.png',type:'image/png',dataUrl:png});p.photo(b.id,{name:'CE-skylt.png',type:'image/png',dataUrl:png});
+ await p.slrComplete();assert.notEqual(api.getProgress(a),100);for(const category of p.cats)await p.slrToggleReviewed(a,category);assert(p.cats.every(category=>p.slrFolderPercent(a,category)===100));await p.slrComplete();assert.equal(api.getProgress(a),100);assert.notEqual(api.getProgress(b),100);p.set(b,bridge);for(const category of p.cats)await p.slrToggleReviewed(b,category);await p.slrComplete();assert.equal(api.getProgress(b),100);assert.equal(api.getProgress(c),0);
+ window.keepEditable=false;const archive=await api.buildFolderArchive([a,b],bridge),zip=await JSZip.loadAsync(archive.bytes,{checkCRC32:true}),files=Object.values(zip.files).filter(f=>!f.dir);assert.equal(files.length,14);assert(files.every(f=>f.name.startsWith('Testprojekt/')));assert(files.some(f=>f.name.includes('/20-01-54-7-8-24-11/7. CE-skylt/')));assert(!files.some(f=>/Godkännande|Försäkringscertifikat|brukaransvarig/.test(f.name)));
+ for(const f of files.filter(f=>f.name.endsWith('.pdf'))){const doc=await PDFLib.PDFDocument.load(await f.async('uint8array'));assert(doc.getPageCount()>0);if(!f.name.includes('Produktlista'))assert(!doc.catalog.get(PDFLib.PDFName.of('AcroForm')));}
+ await assert.rejects(()=>api.buildFolderArchive([c],bridge),/inte klarmarkerad/);
+ fs.mkdirSync(path.join(__dirname,'../test-output'),{recursive:true});fs.writeFileSync(path.join(__dirname,'../test-output/slr-folders.zip'),archive.bytes);
+ const project=await PDFLib.PDFDocument.create();project.addPage();await project.attach(new Uint8Array([65,66]),'customer.txt');let bytes=new Uint8Array(await project.save());
+ const mainSource=fs.readFileSync(path.join(__dirname,'../smartmatch-slr-test-main-v36-125.js'),'utf8');
+ const prune=mainSource.slice(mainSource.indexOf('function smartCompactPruneUnreachablePdfObjects('),mainSource.indexOf('/* v35: PDF outline/'));
+ const exportCode=mainSource.slice(mainSource.indexOf('async function buildPortableProjectPdf('),mainSource.indexOf('function downloadProjectFile('));
+ const buildAndVerify=(data)=>new Function('PDFLib','window','bytes','appendCompactProjectPdf','smartFlattenDrawingNotes','parsePdfEmbeddedJson',prune+exportCode+';return {buildPortableProjectPdf,verifyPortableProjectPdf}')(PDFLib,window,data,async doc=>doc.catalog.set(PDFLib.PDFName.of('SmartMatch36ProgressStreams'),doc.context.obj([])),async doc=>doc.catalog.set(PDFLib.PDFName.of('SmartMatch106NoteStreams'),doc.context.obj([])),obj=>JSON.parse(obj.decodeText()));
+ const sizes=[];
+ for(let i=0;i<3;i++){
+  const payload={automationItems:[a,b,c],slrTestData:JSON.parse(JSON.stringify(api.payload())),drawingNotes:[],instances:{}};
+  const functions=buildAndVerify(bytes);bytes=await functions.buildPortableProjectPdf(payload);await functions.verifyPortableProjectPdf(bytes,payload);sizes.push(bytes.length);
+ }
+ const archived=await PDFLib.PDFDocument.load(bytes),embedded=attachments(archived);assert.equal(Object.keys(embedded).length,8);assert(embedded['customer.txt']);assert.equal(archived.getPageCount(),1);assert(sizes[2]-sizes[0]<300,'Unexpected project growth: '+sizes);
+ const stateFromPdf=JSON.parse(archived.catalog.get(PDFLib.PDFName.of('TillsynoSmartMatchV36Data')).decodeText());
+ api.initProject(archived,stateFromPdf,bytes);await p.loadTemplates();p.set(b,bridge);assert.equal(api.getProgress(a),100);assert.equal(api.getProgress(b),100);assert.equal(p.slrEffectiveFields(b,'Riskanalys').Installationsdatum,'2026-10-16');assert(api.payload().doorPhotos[a.id]);assert.equal(Object.keys(api.payload().signatureLibrary).length,1);
+ fs.writeFileSync(path.join(__dirname,'../test-output/slr-project.pdf'),bytes);console.log('Production project save/verify x3, sizes: '+sizes.join(', '));
+ const reopened=await api.buildFolderArchive([a,b],bridge);assert(reopened.bytes.length>0);
+ p.saved(b,'Riskanalys').fields.Sensor='Ny sensor';p.slrDirty(b,'Riskanalys');assert.notEqual(api.getProgress(b),100);assert.equal(api.getProgress(a),100);assert(!api.payload().completedDoors[b.id]);
+ p.set(a,bridge);await p.slrCaptureProfile();assert.notEqual(api.getProgress(a),100);assert.equal(p.slrEffectiveFields(b,'Riskanalys').Sensor,'Ny sensor');
+ // Old v36.122 checkbox profiles and signatures remain readable; approval is not inferred.
+ api.restore({slrTestData:{schema:2,answers:{},profiles:{glass:{Riskanalys:{Kryss:true}}},doorProfiles:{[c.id]:'glass'},signatureLibrary:{}}});assert.equal(p.slrEffectiveFields(c,'Riskanalys').Kryss,true);
+
+ // v36.125: copied measurements, individual identities, and complete choice stages.
+ api.reset();p.set(a,bridge);window.keepEditable=true;
+ const riskDoc=await PDFLib.PDFDocument.create(),riskPage=riskDoc.addPage([595,842]),rf=riskDoc.getForm();
+ for(const [index,name] of ['Dörrnummer, beteckning','Maskin ID','Fri passagehöjd','Dörrbladsbredd aktivt','Öppningsvinkel','Tillverkare org. nr'].entries())rf.createTextField(name).addToPage(riskPage,{x:40,y:730-index*30,width:200,height:20});
+ rf.createCheckBox('4.3 Objektsorientering 1').addToPage(riskPage,{x:300,y:720,width:12,height:12});
+ for(const [index,name] of ['4.4 Risknivå','4.6.1','4.6.2','4.6.3','4.6.4'].entries()){const field=rf.createRadioGroup(name);field.addOptionToPage('Val 1',riskPage,{x:300,y:680-index*30,width:12,height:12});field.addOptionToPage('Val 2',riskPage,{x:325,y:680-index*30,width:12,height:12});}
+ const checkDoc=await PDFLib.PDFDocument.create(),checkPage=checkDoc.addPage([595,842]),cf=checkDoc.getForm();
+ for(const [index,name] of ['Dörrnummer, beteckning','Maskin ID','Fri passagehöjd','Dörrbladsbredd aktivt','Öppningsvinkel','Riskanalys utförd av','Riskanalys utförd datum'].entries())cf.createTextField(name).addToPage(checkPage,{x:40,y:730-index*30,width:200,height:20});
+ for(const [index,name]of ['10.5.1','10.5.2'].entries()){const field=cf.createRadioGroup(name);field.addOptionToPage('Val 1',checkPage,{x:300,y:680-index*30,width:12,height:12});field.addOptionToPage('Val 2',checkPage,{x:325,y:680-index*30,width:12,height:12});}
+ const stageTemplates={Riskanalys:new Uint8Array(await riskDoc.save()),Egenkontroll:new Uint8Array(await checkDoc.save())};
+ p.templates(stageTemplates);await p.loadTemplates();p.slrSetDoorProfile('glass');p.set(b,bridge);p.slrSetDoorProfile('glass');p.set(a,bridge);p.setScope('profile');
+ p.slrWriteField(a,'Riskanalys','Fri passagehöjd','2100');p.slrWriteField(a,'Riskanalys','Dörrbladsbredd aktivt','950');p.slrWriteField(a,'Riskanalys','Öppningsvinkel','95');
+ assert.equal(p.slrEffectiveFields(b,'Egenkontroll')['Fri passagehöjd'],'2100');assert.equal(p.slrFolderPercent(a,'Riskanalys'),0);assert.equal(p.slrFolderPercent(b,'Riskanalys'),0);
+ p.setScope('door');p.slrWriteField(a,'Riskanalys','Fri passagehöjd','2200');assert.equal(p.slrEffectiveFields(a,'Egenkontroll')['Fri passagehöjd'],'2200');assert.equal(p.slrEffectiveFields(b,'Egenkontroll')['Fri passagehöjd'],'2100');
+ p.slrWriteField(a,'Egenkontroll','Riskanalys utförd av','Separat tekniker');p.slrWriteField(a,'Egenkontroll','Riskanalys utförd datum','2026-10-17');assert(!p.slrEffectiveFields(a,'Riskanalys')['Riskanalys utförd av']);assert(!p.slrEffectiveFields(b,'Egenkontroll')['Riskanalys utförd av']);
+ p.setScope('profile');p.slrWriteField(a,'Riskanalys','4.3 Objektsorientering 1',true);
+ for(const name of ['4.4 Risknivå','4.6.1','4.6.2','4.6.3'])p.slrWriteField(a,'Riskanalys',name,'Val 1');assert.equal(p.slrFolderPercent(a,'Riskanalys'),0);
+ p.slrWriteField(a,'Riskanalys','4.6.4','Val 2');assert.equal(p.slrFolderPercent(a,'Riskanalys'),50);assert.equal(p.slrFolderPercent(b,'Riskanalys'),50);assert(!p.slrEffectiveFields(a,'Riskanalys')['Tillverkare org. nr']);
+ await p.slrToggleReviewed(a,'Riskanalys');assert.equal(p.slrFolderPercent(a,'Riskanalys'),100);assert.equal(p.slrFolderPercent(b,'Riskanalys'),50);
+ p.slrWriteField(a,'Riskanalys','4.6.4','');assert.equal(p.slrFolderPercent(a,'Riskanalys'),0);assert.equal(p.slrFolderPercent(b,'Riskanalys'),0);assert(!api.payload().reviewedFolders[a.id].Riskanalys);
+ p.setScope('door');p.slrWriteField(a,'Egenkontroll','10.5.1','Val 1');assert.equal(p.slrFolderPercent(a,'Egenkontroll'),0);p.slrWriteField(a,'Egenkontroll','10.5.2','Val 2');assert.equal(p.slrFolderPercent(a,'Egenkontroll'),50);
+ assert.equal(p.slrDoorNumber(a),'1');assert.equal(p.slrDoorNumber(b),'11');assert.equal(p.slrDoorNumber({sourceText:'20-01-54-7-8-24-10'}),'10');
+ for(const category of ['Riskanalys','Egenkontroll']){const filled=await PDFLib.PDFDocument.load(await p.compose(category,a));assert.equal(filled.getForm().getTextField('Dörrnummer, beteckning').getText(),'1');assert.equal(filled.getForm().getTextField('Maskin ID').getText(),'20-01-54-7-8-24-1');assert.equal(filled.getForm().getTextField('Fri passagehöjd').getText(),'2200');}
+ console.log('PASS v36.125 additions: linked risk/selfcheck measurements; profile inheritance and individual override isolation; separate reviewer/date; all choices for 50%, manual per-door 100%; optional text excluded; door 1/10/11 versus full machine ID.');
+
+ const riskPath=process.argv[2],checkPath=process.argv[3];
+ if(riskPath&&checkPath){
+  const realRisk=new Uint8Array(fs.readFileSync(riskPath)),realCheck=new Uint8Array(fs.readFileSync(checkPath));
+  p.templates({Riskanalys:realRisk,Egenkontroll:realCheck});await p.slrInspectChoices('Riskanalys',realRisk);await p.slrInspectChoices('Egenkontroll',realCheck);
+  assert.equal(p.slrChoiceProgress(a,'Riskanalys').total,17);assert.equal(p.slrChoiceProgress(a,'Egenkontroll').total,26);
+  for(const category of ['Riskanalys','Egenkontroll']){
+   const bytes=await p.compose(category,a),pdf=await PDFLib.PDFDocument.load(bytes),form=pdf.getForm();
+   assert.equal(form.getTextField('Dörrnummer, beteckning').getText(),'1');
+   assert.equal(form.getTextField('Fri passagehöjd').getText(),'2200');assert.equal(form.getTextField('Dörrbladsbredd aktivt').getText(),'950');assert.equal(form.getTextField('Öppningsvinkel').getText(),'95');
+   if(category==='Egenkontroll'){assert.equal(form.getTextField('Maskin ID').getText(),'20-01-54-7-8-24-1');assert.equal(form.getTextField('Riskanalys utförd av').getText(),'Separat tekniker');}
+   fs.writeFileSync(path.join(__dirname,'../test-output/'+(category==='Riskanalys'?'real-risk':'real-check')+'.pdf'),bytes);
+  }
+  console.log('PASS actual risk/selfcheck templates: 17/26 decision groups, measurements, short door number, full machine ID and independent reviewer.');
+ }
+ console.log('PASS v36.125: 7 folders; glass/no-glass full text/date/check profiles; individual false/empty/date overrides; automatic project-signature reuse on click; door identity; explicit completion; edited doors reopen; 14-file ZIP; flattened customer PDFs; photo and signature save/reopen; 7 shared SLR attachments + preserved customer attachment; production project exporter x3; legacy profiles.');
+})().catch(err=>{console.error(err);process.exitCode=1});
+
