@@ -1,5 +1,9 @@
 # dorrservice
 
+## SLR TEST v36.130 – procentetiketter inåt
+
+Egenkontroll ovanför vänsterkanten, SLR ovanför högerkanten. Båda breder ut sig mot mitten med spegelvända statusstreck. Se [versionsanteckning](SMARTMATCH_SLR_TEST_V36_130.md). Endast separat SLR-test ändrat.
+
 ## Separat SLR TEST v36.129
 
 Egenkontroll visas ovanför markeringens övre vänsterhörn och SLR ovanför övre högerhörnet. Zoomanpassad storlek och kompakt mappvy behålls. Se [ändring och verifiering](SMARTMATCH_SLR_TEST_V36_129.md). Fast testadress `smartmatch-slr-test.html`.
