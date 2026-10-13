@@ -1017,7 +1017,7 @@ function setSecurityOverviewSummary(){
  const overviewItems=ALL_IN_ONE?visibleItems():items;
  const open=overviewItems.filter(o=>statusOf(o)==='action').length,failed=overviewItems.filter(o=>statusOf(o)==='fail').length,done=overviewItems.filter(isSecurityRemediated).length,ready=overviewItems.filter(o=>o.status==='ok'&&!hasSecurityRecordedProblem(o)).length,untested=overviewItems.filter(o=>statusOf(o)==='untested').length;
  target.replaceChildren();
- [['Totalt',overviewItems.length,'total','Alla objekt'],['Klara',ready,'ready','Godkänd'],['Åtgärdade',done,'done','Godkänd / åtgärdad'],['Öppna fel',open,'open','Åtgärd krävs'],['Ej godkända',failed,'fail','Ej godkänd'],['Ej kontrollerade',untested,'untested','Ej kontrollerad']].forEach(([label,value,key,meaning])=>{
+ [['Totalt',overviewItems.length,'total','Alla objekt'],['Klara',ready,'ready','Godkänd'],['Åtgärdade',done,'done','Godkänd / åtgärdad'],[ALL_IN_ONE?'Anmärkning':'Öppna fel',open,'open','Åtgärd krävs'],['Ej godkända',failed,'fail','Ej godkänd'],['Ej kontrollerade',untested,'untested','Ej kontrollerad']].forEach(([label,value,key,meaning])=>{
   const box=document.createElement('span');box.className='overviewStat '+key;
   const strong=document.createElement('strong');strong.textContent=String(value);
   const small=document.createElement('small');small.textContent=label;
@@ -1162,7 +1162,7 @@ function reportDoc(){
   ['TOTALT',reportItems.length,'Alla objekt',neutralAccent],
   ['KLARA',ready,'Godkända',COLORS.ok],
   ['ÅTGÄRDADE',done,'Klarmarkerade',COLORS.ok],
-  ['ÖPPNA FEL',open,'Åtgärd krävs',COLORS.action],
+  [ALL_IN_ONE?'ANMÄRKNING':'ÖPPNA FEL',open,'Åtgärd krävs',COLORS.action],
   ['EJ GODKÄNDA',failed,'Underkända',COLORS.fail],
   ['EJ KONTROLL.',untested,'Ej kontrollerade',COLORS.untested]
  ];
