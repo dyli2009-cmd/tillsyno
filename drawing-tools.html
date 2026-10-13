@@ -1,11 +1,14 @@
 <!doctype html>
 <html lang="sv" data-auth-pending>
 <head>
+<style id="tillsyno-route-transition">html{background:#132b38!important}#tillsynoNavCurtain{position:fixed;inset:0;z-index:2147483647;background:#132b38;opacity:1;pointer-events:auto;transition:opacity .15s ease}html.tillsyno-nav-ready #tillsynoNavCurtain{opacity:0;pointer-events:none}html.tillsyno-nav-leaving #tillsynoNavCurtain{opacity:1;pointer-events:auto}@media(prefers-reduced-motion:reduce){#tillsynoNavCurtain{transition:none}}</style>
+
 <style id="tillsyno-auth-screen">html[data-auth-pending] body{visibility:hidden!important}</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.275"></script><script src="auth/guard.js?v=2.4.275" defer></script>
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="theme-color" content="#132b38">
 <title>Ritningsverktyg · Dörrservice</title>
 <link rel="stylesheet" href="drawing-tools.css?v=2.4.266">
 <script src="vendor/pdf.min.js"></script>
@@ -20,6 +23,7 @@
 @media(max-width:620px){.toolIntro{padding:13px!important}}
 </style></head>
 <body>
+<div id="tillsynoNavCurtain" aria-hidden="true"></div>
 <header class="toolHeader">
  <a href="./" class="backBtn">‹ Hem</a>
  <div><strong>Ritningsverktyg</strong><small>Rensa · beskära · optimera</small></div>
@@ -28,7 +32,7 @@
   <button id="toolsToggle" type="button" aria-controls="toolPanel" aria-expanded="false" disabled>Verktyg</button>
   <button id="savePdf" class="primary" type="button" disabled>Spara PDF</button>
  </div>
- <span class="version">v2.4.287</span>
+ <span class="version">v2.4.291</span>
 </header>
 
 <main class="toolShell">
@@ -143,5 +147,6 @@
  </section>
 </main>
 <script src="ui-text-scale.js?v=2.4.163"></script><script src="drawing-tools.js?v=2.4.266"></script>
+<script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let leaving=false;function reveal(){function show(){requestAnimationFrame(function(){requestAnimationFrame(function(){if(!leaving)root.classList.add('tillsyno-nav-ready')})})}if(!root.hasAttribute('data-auth-pending')){show();return}const observer=new MutationObserver(function(){if(!root.hasAttribute('data-auth-pending')){observer.disconnect();show()}});observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',function(event){if(event.persisted){leaving=false;root.classList.remove('tillsyno-nav-leaving');reveal()}});document.addEventListener('click',function(event){if(leaving||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;const link=event.target.closest?.('a[href]');if(!link||link.hasAttribute('download')||(link.target&&link.target!=='_self'))return;let dest;try{dest=new URL(link.href,location.href)}catch(_){return}if(dest.origin!==location.origin)return;const file=dest.pathname.split('/').pop().toLowerCase();if(!['','index.html','all-in-one.html','drawing-tools.html'].includes(file))return;if(dest.href===location.href)return;event.preventDefault();leaving=true;root.classList.remove('tillsyno-nav-ready');root.classList.add('tillsyno-nav-leaving');const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;setTimeout(function(){location.assign(dest.href)},reduce?0:90)},true)})();</script>
 </body>
 </html>
