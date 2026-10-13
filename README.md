@@ -1,5 +1,9 @@
 # dorrservice
 
+## Separat SLR TEST v36.123
+
+[SLR v36.123 – dokumentmappar och dörrstandarder](SMARTMATCH_SLR_TEST_V36_123.md): sju mappar, full ifyllnad för Med glas/Utan glas, ändra bara denna dörr, CE-foto och sparad projektsignatur. Klart ger 100 % SLR för vald dörr; Spara → SLR exporterar valda klara dörrar till en ZIP med separata dokumentmappar. Fast testadress: `smartmatch-slr-test.html`. Ordinarie app och TestFlight är oförändrade.
+
 > **Viktigt före ändringar:** Läs [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md). Där finns regler för modulgränser, versionshantering och hur Kontrollflöde/Projektflöde ska hållas separerade.
 
 ## SmartMatch TEST v36.105
@@ -37,3 +41,4 @@ Se [senaste implementerade spar- och uppdateringsflödet](SMARTMATCH_TEST_V36_71
 - [Samarbete för flera tekniker, automatisk dörrlåsning, offlinearbete, konflikter och Dropbox/Google Drive/OneDrive](SMARTMATCH_SAMARBETE_OFFLINE_PLAN.md) – planeringsdokument, inte implementerat.
 
 Deploy trigger: 2.4.82
+

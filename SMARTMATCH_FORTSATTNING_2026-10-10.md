@@ -1,3 +1,7 @@
+## Senaste separata SLR-testet: v36.123 (13 oktober 2026)
+
+Se [SLR TEST v36.123](SMARTMATCH_SLR_TEST_V36_123.md): sju dokumentmappar, hela ifyllnaden som glas/utan-glas-standard, ändra bara denna dörr, signatur efter aktivt tryck, CE-foto per dörr, manuell Klart → 100 % och Spara → SLR → ZIP med dörr-/dokumentmappar. Föregående v36.122 bevaras. Denna SLR-funktionsbeställning ändrar inte Kontrollflöde, ordinarie SmartMatch v36.106 eller iOS. Äldre överlämningsavsnitt nedan är historik.
+
 # Tillsyno v2.4.269 – inloggning och enkel användaradministration (2026-10-12)
 
 Startsidan och aktiva SmartMatch-adressen kontrollerar Supabase-inloggning och aktuell tillsyno_access-roll. Admin ser Användare på startsidan. Den nya responsiva adminsidan har lista/sökning, status, skapa konto + personlig lösenordslänk, godkänn/återaktivera, ny länk och ta bort åtkomst. Ingen e-post skickas automatiskt. Ägarkonton kan inte ändras genom denna sida. Borttagning återkallar medlemsposten och spärrar Auth-kontot; kontot kan återaktiveras utan att radera projekt.
@@ -432,5 +436,6 @@ v36.31 publicerad via GitHub Pages. Läs även `SMARTMATCH_TEST_V36_30.md` och `
 **Versionsdisciplin:** Se alltid `DEVELOPMENT_RULES.md`. Ändra aldrig ordinarie TestFlight/Kontrollflöde utan nytt godkännande. Nästa TEST efter bekräftad v36.31 = v36.32. Behåll fasta `project-workspace-smartmatch-test.html` vid varje funktionspublicering.
 
 **Påminnelse:** Användaren har bett om en framtida påminnelse och idéer när arbetet återupptas; **ingen tid är angiven och ingen automation har skapats**. Fråga om önskat datum/klockslag för en verklig notifiering.
+
 
 
