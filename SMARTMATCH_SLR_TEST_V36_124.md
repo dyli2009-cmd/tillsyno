@@ -15,3 +15,6 @@ Separat SLR-test, byggt på v36.123. Ordinarie SmartMatch v36.106, Kontrollflöd
 
 ## Begränsningar att verifiera på riktiga mallar
 Signatur placeras automatiskt i befintliga PDF-signaturfält och namngivna underskriftsfält. Om underskriften endast är tryckt som vanlig text utan interaktivt fält kan placeringen inte bestämmas säkert utan separat mallkontroll. Testa riktiga egenkontroll- och loggboks-PDF:er innan produktionsbruk. Testsviten tests/slr-folders-v36-124.cjs är uppdaterad men har inte körts i denna miljö; även iPhone/iPad-test återstår.
+
+## Versionsfix
+Huvudskriptet `smartmatch-slr-test-main-v36-124.js` använder `SMARTMATCH_RELEASE='36.124-SLR-TEST'` och är kopplat från både den fasta testadressen och v36.124-snapshoten. Detta undviker att huvudskriptet skriver över versionsindikatorn med 36.123.
