@@ -1,5 +1,9 @@
 # dorrservice
 
+## SLR TEST v36.131 – markera fem dokument samtidigt
+
+En knapp i den valda dörrautomatikens SLR-mapp låter användaren bekräfta granskning av Riskanalys, Beskrivning av maskin, Loggbok, EG-försäkran – tillverkare av maskin och Egenkontroll. Produktlista och CE-skylt förblir separata. Se [versionsanteckning](SMARTMATCH_SLR_TEST_V36_131.md).
+
 ## SLR TEST v36.130 – procentetiketter inåt
 
 Egenkontroll ovanför vänsterkanten, SLR ovanför högerkanten. Båda breder ut sig mot mitten med spegelvända statusstreck. Se [versionsanteckning](SMARTMATCH_SLR_TEST_V36_130.md). Endast separat SLR-test ändrat.
