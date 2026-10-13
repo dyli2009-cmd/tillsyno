@@ -1,5 +1,9 @@
 # dorrservice
 
+## Separat SLR TEST v36.127
+
+Analys visar den öppnade PDF:ens storlek i MB och byte, med filnamn och sidantal. Mätningen sker direkt utan export eller omskanning. Se [ändring och verifiering](SMARTMATCH_SLR_TEST_V36_127.md). Fast testadress `smartmatch-slr-test.html`; ordinarie app och iOS är oförändrade.
+
 ## Separat SLR TEST v36.126
 
 Tydligare procent för Egenkontroll och SLR på ritningen: egna bakgrunder, större procentsiffror och tjockare grön statuslinje. Se [ändring och verifiering](SMARTMATCH_SLR_TEST_V36_126.md). Fast testadress `smartmatch-slr-test.html`; statusberäkning, ordinarie app och iOS är oförändrade.
@@ -53,5 +57,6 @@ Se [senaste implementerade spar- och uppdateringsflödet](SMARTMATCH_TEST_V36_71
 - [Samarbete för flera tekniker, automatisk dörrlåsning, offlinearbete, konflikter och Dropbox/Google Drive/OneDrive](SMARTMATCH_SAMARBETE_OFFLINE_PLAN.md) – planeringsdokument, inte implementerat.
 
 Deploy trigger: 2.4.82
+
 
 
