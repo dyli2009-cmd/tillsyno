@@ -1,5 +1,9 @@
 # dorrservice
 
+## Separat SLR TEST v36.129
+
+Egenkontroll visas ovanför markeringens övre vänsterhörn och SLR ovanför övre högerhörnet. Zoomanpassad storlek och kompakt mappvy behålls. Se [ändring och verifiering](SMARTMATCH_SLR_TEST_V36_129.md). Fast testadress `smartmatch-slr-test.html`.
+
 ## Separat SLR TEST v36.128
 
 Statusetiketter följer ritningens zoom med Egenkontroll vid vänsterkanten och SLR vid högerkanten. SLR-mapparna visas som en kompakt lista med mindre utfällbara verktyg. Se [ändring och verifiering](SMARTMATCH_SLR_TEST_V36_128.md). Fast testadress `smartmatch-slr-test.html`; kontrollberäkning, ordinarie app och iOS är oförändrade.
@@ -61,6 +65,7 @@ Se [senaste implementerade spar- och uppdateringsflödet](SMARTMATCH_TEST_V36_71
 - [Samarbete för flera tekniker, automatisk dörrlåsning, offlinearbete, konflikter och Dropbox/Google Drive/OneDrive](SMARTMATCH_SAMARBETE_OFFLINE_PLAN.md) – planeringsdokument, inte implementerat.
 
 Deploy trigger: 2.4.82
+
 
 
 
