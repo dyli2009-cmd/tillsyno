@@ -1,5 +1,9 @@
 # dorrservice
 
+## Separat SLR TEST v36.124
+
+Sju mappkontroller med procent, Ändra standard för Med glas/Utan glas, Ändra endast denna dörrautomatik, gemensam dörrsignatur och Visa PDF i scrollbart visningsfönster. Se [specifikation](SMARTMATCH_SLR_TEST_V36_124.md). Fast testadress `smartmatch-slr-test.html`; ordinarie app och iOS är oförändrade.
+
 ## Separat SLR TEST v36.123
 
 [SLR v36.123 – dokumentmappar och dörrstandarder](SMARTMATCH_SLR_TEST_V36_123.md): sju mappar, full ifyllnad för Med glas/Utan glas, ändra bara denna dörr, CE-foto och sparad projektsignatur. Klart ger 100 % SLR för vald dörr; Spara → SLR exporterar valda klara dörrar till en ZIP med separata dokumentmappar. Fast testadress: `smartmatch-slr-test.html`. Ordinarie app och TestFlight är oförändrade.
