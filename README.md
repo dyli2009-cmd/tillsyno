@@ -1,5 +1,9 @@
 # dorrservice
 
+## SLR TEST v36.132 – direktmarkering utan popup
+
+Knappen **Markera fem dokument kontrollerade** markerar de fem vanliga dokumentmapparna direkt utan extra bekräftelseruta. Produktlista och CE-skylt påverkas inte. Se [versionsanteckning](SMARTMATCH_SLR_TEST_V36_132.md). Endast separat SLR-test ändrat.
+
 ## SLR TEST v36.131 – markera fem dokument samtidigt
 
 En knapp i den valda dörrautomatikens SLR-mapp låter användaren bekräfta granskning av Riskanalys, Beskrivning av maskin, Loggbok, EG-försäkran – tillverkare av maskin och Egenkontroll. Produktlista och CE-skylt förblir separata. Se [versionsanteckning](SMARTMATCH_SLR_TEST_V36_131.md).
