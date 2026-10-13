@@ -1,5 +1,9 @@
 # dorrservice
 
+## Separat SLR TEST v36.126
+
+Tydligare procent för Egenkontroll och SLR på ritningen: egna bakgrunder, större procentsiffror och tjockare grön statuslinje. Se [ändring och verifiering](SMARTMATCH_SLR_TEST_V36_126.md). Fast testadress `smartmatch-slr-test.html`; statusberäkning, ordinarie app och iOS är oförändrade.
+
 ## Separat SLR TEST v36.125
 
 Gemensamma dörruppgifter från riskanalys till egenkontroll, kort dörrbeteckning (sista numret) och fullständigt Maskin-ID. 50 % kräver besvarade huvudval; 100 % kräver manuell mappkontroll per dörr. Se [specifikation och verifiering](SMARTMATCH_SLR_TEST_V36_125.md). Fast testadress `smartmatch-slr-test.html`; ordinarie app och iOS är oförändrade.
