@@ -33,3 +33,5 @@ När låset är aktivt:
 2026-10-12, Tillsyno v2.4.289: felrättning inom den senast godkända mappdesignen – Hem och Ritningsverktyg i protokollväljaren fick mörkblå bakgrund och ljus text/ikon för läsbarhet. Ingen ändring av protokoll, navigation, ritning eller PDF. **Kontrollflödet förblir LÅST.**
 
 2026-10-12, Tillsyno v2.4.290: på användarens uttryckliga beställning tonades den starka och feta texten ned i alla Kontrollflödets mappar och protokoll, tillbaka-knappen ‹ Mappar gjordes mer kompakt och automatisk PDF-filväljare efter Fortsätt till ritning togs bort. Användaren väljer själv Öppna PDF på ritningsytan. Befintliga checklistor, val av flera protokoll och PDF-inläsning bevarades. **Kontrollflödet är åter LÅST.**
+
+2026-10-13, Tillsyno v2.4.291: användaren godkände en avgränsad rättning av vit skärmblinkning vid navigering mellan Hem, Kontrollflöde och Ritningsverktyg. Endast mörkblå sidbakgrund och diskret sidövergång har ändrats; checklistor, arbetsdata, PDF-inläsning och protokoll är oförändrade. **Kontrollflödet är fortsatt LÅST.**
