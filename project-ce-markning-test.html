@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#132b38">
 <meta http-equiv="Cache-Control" content="no-cache">
-<title>CE-märkning TEST 5 | Tillsyno</title>
+<title>CE-märkning TEST 6 | Tillsyno</title>
 <style>html[data-auth-pending] body{visibility:hidden!important}</style>
 <script src="vendor/supabase-2.49.10.min.js"></script>
 <script src="auth-config.js"></script>
@@ -14,17 +14,20 @@
 <script src="vendor/pdf-lib.min.js"></script>
 <script src="vendor/pdf.min.js"></script>
 <script src="vendor/jszip-3.10.1.min.js"></script>
-<link rel="stylesheet" href="project-ce-markning-test-v5.css?v=5">
-<script src="project-ce-markning-test-v5-module.js?v=5"></script>
-<script src="project-ce-markning-test-v5.js?v=5" defer></script>
+<link rel="stylesheet" href="project-ce-markning-test-v6.css?v=6">
+<script src="project-ce-markning-test-v6-storage.js?v=6"></script>
+<script src="project-ce-markning-test-v6-models.js?v=6"></script>
+<script src="project-ce-markning-test-v6-module.js?v=6"></script>
+<script src="project-ce-markning-test-v6.js?v=6" defer></script>
 </head>
 <body>
-<header class="ceTop"><div><strong>CE-märkning <small>TEST 5</small></strong></div><a href="index.html" aria-label="Till Tillsyno" class="ceIcon">⌂</a></header>
+<header class="ceTop"><div><strong>CE-märkning <small>TEST 6</small></strong></div><a href="index.html" aria-label="Till Tillsyno" class="ceIcon">⌂</a></header>
 <main class="ceShell">
  <details class="ceProject" id="ceProject"><summary>Projektuppgifter <span id="ceProjectCaption"></span></summary>
-  <div class="ceMetaIntro">Följer dokumentens fält. Dörrnummer och placering fylls per dörr.</div>
+  <div class="ceMetaIntro">Objektnummer följer nya dörrar. Objektets adress fyller även beställarens adress.</div>
   <details class="ceMetaGroup" open><summary>Objekt / arbetsplats</summary><div class="ceGrid">
    <label>Objekt<input data-meta="projectName" placeholder="Anläggning / projekt"></label>
+   <label>Objektnummer<input data-meta="objectNo" placeholder="20-01-54-28"></label>
    <label>Offertnummer/Ordernummer<input data-meta="order" placeholder="Ordernummer"></label>
    <label>Adress<input data-meta="siteAddress" placeholder="Objektets adress"></label>
    <label>Postnummer/ort<input data-meta="sitePostalPlace" placeholder="Postnummer och ort"></label>
@@ -46,7 +49,7 @@
   </div></details>
   <details class="ceMetaGroup"><summary>Beställare</summary><div class="ceGrid">
    <label>Företag<input data-meta="customer" placeholder="Beställarens företag"></label>
-   <label>Adress<input data-meta="address" placeholder="Beställarens adress"></label>
+   <label>Beställarens adress<input data-meta="address" placeholder="Beställarens adress"></label>
    <label>Postnummer/ort<input data-meta="customerPostalPlace" placeholder="Postnummer och ort"></label>
    <label>Kontaktperson<input data-meta="contact" placeholder="Kontaktperson"></label>
    <label>Telefonnummer<input data-meta="phone" type="tel" placeholder="Telefonnummer"></label>
@@ -67,10 +70,16 @@
  </details>
  <div class="ceTools"><button id="ceAddToggle" class="cePrimary" type="button">＋ Dörr</button><button id="ceSaveLocal" type="button">Spara lokalt</button><button id="ceSavePdf" type="button">Spara PDF</button><label for="ceOpenPdf" class="ceButton">Öppna PDF</label><input id="ceOpenPdf" type="file" hidden accept="application/pdf,.pdf"></div>
  <form id="ceDoorForm" hidden class="ceDoorForm"><div class="ceGrid">
-  <label>Automatiknummer<input id="ceDoorNumber" required placeholder="20-01-54-28-24-2" autocomplete="off"></label>
+  <label>Objektnummer<input id="ceDoorObject" required placeholder="Från projektuppgifterna"></label>
+  <label>Maskintyp<select id="ceDoorCode"></select><input id="ceDoorCustomCode" hidden inputmode="numeric" placeholder="Egen maskintyp"></label>
+  <label>Antal / beteckning<input id="ceDoorCount" type="number" min="1" step="1" required value="1"></label>
+  <label>Automatiknummer<input id="ceDoorNumber" readonly placeholder="Skapas automatiskt"></label>
   <label>Placering<input id="ceDoorLocation" required placeholder="Entré, plan 1"></label>
+  <label>Modell<input id="ceDoorModel" list="ceAutomationModels" placeholder="Modell eller egen text"></label>
+  <label>Fabrikat<input id="ceDoorBrand" placeholder="Fylls automatiskt"></label>
  </div><div class="ceFormEnd"><select id="ceDoorType" aria-label="Utförande"><option value="glass">Med glas</option><option value="noGlass">Utan glas</option></select><button id="ceDoorSubmit" class="cePrimary" type="submit">Lägg till</button><button id="ceDoorCancel" type="button">Avbryt</button></div></form>
- <div class="ceListHead"><strong>Dörrautomatiker</strong><span id="ceDoorCount">0 st</span></div>
+ <datalist id="ceAutomationModels"></datalist>
+ <div class="ceListHead"><strong>Dörrautomatiker</strong><span id="ceDoorTotal">0 st</span></div>
  <div id="ceDoorList"></div>
  <p id="ceEmpty" class="ceEmpty">Lägg till automatiknummer och placering. Öppna dörren för att fylla i CE-dokumenten.</p>
  <p id="ceStorageStatus" class="ceMuted" role="status" aria-live="polite"></p>
