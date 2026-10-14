@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#132b38">
 <meta http-equiv="Cache-Control" content="no-cache">
-<title>CE-märkning TEST 6 | Tillsyno</title>
+<title>CE-märkning TEST 7 | Tillsyno</title>
 <style>html[data-auth-pending] body{visibility:hidden!important}</style>
 <script src="vendor/supabase-2.49.10.min.js"></script>
 <script src="auth-config.js"></script>
@@ -15,13 +15,15 @@
 <script src="vendor/pdf.min.js"></script>
 <script src="vendor/jszip-3.10.1.min.js"></script>
 <link rel="stylesheet" href="project-ce-markning-test-v6.css?v=6">
+<link rel="stylesheet" href="project-ce-markning-test-v7.css?v=7">
 <script src="project-ce-markning-test-v6-storage.js?v=6"></script>
 <script src="project-ce-markning-test-v6-models.js?v=6"></script>
 <script src="project-ce-markning-test-v6-module.js?v=6"></script>
-<script src="project-ce-markning-test-v6.js?v=6" defer></script>
+<script src="project-ce-markning-test-v7-personal.js?v=7"></script>
+<script src="project-ce-markning-test-v7.js?v=7" defer></script>
 </head>
 <body>
-<header class="ceTop"><div><strong>CE-märkning <small>TEST 6</small></strong></div><a href="index.html" aria-label="Till Tillsyno" class="ceIcon">⌂</a></header>
+<header class="ceTop"><div><strong>CE-märkning <small>TEST 7</small></strong></div><a href="index.html" aria-label="Till Tillsyno" class="ceIcon">⌂</a></header>
 <main class="ceShell">
  <details class="ceProject" id="ceProject"><summary>Projektuppgifter <span id="ceProjectCaption"></span></summary>
   <div class="ceMetaIntro">Objektnummer följer nya dörrar. Objektets adress fyller även beställarens adress.</div>
@@ -67,7 +69,22 @@
     <label>Datum<input data-meta="egDate" type="date"></label>
    </div>
   </details>
+
  </details>
+ <details class="cePersonal" id="cePersonalSettings">
+  <summary>Mina sparade uppgifter · detta konto på denna enhet</summary>
+  <p>Spara uppgifter så du slipper skriva in dem i nästa projekt. De delas inte med andra konton och synkas inte mellan enheter.</p>
+  <div class="cePersonalGroup"><strong>Utförare och maskintillverkare</strong><div class="cePersonalTools"><button id="ceRememberPerformer" type="button">Spara uppgifter</button><button id="ceRecallPerformer" type="button">Hämta uppgifter</button></div></div>
+  <div class="cePersonalGroup"><strong>Beställare</strong><div class="cePersonalTools"><button id="ceRememberCustomer" type="button">Spara beställare</button><button id="ceRecallCustomer" type="button">Hämta beställare</button></div></div>
+ </details>
+ <details class="cePersonal" id="cePresetSettings">
+  <summary>Standardmallar · Med glas / Utan glas</summary>
+  <p>Admin sparar de risk- och sensorval som redan fyllts i via Ändra standard på respektive dörrtyp. Ingen signatur, datum, mätning eller egenkontroll godkänns automatiskt.</p>
+  <div class="cePersonalTools" data-admin-only hidden><button id="cePresetSave" type="button">Spara adminmallar</button><button id="cePresetExport" type="button">Exportera JSON</button></div>
+  <div class="cePersonalTools"><button id="cePresetApply" type="button">Använd sparade mallar</button><label for="cePresetImport" class="ceButton">Importera mallfil</label><input id="cePresetImport" type="file" hidden accept="application/json,.json"></div>
+  <p id="cePresetStatus" role="status">Lokala mallar kan delas via export och import. Ingen central synkning i TEST 7.</p>
+ </details>
+ <div class="ceLegacy"><button id="ceImportLegacy" type="button">Hämta äldre lokalt CE-projekt</button> · <a href="project-ce-markning-test-v6.html">Öppna TEST 6</a>. Äldre projekt importeras inte utan ditt val.</div>
  <div class="ceTools"><button id="ceAddToggle" class="cePrimary" type="button">＋ Dörr</button><button id="ceSaveLocal" type="button">Spara lokalt</button><button id="ceSavePdf" type="button">Spara PDF</button><label for="ceOpenPdf" class="ceButton">Öppna PDF</label><input id="ceOpenPdf" type="file" hidden accept="application/pdf,.pdf"></div>
  <form id="ceDoorForm" hidden class="ceDoorForm"><div class="ceGrid">
   <label>Objektnummer<input id="ceDoorObject" required placeholder="Från projektuppgifterna"></label>
@@ -83,7 +100,7 @@
  <div id="ceDoorList"></div>
  <p id="ceEmpty" class="ceEmpty">Lägg till automatiknummer och placering. Öppna dörren för att fylla i CE-dokumenten.</p>
  <p id="ceStorageStatus" class="ceMuted" role="status" aria-live="polite"></p>
- <p class="ceMuted ceFoot">Separat CE-test · mallar läggs in en gång · gemensamma svar följer glasvalet.</p>
+ <p class="ceMuted ceFoot">Separat CE-test · kontoavgränsad lokal lagring · egenkontroll och signaturer per dörr.</p>
 </main>
 <div id="ceNotice" role="status" aria-live="polite" hidden></div>
 </body>
