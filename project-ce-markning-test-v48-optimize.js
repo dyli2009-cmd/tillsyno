@@ -75,7 +75,7 @@ async function optimize(bytes){
 }
 function preview(bytes,filename){
  const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
- const tab=window.open(url,'_blank','noopener');
+ const tab=window.open(url,'_blank');
  if(!tab){const a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();}
  setTimeout(()=>URL.revokeObjectURL(url),90000);
 }
@@ -114,8 +114,10 @@ function makeRow(cat){
   const data=candidate.get(cat);if(!data||source(cat)!==data.original)return;
   apply.disabled=true;
   try{
-   if(!prior.has(cat))prior.set(cat,data.original.slice());
-   await window.TillsynoCETest.replaceOptimizedTemplate(cat,data.optimized);
+   const firstAccept=!prior.has(cat);
+   if(firstAccept)prior.set(cat,data.original.slice());
+   try{await window.TillsynoCETest.replaceOptimizedTemplate(cat,data.optimized);}
+   catch(error){if(firstAccept)prior.delete(cat);throw error;}
    candidate.delete(cat);redraw();
   }catch(err){status.textContent='Ändring misslyckades: '+err.message;apply.disabled=false;}
  },'ceOptAccept');
