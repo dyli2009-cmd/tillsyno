@@ -1,6 +1,6 @@
 /* Narrow CE-only scopes. This worker does not control any other Tillsyno page. */
-const CACHE='tillsyno-ce-markning-test-7-assets';
-const FILES=['project-ce-markning-test.html','project-ce-markning-test-v7.html','project-ce-markning-test-v6.css','project-ce-markning-test-v7.css','project-ce-markning-test-v7-personal.js','project-ce-markning-test-v6-models.js','project-ce-markning-test-v6-storage.js','project-ce-markning-test-v7.js','project-ce-markning-test-v6-module.js','vendor/pdf-lib.min.js','vendor/pdf.min.js','vendor/pdf.worker.min.js','vendor/jszip-3.10.1.min.js','vendor/supabase-2.49.10.min.js','auth-config.js','auth/client.js','auth/guard.js'];
+const CACHE='tillsyno-ce-markning-test-7-assets-sign';
+const FILES=['project-ce-markning-test.html','project-ce-markning-test-v7.html','project-ce-markning-test-v6.css','project-ce-markning-test-v7.css','project-ce-markning-test-v7-personal.js','project-ce-markning-test-v6-models.js','project-ce-markning-test-v6-storage.js','project-ce-markning-test-v7.js','project-ce-markning-test-v7-module.js','vendor/pdf-lib.min.js','vendor/pdf.min.js','vendor/pdf.worker.min.js','vendor/jszip-3.10.1.min.js','vendor/supabase-2.49.10.min.js','auth-config.js','auth/client.js','auth/guard.js'];
 const allowed=new Set(FILES.map(file=>new URL(file,self.location.href).pathname));
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
