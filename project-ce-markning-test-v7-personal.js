@@ -14,7 +14,7 @@
  function saveGroup(userId,meta,group){const keys=fieldGroups[group];if(!keys)throw Error('Okänd uppgiftsgrupp.');const data=raw(userId),fields={};for(const name of keys){const value=cleanText(meta?.[name]);if(value.trim())fields[name]=value;}if(!Object.keys(fields).length)throw Error('Fyll i uppgifter innan du sparar dem.');data.groups={...data.groups,[group]:fields};write(userId,data);return Object.keys(fields).length;}
  function getGroup(userId,group){if(!fieldGroups[group])throw Error('Okänd uppgiftsgrupp.');const found=raw(userId).groups?.[group]||{},out={};for(const name of fieldGroups[group])if(typeof found[name]==='string')out[name]=cleanText(found[name]);return out;}
  function isRiskChoice(name,value){
-  return (/^4\.4 Risknivå(?: .*)?$/.test(name)||/^4\.6\.\d+(?: [^\r\n]{1,40})?$/.test(name))
+  return (/^4\.4 Risknivå$/.test(name)||/^4\.6\.\d+$/.test(name))
     &&(typeof value==='boolean'||typeof value==='string'&&value.length<=100&&!/\r|\n/.test(value));
  }
  function normalizePreset(candidate){
