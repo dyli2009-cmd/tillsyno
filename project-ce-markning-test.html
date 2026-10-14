@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#132b38">
 <meta http-equiv="Cache-Control" content="no-cache">
-<title>CE-märkning TEST 33 | Tillsyno</title>
+<title>CE-märkning TEST 34 | Tillsyno</title>
 <style>html[data-auth-pending] body{visibility:hidden!important}</style>
 <script src="vendor/supabase-2.49.10.min.js"></script>
 <script src="auth-config.js"></script>
@@ -35,7 +35,7 @@
 .ceReuseActions button:first-child{background:#e7f2f7;border-color:#99bdcf;color:#154c68}
 @media(max-width:460px){.ceReuseActions button{flex:1 1 130px;min-height:44px}}
 
-/* CE TEST 33: compact signature date controls + one clear product table. */
+/* CE TEST 34: compact signature date controls + one clear product table. */
 .ceSignOptions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:9px 0}
 .ceSignOptions label{font-size:11px;font-weight:600;min-width:0}
 .ceSignOptions input,.ceSignOptions select{min-height:39px;width:100%;font-size:16px;margin-top:4px}
@@ -62,7 +62,7 @@
  #slrFlowTestDialog .ceProductTableRow .ceProductExtra{grid-column:1/3!important;grid-row:5}
 }
 
-/* CE TEST 33: shared standard and clear per-door exceptions. */
+/* CE TEST 34: shared standard and clear per-door exceptions. */
 .ceDoorInfo .ceDoorScope{display:block;font-size:11px;font-weight:600;color:#506777;margin-top:2px;line-height:1.3}
 .ceDoorInfo .ceDoorScope.has-custom{color:#8b5119}
 #slrFlowTestDialog .ceDoorFolderScope{font-size:11px;font-weight:700;color:#815118;background:#fff1d9;border:1px solid #e6c999;border-radius:20px;padding:4px 8px;white-space:nowrap;margin-left:auto}
@@ -73,7 +73,7 @@
  #slrFlowTestDialog .ceDoorFolderScope{font-size:10px;padding:3px 6px}
 }
 
-/* CE TEST 33: export selective ZIP packages on phone/iPad/desktop. */
+/* CE TEST 34: export selective ZIP packages on phone/iPad/desktop. */
 #ceExportSelected{font-weight:700;color:#13405e;background:#edf6fc;border-color:#92b7cc}
 #slrExportDialog .ceExportSelectActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 #slrExportDialog .ceExportSelectActions button{min-height:40px;padding:7px 10px}
@@ -89,15 +89,138 @@
 #slrExportDialog footer button{min-height:44px;flex:1 1 110px}
 #slrExportDialog footer button:disabled{opacity:.45}
 @media(max-width:460px){#slrExportDialog .ceExportDoor{grid-template-columns:23px minmax(0,1fr)}#slrExportDialog .ceExportDoor small{grid-column:2;text-align:left}#slrExportDialog #slrExportChosen{width:100%;margin:0}}
+
+/* CE TEST 34 – compact action icons without horizontal wrapping. */
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact{
+ display:grid!important;
+ grid-template-columns:repeat(4,minmax(0,1fr)) 30px!important;
+ gap:3px!important;
+ width:100%!important;
+ max-width:460px;
+ margin:0!important;
+ padding:3px 0 5px!important;
+ align-items:stretch!important;
+ overflow:visible;
+}
+#slrFlowTestDialog .ceDocActions.ceDocActionsFive{
+ grid-template-columns:36px 39px minmax(0,1fr) minmax(0,1.22fr) 42px 30px!important;
+}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button{
+ min-width:0!important;
+ width:100%!important;
+ min-height:39px!important;
+ max-height:43px!important;
+ padding:3px 1px!important;
+ margin:0!important;
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:2px!important;
+ font-size:10px!important;
+ line-height:1.05!important;
+ font-weight:600!important;
+ text-align:center!important;
+ white-space:nowrap!important;
+}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button span{
+ font-size:10px!important;line-height:1.05!important;
+ white-space:nowrap!important;overflow:hidden;text-overflow:clip;max-width:100%;
+}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button svg{
+ width:11px!important;height:11px!important;flex:none!important;
+}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>.ceDocMore{
+ align-self:stretch!important;min-width:0!important;
+}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>.ceDocMore>summary{
+ min-height:39px!important;height:100%!important;
+ font-size:17px!important;padding:0!important;
+}
+@media(max-width:380px){
+ #slrFlowTestDialog .ceDocActions.ceDocActionsFive{
+  grid-template-columns:33px 35px minmax(0,.95fr) minmax(0,1.18fr) 37px 26px!important;
+  gap:2px!important;
+ }
+ #slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button,
+ #slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button span{font-size:9px!important}
+}
+#slrFlowTestDialog #slrFields.ceProductEditor{
+ display:block!important;max-width:590px!important;width:100%!important;
+ margin:6px auto 12px!important;min-width:0;
+}
+#slrFlowTestDialog .ceProductEditor>p.ceMuted{
+ font-size:11px!important;line-height:1.35!important;text-align:center;
+ margin:0 auto 7px!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductTools{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ gap:6px!important;max-width:590px;margin:0 auto 8px!important;
+ padding:3px!important;position:static!important;background:transparent!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductTools>button{
+ font-size:11px!important;font-weight:650!important;
+ padding:4px 9px!important;min-height:34px!important;margin:0!important;
+ border-radius:6px!important;max-width:180px;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductRows{
+ display:grid!important;width:100%!important;max-width:590px!important;
+ margin-inline:auto!important;gap:0!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductHead,
+#slrFlowTestDialog .ceProductEditor .ceProductTableRow{
+ grid-template-columns:minmax(92px,1.08fr) minmax(80px,.95fr) minmax(132px,1.45fr) 46px 29px!important;
+ column-gap:5px!important;row-gap:5px!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductHead{
+ padding:7px!important;font-size:10px!important;text-align:left!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductTableRow{
+ padding:6px!important;min-height:46px!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductTableRow input,
+#slrFlowTestDialog .ceProductEditor .ceProductTableRow select{
+ min-height:34px!important;font-size:14px!important;
+ padding:3px 4px!important;border-radius:5px!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductTableRow>button{
+ width:29px!important;min-height:34px!important;height:34px!important;
+ padding:0!important;font-size:17px!important;
+}
+@media(max-width:650px){
+ #slrFlowTestDialog #slrFields.ceProductEditor{max-width:410px!important;padding:0 1px}
+ #slrFlowTestDialog .ceProductEditor .ceProductHead{display:none!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow{
+  display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) 30px!important;
+  grid-auto-rows:minmax(35px,auto);gap:5px!important;padding:6px!important;
+ }
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow>select{grid-column:1!important;grid-row:1!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow>input:nth-child(4){grid-column:2!important;grid-row:1!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow>input:nth-child(2){grid-column:1!important;grid-row:2!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow>input:nth-child(3){grid-column:2!important;grid-row:2!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow>button{
+  grid-column:3!important;grid-row:1/3!important;align-self:center!important
+ }
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow .ceProductExtra{
+  grid-column:1/3!important;grid-row:3!important
+ }
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow input,
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow select{
+  font-size:16px!important;min-height:36px!important;
+ }
+ #slrFlowTestDialog .ceProductEditor .ceProductTools>button{
+  font-size:11px!important;min-height:36px!important
+ }
+}
 </style>
 <script src="project-ce-markning-test-v6-storage.js?v=6"></script>
 <script src="project-ce-markning-test-v6-models.js?v=6"></script>
-<script src="project-ce-markning-test-v33-module.js?v=33"></script>
+<script src="project-ce-markning-test-v34-module.js?v=34"></script>
 <script src="project-ce-markning-test-v7-personal.js?v=7"></script>
-<script src="project-ce-markning-test-v33.js?v=33" defer></script>
+<script src="project-ce-markning-test-v34.js?v=34" defer></script>
 </head>
 <body>
-<header class="ceTop"><div><strong>CE-märkning <small>TEST 33</small></strong></div><a href="index.html" aria-label="Till Tillsyno" class="ceIcon">⌂</a></header>
+<header class="ceTop"><div><strong>CE-märkning <small>TEST 34</small></strong></div><a href="index.html" aria-label="Till Tillsyno" class="ceIcon">⌂</a></header>
 <main class="ceShell">
  <details class="ceProject" id="ceProject"><summary>Projektuppgifter <span id="ceProjectCaption"></span></summary>
   <div class="ceMetaIntro">Fyll i uppgifter om utförare och beställare. Objektnumret följer med till nya dörrar.</div>
