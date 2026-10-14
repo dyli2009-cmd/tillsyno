@@ -1,0 +1,12 @@
+/* TEST 7 only: no changes to established PDF canvas sizing. */
+.cePersonal{margin:9px 0;background:#fff;border:1px solid #d2e0e7;border-radius:8px;padding:7px 9px}
+.cePersonal summary{font-size:12px;font-weight:700;cursor:pointer;min-height:30px}
+.cePersonal p{font-size:11px;color:#526b79;line-height:1.5;margin:8px 0}
+.cePersonalTools{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:6px 0}
+.cePersonalTools button,.cePersonalTools .ceButton{min-height:34px}
+.cePersonalGroup{margin-top:8px;padding-top:7px;border-top:1px solid #dce6ec}
+.cePersonalGroup strong{font-size:12px}
+.cePersonal .ceButton{font-weight:500}
+.cePersonal [hidden]{display:none!important}
+.ceLegacy{font-size:11px;color:#526b79;padding:5px 1px}
+.ceLegacy a{color:#155c76;text-decoration:underline}
