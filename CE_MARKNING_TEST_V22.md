@@ -1,0 +1,3 @@
+# CE-märkning TEST 22: sensortyp i rullgardin
+
+Sensorval i Riskanalys och Egenkontroll öppnas nu som en kompakt meny under knappen, inte som en panel längst ner. Val: FlexScan, FlexScan 3D, ForceSafe, Egen text. Egen text skrivs direkt i samma meny. Egenkontrollens val av sensortäckning behålls. Data sparas oförändrat i de befintliga PDF-fälten. Menyn stängs vid val, Escape, tryck utanför eller scroll, och kan visas ovanför fältet om platsen under inte räcker. Tidigare sparade sensorvärden förblir oförändrade. TEST 21 finns kvar. Kodens JavaScript-syntax har kontrollerats; visuell test på iPad/iPhone återstår.
