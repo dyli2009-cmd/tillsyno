@@ -341,6 +341,6 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&saveRevisi
  finally{renderMeta();renderDoors();if(accountId)startupControls.forEach(control=>control.disabled=false);}
 })();
 if('serviceWorker' in navigator){
- for(const scope of ['project-ce-markning-test.html','project-ce-markning-test-v7.html'])navigator.serviceWorker.register('project-ce-markning-test-v43-sw.js',{scope}).catch(error=>console.warn('CE-cache kunde inte förberedas',error));
+ for(const scope of ['project-ce-markning-test.html','project-ce-markning-test-v7.html'])navigator.serviceWorker.register('project-ce-markning-test-v44-sw.js',{scope}).catch(error=>console.warn('CE-cache kunde inte förberedas',error));
 }
 })();
