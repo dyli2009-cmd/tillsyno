@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="sv" data-auth-pending>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#132b38">
+<title>CE-märkning TEST 1 – Dörrautomatik och lås | Tillsyno</title>
+<style>html[data-auth-pending] body{visibility:hidden!important}</style>
+<script src="vendor/supabase-2.49.10.min.js"></script>
+<script src="auth-config.js"></script>
+<script src="auth/client.js?v=2.4.287"></script>
+<script src="auth/guard.js?v=2.4.287" defer></script>
+<style>
+:root{color-scheme:light;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#eff4f7;color:#173547}
+*{box-sizing:border-box}body{margin:0;line-height:1.45}button,input,textarea,select{font:inherit}button{cursor:pointer}a{color:inherit}
+.top{background:#132b38;color:#f5fcff;padding:15px max(16px,calc((100vw - 1040px)/2));display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.top strong{font-size:20px}.top small{display:block;color:#b8d5df}.top a{font-size:13px;text-decoration:none;border:1px solid #7c9dab;border-radius:9px;padding:8px 12px}
+main{width:min(1040px,100%);margin:0 auto;padding:20px 14px 70px}.warning{padding:11px 14px;border-left:4px solid #b27d26;background:#fff8e8;border-radius:8px;font-size:13px;color:#584315;margin-bottom:15px}
+.steps{display:flex;gap:8px;margin:0 0 18px;overflow-x:auto}.steps button{flex:1;min-width:125px;border:1px solid #b9cbd3;background:#fff;color:#244657;padding:12px 8px;border-radius:10px;font-weight:700}.steps button.active{background:#17485e;color:#fff;border-color:#17485e}
+.panel{background:#fff;border:1px solid #d8e4ea;border-radius:14px;padding:18px;margin-bottom:15px;box-shadow:0 3px 14px #193d4b0a}.screen[hidden]{display:none!important}.panel h2{margin:0 0 7px;font-size:21px}.muted{color:#5c7280;font-size:13px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.field{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:650}.field input,.field select,.field textarea,textarea{background:#fff;border:1px solid #b8cbd5;border-radius:9px;color:#173547;padding:10px;width:100%;min-width:0}.wide{grid-column:1/-1}.actions{display:flex;gap:9px;flex-wrap:wrap;margin:15px 0 0}.btn{border:1px solid #a7c1ce;background:#fff;color:#174157;padding:10px 13px;border-radius:9px;font-weight:700;min-height:42px}.primary{background:#155c76;color:#fff;border-color:#155c76}.secondary{background:#eaf3f7}.danger{color:#ac3b2b}.btn:disabled{opacity:.4;cursor:not-allowed}.sig{width:100%;height:130px;touch-action:none;border:1px dashed #8eaebb;border-radius:10px;background:#fff;display:block}.sig-preview{max-height:80px;max-width:350px;display:block;background:#fff;border:1px solid #c6d7de;border-radius:9px;margin-top:8px}.door-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #d8e5eb;padding:12px;border-radius:10px;margin:10px 0;flex-wrap:wrap}.door-row.active{border-color:#3181a0;background:#edf8fc}.door-row strong{display:block}.door-meta{color:#59717d;font-size:13px}.door-row .actions{margin:0}.folders{display:grid;gap:10px}.folder{border:1px solid #d3e3ea;border-radius:10px;padding:12px;background:#fff}.folder-top{display:flex;align-items:center;justify-content:space-between;gap:8px}.folder-top .name{font-weight:750;display:flex;align-items:center;gap:6px}.folder-top .percentage{white-space:nowrap;font-weight:800;font-variant-numeric:tabular-nums}.track{height:9px;background:#d5e1e6;border-radius:15px;margin:9px 0;overflow:hidden}.fill{height:100%;background:#66b68a;border-radius:15px;transition:width .2s}.fill.complete{background:#177b48}.status-text{font-size:12px;color:#667b86}.document-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.document-actions button{font-size:12px;padding:6px 9px;min-height:32px}
+.overview{display:flex;gap:14px;justify-content:space-between;align-items:center;flex-wrap:wrap}.percent-big{font-weight:850;font-size:25px}.editor{border-top:1px solid #d4e2e7;margin-top:12px;padding-top:13px}.editor textarea{min-height:90px}.editor .caption{font-size:12px;color:#526c79;margin:6px 0 10px}.scope-row{display:flex;gap:8px;flex-wrap:wrap}.scope-row button.selected{background:#164f69;color:#fff}.file-note{font-size:12px;color:#536b76;overflow-wrap:anywhere}.small-note{font-size:12px;color:#566e79}dialog{border:1px solid #a4c2cf;border-radius:14px;padding:0;width:min(850px,calc(100vw - 18px));max-height:95vh}dialog::backdrop{background:#0b2534a9}.dialog-head{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:12px 15px;background:#143748;color:#fff}.pdf-frame{border:none;width:100%;height:min(75vh,750px);display:block}.empty{border:1px dashed #9ab5c2;background:#f8fbfc;border-radius:10px;padding:17px;color:#526975}#status{position:fixed;left:12px;right:12px;bottom:12px;margin:auto;width:min(600px,calc(100% - 24px));padding:11px 15px;border-radius:9px;color:#fff;background:#244e60;box-shadow:0 5px 24px #17354733;z-index:50;font-size:13px}#status[hidden]{display:none}#docEditorPanel[hidden]{display:none}.pill{font-size:12px;background:#e9f3f8;padding:4px 8px;border-radius:10px}
+@media(max-width:660px){.form-grid{grid-template-columns:1fr}.wide{grid-column:auto}.top strong{font-size:18px}.panel{padding:13px}.door-row{align-items:stretch}.steps button{font-size:12px}}
+</style>
+</head>
+<body>
+<header class="top"><div><strong>CE-märkning <span style="font-size:12px;color:#a7d8e6">TEST 1</span></strong><small>Dörrautomatik och lås · separat arbetsyta utan ritning</small></div><a href="index.html">← Till Tillsyno</a></header>
+<main>
+<div class="warning"><strong>Testsida.</strong> Detta provar dokumentflöde och status, inte juridiskt färdig CE-märkning. Ingen riktig CE-dokumentation eller PDF-export godkänns automatiskt. Befintligt SmartMatch och Kontrollflöde påverkas inte.</div>
+<nav class="steps" aria-label="Arbetssteg"><button type="button" class="active" data-step="project">1. Projektuppgifter</button><button type="button" data-step="doors">2. Dörrautomatiker</button><button type="button" data-step="docs">3. CE-dokument</button></nav>
+<section id="project" class="screen">
+ <div class="panel"><h2>Projektuppgifter</h2><p class="muted">Gemensam information fylls i en gång och används i samtliga dokument.</p>
+  <div class="form-grid">
+   <label class="field">Projekt / objekt<input data-project="projectName" placeholder="Exempel: Håstenskolan"></label>
+   <label class="field">Kund / beställare<input data-project="customer" placeholder="Kundens namn"></label>
+   <label class="field">Adress<input data-project="address" placeholder="Anläggningens adress"></label>
+   <label class="field">Kontaktperson<input data-project="contact" placeholder="Namn"></label>
+   <label class="field">Ordernummer<input data-project="order" placeholder="Order / offert"></label>
+   <label class="field">Datum<input data-project="date" type="date"></label>
+   <label class="field">Utförande företag<input data-project="company" placeholder="Företagsnamn"></label>
+   <label class="field">Tillverkare / ansvarig aktör<input data-project="manufacturer" placeholder="Ansvarig tillverkare"></label>
+   <label class="field wide">Kommentar / referens<textarea data-project="comment" rows="2" placeholder="Övrig projektinformation"></textarea></label>
+  </div>
+ </div>
+ <div class="panel"><h2>Underskrift</h2><p class="muted">Skriv under en gång. Den sparade signaturbilden är tillgänglig för dokumenten i det här projektet, utan att någon dörr automatiskt blir godkänd.</p>
+  <label class="field" style="margin-bottom:10px">Namnförtydligande<input data-project="signer" placeholder="Namn på den som signerar"></label>
+  <canvas id="signaturePad" class="sig" width="840" height="260" aria-label="Rita en underskrift med fingret eller musen"></canvas>
+  <img id="savedSignature" class="sig-preview" alt="Sparad underskrift" hidden>
+  <div class="actions"><button class="btn secondary" id="signatureClear" type="button">Rensa ritad signatur</button><button class="btn primary" id="signatureSave" type="button">Spara underskrift</button><button class="btn" id="signatureRemove" type="button">Ta bort sparad signatur</button></div>
+ </div>
+ <div class="actions"><button class="btn primary" type="button" data-next="doors">Fortsätt till dörrautomatiker →</button><button id="exportBackup" type="button" class="btn">Spara projektdata (JSON)</button></div>
+</section>
+<section id="doors" class="screen" hidden>
+ <div class="panel"><h2>Dörrautomatiker</h2><p class="muted">Lägg till flera automatiker. Varje automatik har eget ID, placering, dokumentstatus och kontroll. Gemensamma projektuppgifter följer med.</p>
+  <div class="form-grid">
+   <label class="field">Dörrautomatikens nummer<input id="doorNumber" placeholder="20-01-54-28-24-2"></label>
+   <label class="field">Placering<input id="doorLocation" placeholder="Entré, plan 1"></label>
+   <label class="field">Utförande<select id="doorType"><option value="glass">Med glas</option><option value="noGlass">Utan glas</option></select></label>
+  </div>
+  <div class="actions"><button id="doorAdd" type="button" class="btn primary">+ Lägg till dörrautomatik</button><button id="doorCancelEdit" type="button" class="btn" hidden>Avbryt redigering</button></div>
+ </div>
+ <div class="panel"><h2>Projektets dörrautomatiker <span class="pill" id="doorCount">0 st</span></h2><div id="doorList"></div></div>
+ <div class="actions"><button class="btn" type="button" data-next="project">← Projekt</button><button class="btn primary" type="button" data-next="docs">Fortsätt till CE-dokument →</button></div>
+</section>
+<section id="docs" class="screen" hidden>
+ <div class="panel overview"><div><h2>CE-dokument</h2><p class="muted" id="selectedDoorInfo">Välj en dörrautomatik för att se dokumentmapparna.</p></div><div><div class="percent-big" id="totalPercent">0 %</div><div class="muted">Dokumentstatus, vald automatik</div></div></div>
+ <div class="panel"><div class="actions" style="margin:0 0 12px"><button type="button" class="btn primary" id="markFive">✓ Markera fem dokument kontrollerade</button><button class="btn" id="backDoors" type="button">Hantera dörrautomatiker</button></div><p class="small-note">Markerar Riskanalys, Beskrivning av maskin, Loggbok, Tillverkarens försäkran och Egenkontroll direkt för vald automatik. Produktlista och CE-skylt kontrolleras var för sig. Endast en testmarkering, inte CE-godkännande.</p><div id="folderList" class="folders"></div></div>
+ <div class="panel" id="docEditorPanel" hidden><h2 id="editorTitle">Dokument</h2><p id="editorDoor" class="muted"></p>
+  <div class="scope-row"><button class="btn selected" id="scopeProfile" type="button">Ändra – alla med samma utförande</button><button class="btn" id="scopeDoor" type="button">Ändra endast denna dörrautomatik</button></div>
+  <p class="caption" id="scopeHelp">Ändringar i standarden gäller samma utförande, men markeringar för kontroll görs alltid per automatik.</p>
+  <label class="field">Dokumentuppgifter / anteckning<textarea id="docNotes" rows="4"></textarea></label>
+  <div class="actions"><button class="btn primary" id="saveDocNotes" type="button">Spara ändring</button><label class="btn secondary" for="documentFile">Ersätt fil (PDF)</label><input id="documentFile" type="file" accept="application/pdf,.pdf" hidden><button class="btn" id="showPdf" type="button">Visa PDF</button><button class="btn" id="toggleReview" type="button">Markera kontrollerad</button></div>
+  <p class="file-note" id="documentFileInfo"></p><p class="small-note">PDF öppnas i ett rullbart fönster. Bifogade PDF-filer sparas lokalt på denna enhet, inte i projektets JSON-säkerhetskopia.</p>
+  <div class="panel" style="background:#f6f9fb;margin:12px 0 0"><strong>Information som följer dokumentet</strong><p class="small-note" id="docInherited"></p><div id="docSignatureInfo" class="small-note"></div></div>
+ </div>
+</section>
+</main>
+<dialog id="pdfDialog"><div class="dialog-head"><strong id="pdfDialogTitle">PDF-förhandsvisning</strong><button type="button" class="btn" id="pdfClose">Stäng ×</button></div><iframe id="pdfFrame" class="pdf-frame" title="PDF-förhandsvisning"></iframe></dialog>
+<div id="status" role="status" aria-live="polite" hidden></div>
+<script>
+(function(){
+'use strict';
+const KEY='tillsyno-ce-markning-test-v1:data';
+const DB='tillsyno-ce-markning-test-v1:pdf';
+const CATS=['Riskanalys','Beskrivning av maskin','Loggbok','Tillverkarens försäkran','Produktlista','Egenkontroll','CE-skylt'];
+const BULK=['Riskanalys','Beskrivning av maskin','Loggbok','Tillverkarens försäkran','Egenkontroll'];
+const LABELS={'Tillverkarens försäkran':'EG-försäkran – tillverkare av maskin'};
+const $=id=>document.getElementById(id);
+const empty=()=>({project:{projectName:'',customer:'',address:'',contact:'',order:'',date:new Date().toLocaleDateString('sv-SE'),company:'',manufacturer:'',comment:'',signer:''},signature:'',profiles:{glass:{notes:{},files:{}},noGlass:{notes:{},files:{}}},doors:[],selected:null});
+let state=empty(),activeCat=null,scope='profile',editDoorId=null,previewUrl=null,signDirty=false;
+try{const saved=localStorage.getItem(KEY);if(saved){const loaded=JSON.parse(saved);if(loaded&&Array.isArray(loaded.doors)){state=loaded;state.profiles=state.profiles||empty().profiles;for(const name of ['glass','noGlass'])state.profiles[name]=Object.assign({notes:{},files:{}},state.profiles[name]||{});state.project=Object.assign(empty().project,state.project||{});}}}catch(err){console.warn('CE test kunde inte läsa lokal data',err)}
+const uid=()=>('d'+Date.now().toString(36)+Math.random().toString(36).slice(2,9));
+const current=()=>state.doors.find(d=>d.id===state.selected)||null;
+const label=cat=>LABELS[cat]||cat;
+const typeLabel=type=>type==='glass'?'Med glas':'Utan glas';
+const initDoor=d=>{d.notes=d.notes||{};d.files=d.files||{};d.reviewed=d.reviewed||{};return d};
+state.doors.forEach(initDoor);
+if(!current()&&state.doors.length)state.selected=state.doors[0].id;
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(err){notice('Lagringen är full. Spara en JSON-kopia av projektet.');}}
+let messageTimer=0;
+function notice(msg){$('status').textContent=msg;$('status').hidden=false;clearTimeout(messageTimer);messageTimer=setTimeout(()=>$('status').hidden=true,4200)}
+function go(step){for(const section of document.querySelectorAll('.screen'))section.hidden=section.id!==step;for(const button of document.querySelectorAll('[data-step]')){const on=button.dataset.step===step;button.classList.toggle('active',on);button.setAttribute('aria-current',on?'step':'false');}if(step==='doors')renderDoors();if(step==='docs')renderDocs();window.scrollTo({top:0,behavior:'instant'})}
+document.querySelectorAll('[data-step]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.step)));
+document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.next)));
+document.querySelectorAll('[data-project]').forEach(input=>{const key=input.dataset.project;input.value=state.project[key]||'';input.addEventListener('change',()=>{const old=state.project[key];state.project[key]=input.value;if(old!==input.value)for(const door of state.doors)door.reviewed={};persist();if(old!==input.value)notice('Projektuppgiften sparad. Tidigare dokumentkontroller öppnades för ny granskning.');});});
+$('backDoors').addEventListener('click',()=>go('doors'));
+function resetDoorEditor(){editDoorId=null;$('doorNumber').value='';$('doorLocation').value='';$('doorType').value='glass';$('doorAdd').textContent='+ Lägg till dörrautomatik';$('doorCancelEdit').hidden=true;}
+$('doorCancelEdit').addEventListener('click',resetDoorEditor);
+$('doorAdd').addEventListener('click',()=>{
+ const number=$('doorNumber').value.trim(),location=$('doorLocation').value.trim(),type=$('doorType').value;
+ if(!number||!location)return notice('Fyll i både dörrautomatikens nummer och placering.');
+ if(state.doors.some(d=>d.number.toLowerCase()===number.toLowerCase()&&d.id!==editDoorId))return notice('Det här automatiknumret finns redan. Ange ett unikt nummer.');
+ if(editDoorId){
+  const door=state.doors.find(d=>d.id===editDoorId);if(!door)return;
+  const changed=door.number!==number||door.location!==location||door.type!==type;
+  Object.assign(door,{number,location,type});if(changed)door.reviewed={};state.selected=door.id;
+  notice('Dörrautomatiken uppdaterad'+(changed?' och dokumentkontrollerna öppnade för granskning.':'.'));
+ }else{
+  const door=initDoor({id:uid(),number,location,type});state.doors.push(door);state.selected=door.id;
+  notice('Dörrautomatik '+number+' tillagd.');
+ }
+ persist();resetDoorEditor();renderDoors();
+});
+function makeButton(title,onClick,style){const b=document.createElement('button');b.type='button';b.className='btn '+(style||'');b.textContent=title;b.addEventListener('click',onClick);return b}
+function renderDoors(){
+ const root=$('doorList');root.replaceChildren();$('doorCount').textContent=state.doors.length+' st';
+ if(!state.doors.length){const p=document.createElement('div');p.className='empty';p.textContent='Inga dörrautomatiker ännu. Lägg till den första ovan.';root.append(p);return;}
+ for(const door of state.doors){
+  const row=document.createElement('div');row.className='door-row'+(door.id===state.selected?' active':'');
+  const detail=document.createElement('div'),name=document.createElement('strong'),info=document.createElement('div'),buttons=document.createElement('div');
+  name.textContent=door.number;info.className='door-meta';info.textContent=door.location+' · '+typeLabel(door.type)+' · '+doorPercent(door)+'% CE-dokument';detail.append(name,info);buttons.className='actions';
+  buttons.append(makeButton('Öppna dokument',()=>{state.selected=door.id;persist();go('docs')},'primary'),makeButton('Ändra',()=>{editDoorId=door.id;$('doorNumber').value=door.number;$('doorLocation').value=door.location;$('doorType').value=door.type;$('doorAdd').textContent='Spara dörrändring';$('doorCancelEdit').hidden=false;window.scrollTo({top:0,behavior:'smooth'})}),makeButton('Kopiera inställningar',()=>{editDoorId=null;$('doorNumber').value='';$('doorLocation').value='';$('doorType').value=door.type;$('doorAdd').textContent='+ Lägg till kopia';$('doorCancelEdit').hidden=false;$('doorNumber').focus();notice('Ange nytt dörrnummer och placering. Kontroller och signering godkänns inte automatiskt.');window.scrollTo({top:0,behavior:'smooth'})}));
+  row.append(detail,buttons);root.append(row);
+ }
+}
+function profile(door){return state.profiles[door.type]}
+function scopeFile(door,cat,scopeName){return scopeName==='door'?door.files[cat]:profile(door).files[cat]}
+function effectiveFile(door,cat){return door.files[cat]||profile(door).files[cat]||null}
+function effectiveNotes(door,cat){return Object.prototype.hasOwnProperty.call(door.notes,cat)?door.notes[cat]:(profile(door).notes[cat]||'')}
+function percent(door,cat){if(door.reviewed[cat])return 100;if(effectiveFile(door,cat)||effectiveNotes(door,cat).trim())return 50;return 0}
+function doorPercent(door){return Math.round(CATS.reduce((v,cat)=>v+percent(door,cat),0)/CATS.length)}
+function invalidate(door,cat,shared){if(shared)for(const d of state.doors)if(d.type===door.type)delete d.reviewed[cat];else; else delete door.reviewed[cat];}
+function renderDocs(){
+ const door=current(),root=$('folderList');root.replaceChildren();$('markFive').disabled=!door;$('totalPercent').textContent=door?doorPercent(door)+' %':'0 %';$('selectedDoorInfo').textContent=door?door.number+' · '+door.location+' · '+typeLabel(door.type):'Lägg till en dörrautomatik under steg 2 först.';
+ if(!door){const p=document.createElement('div');p.className='empty';p.textContent='Ingen automatik vald.';root.append(p);$('docEditorPanel').hidden=true;return;}
+ for(const cat of CATS){
+  const pct=percent(door,cat),section=document.createElement('div'),top=document.createElement('div'),title=document.createElement('span'),count=document.createElement('span'),track=document.createElement('div'),fill=document.createElement('div'),sub=document.createElement('div'),buttons=document.createElement('div');
+  section.className='folder';top.className='folder-top';title.className='name';title.textContent='▣ '+label(cat);count.className='percentage';count.textContent=pct+' %';top.append(title,count);
+  track.className='track';fill.className='fill'+(pct===100?' complete':'');fill.style.width=pct+'%';track.append(fill);
+  sub.className='status-text';sub.textContent=pct===100?'Markerad som kontrollerad':pct===50?'Påbörjad – inväntar kontroll':'Ej kontrollerad';
+  buttons.className='document-actions';buttons.append(makeButton('Öppna mapp',()=>openFolder(cat)),makeButton(door.reviewed[cat]?'Ångra kontroll':'Markera kontrollerad',()=>{door.reviewed[cat]=!door.reviewed[cat];persist();renderDocs();notice(label(cat)+': '+(door.reviewed[cat]?'kontrollerad (test)':'kontrollen återöppnad')+'.');},door.reviewed[cat]?'secondary':''));
+  section.append(top,track,sub,buttons);root.append(section);
+ }
+ if(activeCat){renderEditor(door,activeCat);}
+}
+$('markFive').addEventListener('click',()=>{
+ const door=current();if(!door)return notice('Lägg till en dörrautomatik först.');
+ for(const cat of BULK)door.reviewed[cat]=true;
+ persist();renderDocs();notice('Fem dokument markerade direkt för '+door.number+'. Produktlista och CE-skylt är orörda.');
+});
+function openFolder(cat){activeCat=cat;scope='profile';renderDocs();$('docEditorPanel').scrollIntoView({behavior:'smooth',block:'start'});}
+function fileInfoFor(door,cat){const file=effectiveFile(door,cat);return file?'Tillagd PDF: '+file.name+(door.files[cat]?' · endast denna automatik':' · standard för '+typeLabel(door.type)):'Ingen PDF tillagd ännu. Du kan bifoga en PDF i detta test.';}
+function renderEditor(door,cat){
+ $('docEditorPanel').hidden=false;$('editorTitle').textContent=label(cat);$('editorDoor').textContent=door.number+' · '+door.location;
+ $('scopeProfile').classList.toggle('selected',scope==='profile');$('scopeDoor').classList.toggle('selected',scope==='door');
+ $('scopeHelp').textContent=scope==='profile'?'Ändra standardens anteckning eller PDF för alla automatiker med '+typeLabel(door.type).toLowerCase()+'. Befintliga individuella undantag ändras inte.':'Ändra anteckning eller PDF enbart för '+door.number+'.';
+ $('docNotes').value=scope==='door'?(Object.prototype.hasOwnProperty.call(door.notes,cat)?door.notes[cat]:effectiveNotes(door,cat)):(profile(door).notes[cat]||'');
+ $('documentFileInfo').textContent=fileInfoFor(door,cat);
+ $('toggleReview').textContent=door.reviewed[cat]?'Ångra kontroll':'Markera kontrollerad';
+ $('docInherited').textContent='Kund: '+(state.project.customer||'–')+' · Projekt: '+(state.project.projectName||'–')+' · Automatik: '+door.number+' · Placering: '+door.location+' · Utförande: '+typeLabel(door.type);
+ $('docSignatureInfo').textContent=state.signature?'Sparad underskrift tillgänglig: '+(state.project.signer||'utan namnförtydligande')+'. Signeringen är inte ett automatiskt CE-godkännande.':'Underskrift är ännu inte sparad. Lägg in den under Projektuppgifter.';
+}
+$('scopeProfile').addEventListener('click',()=>{scope='profile';if(current()&&activeCat)renderEditor(current(),activeCat)});
+$('scopeDoor').addEventListener('click',()=>{scope='door';if(current()&&activeCat)renderEditor(current(),activeCat)});
+$('saveDocNotes').addEventListener('click',()=>{
+ const door=current();if(!door||!activeCat)return;const txt=$('docNotes').value;
+ if(scope==='profile'){profile(door).notes[activeCat]=txt;invalidate(door,activeCat,true);}else{door.notes[activeCat]=txt;invalidate(door,activeCat,false)}
+ persist();renderDocs();notice('Ändring sparad för '+(scope==='profile'?'alla med '+typeLabel(door.type):door.number)+'. Berörda kontroller öppnades igen.');
+});
+$('toggleReview').addEventListener('click',()=>{
+ const door=current();if(!door||!activeCat)return;door.reviewed[activeCat]=!door.reviewed[activeCat];persist();renderDocs();notice('Dokumentstatus ändrad för '+door.number+'.');
+});
+function openDb(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB,1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains('pdf'))req.result.createObjectStore('pdf')};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+async function pdfWrite(key,file){const db=await openDb();return new Promise((resolve,reject)=>{const t=db.transaction('pdf','readwrite');t.objectStore('pdf').put(file,key);t.oncomplete=()=>{db.close();resolve()};t.onerror=()=>{db.close();reject(t.error)}})}
+async function pdfRead(key){const db=await openDb();return new Promise((resolve,reject)=>{const t=db.transaction('pdf');const req=t.objectStore('pdf').get(key);req.onsuccess=()=>{db.close();resolve(req.result||null)};req.onerror=()=>{db.close();reject(req.error)}})}
+function pdfKey(door,cat,mode){return(mode==='door'?'door:'+door.id:'profile:'+door.type)+':'+cat}
+$('documentFile').addEventListener('change',async e=>{
+ const door=current(),cat=activeCat,mode=scope,file=e.target.files[0];e.target.value='';
+ if(!door||!cat||!file)return;if(file.type!=='application/pdf'&&!/\.pdf$/i.test(file.name))return notice('Välj en PDF-fil.');
+ try{await pdfWrite(pdfKey(door,cat,mode),file);if(mode==='door')door.files[cat]={name:file.name};else profile(door).files[cat]={name:file.name};invalidate(door,cat,mode==='profile');persist();renderDocs();notice('PDF sparad lokalt för '+(mode==='door'?door.number:typeLabel(door.type))+'.');}
+ catch(err){notice('PDF kunde inte lagras på enheten: '+err.message)}
+});
+$('showPdf').addEventListener('click',async()=>{
+ const door=current(),cat=activeCat;if(!door||!cat)return;
+ const mode=door.files[cat]?'door':'profile',desc=effectiveFile(door,cat);if(!desc)return notice('Ingen PDF är tillagd i denna mapp.');
+ try{const pdf=await pdfRead(pdfKey(door,cat,mode));if(!pdf)return notice('PDF-filen saknas på denna enhet. Lägg till filen igen.');
+  if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=URL.createObjectURL(pdf);$('pdfFrame').src=previewUrl;$('pdfDialogTitle').textContent=desc.name;$('pdfDialog').showModal();
+ }catch(err){notice('PDF-förhandsvisningen kunde inte öppnas: '+err.message)}
+});
+function closePdf(){$('pdfDialog').close();$('pdfFrame').removeAttribute('src');if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null;}}
+$('pdfClose').addEventListener('click',closePdf);
+$('pdfDialog').addEventListener('close',()=>{if(previewUrl){$('pdfFrame').removeAttribute('src');URL.revokeObjectURL(previewUrl);previewUrl=null}});
+const pad=$('signaturePad'),ctx=pad.getContext('2d');ctx.lineWidth=4;ctx.strokeStyle='#14394e';ctx.lineCap='round';ctx.lineJoin='round';
+let drawing=false,hasStrokes=false;
+function point(e){const r=pad.getBoundingClientRect();return{x:(e.clientX-r.left)*pad.width/r.width,y:(e.clientY-r.top)*pad.height/r.height}}
+pad.addEventListener('pointerdown',e=>{e.preventDefault();pad.setPointerCapture(e.pointerId);drawing=true;signDirty=true;hasStrokes=true;const p=point(e);ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+.2,p.y+.2);ctx.stroke()});
+pad.addEventListener('pointermove',e=>{if(!drawing)return;e.preventDefault();const p=point(e);ctx.lineTo(p.x,p.y);ctx.stroke()});
+pad.addEventListener('pointerup',()=>drawing=false);pad.addEventListener('pointercancel',()=>drawing=false);
+$('signatureClear').addEventListener('click',()=>{ctx.clearRect(0,0,pad.width,pad.height);hasStrokes=false;signDirty=false;notice('Ritytan tömd. Sparad underskrift finns kvar tills du tar bort eller ersätter den.');});
+function renderSign(){if(state.signature){$('savedSignature').src=state.signature;$('savedSignature').hidden=false}else{$('savedSignature').hidden=true;$('savedSignature').removeAttribute('src')}}
+$('signatureSave').addEventListener('click',()=>{if(!hasStrokes)return notice('Rita en underskrift först.');state.signature=pad.toDataURL('image/png');for(const door of state.doors)door.reviewed={};persist();renderSign();notice('Underskrift sparad för projektet. Dokumentkontroller måste granskas på nytt.');});
+$('signatureRemove').addEventListener('click',()=>{state.signature='';for(const door of state.doors)door.reviewed={};persist();renderSign();notice('Sparad underskrift borttagen.');});
+$('exportBackup').addEventListener('click',()=>{
+ const blob=new Blob([JSON.stringify({format:'Tillsyno CE-märkning TEST 1',note:'Bifogade PDF-filer ingår inte i denna JSON-kopia.',...state},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='CE-markning-projekt-test.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1200);notice('JSON-kopia sparad. PDF-bilagorna ligger endast på den här enheten.');
+});
+renderSign();renderDoors();renderDocs();go('project');
+})();
+</script>
+</body></html>
