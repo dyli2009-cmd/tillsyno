@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="sv" data-auth-pending>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#132b38">
+<meta http-equiv="Cache-Control" content="no-cache">
+<title>CE-märkning TEST 18 | Tillsyno</title>
+<style>html[data-auth-pending] body{visibility:hidden!important}</style>
+<script src="vendor/supabase-2.49.10.min.js"></script>
+<script src="auth-config.js"></script>
+<script src="auth/client.js?v=2.4.287"></script>
+<script src="auth/guard.js?v=2.4.287" defer></script>
+<script src="vendor/pdf-lib.min.js"></script>
+<script src="vendor/pdf.min.js"></script>
+<script src="vendor/jszip-3.10.1.min.js"></script>
+<link rel="stylesheet" href="project-ce-markning-test-v6.css?v=6">
+<link rel="stylesheet" href="project-ce-markning-test-v7.css?v=7.1">
+<script src="project-ce-markning-test-v6-storage.js?v=6"></script>
+<script src="project-ce-markning-test-v6-models.js?v=6"></script>
+<script src="project-ce-markning-test-v18-module.js?v=18"></script>
+<script src="project-ce-markning-test-v7-personal.js?v=7"></script>
+<script src="project-ce-markning-test-v18.js?v=18" defer></script>
+</head>
+<body>
+<header class="ceTop"><div><strong>CE-märkning <small>TEST 18</small></strong></div><a href="index.html" aria-label="Till Tillsyno" class="ceIcon">⌂</a></header>
+<main class="ceShell">
+ <details class="ceProject" id="ceProject"><summary>Projektuppgifter <span id="ceProjectCaption"></span></summary>
+  <div class="ceMetaIntro">Fyll i uppgifter om utförare och beställare. Objektnumret följer med till nya dörrar.</div>
+  <div class="ceProjectColumns">
+   <section class="ceProjectColumn"><h3>Utförare och CE-ansvarig</h3><p>Företaget och personen som utför installation och CE-kontroll.</p>
+    <div class="ceGrid">
+     <label>Ansvarig tekniker<input data-meta="technician" placeholder="För- och efternamn"></label>
+     <label>Utförande företag<input data-meta="technicianCompany" placeholder="Företagsnamn"></label>
+     <label>Företagets telefonnummer<input data-meta="technicianPhone" type="tel"></label>
+     <label>Datum<input data-meta="date" type="date"></label>
+     <label>Organisationsnummer<input data-meta="companyOrgNo"></label>
+     <label>Företagsadress<input data-meta="companyAddress"></label>
+     <label>Postnummer och ort<input data-meta="companyPostalPlace"></label>
+     <label>SLR-auktorisation<input data-meta="slrAuthorisation"></label>
+    </div>
+    <details class="ceMetaGroup"><summary>Projektunderskrift</summary><p>Signera en gång. Underskriften används först när du aktivt godkänner en kontrollpunkt.</p><div class="cePersonalTools"><button type="button" id="ceProjectSign">Skriv underskrift</button><button type="button" id="ceProjectSignClear">Rensa underskrift</button></div><span id="ceProjectSignStatus">Ingen projektunderskrift sparad</span></details>
+    <details class="ceMetaGroup"><summary>Teknisk dokumentation och EG-försäkran</summary><div class="ceGrid">
+     <label>Dokumentationsansvarig<input data-meta="documentationName"></label>
+     <label>Dokumentationsadress<input data-meta="documentationAddress"></label>
+     <label>Postnummer och ort<input data-meta="documentationPostalPlace"></label>
+     <label>Namnförtydligande<input data-meta="egSignerName"></label>
+     <label>Titel<input data-meta="egSignerTitle"></label>
+     <label>Ort<input data-meta="egPlace"></label>
+     <label>Datum<input data-meta="egDate" type="date"></label>
+    </div></details>
+   </section>
+   <section class="ceProjectColumn"><h3>Beställare och arbetsplats</h3><p>Beställarens kontaktuppgifter och platsen där dörrarna installeras.</p>
+    <div class="ceGrid">
+     <label>Beställarens företag<input data-meta="customer"></label>
+     <label>Beställarens adress<input data-meta="address"></label>
+     <label>Postnummer och ort<input data-meta="customerPostalPlace"></label>
+     <label>Kontaktperson<input data-meta="contact"></label>
+     <label>Telefonnummer<input data-meta="phone" type="tel"></label>
+     <label>Objektnummer<input data-meta="objectNo" placeholder="20-01-54-28"></label>
+     <label>Ordernummer<input data-meta="order"></label>
+     <label>Installationsdatum<input data-meta="installationDate" type="date"></label>
+    </div>
+   </section>
+  </div>
+ </details>
+ <details class="cePersonal" id="cePersonalSettings">
+  <summary>Mina sparade uppgifter · detta konto på denna enhet</summary>
+  <p>Spara uppgifter så du slipper skriva in dem i nästa projekt. De delas inte med andra konton och synkas inte mellan enheter.</p>
+  <div class="cePersonalGroup"><strong>Utförare och maskintillverkare</strong><div class="cePersonalTools"><button id="ceRememberPerformer" type="button">Spara uppgifter</button><button id="ceRecallPerformer" type="button">Hämta uppgifter</button></div></div>
+  <div class="cePersonalGroup"><strong>Beställare</strong><div class="cePersonalTools"><button id="ceRememberCustomer" type="button">Spara beställare</button><button id="ceRecallCustomer" type="button">Hämta beställare</button></div></div>
+ </details>
+ <details class="cePersonal" id="cePresetSettings">
+  <summary>Standardmallar · Med glas / Utan glas</summary>
+  <p>Admin sparar de risk- och sensorval som redan fyllts i via Ändra standard på respektive dörrtyp. Ingen signatur, datum, mätning eller egenkontroll godkänns automatiskt.</p>
+  <div class="cePersonalTools" data-admin-only hidden><button id="cePresetSave" type="button">Spara adminmallar</button><button id="cePresetExport" type="button">Exportera JSON</button></div>
+  <div class="cePersonalTools"><button id="cePresetApply" type="button">Använd sparade mallar</button><label for="cePresetImport" class="ceButton">Importera mallfil</label><input id="cePresetImport" type="file" hidden accept="application/json,.json"></div>
+  <p id="cePresetStatus" role="status">Lokala mallar kan delas via export och import. Ingen central synkning i TEST 18.</p>
+ </details>
+ <div class="ceLegacy"><button id="ceImportLegacy" type="button">Hämta äldre lokalt CE-projekt</button> · <a href="project-ce-markning-test-v6.html">Öppna TEST 6</a>. Äldre projekt importeras inte utan ditt val.</div>
+ <div class="ceTools"><button id="ceAddToggle" class="cePrimary" type="button">＋ Dörr</button><button id="ceSaveLocal" type="button">Spara lokalt</button><button id="ceSavePdf" type="button">Spara PDF</button><label for="ceOpenPdf" class="ceButton">Öppna PDF</label><input id="ceOpenPdf" type="file" hidden accept="application/pdf,.pdf"></div>
+ <form id="ceDoorForm" hidden class="ceDoorForm"><div class="ceGrid">
+  <label>Objektnummer<input id="ceDoorObject" required placeholder="Från projektuppgifterna"></label>
+  <label>Maskintyp<select id="ceDoorCode"></select><input id="ceDoorCustomCode" hidden inputmode="numeric" placeholder="Egen maskintyp"></label>
+  <label>Antal / beteckning<input id="ceDoorCount" type="number" min="1" step="1" required value="1"></label>
+  <label>Automatiknummer<input id="ceDoorNumber" readonly placeholder="Skapas automatiskt"></label>
+  <label>Placering<input id="ceDoorLocation" required placeholder="Entré, plan 1"></label>
+  <label>Modell<input id="ceDoorModel" list="ceAutomationModels" placeholder="Modell eller egen text"></label>
+  <label>Fabrikat<input id="ceDoorBrand" placeholder="Fylls automatiskt"></label>
+ </div><div class="ceFormEnd"><select id="ceDoorType" aria-label="Utförande"><option value="glass">Med glas</option><option value="noGlass">Utan glas</option></select><button id="ceDoorSubmit" class="cePrimary" type="submit">Lägg till</button><button id="ceDoorCancel" type="button">Avbryt</button></div></form>
+ <datalist id="ceAutomationModels"></datalist>
+ <div class="ceListHead"><strong>Dörrautomatiker</strong><span id="ceDoorTotal">0 st</span></div>
+ <div id="ceDoorList"></div>
+ <p id="ceEmpty" class="ceEmpty">Lägg till automatiknummer och placering. Öppna dörren för att fylla i CE-dokumenten.</p>
+ <p id="ceStorageStatus" class="ceMuted" role="status" aria-live="polite"></p>
+ <p class="ceMuted ceFoot">Separat CE-test · kontoavgränsad lokal lagring · egenkontroll och signaturer per dörr.</p>
+</main>
+<div id="ceNotice" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
