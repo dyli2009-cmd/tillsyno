@@ -51,11 +51,19 @@ let countTouched=false;
 const startupControls=Array.from(document.querySelectorAll('button,input,select'));
 startupControls.forEach(control=>control.disabled=true);
 function profileType(door){return module.payload().doorProfiles?.[door.id]||door.type||'glass';}
-function renderMeta(){updateProjectSignStatus();for(const input of document.querySelectorAll('[data-meta]'))input.value=state.meta[input.dataset.meta]||'';const caption=$('ceProjectCaption');if(caption){caption.textContent=[state.meta.projectName,state.meta.technician].filter(Boolean).join(' · ');caption.title=caption.textContent;}}
+function syncSharedProjectMeta(){
+ const m=state.meta||{};
+ m.company=m.technicianCompany||'';
+ m.companyPhone=m.technicianPhone||'';
+ m.companyContact=m.technician||'';
+ m.siteAddress=m.address||'';
+ m.sitePostalPlace=m.customerPostalPlace||'';
+}
+function renderMeta(){syncSharedProjectMeta();updateProjectSignStatus();for(const input of document.querySelectorAll('[data-meta]'))input.value=state.meta[input.dataset.meta]||'';const caption=$('ceProjectCaption');if(caption){caption.textContent=[state.meta.projectName,state.meta.technician].filter(Boolean).join(' · ');caption.title=caption.textContent;}}
 function setProjectField(key,value){
  const allowed=new Set(Array.from(document.querySelectorAll('[data-meta]')).map(input=>input.dataset.meta));if(!allowed.has(key))return;
  if(state.meta[key]===value&&state.meta._edited?.[key]===true)return;
- state.meta[key]=value;state.meta._edited=state.meta._edited||{};state.meta._edited[key]=true;const linked={siteAddress:'address',sitePostalPlace:'customerPostalPlace'}[key];if(linked){state.meta[linked]=value;state.meta._edited[linked]=true;}
+ state.meta[key]=value;state.meta._edited=state.meta._edited||{};state.meta._edited[key]=true;syncSharedProjectMeta();
  for(const door of state.doors)module.invalidateDoor(door);
  renderMeta();save();renderDoors();
  if(key==='objectNo'&&!editing){$('ceDoorObject').value=value;syncDoorForm(false);}
@@ -197,7 +205,7 @@ $('ceImportLegacy').onclick=async()=>{
   if(!await askConfirm('Äldre CE-projekt saknar kontomärkning. Importera bara om detta är ditt projekt. Nuvarande lokalt TEST 7-projekt ersätts. Spara dess PDF först. Fortsätta?'))return;
   const loaded=validateState(structuredClone(legacy.state));
   module.reset();module.restore(loaded);module.restoreAssets(legacy.assets);await module.loadTemplates();
-  state=loaded;renderMeta();renderDoors();await enqueueSave();
+  state=loaded;syncSharedProjectMeta();renderMeta();renderDoors();await enqueueSave();
   notice('Äldre CE-projekt importerades till ditt konto i TEST 7. TEST 6 ligger kvar.');
  }catch(error){
   state=previous.state;module.reset();module.restore(state);module.restoreAssets(previous.assets);
@@ -275,7 +283,7 @@ $('ceOpenPdf').onchange=async event=>{
   const required=pdf.catalog.get(PDFLib.PDFName.of('TillsynoSLRTestManifest'))?window.TillsynoCEStorage.read(pdf,'TillsynoSLRTestManifest'):{},assets=module.assets();
   for(const cat of Object.keys(required.templates||{}))if(!assets.templates[cat])throw Error('En PDF-mall saknas i projektfilen: '+cat);
   for(const id of Object.keys(required.products||{}))if(!assets.productFiles[id])throw Error('En produktlista saknas i projektfilen.');
-  state=loaded;renderMeta();renderDoors();await enqueueSave();notice('CE-projekt öppnat · '+state.doors.length+' dörrautomatiker.');
+  state=loaded;syncSharedProjectMeta();renderMeta();renderDoors();await enqueueSave();notice('CE-projekt öppnat · '+state.doors.length+' dörrautomatiker.');
  }catch(error){state=previous.state;module.reset();module.restore(state);module.restoreAssets(previous.assets);await module.loadTemplates().catch(()=>{});renderMeta();renderDoors();notice('Kunde inte öppna filen: '+error.message,true);}
 };
 window.addEventListener('pagehide',()=>{if(saveRevision>savedRevision)void enqueueSave().catch(()=>{});});
