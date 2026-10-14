@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="sv" data-auth-pending>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#132b38">
+<meta http-equiv="Cache-Control" content="no-cache">
+<title>CE-märkning TEST 33 | Tillsyno</title>
+<style>html[data-auth-pending] body{visibility:hidden!important}</style>
+<script src="vendor/supabase-2.49.10.min.js"></script>
+<script src="auth-config.js"></script>
+<script src="auth/client.js?v=2.4.287"></script>
+<script src="auth/guard.js?v=2.4.287" defer></script>
+<script src="vendor/pdf-lib.min.js"></script>
+<script src="vendor/pdf.min.js"></script>
+<script src="vendor/jszip-3.10.1.min.js"></script>
+<link rel="stylesheet" href="project-ce-markning-test-v6.css?v=6">
+<link rel="stylesheet" href="project-ce-markning-test-v7.css?v=7.1">
+<style id="ceTest25Responsive">
+/* Independent door actions work on phone, iPad and desktop. */
+.ceDoorRow{grid-template-columns:minmax(0,1fr) 40px 68px;gap:6px}
+.ceDoorRow>.ceDoorEdit,.ceDoorRow>.ceDoorRemove{min-height:44px;padding:4px;border-radius:7px}
+.ceDoorRow>.ceDoorEdit{font-size:17px}
+.ceDoorRow>.ceDoorRemove{color:#8a2f33;background:#fff6f5;border-color:#dcacab;font-weight:650;font-size:12px}
+.ceDoorConfirm{grid-column:1/-1;display:flex;gap:7px;flex-wrap:wrap;align-items:center;background:#fff8f5;border:1px solid #e1b8af;border-radius:8px;padding:9px}
+.ceDoorConfirm strong{flex:1 1 180px;font-size:12px;color:#663530;overflow-wrap:anywhere}
+.ceDoorConfirm button{min-height:40px;font-weight:650}
+.ceDoorConfirm .ceDoorDeleteYes{background:#9a3038;color:#fff;border-color:#9a3038}
+#slrFlowTestDialog .slrSensorAtField{z-index:7;min-height:0!important;min-width:0!important;margin:0!important;padding:0!important;display:grid;place-items:center;background:#edf6fc!important;color:#124b6b!important;border:1px solid #a9c6d5!important}
+#slrFlowTestDialog .ceSensorInlinePanel button.ceSensorDropOption{display:block!important;min-height:44px!important;font-size:14px!important;text-align:left!important;white-space:normal}
+#slrFlowTestDialog .ceSensorInlinePanel{touch-action:pan-y;overscroll-behavior:contain}
+@media(max-width:460px){.ceDoorRow{grid-template-columns:minmax(0,1fr) 40px 62px;gap:4px}.ceDoorOpen{padding:6px}.ceDoorConfirm button{min-height:44px}}
+.ceReuseActions{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 10px}
+.ceReuseActions button{min-height:40px;padding:8px 11px;font-weight:600;font-size:12px}
+.ceReuseActions button:first-child{background:#e7f2f7;border-color:#99bdcf;color:#154c68}
+@media(max-width:460px){.ceReuseActions button{flex:1 1 130px;min-height:44px}}
+
+/* CE TEST 33: compact signature date controls + one clear product table. */
+.ceSignOptions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:9px 0}
+.ceSignOptions label{font-size:11px;font-weight:600;min-width:0}
+.ceSignOptions input,.ceSignOptions select{min-height:39px;width:100%;font-size:16px;margin-top:4px}
+#slrFlowTestDialog .slrOverlayDate{text-align:left!important;direction:ltr!important;padding-left:0!important}
+#slrFlowTestDialog .slrOverlayDate::-webkit-date-and-time-value{text-align:left!important;margin:0!important}
+#slrFlowTestDialog .slrOverlayDate::-webkit-datetime-edit{text-align:left!important;padding:0!important}
+#slrFlowTestDialog .ceProductRows{display:grid;gap:0!important;overflow-x:hidden;border:1px solid #c6d7df;border-radius:9px;background:#fff}
+#slrFlowTestDialog .ceProductHead,#slrFlowTestDialog .ceProductTableRow{display:grid!important;grid-template-columns:minmax(105px,1fr) minmax(105px,1fr) minmax(170px,1.6fr) 60px 37px!important;gap:7px!important;align-items:center}
+#slrFlowTestDialog .ceProductHead{background:#e9f2f7;padding:11px!important;font-size:11px;color:#30576c}
+#slrFlowTestDialog .ceProductTableRow{padding:8px 10px!important;margin:0!important;border:0!important;border-bottom:1px solid #dce6ec!important;border-radius:0!important;background:#fff!important}
+#slrFlowTestDialog .ceProductTableRow:last-child{border-bottom:0!important}
+#slrFlowTestDialog .ceProductTableRow input,#slrFlowTestDialog .ceProductTableRow select{font-size:16px!important;min-height:40px!important;margin:0!important;width:100%!important;grid-column:auto!important}
+#slrFlowTestDialog .ceProductTableRow button{min-height:40px!important;margin:0!important;padding:3px!important}
+#slrFlowTestDialog .ceProductTableRow .ceProductExtra{grid-column:2/5!important;font-size:12px!important;min-height:32px!important}
+@media(max-width:650px){
+ .ceSignOptions{grid-template-columns:1fr 1fr}.ceSignOptions label:first-child{grid-column:1/-1}
+ #slrFlowTestDialog .ceProductHead{display:none!important}
+ #slrFlowTestDialog .ceProductTableRow{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 40px!important;gap:6px!important}
+ #slrFlowTestDialog .ceProductTableRow>select{grid-column:1/3!important;grid-row:1}
+ #slrFlowTestDialog .ceProductTableRow>input:nth-child(2){grid-column:1/3!important;grid-row:2}
+ #slrFlowTestDialog .ceProductTableRow>input:nth-child(3){grid-column:1/3!important;grid-row:3}
+ #slrFlowTestDialog .ceProductTableRow>input:nth-child(4){grid-column:1/3!important;grid-row:4}
+ #slrFlowTestDialog .ceProductTableRow>button{grid-column:3;grid-row:1/5}
+ #slrFlowTestDialog .ceProductTableRow .ceProductExtra{grid-column:1/3!important;grid-row:5}
+}
+
+/* CE TEST 33: shared standard and clear per-door exceptions. */
+.ceDoorInfo .ceDoorScope{display:block;font-size:11px;font-weight:600;color:#506777;margin-top:2px;line-height:1.3}
+.ceDoorInfo .ceDoorScope.has-custom{color:#8b5119}
+#slrFlowTestDialog .ceDoorFolderScope{font-size:11px;font-weight:700;color:#815118;background:#fff1d9;border:1px solid #e6c999;border-radius:20px;padding:4px 8px;white-space:nowrap;margin-left:auto}
+#slrFlowTestDialog .ceDoorFolderScope[hidden]{display:none!important}
+#slrFlowTestDialog .slrFolder>summary{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#slrFlowTestDialog .slrFolder>summary .slrFolderProgress{margin-left:0}
+@media(max-width:460px){
+ #slrFlowTestDialog .ceDoorFolderScope{font-size:10px;padding:3px 6px}
+}
+
+/* CE TEST 33: export selective ZIP packages on phone/iPad/desktop. */
+#ceExportSelected{font-weight:700;color:#13405e;background:#edf6fc;border-color:#92b7cc}
+#slrExportDialog .ceExportSelectActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+#slrExportDialog .ceExportSelectActions button{min-height:40px;padding:7px 10px}
+#slrExportDialog #slrExportChosen{font-size:12px;color:#385a6b;margin-left:auto}
+#slrExportDialog .ceExportDoorChoices{display:grid;gap:6px;max-height:min(43vh,360px);overflow:auto}
+#slrExportDialog .ceExportDoor{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid #ccdbe2;background:white;padding:10px;border-radius:8px;cursor:pointer}
+#slrExportDialog .ceExportDoor input{width:20px;height:20px;margin:0}
+#slrExportDialog .ceExportDoor span{font-weight:650;overflow-wrap:anywhere}
+#slrExportDialog .ceExportDoor small{color:#4e6b78;font-size:11px;text-align:right}
+#slrExportDialog .ceExportPending{background:#f1f4f6;color:#778894;cursor:not-allowed}
+#slrExportDialog .ceExportHint{font-size:11px;line-height:1.5;color:#466477;margin:10px 0 0}
+#slrExportDialog footer{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+#slrExportDialog footer button{min-height:44px;flex:1 1 110px}
+#slrExportDialog footer button:disabled{opacity:.45}
+@media(max-width:460px){#slrExportDialog .ceExportDoor{grid-template-columns:23px minmax(0,1fr)}#slrExportDialog .ceExportDoor small{grid-column:2;text-align:left}#slrExportDialog #slrExportChosen{width:100%;margin:0}}
+</style>
+<script src="project-ce-markning-test-v6-storage.js?v=6"></script>
+<script src="project-ce-markning-test-v6-models.js?v=6"></script>
+<script src="project-ce-markning-test-v33-module.js?v=33"></script>
+<script src="project-ce-markning-test-v7-personal.js?v=7"></script>
+<script src="project-ce-markning-test-v33.js?v=33" defer></script>
+</head>
+<body>
+<header class="ceTop"><div><strong>CE-märkning <small>TEST 33</small></strong></div><a href="index.html" aria-label="Till Tillsyno" class="ceIcon">⌂</a></header>
+<main class="ceShell">
+ <details class="ceProject" id="ceProject"><summary>Projektuppgifter <span id="ceProjectCaption"></span></summary>
+  <div class="ceMetaIntro">Fyll i uppgifter om utförare och beställare. Objektnumret följer med till nya dörrar.</div>
+  <div class="ceProjectColumns">
+   <section class="ceProjectColumn"><h3>Utförare och CE-ansvarig</h3><p>Företaget och personen som utför installation och CE-kontroll.</p>
+     <div class="ceReuseActions"><button id="ceRememberPerformer" type="button">Spara uppgifter</button><button id="ceRecallPerformer" type="button">Hämta sparade</button></div>
+    <div class="ceGrid">
+     <label>Ansvarig tekniker<input data-meta="technician" placeholder="För- och efternamn"></label>
+     <label>Utförande företag<input data-meta="technicianCompany" placeholder="Företagsnamn"></label>
+     <label>Företagets telefonnummer<input data-meta="technicianPhone" type="tel"></label>
+     <label>Datum<input data-meta="date" type="date"></label>
+     <label>Organisationsnummer<input data-meta="companyOrgNo"></label>
+     <label>Företagsadress<input data-meta="companyAddress"></label>
+     <label>Postnummer och ort<input data-meta="companyPostalPlace"></label>
+     <label>SLR-auktorisation<input data-meta="slrAuthorisation"></label>
+    </div>
+    <details class="ceMetaGroup"><summary>Projektunderskrift</summary><p>Skriv underskriften en gång. Den visas i underskriftsrutorna för alla dörrar, både Med glas och Utan glas. Egenkontroll signeras för valda kontrollpunkter.</p><div class="cePersonalTools"><button type="button" id="ceProjectSign">Skriv underskrift</button><button type="button" id="ceProjectSignClear">Rensa underskrift</button></div><div class="ceSignOptions"><label>Datum under underskrift<input id="ceSignDate" type="date"></label><label>Datumformat<select id="ceSignDateFormat"><option value="day">14 okt 2026</option><option value="month">okt 2026</option></select></label><label>Stil på datum<select id="ceSignDateStyle"><option value="handwriting">Handstil</option><option value="italic">Kursiv</option><option value="regular">Vanlig</option><option value="typewriter">Skrivmaskin</option></select></label></div><span id="ceProjectSignStatus">Ingen projektunderskrift sparad</span></details>
+    <details class="ceMetaGroup"><summary>Teknisk dokumentation och EG-försäkran</summary><div class="ceGrid">
+     <label>Dokumentationsansvarig<input data-meta="documentationName"></label>
+     <label>Dokumentationsadress<input data-meta="documentationAddress"></label>
+     <label>Postnummer och ort<input data-meta="documentationPostalPlace"></label>
+     <label>Namnförtydligande<input data-meta="egSignerName"></label>
+     <label>Titel<input data-meta="egSignerTitle"></label>
+     <label>Ort<input data-meta="egPlace"></label>
+     <label>Datum<input data-meta="egDate" type="date"></label>
+    </div></details>
+   </section>
+   <section class="ceProjectColumn"><h3>Beställare och arbetsplats</h3><p>Beställarens kontaktuppgifter och platsen där dörrarna installeras.</p>
+     <div class="ceReuseActions"><button id="ceRememberCustomer" type="button">Spara uppgifter</button><button id="ceRecallCustomer" type="button">Hämta sparade</button></div>
+    <div class="ceGrid">
+     <label>Beställarens företag<input data-meta="customer"></label>
+     <label>Beställarens adress<input data-meta="address"></label>
+     <label>Postnummer och ort<input data-meta="customerPostalPlace"></label>
+     <label>Kontaktperson<input data-meta="contact"></label>
+     <label>Telefonnummer<input data-meta="phone" type="tel"></label>
+     <label>Objektnummer<input data-meta="objectNo" placeholder="20-01-54-28"></label>
+     <label>Ordernummer<input data-meta="order"></label>
+     <label>Installationsdatum<input data-meta="installationDate" type="date"></label>
+    </div>
+   </section>
+  </div>
+ </details>
+ <div class="ceTools"><button id="ceAddToggle" class="cePrimary" type="button">＋ Dörr</button><button id="ceSaveLocal" type="button">Spara lokalt</button><button id="ceSavePdf" type="button">Spara PDF</button><button id="ceExportSelected" type="button">Exportera valda dörrar</button><label for="ceOpenPdf" class="ceButton">Öppna PDF</label><input id="ceOpenPdf" type="file" hidden accept="application/pdf,.pdf"></div>
+ <form id="ceDoorForm" hidden class="ceDoorForm"><div class="ceGrid">
+  <label>Objektnummer<input id="ceDoorObject" required placeholder="Från projektuppgifterna"></label>
+  <label>Maskintyp<select id="ceDoorCode"></select><input id="ceDoorCustomCode" hidden inputmode="numeric" placeholder="Egen maskintyp"></label>
+  <label>Antal / beteckning<input id="ceDoorCount" type="number" min="1" step="1" required value="1"></label>
+  <label>Automatiknummer<input id="ceDoorNumber" readonly placeholder="Skapas automatiskt"></label>
+  <label>Placering<input id="ceDoorLocation" required placeholder="Entré, plan 1"></label>
+  <label>Modell<input id="ceDoorModel" list="ceAutomationModels" placeholder="Modell eller egen text"></label>
+  <label>Fabrikat<input id="ceDoorBrand" placeholder="Fylls automatiskt"></label>
+ </div><div class="ceFormEnd"><select id="ceDoorType" aria-label="Utförande"><option value="glass">Med glas</option><option value="noGlass">Utan glas</option></select><button id="ceDoorSubmit" class="cePrimary" type="submit">Lägg till</button><button id="ceDoorCancel" type="button">Avbryt</button></div></form>
+ <datalist id="ceAutomationModels"></datalist>
+ <div class="ceListHead"><strong>Dörrautomatiker</strong><span id="ceDoorTotal">0 st</span></div>
+ <div id="ceDoorList"></div>
+ <p id="ceEmpty" class="ceEmpty">Lägg till automatiknummer och placering. Öppna dörren för att fylla i CE-dokumenten.</p>
+ <p id="ceStorageStatus" class="ceMuted" role="status" aria-live="polite"></p>
+</main>
+<div id="ceNotice" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
