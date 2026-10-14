@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#132b38">
 <meta http-equiv="Cache-Control" content="no-cache">
-<title>CE-märkning TEST 25 | Tillsyno</title>
+<title>CE-märkning TEST 26 | Tillsyno</title>
 <style>html[data-auth-pending] body{visibility:hidden!important}</style>
 <script src="vendor/supabase-2.49.10.min.js"></script>
 <script src="auth-config.js"></script>
@@ -30,20 +30,25 @@
 #slrFlowTestDialog .ceSensorInlinePanel button.ceSensorDropOption{display:block!important;min-height:44px!important;font-size:14px!important;text-align:left!important;white-space:normal}
 #slrFlowTestDialog .ceSensorInlinePanel{touch-action:pan-y;overscroll-behavior:contain}
 @media(max-width:460px){.ceDoorRow{grid-template-columns:minmax(0,1fr) 40px 62px;gap:4px}.ceDoorOpen{padding:6px}.ceDoorConfirm button{min-height:44px}}
+.ceReuseActions{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 10px}
+.ceReuseActions button{min-height:40px;padding:8px 11px;font-weight:600;font-size:12px}
+.ceReuseActions button:first-child{background:#e7f2f7;border-color:#99bdcf;color:#154c68}
+@media(max-width:460px){.ceReuseActions button{flex:1 1 130px;min-height:44px}}
 </style>
 <script src="project-ce-markning-test-v6-storage.js?v=6"></script>
 <script src="project-ce-markning-test-v6-models.js?v=6"></script>
-<script src="project-ce-markning-test-v25-module.js?v=25"></script>
+<script src="project-ce-markning-test-v26-module.js?v=26"></script>
 <script src="project-ce-markning-test-v7-personal.js?v=7"></script>
-<script src="project-ce-markning-test-v25.js?v=25" defer></script>
+<script src="project-ce-markning-test-v26.js?v=26" defer></script>
 </head>
 <body>
-<header class="ceTop"><div><strong>CE-märkning <small>TEST 25</small></strong></div><a href="index.html" aria-label="Till Tillsyno" class="ceIcon">⌂</a></header>
+<header class="ceTop"><div><strong>CE-märkning <small>TEST 26</small></strong></div><a href="index.html" aria-label="Till Tillsyno" class="ceIcon">⌂</a></header>
 <main class="ceShell">
  <details class="ceProject" id="ceProject"><summary>Projektuppgifter <span id="ceProjectCaption"></span></summary>
   <div class="ceMetaIntro">Fyll i uppgifter om utförare och beställare. Objektnumret följer med till nya dörrar.</div>
   <div class="ceProjectColumns">
    <section class="ceProjectColumn"><h3>Utförare och CE-ansvarig</h3><p>Företaget och personen som utför installation och CE-kontroll.</p>
+     <div class="ceReuseActions"><button id="ceRememberPerformer" type="button">Spara uppgifter</button><button id="ceRecallPerformer" type="button">Hämta sparade</button></div>
     <div class="ceGrid">
      <label>Ansvarig tekniker<input data-meta="technician" placeholder="För- och efternamn"></label>
      <label>Utförande företag<input data-meta="technicianCompany" placeholder="Företagsnamn"></label>
@@ -66,6 +71,7 @@
     </div></details>
    </section>
    <section class="ceProjectColumn"><h3>Beställare och arbetsplats</h3><p>Beställarens kontaktuppgifter och platsen där dörrarna installeras.</p>
+     <div class="ceReuseActions"><button id="ceRememberCustomer" type="button">Spara uppgifter</button><button id="ceRecallCustomer" type="button">Hämta sparade</button></div>
     <div class="ceGrid">
      <label>Beställarens företag<input data-meta="customer"></label>
      <label>Beställarens adress<input data-meta="address"></label>
