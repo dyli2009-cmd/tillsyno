@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#132b38">
 <meta http-equiv="Cache-Control" content="no-cache">
-<title>CE-märkning TEST 24 | Tillsyno</title>
+<title>CE-märkning TEST 25 | Tillsyno</title>
 <style>html[data-auth-pending] body{visibility:hidden!important}</style>
 <script src="vendor/supabase-2.49.10.min.js"></script>
 <script src="auth-config.js"></script>
@@ -16,14 +16,29 @@
 <script src="vendor/jszip-3.10.1.min.js"></script>
 <link rel="stylesheet" href="project-ce-markning-test-v6.css?v=6">
 <link rel="stylesheet" href="project-ce-markning-test-v7.css?v=7.1">
+<style id="ceTest25Responsive">
+/* Independent door actions work on phone, iPad and desktop. */
+.ceDoorRow{grid-template-columns:minmax(0,1fr) 40px 68px;gap:6px}
+.ceDoorRow>.ceDoorEdit,.ceDoorRow>.ceDoorRemove{min-height:44px;padding:4px;border-radius:7px}
+.ceDoorRow>.ceDoorEdit{font-size:17px}
+.ceDoorRow>.ceDoorRemove{color:#8a2f33;background:#fff6f5;border-color:#dcacab;font-weight:650;font-size:12px}
+.ceDoorConfirm{grid-column:1/-1;display:flex;gap:7px;flex-wrap:wrap;align-items:center;background:#fff8f5;border:1px solid #e1b8af;border-radius:8px;padding:9px}
+.ceDoorConfirm strong{flex:1 1 180px;font-size:12px;color:#663530;overflow-wrap:anywhere}
+.ceDoorConfirm button{min-height:40px;font-weight:650}
+.ceDoorConfirm .ceDoorDeleteYes{background:#9a3038;color:#fff;border-color:#9a3038}
+#slrFlowTestDialog .slrSensorAtField{z-index:7;min-height:0!important;min-width:0!important;margin:0!important;padding:0!important;display:grid;place-items:center;background:#edf6fc!important;color:#124b6b!important;border:1px solid #a9c6d5!important}
+#slrFlowTestDialog .ceSensorInlinePanel button.ceSensorDropOption{display:block!important;min-height:44px!important;font-size:14px!important;text-align:left!important;white-space:normal}
+#slrFlowTestDialog .ceSensorInlinePanel{touch-action:pan-y;overscroll-behavior:contain}
+@media(max-width:460px){.ceDoorRow{grid-template-columns:minmax(0,1fr) 40px 62px;gap:4px}.ceDoorOpen{padding:6px}.ceDoorConfirm button{min-height:44px}}
+</style>
 <script src="project-ce-markning-test-v6-storage.js?v=6"></script>
 <script src="project-ce-markning-test-v6-models.js?v=6"></script>
-<script src="project-ce-markning-test-v24-module.js?v=24"></script>
+<script src="project-ce-markning-test-v25-module.js?v=25"></script>
 <script src="project-ce-markning-test-v7-personal.js?v=7"></script>
-<script src="project-ce-markning-test-v24.js?v=24" defer></script>
+<script src="project-ce-markning-test-v25.js?v=25" defer></script>
 </head>
 <body>
-<header class="ceTop"><div><strong>CE-märkning <small>TEST 24</small></strong></div><a href="index.html" aria-label="Till Tillsyno" class="ceIcon">⌂</a></header>
+<header class="ceTop"><div><strong>CE-märkning <small>TEST 25</small></strong></div><a href="index.html" aria-label="Till Tillsyno" class="ceIcon">⌂</a></header>
 <main class="ceShell">
  <details class="ceProject" id="ceProject"><summary>Projektuppgifter <span id="ceProjectCaption"></span></summary>
   <div class="ceMetaIntro">Fyll i uppgifter om utförare och beställare. Objektnumret följer med till nya dörrar.</div>
