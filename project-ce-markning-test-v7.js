@@ -9,6 +9,24 @@ pdfjsLib.GlobalWorkerOptions.workerSrc='vendor/pdf.worker.min.js';
 const fresh=()=>({format:FORMAT,schema:VERSION,meta:{projectName:'',objectNo:'',siteAddress:'',sitePostalPlace:'',customer:'',address:'',customerPostalPlace:'',contact:'',phone:'',company:'',companyAddress:'',companyPostalPlace:'',companyOrgNo:'',companyContact:'',companyPhone:'',slrAuthorisation:'',order:'',technician:'',technicianCompany:'',technicianPhone:'',date:new Date().toLocaleDateString('sv-SE'),installationDate:'',documentationName:'',documentationAddress:'',documentationPostalPlace:'',egSignerName:'',egSignerTitle:'',egPlace:'',egDate:'',_edited:{}},doors:[],selected:null,slrTestData:null});
 let state=fresh(),editing=null,noticeTimer=0,saveTimer=0,saveRevision=0,savedRevision=0,writeQueue=Promise.resolve(),pdfBusy=false,accountId='';
 const personal=window.TillsynoCEPersonal;
+function updateProjectSignStatus(){const label=$('ceProjectSignStatus');if(label)label.textContent=module.getProjectSignature()?'Projektunderskrift sparad · används när du bockar av en punkt':'Ingen projektunderskrift sparad';}
+function openProjectSignature(){
+ const d=document.createElement('dialog');d.style.cssText='width:min(600px,94vw);border:1px solid #8eafc0;border-radius:12px;padding:16px;background:#fff;color:#17394c';
+ const heading=document.createElement('h3');heading.textContent='Projektunderskrift';d.append(heading);
+ const tip=document.createElement('p');tip.textContent='Skriv en gång. Signaturen placeras först när du bockar av en kontrollpunkt.';d.append(tip);
+ const canvas=document.createElement('canvas');canvas.width=700;canvas.height=200;canvas.style.cssText='display:block;width:100%;height:160px;background:white;border:1px solid #aec8d6;touch-action:none';
+ const ctx=canvas.getContext('2d');ctx.lineWidth=3;ctx.strokeStyle='#183e57';ctx.lineJoin='round';ctx.lineCap='round';
+ let down=false,hasInk=false,prev;const pos=e=>{const box=canvas.getBoundingClientRect();return [(e.clientX-box.left)*canvas.width/box.width,(e.clientY-box.top)*canvas.height/box.height]};
+ canvas.addEventListener('pointerdown',e=>{down=true;prev=pos(e);canvas.setPointerCapture(e.pointerId);ctx.beginPath();ctx.moveTo(...prev);ctx.lineTo(prev[0]+.1,prev[1]+.1);ctx.stroke();hasInk=true;e.preventDefault();});
+ canvas.addEventListener('pointermove',e=>{if(!down)return;const next=pos(e);ctx.beginPath();ctx.moveTo(...prev);ctx.lineTo(...next);ctx.stroke();prev=next;e.preventDefault();});
+ canvas.addEventListener('pointerup',()=>down=false);canvas.addEventListener('pointercancel',()=>down=false);d.append(canvas);
+ const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;margin-top:12px;flex-wrap:wrap';
+ for(const [label,fn] of [['Rensa',()=>{ctx.clearRect(0,0,canvas.width,canvas.height);hasInk=false;}],['Avbryt',()=>d.close()],['Spara underskrift',()=>{if(!hasInk)return notice('Skriv din underskrift först.',true);module.setProjectSignature(canvas.toDataURL('image/png'));updateProjectSignStatus();d.close();notice('Projektunderskrift sparad. Den sätts bara på punkter du aktivt godkänner.');}]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=fn;actions.append(b)}
+ d.append(actions);document.body.append(d);d.addEventListener('close',()=>d.remove(),{once:true});d.showModal();
+}
+$('ceProjectSign').onclick=openProjectSignature;
+$('ceProjectSignClear').onclick=()=>{module.setProjectSignature('');updateProjectSignStatus();notice('Projektunderskriften rensad. Redan signerade punkter ändras inte.');};
+
 const accountDb=()=>{if(!accountId)throw Error('Du måste vara inloggad för att öppna lokalt CE-projekt.');return DB+'-'+encodeURIComponent(accountId);};
 const uid=()=>'ce-'+(crypto.randomUUID?.()||Date.now().toString(36)+Math.random().toString(36).slice(2));
 const current=()=>state.doors.find(door=>door.id===state.selected)||null;
@@ -33,7 +51,7 @@ let countTouched=false;
 const startupControls=Array.from(document.querySelectorAll('button,input,select'));
 startupControls.forEach(control=>control.disabled=true);
 function profileType(door){return module.payload().doorProfiles?.[door.id]||door.type||'glass';}
-function renderMeta(){for(const input of document.querySelectorAll('[data-meta]'))input.value=state.meta[input.dataset.meta]||'';const caption=$('ceProjectCaption');if(caption){caption.textContent=[state.meta.projectName,state.meta.technician].filter(Boolean).join(' · ');caption.title=caption.textContent;}}
+function renderMeta(){updateProjectSignStatus();for(const input of document.querySelectorAll('[data-meta]'))input.value=state.meta[input.dataset.meta]||'';const caption=$('ceProjectCaption');if(caption){caption.textContent=[state.meta.projectName,state.meta.technician].filter(Boolean).join(' · ');caption.title=caption.textContent;}}
 function setProjectField(key,value){
  const allowed=new Set(Array.from(document.querySelectorAll('[data-meta]')).map(input=>input.dataset.meta));if(!allowed.has(key))return;
  if(state.meta[key]===value&&state.meta._edited?.[key]===true)return;
