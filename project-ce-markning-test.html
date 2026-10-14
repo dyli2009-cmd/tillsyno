@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#132b38">
 <meta http-equiv="Cache-Control" content="no-cache">
-<title>CE-märkning TEST 29 | Tillsyno</title>
+<title>CE-märkning TEST 30 | Tillsyno</title>
 <style>html[data-auth-pending] body{visibility:hidden!important}</style>
 <script src="vendor/supabase-2.49.10.min.js"></script>
 <script src="auth-config.js"></script>
@@ -34,15 +34,42 @@
 .ceReuseActions button{min-height:40px;padding:8px 11px;font-weight:600;font-size:12px}
 .ceReuseActions button:first-child{background:#e7f2f7;border-color:#99bdcf;color:#154c68}
 @media(max-width:460px){.ceReuseActions button{flex:1 1 130px;min-height:44px}}
+
+/* CE TEST 30: compact signature date controls + one clear product table. */
+.ceSignOptions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:9px 0}
+.ceSignOptions label{font-size:11px;font-weight:600;min-width:0}
+.ceSignOptions input,.ceSignOptions select{min-height:39px;width:100%;font-size:16px;margin-top:4px}
+#slrFlowTestDialog .slrOverlayDate{text-align:left!important;direction:ltr!important;padding-left:0!important}
+#slrFlowTestDialog .slrOverlayDate::-webkit-date-and-time-value{text-align:left!important;margin:0!important}
+#slrFlowTestDialog .slrOverlayDate::-webkit-datetime-edit{text-align:left!important;padding:0!important}
+#slrFlowTestDialog .ceProductRows{display:grid;gap:0!important;overflow-x:hidden;border:1px solid #c6d7df;border-radius:9px;background:#fff}
+#slrFlowTestDialog .ceProductHead,#slrFlowTestDialog .ceProductTableRow{display:grid!important;grid-template-columns:minmax(105px,1fr) minmax(105px,1fr) minmax(170px,1.6fr) 60px 37px!important;gap:7px!important;align-items:center}
+#slrFlowTestDialog .ceProductHead{background:#e9f2f7;padding:11px!important;font-size:11px;color:#30576c}
+#slrFlowTestDialog .ceProductTableRow{padding:8px 10px!important;margin:0!important;border:0!important;border-bottom:1px solid #dce6ec!important;border-radius:0!important;background:#fff!important}
+#slrFlowTestDialog .ceProductTableRow:last-child{border-bottom:0!important}
+#slrFlowTestDialog .ceProductTableRow input,#slrFlowTestDialog .ceProductTableRow select{font-size:16px!important;min-height:40px!important;margin:0!important;width:100%!important;grid-column:auto!important}
+#slrFlowTestDialog .ceProductTableRow button{min-height:40px!important;margin:0!important;padding:3px!important}
+#slrFlowTestDialog .ceProductTableRow .ceProductExtra{grid-column:2/5!important;font-size:12px!important;min-height:32px!important}
+@media(max-width:650px){
+ .ceSignOptions{grid-template-columns:1fr 1fr}.ceSignOptions label:first-child{grid-column:1/-1}
+ #slrFlowTestDialog .ceProductHead{display:none!important}
+ #slrFlowTestDialog .ceProductTableRow{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 40px!important;gap:6px!important}
+ #slrFlowTestDialog .ceProductTableRow>select{grid-column:1/3!important;grid-row:1}
+ #slrFlowTestDialog .ceProductTableRow>input:nth-child(2){grid-column:1/3!important;grid-row:2}
+ #slrFlowTestDialog .ceProductTableRow>input:nth-child(3){grid-column:1/3!important;grid-row:3}
+ #slrFlowTestDialog .ceProductTableRow>input:nth-child(4){grid-column:1/3!important;grid-row:4}
+ #slrFlowTestDialog .ceProductTableRow>button{grid-column:3;grid-row:1/5}
+ #slrFlowTestDialog .ceProductTableRow .ceProductExtra{grid-column:1/3!important;grid-row:5}
+}
 </style>
 <script src="project-ce-markning-test-v6-storage.js?v=6"></script>
 <script src="project-ce-markning-test-v6-models.js?v=6"></script>
-<script src="project-ce-markning-test-v29-module.js?v=29"></script>
+<script src="project-ce-markning-test-v30-module.js?v=30"></script>
 <script src="project-ce-markning-test-v7-personal.js?v=7"></script>
-<script src="project-ce-markning-test-v29.js?v=29" defer></script>
+<script src="project-ce-markning-test-v30.js?v=30" defer></script>
 </head>
 <body>
-<header class="ceTop"><div><strong>CE-märkning <small>TEST 29</small></strong></div><a href="index.html" aria-label="Till Tillsyno" class="ceIcon">⌂</a></header>
+<header class="ceTop"><div><strong>CE-märkning <small>TEST 30</small></strong></div><a href="index.html" aria-label="Till Tillsyno" class="ceIcon">⌂</a></header>
 <main class="ceShell">
  <details class="ceProject" id="ceProject"><summary>Projektuppgifter <span id="ceProjectCaption"></span></summary>
   <div class="ceMetaIntro">Fyll i uppgifter om utförare och beställare. Objektnumret följer med till nya dörrar.</div>
@@ -59,7 +86,7 @@
      <label>Postnummer och ort<input data-meta="companyPostalPlace"></label>
      <label>SLR-auktorisation<input data-meta="slrAuthorisation"></label>
     </div>
-    <details class="ceMetaGroup"><summary>Projektunderskrift</summary><p>Skriv underskriften en gång. Den visas i underskriftsrutorna för alla dörrar, både Med glas och Utan glas. Egenkontroll signeras för valda kontrollpunkter.</p><div class="cePersonalTools"><button type="button" id="ceProjectSign">Skriv underskrift</button><button type="button" id="ceProjectSignClear">Rensa underskrift</button></div><span id="ceProjectSignStatus">Ingen projektunderskrift sparad</span></details>
+    <details class="ceMetaGroup"><summary>Projektunderskrift</summary><p>Skriv underskriften en gång. Den visas i underskriftsrutorna för alla dörrar, både Med glas och Utan glas. Egenkontroll signeras för valda kontrollpunkter.</p><div class="cePersonalTools"><button type="button" id="ceProjectSign">Skriv underskrift</button><button type="button" id="ceProjectSignClear">Rensa underskrift</button></div><div class="ceSignOptions"><label>Datum under underskrift<input id="ceSignDate" type="date"></label><label>Datumformat<select id="ceSignDateFormat"><option value="day">14 okt 2026</option><option value="month">okt 2026</option></select></label><label>Stil på datum<select id="ceSignDateStyle"><option value="handwriting">Handstil</option><option value="italic">Kursiv</option><option value="regular">Vanlig</option><option value="typewriter">Skrivmaskin</option></select></label></div><span id="ceProjectSignStatus">Ingen projektunderskrift sparad</span></details>
     <details class="ceMetaGroup"><summary>Teknisk dokumentation och EG-försäkran</summary><div class="ceGrid">
      <label>Dokumentationsansvarig<input data-meta="documentationName"></label>
      <label>Dokumentationsadress<input data-meta="documentationAddress"></label>
