@@ -1,4 +1,4 @@
-/* Tillsyno appearance v2.4.316 — a UI-only layer. NO domain data, PDF, canvas, checklist or authentication mutations. */
+/* Tillsyno appearance v2.4.317 — a UI-only layer. NO domain data, PDF, canvas, checklist or authentication mutations. */
 (function(){
 'use strict';
 const KEY='tillsyno-ui-appearance-v1';
@@ -6,7 +6,10 @@ const PALETTES={
  ice:{name:'Isblå',sub:'Klar och luftig',page:'#edf6fb',soft:'#dceef7',accent:'#2b7192',ink:'#173f55'},
  mist:{name:'Nordisk dimblå',sub:'Mjuk blågrå · rekommenderas',page:'#ebf1f5',soft:'#dfeef3',accent:'#356e86',ink:'#233f52'},
  coast:{name:'Havsbris',sub:'Lugn turkosblå',page:'#edf7f6',soft:'#d9f0ef',accent:'#247f85',ink:'#1d4852'},
- sand:{name:'Sand & blå',sub:'Varm och ljus',page:'#f7f5f1',soft:'#e8f0ef',accent:'#356b81',ink:'#2e4b58'}
+ sand:{name:'Sand & blå',sub:'Varm och ljus',page:'#f7f5f1',soft:'#e8f0ef',accent:'#356b81',ink:'#2e4b58'},
+ night:{name:'Midnattsblå',sub:'Mörkblå · ljus och tydlig text',page:'#081523',card:'#152b3e',soft:'#203b50',accent:'#336a96',ink:'#e5eef5'},
+ graphite:{name:'Grafit',sub:'Mörk gråblå · lugn kontrast',page:'#12151c',card:'#232a35',soft:'#2c3543',accent:'#526886',ink:'#eef0f7'},
+ pine:{name:'Mörkgrön',sub:'Djup grönblå · mjukt ljus text',page:'#091c1e',card:'#163436',soft:'#204447',accent:'#32776c',ink:'#e5f4f0'}
 };
 const DEVICES={
  auto:{name:'Automatiskt',sub:'Anpassas efter skärmen',icon:'monitor-smartphone'},
@@ -64,7 +67,7 @@ function persist(){saved={...current};try{localStorage.setItem(KEY,JSON.stringif
 apply(current);
 function choices(){
  return '<div class="ta-section"><h3>Färgtema</h3><div class="ta-palettes">'+Object.keys(PALETTES).map(key=>{
-  const p=PALETTES[key];return '<button type="button" data-ta-theme="'+key+'" class="ta-choice ta-palette-choice'+(draft.theme===key?' is-selected':'')+'" aria-pressed="'+(draft.theme===key)+'"><span class="ta-swatches"><i style="background:'+p.page+'"></i><i style="background:#fff"></i><i style="background:'+p.soft+'"></i><i style="background:'+p.accent+'"></i></span><span class="ta-choice-text"><strong>'+p.name+'</strong><small>'+p.sub+'</small></span><span class="ta-choice-check">'+(draft.theme===key?svg('check'):'')+'</span></button>';
+  const p=PALETTES[key];return '<button type="button" data-ta-theme="'+key+'" class="ta-choice ta-palette-choice'+(draft.theme===key?' is-selected':'')+'" aria-pressed="'+(draft.theme===key)+'"><span class="ta-swatches"><i style="background:'+p.page+'"></i><i style="background:'+(p.card||'#fff')+'"></i><i style="background:'+p.soft+'"></i><i style="background:'+p.accent+'"></i></span><span class="ta-choice-text"><strong>'+p.name+'</strong><small>'+p.sub+'</small></span><span class="ta-choice-check">'+(draft.theme===key?svg('check'):'')+'</span></button>';
  }).join('')+'</div></div>'+
  '<div class="ta-section"><h3>Vilken enhet använder du?</h3><p>Appens vyer anpassas fortfarande automatiskt till skärmens storlek. Ditt val justerar knappstorlek och text där det är lämpligt.</p><div class="ta-devices">'+Object.keys(DEVICES).map(key=>{
   const d=DEVICES[key];return '<button type="button" data-ta-device="'+key+'" class="ta-choice ta-device-choice'+(draft.device===key?' is-selected':'')+'" aria-pressed="'+(draft.device===key)+'"><span class="ta-device-icon">'+svg(key==='auto'?'auto':key)+'</span><span class="ta-choice-text"><strong>'+d.name+'</strong><small>'+d.sub+'</small></span><span class="ta-choice-check">'+(draft.device===key?svg('check'):'')+'</span></button>';
@@ -143,9 +146,10 @@ function placeVersionAtBottom(){
   if(topVersion)topVersion.hidden=true;
  }else if(['all-in-one.html','project-flow.html','security.html'].includes(page)){
   node=document.createElement('small');
-  node.textContent='v2.4.316';
+  node.textContent='v2.4.317';
  }
  if(!node)return;
+ if(!['smartmatch-slr-test.html','project-workspace-smartmatch-test.html'].includes(page))node.textContent='v2.4.317';
  node.classList.add('ta-page-version');
  node.setAttribute('data-ta-version-footer','true');
  document.body.appendChild(node);

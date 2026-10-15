@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.317 – tre nya mörka teman
+
+Midnattsblå, Grafit och Mörkgrön ger mörk omgivning och ljus text. Sju valbara teman, fortsatt val på Hem. Se [ändring och verifiering](DARK_THEMES_317.md).
+
 ## Tillsyno v2.4.316 – stabil vänsterställd CE-dörrad
 
 Rättar den fördröjda mappikonen som sköt dörrtexten mot mitten. Se [orsak och verifiering](CE_DOOR_ROW_316.md).
