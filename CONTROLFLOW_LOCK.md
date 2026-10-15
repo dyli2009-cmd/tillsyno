@@ -154,3 +154,6 @@ När låset är aktivt:
 
 
 2026-10-15, Tillsyno v2.4.350: Två beställda förbättringar. Klicka på stämpelprocenten i Kundmall → Justera stämplar för att skriva 50–300 % direkt och använda värdet för alla aktiva stämplar på alla sidor eller vald stämpel. Använd/Enter tillämpar exakt skala; Klart tillämpar ett påbörjat värde. Återställ 177 %, pillinjer, zoom och inaktiva protokoll bevaras. Detektor tas bort direkt utan webbläsar-popup; en lokal meddelanderad erbjuder Ångra genom befintlig sessionshistorik, med skydd mot att ångra fel senare åtgärd/projekt. Webb/native-källor speglas. Kontrollflödet är åter LÅST.
+
+
+2026-10-15, Tillsyno v2.4.351: Beställd ordning på detektorns ritningsetikett: kod först, bindestreck och löpnummer sist, t.ex. IR-101-12. Utan kod visas bara löpnumret. Samma etikett i arbetsritning, kundmall och PDF-ritning; sparade koder/nummer och namn i protokoll/översikt bevaras. Webb/native-källor speglas. Kontrollflödet är åter LÅST.

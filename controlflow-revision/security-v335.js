@@ -401,7 +401,7 @@ function renumberLegacySecurityItems(list){
  return list
 }
 function securityDrawingLabel(o){if(o.type==='detector'){const base='Detektor '+o.number,code=String(o.id||'').trim();return base+(code&&code!==base?' · '+code:'')}const cfg=SYSTEMS[o.type];return isDoorAutomationItem(o)?(o.id||('D'+(o.serialNumber||o.number||1))):(cfg?.markerLabel||cfg?.label||o.type)+' '+(Number(o.number)||1)}
-function securityDrawingMarkerLabel(o){if(o.type!=='detector')return securityDrawingLabel(o);const number=String(o.number||1),code=String(o.id||'').trim(),base='Detektor '+o.number;return number+(code&&code!==base?' · '+code:'')}
+function securityDrawingMarkerLabel(o){if(o.type!=='detector')return securityDrawingLabel(o);const number=String(o.number||1),code=String(o.id||'').trim(),base='Detektor '+o.number;return code&&code!==base?code+'-'+number:number}
 function createItem(type,x,y){
  const cfg=SYSTEMS[type],automation=ALL_IN_ONE&&(type==='automation'||type==='automation_selfcheck'),serial=automation?nextAutomationSerial():'',n=automation?Number(serial):nextNumber(type),label=automation?'D'+serial:(cfg.markerLabel||cfg.label)+' '+n;
  const o=normalize({uid:crypto.randomUUID(),type,number:n,id:label,idMode:automation?'auto':'manual',serialNumber:serial,modelCode:'',model:'',page,x,y,labelX:Math.max(.035,Math.min(.965,x+(x>.78?-.075:.075))),labelY:Math.max(.035,Math.min(.965,y-.045)),checks:{},customChecks:[],status:'untested',remediationDate:'',remediationSignature:''});
