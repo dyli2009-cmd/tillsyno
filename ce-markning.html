@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#132b38">
 <meta http-equiv="Cache-Control" content="no-cache">
-<title>CE-märkning | Tillsyno v2.4.314</title>
-<link rel="stylesheet" href="ce-file-export-v312.css?v=2.4.314">
+<title>CE-märkning | Tillsyno v2.4.315</title>
+<link rel="stylesheet" href="ce-file-export-v312.css?v=2.4.315">
 <style>html[data-auth-pending] body{visibility:hidden!important}</style>
 <script src="vendor/supabase-2.49.10.min.js"></script>
 <script src="auth-config.js"></script>
@@ -528,9 +528,9 @@ width:14px!important;height:14px!important;min-width:14px!important}}
 </style>
 <script src="project-ce-markning-test-v6-storage.js?v=6"></script>
 <script src="project-ce-markning-test-v6-models.js?v=6"></script>
-<script src="ce-markning-v1-2-module.js?v=2.4.314"></script><script src="ce-file-export-v312.js?v=2.4.314"></script><script src="ce-markning-v1-2-optimize.js?v=1.2"></script>
+<script src="ce-markning-v1-2-module.js?v=2.4.315"></script><script src="ce-file-export-v312.js?v=2.4.315"></script><script src="ce-markning-v1-2-optimize.js?v=1.2"></script>
 <script src="project-ce-markning-test-v7-personal.js?v=7"></script>
-<script src="ce-markning-v1-2.js?v=2.4.314" defer></script>
+<script src="ce-markning-v1-2.js?v=2.4.315" defer></script>
 <style id="ceTest50MenuStyles">
 .ceTools.ceToolsMenu{position:relative;z-index:40;overflow:visible!important;display:flex!important;align-items:center;gap:9px;flex-wrap:wrap;padding:8px 0 12px}
 .ceToolsMenu>#ceAddToggle{min-height:44px;flex:0 0 auto}
@@ -999,14 +999,21 @@ dialog.ceImportCEDialog::backdrop{background:#071d2cba}
 .ceSavedProjects .ceSavedChevron{font-size:20px;transition:transform .15s}
 .ceSavedProjects[open] .ceSavedChevron{transform:rotate(180deg)}
 .ceSavedProjects>summary:focus-visible{outline:2px solid #8ec4da;outline-offset:3px;border-radius:6px}
+/* Keep workspace headings beside their leading icon, not between two edges. */
+#ceWorkspace #ceProject>summary{justify-content:flex-start;text-align:left;gap:8px}
+#ceWorkspace #ceProject>summary .ceProjectLabel{max-width:none;font-size:12px;font-weight:650;white-space:normal;overflow:visible;text-align:left}
+#ceWorkspace #ceProjectCaption{margin-left:auto;text-align:right}
+#ceWorkspace .ceListHead{justify-content:flex-start;text-align:left;gap:8px}
+#ceWorkspace .ceListHead>strong{margin:0;text-align:left}
+#ceWorkspace #ceDoorTotal{margin-left:auto}
 </style>
 </head>
 <body>
-<header class="ceTop"><div class="ceTopIdentity"><strong>CE-märkning</strong><small>v2.4.314</small></div><a href="index.html" aria-label="Hem till Tillsyno" title="Hem till Tillsyno" class="ceIcon ceBackHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></svg><span>Hem</span></a></header>
+<header class="ceTop"><div class="ceTopIdentity"><strong>CE-märkning</strong><small>v2.4.315</small></div><a href="index.html" aria-label="Hem till Tillsyno" title="Hem till Tillsyno" class="ceIcon ceBackHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></svg><span>Hem</span></a></header>
 <main class="ceShell">
 <section id="ceProjectHome" class="ceProjectHome" hidden>
  <div class="ceHomeHero">
-   <div class="ceHomeBrand"><span class="ceHomeBrandText"><strong>Tillsyno</strong><small>CE-märkning</small></span><span class="ceHomeVersion">v2.4.314</span></div>
+   <div class="ceHomeBrand"><span class="ceHomeBrandText"><strong>Tillsyno</strong><small>CE-märkning</small></span><span class="ceHomeVersion">v2.4.315</span></div>
  </div>
  <div class="ceHomeActions">
   <button id="ceHomeOpenPdf" type="button">
@@ -1033,7 +1040,7 @@ dialog.ceImportCEDialog::backdrop{background:#071d2cba}
   </button>
  </div>
 
- <details class="ceProject" id="ceProject"><summary>Projektuppgifter <span id="ceProjectCaption"></span></summary>
+ <details class="ceProject" id="ceProject"><summary><span class="ceProjectLabel">Projektuppgifter</span><span id="ceProjectCaption"></span></summary>
   <div class="ceMetaIntro">Fyll i uppgifter om utförare och beställare. Objektnumret följer med till nya dörrar.</div>
   <div class="ceProjectColumns">
    <section class="ceProjectColumn"><h3>Utförare och CE-ansvarig</h3><p>Företaget och personen som utför installation och CE-kontroll.</p>
@@ -1123,6 +1130,6 @@ dialog.ceImportCEDialog::backdrop{background:#071d2cba}
  <div class="ceImportCEActions"><button id="ceImportCEApply" type="button" disabled>Importera till rätt mappar</button><button id="ceImportCECancel" type="button">Avbryt</button></div>
 </main></dialog>
 <div id="ceNotice" role="status" aria-live="polite" hidden></div>
-<script src="tillsyno-appearance.js?v=2.4.314"></script>
+<script src="tillsyno-appearance.js?v=2.4.315"></script>
 </body>
 </html>

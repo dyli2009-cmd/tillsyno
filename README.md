@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.315 – CE-rubriker till vänster
+
+Projektuppgifter och Dörrar och dörrautomatik håller vänsterkanten. Se [ändring och verifiering](CE_HEADINGS_315.md).
+
 ## Tillsyno v2.4.314 – dörrnummer först i CE-filnamn
 
 Valda ZIP-filer får löpnummer först: 01-Loggbok-…, 01-Egenkontroll-…, 02-Loggbok-…. Se [ändring och verifiering](CE_FILE_NAMES_314.md).

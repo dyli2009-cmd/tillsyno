@@ -58,3 +58,5 @@ När låset är aktivt:
 2026-10-15, Tillsyno v2.4.313: användaren beställde hopfällda sparade projekt, borttagen Fortsätt senaste projekt och direkt Nytt projekt utan extra bekräftelse i CE-märkning. Befintligt arbete arkiveras innan nytt projekt skapas. Endast CE-webbytan ändras funktionellt. Övriga moduler och native-källa får enbart gemensam versions-/cachemärkning. **Kontrollflödet är fortsatt LÅST.**
 
 2026-10-15, Tillsyno v2.4.314: användaren beställde dörrens befintliga löpnummer först i filnamnen vid CE-export av valda filer till ZIP. Prefix fylls med nollor för korrekt namnsortering och omnumrerar inte urval. PDF-innehåll, sparade data och övriga exporttyper bevaras. Native speglar endast versionsmärkningen eftersom CE-modulen saknas där. **Kontrollflödet är fortsatt LÅST.**
+
+2026-10-15, Tillsyno v2.4.315: användaren beställde vänsterställda rubriker vid Projektuppgifter och Dörrar och dörrautomatik i CE-arbetsytan. Ändringen avser enbart CE-HTML/CSS, ingen projektdata, PDF eller funktion. Native saknar CE och speglar endast gemensam versionsmärkning. **Kontrollflödet är fortsatt LÅST.**
