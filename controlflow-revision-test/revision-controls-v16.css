@@ -1,0 +1,9 @@
+/* Smaller result controls; header columns and result logic remain unchanged. */
+body.allInOneApp #securityProtocol .secChoices button{justify-self:center;width:32px!important;min-width:32px!important;height:32px!important;min-height:32px!important;font-size:17px!important;border-radius:4px!important}
+/* Explicit contrast and type sizes avoid inherited theme/text-size overrides. */
+body.allInOneApp #securityProtocol #revisionCheckEditor h3{color:#173b4e!important;font-size:14px!important;line-height:1.35}
+body.allInOneApp #securityProtocol #revisionCheckEditor label{color:#294a5b!important;font-size:12px!important}
+body.allInOneApp #securityProtocol #revisionCheckEditor textarea{background:#fff!important;color:#173b4e!important;font-size:16px!important;border:1px solid #91acba}
+body.allInOneApp #securityProtocol #revisionCheckEditor .revisionCheckEditorActions button{min-height:36px!important;padding:7px 14px!important;font-size:13px!important;line-height:1.2!important;font-weight:600!important;background:#fff!important;color:#234758!important;border:1px solid #a7beca!important}
+body.allInOneApp #securityProtocol #revisionCheckEditor .revisionCheckEditorActions button.primary{background:#245b77!important;color:#fff!important;border-color:#245b77!important}
+body.allInOneApp #securityProtocol #revisionCheckEditor{scroll-margin-bottom:90px;margin-bottom:70px!important}
