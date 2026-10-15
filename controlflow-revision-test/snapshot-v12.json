@@ -1,0 +1,16 @@
+{
+  "testVersion": 12,
+  "previousEntry": "v11/all-in-one.html",
+  "dataCompatibility": "same project keys and work-PDF; optional serviceOverview.layout; missing layout stays compact",
+  "files": {
+    "all-in-one.html": "314b93106857f198028f2d42ac3c93c0df2b2d2331423bdc2bb532dafddb5e6e",
+    "security-v12.js": "8e888c0e3bf9db176612adbd351674284619fb475ab93e6971da614c68c83bcc",
+    "tillsyno-appearance-v12.js": "c1963c06556874320be14c28d8f4abe9fe2e15cc262196f0e5e6041d3e4c2949",
+    "offline-v12.js": "2d0628476abcb94a107175d3420076f8164a7ab5ea51ca4451740d8ca4747ad5",
+    "service-overview-v12.js": "764cd3344cb1c77a30f9d201837cd53c1e1b952797aaa07e1a79b9488dcb6626",
+    "service-overview-v12.css": "69a051a7c67a192ed34cf743a9abfa62e3db8143d28a6659b679956d6ec6a0b4",
+    "revision-checklist-v12.css": "16c3037ed88cfd567d91461fd6ecb0c21ec9feb87f6189c9659638ac318a75cc",
+    "revision-visibility-v11.css": "449e616212228afba97e212967d1b87c8acc27a5367c44f5cef43a94994c2f80",
+    "sw.js": "70d04a4ba550544628bdbf004d5c40075f04fd90ed1588e9477ac78a814ddd65"
+  }
+}
