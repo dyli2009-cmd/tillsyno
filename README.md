@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.309 – godkända TEST v16 införd i Dörrautomatik / Lås
+
+Ordinarie Kontrollflöde öppnar nu den godkända revisionsmodulen för protokoll under Dörrautomatik / Lås. Befintliga arbetsfiler, originalfilnamn, båda importprofilerna, symboltabell, signatur, serviceöversikt och kompakta vyer bevaras. Se [införande och verifiering](CONTROLFLOW_REVISION_RELEASE_309.md). Testkopian och andra fristående moduler är bevarade.
+
 ## SLR TEST v36.132 – direktmarkering utan popup
 
 Knappen **Markera fem dokument kontrollerade** markerar de fem vanliga dokumentmapparna direkt utan extra bekräftelseruta. Produktlista och CE-skylt påverkas inte. Se [versionsanteckning](SMARTMATCH_SLR_TEST_V36_132.md). Endast separat SLR-test ändrat.

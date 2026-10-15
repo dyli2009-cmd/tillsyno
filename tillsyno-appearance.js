@@ -1,4 +1,4 @@
-/* Tillsyno appearance v2.4.307 — a UI-only layer. NO domain data, PDF, canvas, checklist or authentication mutations. */
+/* Tillsyno appearance v2.4.309 — a UI-only layer. NO domain data, PDF, canvas, checklist or authentication mutations. */
 (function(){
 'use strict';
 const KEY='tillsyno-ui-appearance-v1';
@@ -143,7 +143,7 @@ function placeVersionAtBottom(){
   if(topVersion)topVersion.hidden=true;
  }else if(['all-in-one.html','project-flow.html','security.html'].includes(page)){
   node=document.createElement('small');
-  node.textContent='v2.4.307';
+  node.textContent='v2.4.309';
  }
  if(!node)return;
  node.classList.add('ta-page-version');

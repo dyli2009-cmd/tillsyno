@@ -1,0 +1,10 @@
+#revisionImportNotice{margin:6px 12px;padding:9px 12px;border:1px solid #c7d7de;border-radius:9px;display:flex;align-items:center;gap:10px;justify-content:space-between;background:#f4f8fa;color:#203e4e;font:12px/1.4 system-ui}
+#revisionImportNotice[hidden]{display:none}#revisionImportNotice[data-pending="true"]{border-color:#d6a95c;background:#fff7e7;color:#664819}
+#revisionImportNotice button{font:inherit;min-height:36px;padding:7px 11px;flex-shrink:0}
+#revisionImportDialog{box-sizing:border-box;width:min(600px,calc(100vw - 24px));max-height:85dvh;overflow:auto;border:1px solid #b7ccd6;border-radius:14px;padding:18px;background:#f4f8fa;color:#203e4e;font:14px/1.5 system-ui}
+#revisionImportDialog::backdrop{background:#18384680}#revisionImportDialog h2{font-size:18px;margin:0 0 8px}
+#revisionImportDialog p{margin:7px 0}#revisionImportDialog article{padding:12px 0;border-top:1px solid #cbd9e0}
+#revisionImportDialog code{overflow-wrap:anywhere;font-size:13px}#revisionImportDialog label{display:block;margin-top:10px}
+#revisionImportDialog select{box-sizing:border-box;width:100%;min-height:44px;font:14px system-ui;margin:6px 0 8px;padding:8px;border:1px solid #9db9c7;border-radius:7px;background:white;color:#203e4e}
+#revisionImportDialog button{min-height:42px;margin:4px 4px 4px 0;padding:8px 12px;font:14px system-ui}#revisionImportDialog .revisionReviewHelp{font-size:12px;color:#536c79}
+@media(max-width:500px){#revisionImportNotice{margin:5px 6px;align-items:flex-start;flex-direction:column;gap:5px}#revisionImportNotice button{align-self:flex-end}}
