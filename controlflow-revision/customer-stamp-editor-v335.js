@@ -38,7 +38,7 @@ function paint(){
   });
   handle.addEventListener('pointermove',event=>{
    if(drag?.id!==event.pointerId)return;event.preventDefault();const x=drag.x+(event.clientX-drag.startX)/drag.width,y=drag.y+(event.clientY-drag.startY)/drag.height;
-   drag.nextX=bounded(x,drag.rect.width/2);drag.nextY=bounded(y,drag.rect.height/2);handle.style.left=drag.nextX*100+'%';handle.style.top=drag.nextY*100+'%';handle.classList.add('is-dragging');handle.textContent=securityDrawingLabel(o);
+   drag.nextX=bounded(x,drag.rect.width/2);drag.nextY=bounded(y,drag.rect.height/2);handle.style.left=drag.nextX*100+'%';handle.style.top=drag.nextY*100+'%';handle.classList.add('is-dragging');handle.textContent=securityDrawingMarkerLabel(o);
   });
   handle.addEventListener('pointerup',event=>{if(drag?.id!==event.pointerId)return;const d=drag;drag=null;handle.releasePointerCapture(event.pointerId);if(d.nextX!==o.labelX||d.nextY!==o.labelY){o.labelX=d.nextX;o.labelY=d.nextY;commit();}else paint();});
   handle.addEventListener('pointercancel',()=>{drag=null;paint();});
