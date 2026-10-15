@@ -55,6 +55,7 @@
   const enabled=desktopQuery.matches&&device!=='phone'&&device!=='tablet'&&active.size>0;
   document.body.toggleAttribute('data-desktop-protocol-context',enabled);
   document.body.toggleAttribute('data-protocol-context',active.size>0);
+  document.body.toggleAttribute('data-security-project-layout',[...active].some(type=>['alarm','detector','lock','access'].includes(type)));
   const areas=groups.filter(group=>[...group.querySelectorAll('input[value]')].some(input=>active.has(input.value))).map(group=>group.querySelector('summary strong').textContent.trim());
   const names=TYPES.filter(type=>active.has(type)).map(type=>dialog.querySelector('input[value="'+type+'"]')?.closest('label')?.querySelector('strong')?.textContent.trim()||type);
   const texts=active.size>0?[areas.join(' · ')||'Kontrollflöde',names.join(' · '),areas.join(' · ')||'Kontrollflöde']:contextOriginals;
@@ -83,7 +84,7 @@
  function applyPicker(){
   const chosen=new Set([...dialog.querySelectorAll('input[type=checkbox][value]:checked')].map(x=>x.value).filter(x=>TYPES.includes(x)));
   if(!chosen.size)return
-  if(['automation','automation_selfcheck','lock_revision'].some(type=>chosen.has(type))){const target=new URL('controlflow-revision/all-in-one.html',location.href);target.searchParams.set('protocols',[...chosen].join(','));target.searchParams.set('v','2.4.346');location.assign(target.href);return}
+  if(['automation','automation_selfcheck','lock_revision'].some(type=>chosen.has(type))){const target=new URL('controlflow-revision/all-in-one.html',location.href);target.searchParams.set('protocols',[...chosen].join(','));target.searchParams.set('v','2.4.347');location.assign(target.href);return}
   active=chosen;
   write();
   refresh();
