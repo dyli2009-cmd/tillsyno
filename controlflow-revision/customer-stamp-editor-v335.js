@@ -20,7 +20,7 @@ function visibleItems(){return items.filter(o=>(!ALL_IN_ONE||allInOneProtocolAct
 function scale(o){return securityCustomerStampScale(o);}
 function syncControls(){
  const available=dialog.open&&previewMode==='drawing';toggle.hidden=!available;tools.hidden=!available||!editing;toggle.setAttribute('aria-pressed',String(editing));
- const pageItems=visibleItems().filter(o=>o.page===previewPage);if(selected&&!pageItems.some(o=>o.uid===selected))selected=null;
+ const pageItems=visibleItems().filter(o=>o.page===previewPage);if(selected&&!pageItems.some(o=>o.uid===selected)){selected=null;closePercent();}
  const options=[['all','Alla stämplar'],...pageItems.map(o=>[o.uid,securityDrawingLabel(o)])];const key=JSON.stringify(options);
  if(target.dataset.options!==key){target.replaceChildren(...options.map(([value,text])=>new Option(text,value)));target.dataset.options=key;}
  target.value=selected||'all';const list=selected?pageItems.filter(o=>o.uid===selected):visibleItems();
@@ -35,7 +35,7 @@ function paint(){
  overlay.replaceChildren();for(const rect of previewStampRects.filter(r=>r.pageIndex===previewPage-1)){
   const o=items.find(o=>o.uid===rect.uid);if(!o)continue;const handle=document.createElement('button');handle.type='button';handle.className='customerStampHandle';handle.classList.toggle('is-selected',selected===o.uid);handle.dataset.uid=o.uid;handle.setAttribute('aria-label','Flytta stämpel '+securityDrawingLabel(o));handle.setAttribute('aria-pressed',String(selected===o.uid));handle.title='Dra för att flytta '+securityDrawingLabel(o);handle.style.left=rect.x*100+'%';handle.style.top=rect.y*100+'%';handle.style.width=Math.max(24,rect.width*c.width)+'px';handle.style.height=Math.max(24,rect.height*c.height)+'px';
   handle.addEventListener('pointerdown',event=>{
-   if(busy||pinch||event.button!==0)return;event.preventDefault();event.stopPropagation();selected=o.uid;target.value=o.uid;overlay.querySelectorAll('.customerStampHandle').forEach(h=>{h.classList.toggle('is-selected',h===handle);h.setAttribute('aria-pressed',String(h===handle));});syncControls();drag={id:event.pointerId,o,handle,rect,startX:event.clientX,startY:event.clientY,x:o.labelX,y:o.labelY,width:c.width,height:c.height,nextX:o.labelX,nextY:o.labelY};handle.setPointerCapture(event.pointerId);
+   if(busy||pinch||event.button!==0)return;event.preventDefault();event.stopPropagation();closePercent();selected=o.uid;target.value=o.uid;overlay.querySelectorAll('.customerStampHandle').forEach(h=>{h.classList.toggle('is-selected',h===handle);h.setAttribute('aria-pressed',String(h===handle));});syncControls();drag={id:event.pointerId,o,handle,rect,startX:event.clientX,startY:event.clientY,x:o.labelX,y:o.labelY,width:c.width,height:c.height,nextX:o.labelX,nextY:o.labelY};handle.setPointerCapture(event.pointerId);
   });
   handle.addEventListener('pointermove',event=>{
    if(drag?.id!==event.pointerId)return;event.preventDefault();const x=drag.x+(event.clientX-drag.startX)/drag.width,y=drag.y+(event.clientY-drag.startY)/drag.height;
