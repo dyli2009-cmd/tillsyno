@@ -27,3 +27,6 @@ html[data-tillsyno-device="phone"] #secStage .secTarget.detectorIcon::after,html
 #securityDetectors .detectorActions{align-items:center}
 #securityDetectors .detectorActions>button{margin:0}
 #securityDetectors #detectorDrawing{flex:0 0 auto;width:auto;min-height:44px;padding:8px 12px}
+
+/* Let the drawing show through the detector symbol; labels stay fully opaque. */
+#secStage .secTarget.detectorIcon{opacity:.8}

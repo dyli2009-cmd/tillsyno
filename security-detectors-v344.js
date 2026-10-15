@@ -37,6 +37,6 @@
  // Picker/import updates the active protocols independently of work-data saves.
  new MutationObserver(refresh).observe($('allProtocolDialog'),{attributes:true,attributeFilter:['open']});
  const textBefore=securityStatusText;securityStatusText=function(o){return o.type==='detector'&&!isSecurityRemediated(o)?labels[statusOf(o)]:textBefore(o)};
- window.DetectorProtocol={drawPdfIcon(pg,x,y,color,angle){const {rgb,degrees}=PDFLib,rad=angle*Math.PI/180,cos=Math.cos(rad),sin=Math.sin(rad),point=(a,b)=>({x:x+a*cos-b*sin,y:y+a*sin+b*cos}),origin=point(-5,-8);pg.drawRectangle({...origin,width:10,height:16,color,borderColor:rgb(1,1,1),borderWidth:.8,rotate:degrees(angle)});pg.drawCircle({...point(0,4),size:.85,color:rgb(1,1,1)});for(const [a,b,c,d] of [[-3,0,3,0],[-3,0,-2,-5],[3,0,2,-5],[-2,-5,2,-5],[-2.5,-2.5,2.5,-2.5],[0,0,0,-5]])pg.drawLine({start:point(a,b),end:point(c,d),thickness:.65,color:rgb(1,1,1)});}};
+ window.DetectorProtocol={drawPdfIcon(pg,x,y,color,angle){const {rgb,degrees}=PDFLib,rad=angle*Math.PI/180,cos=Math.cos(rad),sin=Math.sin(rad),point=(a,b)=>({x:x+a*cos-b*sin,y:y+a*sin+b*cos}),origin=point(-5,-8);pg.drawRectangle({...origin,width:10,height:16,color,borderColor:rgb(1,1,1),borderWidth:.8,opacity:.8,borderOpacity:.8,rotate:degrees(angle)});pg.drawCircle({...point(0,4),size:.85,color:rgb(1,1,1),opacity:.8});for(const [a,b,c,d] of [[-3,0,3,0],[-3,0,-2,-5],[3,0,2,-5],[-2,-5,2,-5],[-2.5,-2.5,2.5,-2.5],[0,0,0,-5]])pg.drawLine({start:point(a,b),end:point(c,d),thickness:.65,color:rgb(1,1,1),opacity:.8});}};
  refresh();
 })();

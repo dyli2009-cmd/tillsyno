@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.348**
+Aktuell version: **v2.4.349**
 
 Regler:
 - Samma appversion gäller Kontrollflöde, Dörrautomatik, Säkerhetsservice, Brand, Projektflöde och Ritningsverktyg.
@@ -289,3 +289,6 @@ Användarbeslut 15 oktober 2026: alla ändringar av texter, logotyper, ikoner oc
 
 
 2026-10-15, Tillsyno v2.4.348: Beställd kortare detektoretikett på ritningen: endast löpnummer och eventuell kod, t.ex. 12 · IR-101. Ordet Detektor tas bort från arbetsritning, kundmallens ritning och PDF-ritning. Namnet i protokoll och anmärkningsöversikt, sparat ID, numrering, status och övriga objekttyper bevaras. Samma markeringsetikett används under stämpeldragning. Webb/native-källor speglas. Kontrollflödet är åter LÅST.
+
+
+2026-10-15, Tillsyno v2.4.349: Beställd lätt genomskinlig detektorikon. 80 % opacitet på arbetsritningen och i kund-/arbets-PDF:s detektorsymbol. Nummer/kod och stämpeletikett behåller full opacitet. PDF verifierad med nummer/kod utan ordet Detektor, symbolopacitet 0,8 och lyckad sparning/återöppning. Status, koordinater och kontrolluppgifter bevaras. Webb/native-källor speglas. Kontrollflödet är åter LÅST.
