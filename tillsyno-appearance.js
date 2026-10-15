@@ -134,7 +134,7 @@ function placeVersionAtBottom(){
   if(node)node.setAttribute('aria-label','SmartMatch version');
  }else if(page==='project-workspace.html'){
   node=document.querySelector('.pwTitleVersion');
-  if(node)node.textContent=node.textContent.replace(/^\\s*·\\s*/,'').trim();
+  if(node)node.textContent=node.textContent.replace(/^\s*·\s*/,'').trim();
  }else if(page==='drawing-tools.html'){
   node=document.querySelector('.toolHeader .version');
  }else if(cePages.includes(page)){
