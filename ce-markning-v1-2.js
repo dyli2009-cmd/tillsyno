@@ -158,13 +158,10 @@ async function ceClosedState(value){
  await ceDbPut(CE_CLOSED,value);ceClosed=value;
  $('ceWorkspace').hidden=value;$('ceProjectHome').hidden=!value;
  document.body.classList.toggle('ceProjectPickerOpen',!!value);
- if(value)await ceRenderHistory();
+ if(value){$('ceSavedProjects').open=false;await ceRenderHistory();}
 }
 async function ceRenderHistory(){
  const host=$('ceHomeHistory');host.replaceChildren();
- $('ceHomeCurrent').textContent=ceWork()?
-  (state.meta.projectName||'Namnlöst CE-projekt')+' · '+state.doors.length+' dörrar':'Inget aktivt arbete';
- $('ceHomeResume').disabled=!ceWork();
  try{
   const list=await ceHistoryList();$('ceHomeCount').textContent=list.length+' sparade projekt';
   if(!list.length){const p=document.createElement('p');p.textContent='Inga sparade projekt ännu. Ditt arbete sparas automatiskt när du börjar.';host.append(p);}
@@ -784,7 +781,7 @@ async function ceNewProject(){
   window.TillsynoCEOptimize?.reset?.();
   saveRevision++;await enqueueSave();
   renderMeta();renderDoors();resetForm();$('ceProject').open=true;
-  $('ceNewProjectDialog')?.close();
+  $('ceFileExport')?.setAttribute('hidden','');
   ceWorkspaceOpen();await ceClosedState(false);
   storageStatus('Nytt CE-projekt');
   notice('Nytt projekt. Föregående projekt finns i historiken.');
@@ -794,22 +791,9 @@ async function ceNewProject(){
   notice('Kunde inte skapa nytt projekt: '+err.message,true);
  }finally{ceTransition=false;}
 }
-function ceNewProjectDialog(){
- const dialog=$('ceNewProjectDialog');if(!dialog.open)dialog.showModal();
- $('ceNewProjectMessage').textContent='Nuvarande projekt sparas automatiskt lokalt. Du kan också spara en projekt-PDF innan du fortsätter.';
- $('ceNewProjectSave').onclick=async()=>{
-  try{const pdf=await cePrepareProjectFile();download(pdf.bytes,pdf.name,'application/pdf');$('ceNewProjectMessage').textContent='Projekt-PDF skapad. Kontrollera dina nedladdningar innan du fortsätter.';}
-  catch(err){$('ceNewProjectMessage').textContent='PDF-kunde inte sparas: '+err.message;}
- };
- $('ceNewProjectStart').disabled=false;
- $('ceNewProjectStart').onclick=()=>void ceNewProject();
- $('ceNewProjectDiscard').hidden=true;
- $('ceNewProjectCancel').onclick=()=>dialog.close();
-}
 $('ceCloseProject').onclick=()=>void ceClose();
 $('ceOpenSaved').onclick=()=>void ceClose();
-$('ceHomeResume').onclick=async()=>{try{ceWorkspaceOpen();await ceClosedState(false);}catch(err){notice(err.message,true);}};
-$('ceHomeNew').onclick=ceNewProjectDialog;
+$('ceHomeNew').onclick=()=>void ceNewProject();
 $('ceHomeOpenPdf').onclick=()=>$('ceHomePdfPicker').click();
 $('ceHomePdfPicker').onchange=event=>$('ceOpenPdf').onchange(event);
 const ceActionMenus=[...document.querySelectorAll('.ceToolbarMenu')];

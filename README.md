@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.313 – enklare CE-startsida
+
+Två ingångar, hopfälld projekthistorik och direkt Nytt projekt med automatisk arkivering. Se [ändring och verifiering](CE_HOME_313.md).
+
 ## Tillsyno v2.4.312 – CE-filer utan undermappar
 
 Välj dörrar och dokument och spara separata filer i en ZIP. Befintlig komplett mappexport finns kvar. Se [ändring och verifiering](CE_FILE_EXPORT_312.md).
