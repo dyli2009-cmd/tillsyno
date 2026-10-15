@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.355**
+Aktuell version: **v2.4.356**
 
 Regler:
 - Samma appversion gäller Kontrollflöde, Dörrautomatik, Säkerhetsservice, Brand, Projektflöde och Ritningsverktyg.
@@ -314,3 +314,6 @@ Användarbeslut 15 oktober 2026: alla ändringar av texter, logotyper, ikoner oc
 
 
 2026-10-15, Tillsyno v2.4.355: På användarens beställning får CE-märkningens första sida (Öppna projekt-PDF / Nytt projekt) samma datorskala som Tillsynos startsida i v2.4.323: 700 px ram, 640 px valkort, minst 108 px korthöjd, 28/20/14 px rubrik/korttitel/beskrivning och 60 px ikonrutor. Endast dator från 1100 px med hover och precis pekare; uttryckligt telefon-/surfplatteval undantas. Avgränsad CSS under ceProjectPickerOpen; färger och CE-arbetsytans funktioner bevaras. CSS ingår i CE:s offlinecache. Användaren bad även att den gemensamma datorskalan sparas på GitHub: DESKTOP_SIZE_RULES.md är länkad från utvecklingsreglerna och speglas till native-repot. Verifierat i Chromium: 16 före/efter-fall i ljust/mörkt tema; sex datorfall med exakta mått och tio pixelidentiska telefon-/iPad-/manuella enhetsvyer. Nytt projekt, Öppna projekt-PDF och Sparade projekt kontrollerade utan runtime-fel. Ljus dator och mörk låg datorvy bildgranskade. Native saknar CE-modulen och får endast samma synliga appversion och dokumentation. Kontrollflödet är fortsatt LÅST.
+
+
+2026-10-15, Tillsyno v2.4.356: På användarens beställning rättas blinkningen när CE-märkning öppnas. HTML markerar CE-uppstart separat från behörighetskontrollen; befintligt tema visas medan innehållet hålls dolt tills lokala projektuppgifter och rätt startvy är färdiga. Ingen extra laddningsvy läggs till. Startflaggan tas bort i finally även vid lagringsfel. Befintligt val mellan projektmenyn och ett aktivt lokalt CE-projekt samt spara/öppna/stäng bevaras. Endast CE:s initiala synlighet ändras funktionellt; authregler och övriga moduler bevaras. Verifierat i Chromium: 18 starter i telefon/iPad/dator och ljust/mörkt tema, med tomt projekt, aktivt sparat projekt och stängt sparat projekt. IndexedDB-öppning fördröjdes; bildrutornas synlighet kontrollerades utan en enda felaktig vy. Sparade företagsuppgifter och Nytt projekt/Stäng kontrollerade. Ytterligare test av lagringsfel bekräftade att startspärren släpps och befintligt felmeddelande visas. Native saknar CE-modulen och speglar endast det gemensamma versionsnumret och anteckningen. Kontrollflödet är fortsatt LÅST.

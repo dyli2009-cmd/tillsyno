@@ -825,15 +825,17 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&saveRevisi
   }
  }catch(error){storageStatus('Lokal återöppning misslyckades.');notice(error.message,true);}
  finally{
-  renderMeta();renderDoors();
-  if(accountId){
-   startupControls.forEach(control=>control.disabled=false);
-   try{
-    const closed=await ceDbGet(CE_CLOSED);
-    if(closed===true||!ceWork())await ceClosedState(true);
-    else ceWorkspaceOpen();
-   }catch(err){ceWorkspaceOpen();notice('Kunde inte öppna projektväljaren: '+err.message,true);}
-  }
+  try{
+   renderMeta();renderDoors();
+   if(accountId){
+    startupControls.forEach(control=>control.disabled=false);
+    try{
+     const closed=await ceDbGet(CE_CLOSED);
+     if(closed===true||!ceWork())await ceClosedState(true);
+     else ceWorkspaceOpen();
+    }catch(err){ceWorkspaceOpen();notice('Kunde inte öppna projektväljaren: '+err.message,true);}
+   }
+  }finally{document.documentElement.removeAttribute('data-ce-starting');}
  }
 })();
 if('serviceWorker' in navigator){
