@@ -4,7 +4,7 @@
 const dialog=document.getElementById('secPreviewDialog'),wrap=document.getElementById('secPreviewWrap'),canvas=document.getElementById('secPreviewCanvas'),head=dialog?.querySelector('.secPreviewHead');
 if(!head||typeof buildSecurityDrawingPdf!=='function')return;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
-let editing=false,busy=false,selected=null,drag=null,renderSerial=0,pinch=null,wheelTimer=null;
+let editing=false,busy=false,selected=null,drag=null,renderSerial=0,pinch=null,wheelTimer=null,pan=null,suppressClickUntil=0;
 const toggle=document.createElement('button');toggle.type='button';toggle.id='customerStampEdit';toggle.textContent='Justera stämplar';toggle.setAttribute('aria-pressed','false');toggle.hidden=true;head.querySelector('div').append(toggle);
 const tools=document.createElement('div');tools.className='customerStampTools';tools.hidden=true;tools.setAttribute('role','group');tools.setAttribute('aria-label','Justera stämplar');
 const label=document.createElement('label');label.textContent='Storlek för ';const target=document.createElement('select');target.id='customerStampTarget';target.setAttribute('aria-label','Ändra storlek för');label.append(target);
@@ -28,7 +28,7 @@ function syncControls(){
  reset.disabled=busy||!visibleItems().length;target.disabled=busy;exportButton.disabled=busy;done.disabled=busy;
 }
 function paint(){
- syncControls();const active=editing&&dialog.open&&previewMode==='drawing';overlay.hidden=!active;
+ syncControls();wrap.style.cursor=dialog.open&&previewMode==='drawing'?(pan?.moved?'grabbing':'grab'):'';const active=editing&&dialog.open&&previewMode==='drawing';overlay.hidden=!active;
  if(!active){overlay.replaceChildren();return;}
  const c=canvas.getBoundingClientRect(),w=wrap.getBoundingClientRect();overlay.style.left=(c.left-w.left+wrap.scrollLeft)+'px';overlay.style.top=(c.top-w.top+wrap.scrollTop)+'px';overlay.style.width=c.width+'px';overlay.style.height=c.height+'px';overlay.classList.toggle('is-busy',busy);
  overlay.replaceChildren();for(const rect of previewStampRects.filter(r=>r.pageIndex===previewPage-1)){
@@ -62,6 +62,16 @@ arrowWidth.onchange=()=>{if(busy)return;const value=Number(arrowWidth.value);if(
 reset.onclick=()=>{if(busy)return;visibleItems().forEach(o=>{o.customerStampScale=1.77;});selected=null;commit();};
 smaller.onclick=()=>resize(1/1.1);larger.onclick=()=>resize(1.1);target.onchange=()=>{selected=target.value==='all'?null:target.value;paint();};
 toggle.onclick=()=>{editing=!editing;selected=null;paint();};done.onclick=()=>{editing=false;paint();};exportButton.onclick=()=>{if(busy)return;editing=false;dialog.close();document.getElementById('securityExport').click();};
+wrap.addEventListener('pointerdown',event=>{
+ if(event.pointerType!=='mouse'||event.button!==0||previewMode!=='drawing'||!dialog.open||busy||event.target.closest('.customerStampHandle'))return;
+ pan={id:event.pointerId,x:event.clientX,y:event.clientY,left:wrap.scrollLeft,top:wrap.scrollTop,moved:false};wrap.style.justifyContent='safe center';wrap.setPointerCapture(event.pointerId);event.preventDefault();
+});
+wrap.addEventListener('pointermove',event=>{
+ if(!pan||event.pointerId!==pan.id)return;const dx=event.clientX-pan.x,dy=event.clientY-pan.y;if(!pan.moved&&Math.hypot(dx,dy)<3)return;pan.moved=true;event.preventDefault();wrap.style.cursor='grabbing';wrap.scrollLeft=pan.left-dx;wrap.scrollTop=pan.top-dy;
+});
+function endPan(event){if(!pan||event.pointerId!==pan.id)return;if(pan.moved)suppressClickUntil=Date.now()+350;pan=null;if(wrap.hasPointerCapture(event.pointerId))wrap.releasePointerCapture(event.pointerId);paint();}
+wrap.addEventListener('pointerup',endPan);wrap.addEventListener('pointercancel',endPan);
+wrap.addEventListener('click',event=>{if(Date.now()<suppressClickUntil){event.preventDefault();event.stopImmediatePropagation();}},{capture:true});
 const touchDistance=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
 wrap.addEventListener('touchstart',event=>{
  if(previewMode!=='drawing'||!dialog.open||event.touches.length!==2||busy)return;
@@ -76,7 +86,7 @@ wrap.addEventListener('touchmove',event=>{
  wrap.scrollLeft+=rect.left+pinch.x*rect.width-midX;wrap.scrollTop+=rect.top+pinch.y*rect.height-midY;paint();
 },{passive:false});
 function endPinch(event){if(!pinch||event.touches.length>=2)return;pinch=null;renderCustomerPreview();}
-wrap.title='Zooma med två fingrar eller Ctrl + mushjul (⌘ på Mac).';
+wrap.title='Zooma med två fingrar eller Ctrl + mushjul (⌘ på Mac). Dra med vänster musknapp för att flytta ritningen.';
 wrap.addEventListener('wheel',event=>{
  if(previewMode!=='drawing'||!dialog.open||busy||pinch||(!event.ctrlKey&&!event.metaKey))return;
  event.preventDefault();const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width,y=(event.clientY-rect.top)/rect.height,previous=customerPreviewZoom,delta=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?wrap.clientHeight:1);
@@ -85,5 +95,5 @@ wrap.addEventListener('wheel',event=>{
 },{passive:false});
 wrap.addEventListener('touchend',endPinch);wrap.addEventListener('touchcancel',endPinch);
 const originalRender=renderCustomerPreview;renderCustomerPreview=async function(...args){await originalRender(...args);paint();};
-dialog.addEventListener('close',()=>{pinch=null;clearTimeout(wheelTimer);customerPreviewZoom=1;wrap.style.justifyContent='';editing=false;selected=null;drag=null;paint();});window.addEventListener('revision-inline-view',event=>{if(event.detail.id!=='secPreviewDialog'){editing=false;selected=null;drag=null;}paint();});window.addEventListener('resize',()=>requestAnimationFrame(paint));
+dialog.addEventListener('close',()=>{pinch=null;pan=null;clearTimeout(wheelTimer);customerPreviewZoom=1;wrap.style.cursor='';wrap.style.justifyContent='';editing=false;selected=null;drag=null;paint();});window.addEventListener('revision-inline-view',event=>{if(event.detail.id!=='secPreviewDialog'){editing=false;selected=null;drag=null;}paint();});window.addEventListener('resize',()=>requestAnimationFrame(paint));
 })();
