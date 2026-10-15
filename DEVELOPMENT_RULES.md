@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.357**
+Aktuell version: **v2.4.358**
 
 Beställd CE-uppdatering 15 oktober 2026: se [CE_DESKTOP_357.md](CE_DESKTOP_357.md). Delad/flyttbar/storleksjusterbar vy gäller endast dator. Samma enkla Ny dörr-ikon och temakopplad underskrift gäller även iPhone/iPad enligt den kompletterade beställningen. CE-data, PDF-beräkningar, övriga moduler och authregler bevaras. Kontrollflödet är fortsatt låst utanför den fristående CE-modulen.
 
@@ -319,3 +319,6 @@ Användarbeslut 15 oktober 2026: alla ändringar av texter, logotyper, ikoner oc
 
 
 2026-10-15, Tillsyno v2.4.356: På användarens beställning rättas blinkningen när CE-märkning öppnas. HTML markerar CE-uppstart separat från behörighetskontrollen; befintligt tema visas medan innehållet hålls dolt tills lokala projektuppgifter och rätt startvy är färdiga. Ingen extra laddningsvy läggs till. Startflaggan tas bort i finally även vid lagringsfel. Befintligt val mellan projektmenyn och ett aktivt lokalt CE-projekt samt spara/öppna/stäng bevaras. Endast CE:s initiala synlighet ändras funktionellt; authregler och övriga moduler bevaras. Verifierat i Chromium: 18 starter i telefon/iPad/dator och ljust/mörkt tema, med tomt projekt, aktivt sparat projekt och stängt sparat projekt. IndexedDB-öppning fördröjdes; bildrutornas synlighet kontrollerades utan en enda felaktig vy. Sparade företagsuppgifter och Nytt projekt/Stäng kontrollerade. Ytterligare test av lagringsfel bekräftade att startspärren släpps och befintligt felmeddelande visas. Native saknar CE-modulen och speglar endast det gemensamma versionsnumret och anteckningen. Kontrollflödet är fortsatt LÅST.
+
+
+2026-10-15, Tillsyno v2.4.358: Beställd rättning av datorns ZIP-delning i den fristående CE-modulen. Både valda filer och komplett CE-underlag använder samma färdiga ZIP även när webbläsaren nekar direktdelningen. Avbrott ger ingen nedladdning och dubbelklick spärras under delning. Data, PDF-innehåll och godkännanden bevaras. Se CE_ZIP_SHARING_358.md. Kontrollflödet är fortsatt LÅST.

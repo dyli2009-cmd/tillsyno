@@ -2178,14 +2178,15 @@ async function openExport(context){
    const file=slrExportReady;if(!file)return;
    slrDownloadZip(file);slrExportMessage('ZIP-filen hämtas: '+file.name+'. Den kan öppnas på datorn.');
   };
+  let sharing=false;
   $('slrExportShare').onclick=async()=>{
-   const file=slrExportReady;if(!file)return;
-   if(navigator.share&&navigator.canShare?.({files:[file]})){
-    try{await navigator.share({files:[file],title:'CE-dokument · '+file.name});slrExportMessage('ZIP-filen lämnad till delningsmenyn.');}
-    catch(err){if(err.name==='AbortError')slrExportMessage('Delningen avbröts. ZIP-filen finns kvar här.');else slrExportMessage('Kunde inte dela: '+err.message,true);}
-   }else{
-    slrDownloadZip(file);slrExportMessage('Webbläsaren kan inte dela direkt. ZIP-filen hämtas så att du kan bifoga den i mejl.');
-   }
+   const file=slrExportReady;if(!file||sharing)return;
+   sharing=true;$('slrExportShare').disabled=true;
+   try{
+    const result=await window.TillsynoCEFileExport.shareZip(file,slrDownloadZip,'CE-dokument · '+file.name);
+    if(slrExportReady===file)slrExportMessage(result.message);
+   }catch(err){slrExportMessage('Kunde inte dela eller hämta ZIP: '+err.message+'. Använd Spara ZIP för att försöka igen.',true);}
+   finally{sharing=false;$('slrExportShare').disabled=!slrExportReady;}
   };
  }
  const all=bridge?.getItems?.()||[],done=all.filter(obj=>!!completedDoors[obj.id]);

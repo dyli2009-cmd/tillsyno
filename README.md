@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.358 – ZIP kan sparas när direktdelning stoppas
+
+CE-exporten hämtar den färdiga ZIP-filen även när webbläsaren nekar själva delningen. Avbrott behåller filen utan extra hämtning. Gäller både valda filer och komplett CE-underlag. Se [ändring och verifiering](CE_ZIP_SHARING_358.md).
+
 ## Tillsyno v2.4.357 – justerbar CE-vy och temakopplad underskrift
 
 Delad datorvy med tydligare text och menyer högst upp. Samma enkla Ny dörr-ikon på dator, iPhone och iPad. Underskriftens datumfält och omgivning följer valt färgtema. Se [ändring och verifiering](CE_DESKTOP_357.md).

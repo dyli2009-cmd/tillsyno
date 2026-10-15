@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const $=id=>document.getElementById(id),api=window.TillsynoCETest;
-let context=null,ready=null,busy=false,returnFocus=null;
+let context=null,ready=null,busy=false,sharing=false,returnFocus=null;
 const designation=door=>[door.objectNo,door.modelCode,door.serialNumber].every(v=>String(v??'').trim())?[door.objectNo,door.modelCode,door.serialNumber].join('-'):String(door.sourceText||door.objectNo||door.id);
 const node=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;};
 const inputs=group=>[...$(group).querySelectorAll('input:checked')];
@@ -21,6 +21,20 @@ function currentFile(){
 }
 function download(file){
  const url=URL.createObjectURL(file),link=node('a');link.href=url;link.download=file.name;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+}
+// A positive canShare result does not guarantee that the OS accepts this ZIP.
+// Keep the completed file and use the same download for preflight and share failures.
+function shareZip(file,downloadFile,title='CE-dokument'){
+ const cancelled=()=>({kind:'cancelled',message:'Delningen avbröts. ZIP-filen finns kvar här.'});
+ const fallback=()=>{downloadFile(file);return {kind:'downloaded',message:'Direktdelningen kunde inte öppnas. ZIP-filen hämtas: '+file.name+'. Bifoga filen i mejl från Hämtade filer.'};};
+ const recover=error=>error?.name==='AbortError'?cancelled():fallback();
+ let supported=false;
+ try{supported=typeof navigator.share==='function'&&(typeof navigator.canShare!=='function'||navigator.canShare({files:[file]}));}catch(_){supported=false;}
+ if(!supported)return Promise.resolve(fallback());
+ let pending;
+ // Invoke sharing in the original click, before waiting for any other work.
+ try{pending=navigator.share({files:[file],title});}catch(error){return Promise.resolve(recover(error));}
+ return Promise.resolve(pending).then(()=>({kind:'shared',message:'ZIP-filen lämnad till delningsmenyn.'}),recover);
 }
 function setup(){
  if($('ceFileExport'))return;
@@ -50,11 +64,14 @@ function setup(){
  };
  $('ceFilesDownload').onclick=()=>{const file=currentFile();if(file){download(file);message('ZIP-filen sparas: '+file.name);}};
  $('ceFilesShare').onclick=async()=>{
-  const file=currentFile();if(!file)return;
-  if(navigator.share&&navigator.canShare?.({files:[file]})){
-   try{await navigator.share({files:[file],title:'CE-dokument'});message('ZIP-filen lämnad till delningsmenyn.');}
-   catch(error){message(error.name==='AbortError'?'Delningen avbröts. ZIP-filen finns kvar här.':'Kunde inte dela ZIP: '+error.message,error.name!=='AbortError');}
-  }else{download(file);message('ZIP-filen hämtas. Du kan bifoga den i mejl.');}
+  if(sharing)return;
+  try{
+   const file=currentFile();if(!file)return;
+   sharing=true;$('ceFilesShare').disabled=true;
+   const result=await shareZip(file,download);
+   if(ready?.file===file)message(result.message);
+  }catch(error){message('Kunde inte dela eller hämta ZIP: '+error.message+'. Använd Spara ZIP för att försöka igen.',true);}
+  finally{sharing=false;$('ceFilesShare').disabled=!ready||busy;}
  };
 }
 function open(bridge){
@@ -74,5 +91,5 @@ function open(bridge){
  invalidate();$('ceFileExport').hidden=false;$('ceDocumentActions').open=false;
  $('ceFileExport').scrollIntoView({block:'start'});$('ceFilesHeading').focus({preventScroll:true});
 }
-window.TillsynoCEFileExport={open};
+window.TillsynoCEFileExport={open,shareZip};
 })();
