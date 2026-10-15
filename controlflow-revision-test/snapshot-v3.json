@@ -1,0 +1,12 @@
+{
+  "testVersion": 3,
+  "previousEntry": "v2/all-in-one.html",
+  "dataCompatibility": "same project keys and work-PDF format as TEST v2",
+  "files": {
+    "all-in-one.html": "4a1180c76858b843a495f77c8fb49b66acd83c7bcb65f863459caeb37ef658aa",
+    "security-v3.js": "5fcbdce933e781a52e2c1777143fbe5db01e2d747357ef2e51d747549b88a23a",
+    "tillsyno-appearance-v3.js": "09a7e0643bc9f8de04cfb844e227431c0a5de60b0751fab932d76cbaf558076c",
+    "offline-v3.js": "bd454d0d41dadbf47f2af86be90928506b742a1cd414127849b6d2f75acda77a",
+    "sw.js": "d2b750db28d2587d96e6d2eb503bdc8246d4753d8da8ef3c8658db081aebf4e8"
+  }
+}

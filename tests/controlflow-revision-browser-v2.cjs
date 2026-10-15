@@ -57,7 +57,7 @@ async function state(page){return page.evaluate(()=>JSON.parse(JSON.stringify({i
   const context=await browser.newContext({acceptDownloads:true,serviceWorkers:'allow',viewport:{width:820,height:1180},hasTouch:true});
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>{errors.push(e.message);console.error(e.message);});
   await page.addInitScript(()=>{localStorage.setItem('doorservice-all-in-one:sentinel','keep');localStorage.setItem('tillsyno-revision-test-all-in-one:sentinel','keep-v1');});
-  const entry=base+'/controlflow-revision-test/all-in-one.html';
+  const entry=base+'/controlflow-revision-test/v2/all-in-one.html';
   const bytes=await fixture();await page.goto(entry);await choose(page);await upload(page,bytes);
   let s=await state(page);assert.equal(s.pages,1);assert.equal(s.items.length,4);assert.equal(s.items.filter(o=>o.importReview.status==='matched').length,3);assert.equal(s.items.filter(o=>o.importReview.status==='unmatched').length,1);
   for(const [key,value] of Object.entries({company:'Service A',customer:'Customer B',companyContact:'Service contact',contact:'Customer contact',companyPhone:'0300123456',phone:'0701234567',companyAddress:'Service street 1',address:'Customer street 2',companyPostalCode:'432 50',postalCode:'432 56',companyPostalCity:'Service city',postalCity:'Customer city',facilityNo:'765432',agreement:'123456',order:'987654',date:'2025-03-09',nextDate:'2026-03-09'}))assert.equal(s.project[key],value,key);
