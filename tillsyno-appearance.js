@@ -1,4 +1,4 @@
-/* Tillsyno appearance v2.4.304 — a UI-only layer. NO domain data, PDF, canvas, checklist or authentication mutations. */
+/* Tillsyno appearance v2.4.307 — a UI-only layer. NO domain data, PDF, canvas, checklist or authentication mutations. */
 (function(){
 'use strict';
 const KEY='tillsyno-ui-appearance-v1';
@@ -123,8 +123,33 @@ function decorate(root){
   el.dataset.taIcon=name;
  });
 }
+/* Versions belong to the bottom-right edge, never the work toolbar.
+   Move original elements to avoid visual duplicates AND preserve JS IDs/updaters. */
+function placeVersionAtBottom(){
+ const page=(window.location.pathname.split('/').pop()||'index.html').toLowerCase();
+ const cePages=['ce-markning.html','project-ce-markning-test.html','project-ce-markning-test-v60.html'];
+ let node=null;
+ if(page==='smartmatch-slr-test.html'){
+  node=document.querySelector('.pwTitle .pwReleaseLine');
+  if(node)node.setAttribute('aria-label','SmartMatch version');
+ }else if(page==='drawing-tools.html'){
+  node=document.querySelector('.toolHeader .version');
+ }else if(cePages.includes(page)){
+  node=document.querySelector('#ceProjectHome .ceHomeVersion');
+  const topVersion=document.querySelector('.ceTopIdentity>small');
+  if(topVersion)topVersion.hidden=true;
+ }else if(page==='all-in-one.html'){
+  node=document.createElement('small');
+  node.textContent='v2.4.307';
+ }
+ if(!node)return;
+ node.classList.add('ta-page-version');
+ node.setAttribute('data-ta-version-footer','true');
+ document.body.appendChild(node);
+}
 function attach(){
  if(rendered||!document.body)return;rendered=true;
+ placeVersionAtBottom();
  const btn=document.createElement('button');btn.type='button';btn.className='ta-launcher';btn.id='tillsynoAppearanceButton';
  btn.title='Färger och enhet';btn.setAttribute('aria-label','Välj färger, iPhone, iPad eller dator');btn.innerHTML=svg('palette');launcher=btn;
  btn.addEventListener('click',open);
