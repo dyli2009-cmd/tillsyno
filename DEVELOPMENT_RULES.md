@@ -219,3 +219,8 @@ Beställd områdesrubrik, checklistrad och större ritningsstart på dator enlig
 
 
 2026-10-15, Tillsyno v2.4.328: Användaren beställde samma korrekta områdesrubrik och valda checklistnamn på dator, iPhone och iPad. Texten följer protokollvalet på alla enheter; de större måtten aktiveras fortfarande bara på dator. Mobilens och iPadens befintliga typografi och knappar bevaras. Ingen ändring av routing, PDF eller projektdata. Kontrollflödet är åter LÅST.
+
+
+## Gemensamma texter på alla enheter – användarbeslut 15 oktober 2026
+
+Texter och benämningar ska vara identiska på dator, iPhone och iPad. När text ändras ska motsvarande text uppdateras för samtliga enheter och i webb-/iOS-källorna. Endast storlek, radbrytning och layout får anpassas till skärmen; enhetsvillkor får inte lämna kvar gamla formuleringar.
