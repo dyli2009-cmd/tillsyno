@@ -136,3 +136,6 @@ När låset är aktivt:
 
 
 2026-10-15, Tillsyno v2.4.344: Användaren beställde och godkände publicering av Detektorer som eget protokoll och egen flik under Säkerhetsservice. Ikon per fysisk detektor, automatisk lägsta lediga positiva nummer, namn/kod, placering, fyra bedömningar och anmärkning. Samma statusregler, översikt, projektlagring och arbets-/kund-PDF används. Andra objekttyper behåller sin numrering. Blandat val med Dörrautomatik/Lås stöds. Webb och native-källa speglas; fysisk iOS/TestFlight har inte verifierats. Kontrollflödet är åter LÅST efter den avgränsade beställningen.
+
+
+2026-10-15, Tillsyno v2.4.345: Beställd mindre detektorikon på arbetsritningen i Säkerhetsservice. Synlig storlek 22×28 px dator, 20×26 px iPad/surfplatta och 18×24 px telefon; manuellt enhetsval följs. Pekskärm behåller 44×44 px transparent tryckyta. Endast CSS för ritningsikonen ändras; statusfärger, checklistor, placering, PDF-symboler och data bevaras. Webb/native-källor speglas. Kontrollflödet är åter LÅST.
