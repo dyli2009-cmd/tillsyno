@@ -28,7 +28,7 @@
   dialog.dataset.stage='folder';
   back.hidden=false;
   title.textContent=group.querySelector('summary strong').textContent.trim();
-  lead.textContent='Kryssa i ett eller flera protokoll och fortsätt till ritningen.';
+  lead.textContent=group===groups[0]?'Välj checklistor för ritningen eller öppna CE-märkning separat.':'Kryssa i ett eller flera protokoll och fortsätt till ritningen.';
  }
  groups.forEach(group=>{
   group.querySelector('summary').addEventListener('click',event=>{
