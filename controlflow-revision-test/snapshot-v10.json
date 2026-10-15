@@ -1,0 +1,14 @@
+{
+  "testVersion": 10,
+  "previousEntry": "v9/all-in-one.html",
+  "dataCompatibility": "same project keys/work-PDF format; optional project.serviceOverview placement only; counts stay live",
+  "files": {
+    "all-in-one.html": "8b494c050b1c5b9631029c825ac806139e6e228c65de7ff2a861f97413e90d8a",
+    "security-v10.js": "3c740278994b90db5fe47c119a0a720baedaa4895152336e7f171e94fd22f210",
+    "service-overview-v10.js": "26442d0408d4f3f1a5827e4053bccdc734a6eb95fd5e4aececd6a64432f26beb",
+    "service-overview-v10.css": "2e51e0dc22de6f44e664163d50e9c1b657f9412c7a4848ee8b6175c490281440",
+    "tillsyno-appearance-v10.js": "3ec80a3b09b3f073501028be7b7409f7c4afd3ce8b1ebe0b0cab7c5138717de1",
+    "offline-v10.js": "d7fd762a472e739a5d9f3e9714e8ca38331549dbfb735ed670f64eb506132f5e",
+    "sw.js": "7960df08859674ffbb111c8b4499e833c788627cd31e71ac48031aa038d4c378"
+  }
+}
