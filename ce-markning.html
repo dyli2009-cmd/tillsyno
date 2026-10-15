@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#132b38">
 <meta http-equiv="Cache-Control" content="no-cache">
-<title>CE-märkning v1.2.2 | Tillsyno</title>
+<title>CE-märkning | Tillsyno v2.4.312</title>
+<link rel="stylesheet" href="ce-file-export-v312.css?v=2.4.312">
 <style>html[data-auth-pending] body{visibility:hidden!important}</style>
 <script src="vendor/supabase-2.49.10.min.js"></script>
 <script src="auth-config.js"></script>
@@ -527,9 +528,9 @@ width:14px!important;height:14px!important;min-width:14px!important}}
 </style>
 <script src="project-ce-markning-test-v6-storage.js?v=6"></script>
 <script src="project-ce-markning-test-v6-models.js?v=6"></script>
-<script src="ce-markning-v1-2-module.js?v=1.2"></script><script src="ce-markning-v1-2-optimize.js?v=1.2"></script>
+<script src="ce-markning-v1-2-module.js?v=2.4.312"></script><script src="ce-file-export-v312.js?v=2.4.312"></script><script src="ce-markning-v1-2-optimize.js?v=1.2"></script>
 <script src="project-ce-markning-test-v7-personal.js?v=7"></script>
-<script src="ce-markning-v1-2.js?v=1.2.2" defer></script>
+<script src="ce-markning-v1-2.js?v=2.4.312" defer></script>
 <style id="ceTest50MenuStyles">
 .ceTools.ceToolsMenu{position:relative;z-index:40;overflow:visible!important;display:flex!important;align-items:center;gap:9px;flex-wrap:wrap;padding:8px 0 12px}
 .ceToolsMenu>#ceAddToggle{min-height:44px;flex:0 0 auto}
@@ -992,11 +993,11 @@ dialog.ceImportCEDialog::backdrop{background:#071d2cba}
 <link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.307">
 </head>
 <body>
-<header class="ceTop"><div class="ceTopIdentity"><strong>CE-märkning</strong><small>v1.2.2</small></div><a href="index.html" aria-label="Hem till Tillsyno" title="Hem till Tillsyno" class="ceIcon ceBackHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></svg><span>Hem</span></a></header>
+<header class="ceTop"><div class="ceTopIdentity"><strong>CE-märkning</strong><small>v2.4.312</small></div><a href="index.html" aria-label="Hem till Tillsyno" title="Hem till Tillsyno" class="ceIcon ceBackHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></svg><span>Hem</span></a></header>
 <main class="ceShell">
 <section id="ceProjectHome" class="ceProjectHome" hidden>
  <div class="ceHomeHero">
-   <div class="ceHomeBrand"><span class="ceHomeBrandText"><strong>Tillsyno</strong><small>CE-märkning</small></span><span class="ceHomeVersion">v1.2.2</span></div>
+   <div class="ceHomeBrand"><span class="ceHomeBrandText"><strong>Tillsyno</strong><small>CE-märkning</small></span><span class="ceHomeVersion">v2.4.312</span></div>
  </div>
  <div class="ceHomeActions">
   <button id="ceHomeResume" class="ceHomePrimary" type="button">
@@ -1082,7 +1083,8 @@ dialog.ceImportCEDialog::backdrop{background:#071d2cba}
 </div></details>
 <details class="ceToolbarMenu" id="ceDocumentActions"><summary>Dokument &amp; export <span>⌄</span></summary><div class="ceMenuPanel">
 <div class="ceMenuHeading">Dokument och export</div>
-<button id="ceExportSelected" type="button">Exportera CE-underlag (ZIP)<small>Färdiga dörrar till datorn</small></button>
+<button id="ceExportFiles" type="button">Spara valda filer (ZIP)<small>Välj dörrar och dokument · utan undermappar</small></button>
+<button id="ceExportSelected" type="button">Exportera komplett CE-underlag (ZIP)<small>Färdiga dörrar med dokumentmappar</small></button>
 <details class="ceExportAdvanced"><summary>Avancerat</summary><button id="ceOptimizeTemplates" type="button">Optimera PDF-mallar<small>Testa alla eller välj separat</small></button></details>
 </div></details>
 <span class="ceToolbarHint">Autosparas på denna enhet</span>
@@ -1128,6 +1130,6 @@ dialog.ceImportCEDialog::backdrop{background:#071d2cba}
 <button id="ceNewProjectDiscard" type="button" hidden>Starta nytt utan projekt-PDF</button>
 </main></dialog>
 <div id="ceNotice" role="status" aria-live="polite" hidden></div>
-<script src="tillsyno-appearance.js?v=2.4.307"></script>
+<script src="tillsyno-appearance.js?v=2.4.312"></script>
 </body>
 </html>

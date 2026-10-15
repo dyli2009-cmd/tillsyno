@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.312 – CE-filer utan undermappar
+
+Välj dörrar och dokument och spara separata filer i en ZIP. Befintlig komplett mappexport finns kvar. Se [ändring och verifiering](CE_FILE_EXPORT_312.md).
+
 ## Tillsyno v2.4.311 – Färger och enhet på Hem
 
 Utseendeknappen finns endast på startsidan. Sparade val gäller fortfarande i arbetsytorna. Se [ändring och verifiering](APPEARANCE_HOME_ONLY_311.md).

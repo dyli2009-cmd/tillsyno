@@ -52,3 +52,5 @@ När låset är aktivt:
 
 
 2026-10-15, Tillsyno v2.4.311: användaren beställde att Färger och enhet endast ska synas på startsidan. Utseendelagret behåller läsning/tillämpning av sparade inställningar på arbetsytorna men visar och tillåter öppning av inställningsknappen endast i startsidans homeMode. Ingen ändring i domänfunktion, projektdata, PDF eller auth. Webb och iOS speglas. **Kontrollflödet är fortsatt LÅST.**
+
+2026-10-15, Tillsyno v2.4.312: användaren beställde uttryckligen CE-export av valda dokument för valda dörrar till ZIP utan undermappar. Endast den fristående webbmodulen CE-märkning ändras funktionellt. Kontrollflödets protokoll, ritningslogik, importer och godkännanden bevaras; gemensam versions-/cachemärkning höjs. Native-källan saknar CE och får endast samma versionsmärkning. **Kontrollflödet är fortsatt LÅST.**

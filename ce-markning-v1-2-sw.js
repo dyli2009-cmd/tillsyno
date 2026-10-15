@@ -1,7 +1,7 @@
 /* CE-märkning v1.2: only the standalone CE page, never Kontrollflöde. */
-const CACHE='tillsyno-ce-markning-1.2.2-assets-r5';
+const CACHE='tillsyno-ce-markning-2.4.312-assets';
 const FILES=[
- 'ce-markning.html','tillsyno-appearance.css','tillsyno-appearance.js','ce-markning-v1-2.js','ce-markning-v1-2-module.js','ce-markning-v1-2-optimize.js',
+ 'ce-markning.html','tillsyno-appearance.css','tillsyno-appearance.js','ce-markning-v1-2.js','ce-markning-v1-2-module.js','ce-markning-v1-2-optimize.js','ce-file-export-v312.js','ce-file-export-v312.css',
  'project-ce-markning-test-v6.css','project-ce-markning-test-v7.css',
  'project-ce-markning-test-v6-storage.js','project-ce-markning-test-v6-models.js','project-ce-markning-test-v7-personal.js',
  'vendor/pdf-lib.min.js','vendor/pdf.min.js','vendor/pdf.worker.min.js','vendor/jszip-3.10.1.min.js',

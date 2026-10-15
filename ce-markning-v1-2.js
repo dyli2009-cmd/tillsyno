@@ -73,7 +73,7 @@ async function writeLocal(data){const db=await openDb(accountDb());try{await new
 function enqueueSave(){
  clearTimeout(saveTimer);const revision=saveRevision,data=snapshot();
  const operation=writeQueue.catch(()=>{}).then(()=>writeLocal(data));writeQueue=operation;
- operation.then(()=>{savedRevision=Math.max(savedRevision,revision);if(savedRevision===saveRevision)storageStatus('Sparat lokalt · v1.2');}).catch(error=>{storageStatus('Kunde inte spara lokalt.');notice('Sparningen misslyckades: '+error.message,true);});
+ operation.then(()=>{savedRevision=Math.max(savedRevision,revision);if(savedRevision===saveRevision)storageStatus('Sparat lokalt');}).catch(error=>{storageStatus('Kunde inte spara lokalt.');notice('Sparningen misslyckades: '+error.message,true);});
  return operation;
 }
 function save(){
@@ -554,6 +554,7 @@ $('ceDoorForm').onsubmit=async event=>{
 };
 for(const input of document.querySelectorAll('[data-meta]'))input.addEventListener('change',()=>setProjectField(input.dataset.meta,input.value));
 $('ceExportSelected').onclick=()=>{if(!state.doors.length)return notice('Lägg till en dörr först.',true);void module.openExport(bridge).catch(err=>notice('Kunde inte öppna ZIP-exporten: '+err.message,true));};
+$('ceExportFiles').onclick=()=>window.TillsynoCEFileExport.open(bridge);
 const personal=window.TillsynoCEPersonal;
 function personalAccount(){
  const access=window.TillsynoCurrentAccess;
@@ -785,7 +786,7 @@ async function ceNewProject(){
   renderMeta();renderDoors();resetForm();$('ceProject').open=true;
   $('ceNewProjectDialog')?.close();
   ceWorkspaceOpen();await ceClosedState(false);
-  storageStatus('Nytt CE-projekt · v1.2');
+  storageStatus('Nytt CE-projekt');
   notice('Nytt projekt. Föregående projekt finns i historiken.');
  }catch(err){
   module.reset();state=backup.state;module.restore(state);module.restoreAssets(backup.assets);
@@ -831,10 +832,10 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&saveRevisi
   const local=await readLocal();
   if(local){
    state=validateState(local.state);module.restore(state);module.restoreAssets(local.assets);await module.loadTemplates();
-   storageStatus('Ditt lokala CE-projekt återöppnat · v1.2');
+   storageStatus('Ditt lokala CE-projekt återöppnat');
    if(ceWork())ceScheduleAutoHistory(4000);
   }else{
-   storageStatus('Nytt CE-projekt · v1.2');
+   storageStatus('Nytt CE-projekt');
   }
  }catch(error){storageStatus('Lokal återöppning misslyckades.');notice(error.message,true);}
  finally{

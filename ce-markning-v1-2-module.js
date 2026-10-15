@@ -991,7 +991,7 @@ const style=elm("style");style.textContent='#slrFlowTestDialog{width:min(850px,9
 const folderStatusCss=elm("style");folderStatusCss.id="slrFolderStatusCss";folderStatusCss.textContent="#slrFlowTestDialog .slrFolderProgress{margin-left:auto;white-space:nowrap;padding:5px 9px;font-size:12px;font-weight:800;border-radius:18px;background:#e3e9ed;color:#5f7180}#slrFlowTestDialog .slrFolderProgress.is-partial{background:#d3ecd9;color:#19653c}#slrFlowTestDialog .slrFolderProgress.is-done{background:#b8e7c8;color:#126138}#slrFlowTestDialog .slrFolderActions button:disabled{opacity:.45;cursor:not-allowed}#slrFlowTestDialog .slrFolderActions button{font-size:12px}";document.head.append(folderStatusCss);
 const photoStyle=elm('style');photoStyle.id='cePhotoControlsStyle';photoStyle.textContent='#slrFlowTestDialog .cePhotoControls{display:flex;align-items:center;margin:3px 0 7px;gap:6px}#slrFlowTestDialog .cePhotoControls button{min-height:39px!important;padding:7px 11px!important;margin:0!important;font-size:12px!important;font-weight:600!important;white-space:normal!important}#slrFlowTestDialog .cePhotoRemove{background:#fff6f5!important;color:#933c39!important;border-color:#dbaaa5!important}#slrFlowTestDialog .cePhotoUndo{background:#e6f5ea!important;color:#20613f!important;border-color:#a9d3b7!important}';document.head.append(photoStyle);
 const sizeStyle=elm('style');sizeStyle.id='ceSizeStyle';sizeStyle.textContent='#slrFlowTestDialog .ceSizeSummary{display:flex;align-items:center;flex-wrap:wrap;gap:7px;padding:9px 11px;margin:8px 0 12px;background:#edf5fa;border:1px solid #bad1df;border-radius:9px}#slrFlowTestDialog .ceSizeSummary strong{font-size:13px;color:#173d54}#slrFlowTestDialog .ceSizeSummary small{flex:1 1 200px;color:#3b5c6e;font-size:11px}#slrFlowTestDialog .ceSizeSummary button{min-height:38px;margin:0;font-size:11px}#slrFlowTestDialog .ceFolderSize{font-size:11px;color:#315c75;font-weight:600;white-space:nowrap}';document.head.append(sizeStyle);
-const d=elm("dialog");d.id="slrFlowTestDialog";d.innerHTML='<header><div><strong id="slrTestHeading">CE-märkning v1.2</strong><div style="font-size:12px;opacity:.8">Öppna en mapp för att visa verktygen</div></div><button id="slrTestExit" type="button">Stäng ×</button></header><main><div id="slrTestSource" style="font-size:13px;margin:9px 0"></div><div id="ceSizeSummary" class="ceSizeSummary"><strong>Beräknar dokumentstorlek…</strong><small>Storlek före ZIP-komprimering.</small><button type="button" id="ceSizeRecount">Uppdatera storlek</button></div><div id="slrProfilesPanel" style="padding:10px;margin:8px 0;border:1px solid #b8d1dd;border-radius:10px;background:#eff7fc"><label style="font-weight:500" for="slrDoorProfile">Gemensam standard för dörrtyp</label><select id="slrDoorProfile" style="margin:7px 0;width:100%;min-height:42px"><option value="">Ingen profil (manuell)</option><option value="glass">Med glas</option><option value="noGlass">Utan glas</option></select><div id="slrDoorProfileCaption" style="font-size:12px;line-height:1.5;color:#315568"></div><details class="slrProfileSettings"><summary>Inställningar för standard</summary><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:9px"><button id="slrSaveProfileChecks" type="button" style="padding:8px;border:1px solid #8aa9ba;border-radius:7px">Spara som standard</button><button id="slrResetDoorChecks" type="button" style="padding:8px;border:1px solid #8aa9ba;border-radius:7px">Återställ denna dörr</button></div><div style="margin-top:7px;font-size:12px;color:#315568">Öppna en dokumentmapp för att visa eller ändra denna dörr.</div></details></div><div id="slrTestDocRows"></div><div class="slrCompleteBar"><button id="slrMarkFiveReviewed" type="button" title="Markera Riskanalys, Beskrivning av maskin, Loggbok, EG-försäkran och Egenkontroll på denna dörrautomatik">Markera 5 som granskade</button><button id="slrDoneDoor" type="button">Slutför dörr</button><button id="slrCustomerExport" type="button" style="padding:10px 13px;border:1px solid #8aa9ba;border-radius:8px;background:#fff">Exportera CE-underlag</button></div><section id="slrEditor" hidden><div class="slrEditToolbar"><h3 id="slrEditHeading" style="font-size:16px"></h3><button id="slrCloseEditor" type="button">Stäng redigering</button></div><div id="slrFields"></div></section><p id="slrStatusText"></p></main><input id="slrFileSelect" type="file" style="display:none" accept=".pdf,application/pdf"><input id="slrCameraSelect" type="file" hidden accept="image/*" capture="environment"><input id="slrPhotoSelect" type="file" hidden accept="image/*">';
+const d=elm("dialog");d.id="slrFlowTestDialog";d.innerHTML='<header><div><strong id="slrTestHeading">CE-märkning</strong><div style="font-size:12px;opacity:.8">Öppna en mapp för att visa verktygen</div></div><button id="slrTestExit" type="button">Stäng ×</button></header><main><div id="slrTestSource" style="font-size:13px;margin:9px 0"></div><div id="ceSizeSummary" class="ceSizeSummary"><strong>Beräknar dokumentstorlek…</strong><small>Storlek före ZIP-komprimering.</small><button type="button" id="ceSizeRecount">Uppdatera storlek</button></div><div id="slrProfilesPanel" style="padding:10px;margin:8px 0;border:1px solid #b8d1dd;border-radius:10px;background:#eff7fc"><label style="font-weight:500" for="slrDoorProfile">Gemensam standard för dörrtyp</label><select id="slrDoorProfile" style="margin:7px 0;width:100%;min-height:42px"><option value="">Ingen profil (manuell)</option><option value="glass">Med glas</option><option value="noGlass">Utan glas</option></select><div id="slrDoorProfileCaption" style="font-size:12px;line-height:1.5;color:#315568"></div><details class="slrProfileSettings"><summary>Inställningar för standard</summary><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:9px"><button id="slrSaveProfileChecks" type="button" style="padding:8px;border:1px solid #8aa9ba;border-radius:7px">Spara som standard</button><button id="slrResetDoorChecks" type="button" style="padding:8px;border:1px solid #8aa9ba;border-radius:7px">Återställ denna dörr</button></div><div style="margin-top:7px;font-size:12px;color:#315568">Öppna en dokumentmapp för att visa eller ändra denna dörr.</div></details></div><div id="slrTestDocRows"></div><div class="slrCompleteBar"><button id="slrMarkFiveReviewed" type="button" title="Markera Riskanalys, Beskrivning av maskin, Loggbok, EG-försäkran och Egenkontroll på denna dörrautomatik">Markera 5 som granskade</button><button id="slrDoneDoor" type="button">Slutför dörr</button><button id="slrCustomerExport" type="button" style="padding:10px 13px;border:1px solid #8aa9ba;border-radius:8px;background:#fff">Exportera CE-underlag</button></div><section id="slrEditor" hidden><div class="slrEditToolbar"><h3 id="slrEditHeading" style="font-size:16px"></h3><button id="slrCloseEditor" type="button">Stäng redigering</button></div><div id="slrFields"></div></section><p id="slrStatusText"></p></main><input id="slrFileSelect" type="file" style="display:none" accept=".pdf,application/pdf"><input id="slrCameraSelect" type="file" hidden accept="image/*" capture="environment"><input id="slrPhotoSelect" type="file" hidden accept="image/*">';
 document.body.append(d);
 // TEST 60: Attach the single global CE-template importer below the glass choice.
 // The button remains the same DOM node, keeping the controller's click handler.
@@ -2020,6 +2020,59 @@ async function slrPhotoForZip(photo){
  }catch(error){console.warn('CE: kept saved image in ZIP',error);return original;}
 }
 const slrFormatMegabytes=bytes=>(bytes/(1024*1024)).toFixed(1).replace('.',',')+' MB';
+const fileExportAssetIds=new WeakMap();let fileExportAssetSerial=0;
+function fileExportAssetId(asset){if(!asset||typeof asset!=='object')return 0;if(!fileExportAssetIds.has(asset))fileExportAssetIds.set(asset,++fileExportAssetSerial);return fileExportAssetIds.get(asset);}
+function fileExportRevision(context=bridge){
+ const assets=Object.entries(templates).map(([cat,bytes])=>[cat,fileExportAssetId(bytes)]);
+ const products=Object.entries(productFiles).map(([id,product])=>[id,fileExportAssetId(product),fileExportAssetId(product.bytes),product.designation,product.format]);
+ // Background size measurements may initialize empty answer records; those
+ // are not edits and must not invalidate a freshly generated download.
+ const answerState={};
+ for(const [id,records] of Object.entries(answers)){
+  const meaningful=Object.fromEntries(Object.entries(records).filter(([,record])=>Object.keys(record).some(key=>!['fields','signatures'].includes(key)||Object.keys(record[key]||{}).length)));
+  if(Object.keys(meaningful).length)answerState[id]=meaningful;
+ }
+ return JSON.stringify({data:{...payload(),answers:answerState},assets,products,meta:context?.getProjectMeta?.()||{},doors:context?.getItems?.()||[]});
+}
+async function buildFileArchive(selected,selectedCategories,context=bridge,onProgress=null){
+ if(!window.JSZip)throw Error('ZIP-verktyget kunde inte laddas. Öppna sidan med internet först.');
+ if(!selected?.length)throw Error('Välj minst en dörr.');
+ if(!selectedCategories?.length)throw Error('Välj minst ett dokument.');
+ if(new Set(selected.map(obj=>obj.id)).size!==selected.length)throw Error('Samma dörr är vald flera gånger.');
+ const categories=[...new Set(selectedCategories)];
+ if(categories.some(cat=>!cats.includes(cat)))throw Error('Okänd dokumenttyp.');
+ bridge=context||bridge;await loadTemplates();
+ const live=new Map((bridge?.getItems?.()||[]).map(obj=>[obj.id,obj]));
+ for(const obj of selected){
+  if(live.get(obj.id)!==obj)throw Error('Dörrvalet har ändrats. Välj dörrarna igen.');
+  for(const cat of categories){
+   if(!slrDocumentAvailable(obj,cat))throw Error(labelFor(cat)+' saknas eller behöver uppdateras för '+slrDoorDesignation(obj)+'.');
+   saved(obj,cat);
+  }
+  if(categories.includes('Egenkontroll'))slrRequirePointSignatures(obj);
+ }
+ const revision=fileExportRevision(bridge),zip=new window.JSZip(),used=new Set();
+ const categorySizes=Object.fromEntries(categories.map(cat=>[cat,0]));
+ let sourceSize=0,count=0;
+ for(const obj of selected)for(const cat of categories){
+  const photo=cat==='CE-skylt'?doorPhotos[obj.id]:null;
+  const bytes=photo?await slrPhotoForZip(photo):await compose(cat,obj);
+  const ext=photo?(photo.type==='image/png'?'png':'jpg'):cat==='CE-skylt'?(names[cat]?.match(/\.(png|jpe?g)$/i)?.[1]||'pdf').toLowerCase():'pdf';
+  const title=cat==='Tillverkarens försäkran'?'EG-försäkran':labelFor(cat);
+  const stem=slrFolderName(title)+'-'+slrFolderName(slrDoorDesignation(obj));
+  let name=stem+'.'+ext,n=2;
+  while(used.has(name.toLocaleLowerCase('sv-SE')))name=stem+' ('+(n++)+').'+ext;
+  used.add(name.toLocaleLowerCase('sv-SE'));
+  zip.file(name,bytes,{binary:true});
+  sourceSize+=bytes.byteLength;categorySizes[cat]+=bytes.byteLength;count++;
+  onProgress?.(count,selected.length*categories.length,name);
+  await new Promise(resolve=>setTimeout(resolve,0));
+ }
+ const bytes=await zip.generateAsync({type:'uint8array',compression:'DEFLATE',compressionOptions:{level:6},streamFiles:true},meta=>onProgress?.(count,count,'Komprimerar ZIP · '+Math.floor(meta.percent||0)+' %'));
+ if(fileExportRevision(bridge)!==revision)throw Error('Projektet ändrades under exporten. Skapa ZIP-filen igen.');
+ const meta=bridge?.getProjectMeta?.()||{};
+ return {bytes,name:slrFolderName(meta.projectName||meta.objectNo||meta.facilityNo||'CE')+'-valda-filer.zip',doors:selected.length,files:count,sourceSize,categorySizes,revision};
+}
 async function buildFolderArchive(selected,context=bridge,onProgress=null){
  if(!window.JSZip)throw Error('Mappexporten kunde inte laddas. Öppna sidan med internet först.');
  await loadTemplates();
@@ -2146,7 +2199,8 @@ async function openExport(context){
  slrExportMessage(done.length+' färdiga av '+all.length+' dörrar. Välj de du vill exportera.');
  if(!dialog.open)dialog.showModal();
 }
-window.TillsynoCETest={reset,initProject,restore,payload,open,saveTo,verify,getProgress:slrProgress,openExport,buildFolderArchive,
+window.TillsynoCETest={reset,initProject,restore,payload,open,saveTo,verify,getProgress:slrProgress,openExport,buildFolderArchive,buildFileArchive,fileExportRevision,
+ getFileExportTypes:()=>cats.map(cat=>({category:cat,label:cat==='Tillverkarens försäkran'?'EG-försäkran':labelFor(cat)})),
  getProjectSignature:()=>slrSignatureImage(projectSignature),
  getSignatureDisplay:()=>slrSignatureDateInfo(),
  getDoorCustomizations:obj=>slrDoorCustomizedCategories(obj),
