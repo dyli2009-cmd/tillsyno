@@ -309,3 +309,28 @@ html[data-tillsyno-theme] body #appHome .homeBrand>.ta-launcher{
   width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;
  }
 }
+
+/* Licensed entry wrappers may open full-screen app iframes. The inner app then owns
+   the palette launcher, so hide the outer wrapper's launcher to prevent duplicates. */
+html[data-tillsyno-theme] body.workspaceMode>.ta-launcher,
+html[data-tillsyno-theme] body:has(>iframe.licensedFrame)>.ta-launcher{
+ display:none!important;
+}
+/* Licensed module and legacy landing cards only — not work forms or document pages. */
+html[data-tillsyno-theme] body:not(.securityApp):not(.allInOneApp) :is(.shell>.card,.shell>.module,.shell>.list>.choice,.shell .choice,.shell .module){
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body:not(.securityApp):not(.allInOneApp) .shell>.card{
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body:not(.securityApp):not(.allInOneApp) .shell :is(.choice,.module){
+ background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;
+}
+html[data-tillsyno-theme] body:not(.securityApp):not(.allInOneApp) .shell :is(.choice,.module) :is(strong,small){
+ color:inherit!important;
+}
+html[data-tillsyno-theme] body:not(.securityApp):not(.allInOneApp) .shell :is(.choice,.module):focus-visible{
+ outline:2px solid var(--ta-blue)!important;
+}
+/* TV mode keeps large label layout, but it never sets canvas transform or PDF zoom. */
+html[data-tillsyno-device="tv"] body .ta-modal .ta-choice{min-height:71px!important}
