@@ -402,6 +402,21 @@ html[data-tillsyno-theme] body .pwSide{background:var(--ta-card)!important;borde
 html[data-tillsyno-theme] body :is(.pwGroupTitle,.pwGroupAccordion>.pwGroupTitle){
   background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;
 }
+/* Save must match Tillsyno's light header, not SmartMatch's legacy forced blue button. */
+html[data-tillsyno-theme] body .pwHeader .pwHeaderActions > #smartPdfInspect.pwHeaderInspect{
+  background:var(--ta-card)!important;
+  color:var(--ta-blue-dark)!important;
+  border:1px solid var(--ta-border)!important;
+  box-shadow:none!important;
+}
+html[data-tillsyno-theme] body .pwHeader .pwHeaderActions > #smartPdfInspect.pwHeaderInspect:not(:disabled):hover{
+  background:var(--ta-soft2)!important;
+  border-color:var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body .pwHeader .pwHeaderActions > #smartPdfInspect.pwHeaderInspect:focus-visible{
+  outline:2px solid var(--ta-blue)!important;
+  outline-offset:2px;
+}
 html[data-tillsyno-theme] body .pwEmptyCard{box-shadow:var(--ta-shadow)!important}
 html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!important}
 @media(min-width:900px){
