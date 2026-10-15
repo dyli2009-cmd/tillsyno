@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.318 – större och lugnare datorvy
+
+Större arbetsytor och mappkort, mörkblå omgivning och dämpade blågrå fält. Telefon, iPad och startsida bevaras. Se [ändring och verifiering](DESKTOP_LAYOUT_318.md).
+
 ## Tillsyno v2.4.317 – tre nya mörka teman
 
 Midnattsblå, Grafit och Mörkgrön ger mörk omgivning och ljus text. Sju valbara teman, fortsatt val på Hem. Se [ändring och verifiering](DARK_THEMES_317.md).
