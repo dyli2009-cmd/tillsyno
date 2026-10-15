@@ -80,3 +80,5 @@ När låset är aktivt:
 2026-10-15, Tillsyno v2.4.324: användaren godkände större rubriker, beskrivningar och ikoner endast i datorns områdesval. Kortens geometri, telefon/iPad, färgteman, checklistor och funktioner bevaras. **Kontrollflödet är åter LÅST efter den avgränsade ändringen.**
 
 2026-10-15, Tillsyno v2.4.325: användaren beställde uttryckligen större text, ikoner och kryssrutor i datorns checklistval för samtliga tre områden samtidigt. Endast CSS i mappens checkliststadium; telefon/iPad, paletter, protokollinnehåll, PDF och data bevaras. **Kontrollflödet är åter LÅST efter denna ändring.**
+
+2026-10-15, Tillsyno v2.4.326: användaren beställde att datorns ritningsstart visar områdets namn och valda checklistor, med större rubrik och Välj en ritning/Öppna PDF. Endast DOM-presentation och dator-CSS; telefon/iPad, protokollval, PDF och projektdata bevaras. **Kontrollflödet är åter LÅST.**

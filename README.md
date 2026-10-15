@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.326 – tydligare ritningsstart på dator
+
+Aktuellt område och valda checklistor visas i datorns ritningsrubrik. Större ritningsstart; telefon/iPad och färgteman bevaras. Se [ändring och verifiering](DESKTOP_DRAWING_HEADER_326.md).
+
 ## Tillsyno v2.4.325 – tydligare checklistval på dator
 
 Större text, ikoner och kryssrutor för alla tre områden på dator. Telefon/iPad och färgteman bevaras. Se [ändring och verifiering](DESKTOP_CHECKLISTS_325.md).
