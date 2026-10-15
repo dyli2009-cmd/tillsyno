@@ -10,8 +10,9 @@ const tools=document.createElement('div');tools.className='customerStampTools';t
 const label=document.createElement('label');label.textContent='Storlek för ';const target=document.createElement('select');target.id='customerStampTarget';target.setAttribute('aria-label','Ändra storlek för');label.append(target);
 const smaller=button('customerStampSmaller','Stämpel −','Mindre stämplar'),larger=button('customerStampLarger','Stämpel +','Större stämplar'),status=document.createElement('span'),done=button('customerStampDone','Klart'),exportButton=button('customerStampExport','Spara PDF');status.id='customerStampSize';status.setAttribute('role','status');
 const reset=button('customerStampReset','Återställ alla storlekar');
+const arrowLabel=document.createElement('label');arrowLabel.textContent='Pillinje ';const arrowWidth=document.createElement('select');arrowWidth.id='customerArrowWidth';arrowWidth.setAttribute('aria-label','Pillinjens tjocklek');[['mixed','Olika tjocklekar'],['1','Normal'],['1.5','Lite tjockare'],['2','Tjock'],['3','Extra tjock']].forEach(([value,text])=>arrowWidth.append(new Option(text,value)));arrowWidth.options[0].disabled=true;arrowLabel.append(arrowWidth);
 const hint=document.createElement('small');hint.textContent='Dra etiketten för att flytta den. Pilspetsen ligger kvar. Justeringarna sparas i projektet.';
-tools.append(label,smaller,larger,status,reset,done,exportButton,hint);head.after(tools);
+tools.append(label,smaller,larger,status,reset,arrowLabel,done,exportButton,hint);head.after(tools);
 const overlay=document.createElement('div');overlay.className='customerStampOverlay';overlay.hidden=true;wrap.append(overlay);
 function button(id,text,aria=text){const b=document.createElement('button');b.type='button';b.id=id;b.textContent=text;b.setAttribute('aria-label',aria);return b;}
 function visibleItems(){return items.filter(o=>(!ALL_IN_ONE||allInOneProtocolActive(o.type)));}
@@ -23,7 +24,8 @@ function syncControls(){
  if(target.dataset.options!==key){target.replaceChildren(...options.map(([value,text])=>new Option(text,value)));target.dataset.options=key;}
  target.value=selected||'all';const list=selected?pageItems.filter(o=>o.uid===selected):visibleItems();
  const percentages=[...new Set(list.map(o=>Math.round(scale(o)*100)))];status.textContent=percentages.length===1?percentages[0]+'%':percentages.length?'Olika storlekar':'Inga stämplar';
- smaller.disabled=busy||!list.length||list.every(o=>scale(o)<=.5);larger.disabled=busy||!list.length||list.every(o=>scale(o)>=3);reset.disabled=busy||!visibleItems().length;target.disabled=busy;exportButton.disabled=busy;done.disabled=busy;
+ smaller.disabled=busy||!list.length||list.every(o=>scale(o)<=.5);larger.disabled=busy||!list.length||list.every(o=>scale(o)>=3);const widths=[...new Set(list.map(o=>securityCustomerArrowScale(o)))];arrowWidth.value=widths.length===1?String(widths[0]):'mixed';arrowWidth.disabled=busy||!list.length;
+ reset.disabled=busy||!visibleItems().length;target.disabled=busy;exportButton.disabled=busy;done.disabled=busy;
 }
 function paint(){
  syncControls();const active=editing&&dialog.open&&previewMode==='drawing';overlay.hidden=!active;
@@ -56,6 +58,7 @@ async function refresh(){
 }
 function commit(){save();drawMarkers();refresh();}
 function resize(factor){if(busy)return;const list=selected?visibleItems().filter(o=>o.uid===selected):visibleItems();list.forEach(o=>{o.customerStampScale=Math.round(clamp(scale(o)*factor,.5,3)*10000)/10000;});commit();}
+arrowWidth.onchange=()=>{if(busy)return;const value=Number(arrowWidth.value);if(![1,1.5,2,3].includes(value))return;const list=selected?visibleItems().filter(o=>o.uid===selected):visibleItems();list.forEach(o=>{o.customerArrowScale=value;});commit();};
 reset.onclick=()=>{if(busy)return;visibleItems().forEach(o=>{o.customerStampScale=1;});selected=null;commit();};
 smaller.onclick=()=>resize(1/1.1);larger.onclick=()=>resize(1.1);target.onchange=()=>{selected=target.value==='all'?null:target.value;paint();};
 toggle.onclick=()=>{editing=!editing;selected=null;paint();};done.onclick=()=>{editing=false;paint();};exportButton.onclick=()=>{if(busy)return;editing=false;dialog.close();document.getElementById('securityExport').click();};
