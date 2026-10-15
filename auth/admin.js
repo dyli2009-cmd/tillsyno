@@ -17,7 +17,7 @@
    info.append(node('strong','',name),node('small','',user.email+' · '+(user.status==='pending'&&!user.emailVerified?'E-post ej bekräftad':user.protected?'Administratör':remaining)));identity.append(avatar,info);
    row.append(identity,node('div','',undefined));row.lastChild.append(node('span','badge '+user.status,user.protected?'Administratör':labels[user.status]));
    const actions=node('div','actions');
-   const button=(text,action,style='secondary')=>{const b=node('button',style,text);b.type='button';b.disabled=busy;b.addEventListener('click',()=>void perform(action,user));actions.append(b)};
+   const button=(text,action,style='secondary')=>{const b=node('button',style,text);b.type='button';b.disabled=busy;b.addEventListener('click',()=>void perform(action,user));actions.append(b);return b};
    if(user.protected)actions.append(node('span','ownerlabel','Skyddat ägarkonto'));
    else if(user.status==='pending'||user.status==='removed'){
     const b=button(user.status==='pending'?'Godkänn':'Återaktivera','approve');
