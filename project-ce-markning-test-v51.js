@@ -126,6 +126,7 @@ async function ceRenderHistory(){
  const host=$('ceHomeHistory');host.replaceChildren();
  $('ceHomeCurrent').textContent=ceWork()?
   (state.meta.projectName||'Namnlöst CE-projekt')+' · '+state.doors.length+' dörrar':'Inget aktivt arbete';
+ $('ceHomeResume').disabled=!ceWork();
  try{
   const list=await ceHistoryList();$('ceHomeCount').textContent=list.length+' sparade versioner';
   if(!list.length){const p=document.createElement('p');p.textContent='Inga manuella sparningar ännu. Välj Spara lokalt inne i projektet.';host.append(p);}
@@ -599,7 +600,8 @@ $('ceCloseProject').onclick=()=>void ceClose();
 $('ceOpenSaved').onclick=()=>void ceClose();
 $('ceHomeResume').onclick=async()=>{try{ceWorkspaceOpen();await ceClosedState(false);}catch(err){notice(err.message,true);}};
 $('ceHomeNew').onclick=ceNewProjectDialog;
-$('ceHomeOpenPdf').onclick=()=>$('ceOpenPdf').click();
+$('ceHomeOpenPdf').onclick=()=>$('ceHomePdfPicker').click();
+$('ceHomePdfPicker').onchange=event=>$('ceOpenPdf').onchange(event);
 const ceActionMenus=[...document.querySelectorAll('.ceToolbarMenu')];
 for(const menu of ceActionMenus){
  menu.addEventListener('toggle',()=>{if(menu.open)ceActionMenus.forEach(other=>{if(other!==menu)other.open=false;});});
