@@ -129,16 +129,19 @@ function placeVersionAtBottom(){
  const page=(window.location.pathname.split('/').pop()||'index.html').toLowerCase();
  const cePages=['ce-markning.html','project-ce-markning-test.html','project-ce-markning-test-v60.html'];
  let node=null;
- if(page==='smartmatch-slr-test.html'){
+ if(page==='smartmatch-slr-test.html'||page==='project-workspace-smartmatch-test.html'){
   node=document.querySelector('.pwTitle .pwReleaseLine');
   if(node)node.setAttribute('aria-label','SmartMatch version');
+ }else if(page==='project-workspace.html'){
+  node=document.querySelector('.pwTitleVersion');
+  if(node)node.textContent=node.textContent.replace(/^\\s*·\\s*/,'').trim();
  }else if(page==='drawing-tools.html'){
   node=document.querySelector('.toolHeader .version');
  }else if(cePages.includes(page)){
   node=document.querySelector('#ceProjectHome .ceHomeVersion');
   const topVersion=document.querySelector('.ceTopIdentity>small');
   if(topVersion)topVersion.hidden=true;
- }else if(page==='all-in-one.html'){
+ }else if(['all-in-one.html','project-flow.html','security.html'].includes(page)){
   node=document.createElement('small');
   node.textContent='v2.4.307';
  }
