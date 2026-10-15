@@ -1,6 +1,6 @@
-# Checklista revision dörrautomatik – TEST v3
+# Checklista revision dörrautomatik – TEST v4
 
-Aktiv separat testversion med justerad kundmall för revisionschecklistan. [Kundmall TEST v3](CUSTOMER_TEMPLATE_V3.md). Föregående [TEST v2](v2/all-in-one.html) finns kvar. Läsprofilen för textmärkningar och pilar utan P-länkar är oförändrad. Grundkopia: Tillsyno 2.4.308, commit `60b07179296dcf095d2c0bc0603b6af59fc13dc7`. [Profil och verifiering för TEST v2](IMPORT_PROFILE_V2.md). Föregående [TEST v1](v1/all-in-one.html) och dess runtime-filer är bevarade.
+Aktiv separat testversion med projektsignatur, större exporterade automatiketiketter och objektnummer från ritningen. Se [TEST v4](PROJECT_SIGNATURE_V4.md). Föregående [TEST v3](v3/all-in-one.html) finns kvar. Historisk kundmallsändring:  [Kundmall TEST v3](CUSTOMER_TEMPLATE_V3.md). Föregående [TEST v2](v2/all-in-one.html) finns kvar. TEST v4 läser anläggningsnumret från ritningsmärkningens objektprefix; matchning och pilkoordinater är bevarade. Grundkopia: Tillsyno 2.4.308, commit `60b07179296dcf095d2c0bc0603b6af59fc13dc7`. [Profil och verifiering för TEST v2](IMPORT_PROFILE_V2.md). Föregående [TEST v1](v1/all-in-one.html) och dess runtime-filer är bevarade.
 
 Öppna `all-in-one.html`. Följ samma väg som i ordinarie app: Dörrautomatik / Lås → Checklista revision dörrautomatik → Fortsätt till ritning → Öppna PDF. Ritning, Dörrar, Protokoll och Projekt, alla 18 kontrollpunkter samt kundmall och PDF-export är kopierade från originalet.
 

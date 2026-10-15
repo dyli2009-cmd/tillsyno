@@ -14,7 +14,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Checklista revision dörrautomatik – TEST v3</title>
+<title>Checklista revision dörrautomatik – TEST v4</title>
 <link rel="stylesheet" href="style.css?v=1">
 <link rel="stylesheet" href="security.css?v=1"><link rel="stylesheet" href="security-compact.css?v=1"><link rel="stylesheet" href="all-in-one.css?v=1">
 <script src="../vendor/pdf.min.js"></script>
@@ -99,6 +99,7 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
 <script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-revision-test-v2-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
 <link rel="stylesheet" href="tillsyno-appearance.css?v=1">
 <link rel="stylesheet" href="revision-import-v2.css?v=2">
+<link rel="stylesheet" href="revision-signature-v4.css?v=4">
 </head>
 <body class="securityApp allInOneApp" data-view="drawing">
 <div id="tillsynoNavCurtain" aria-hidden="true"></div>
@@ -155,7 +156,7 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
         <p id="secAutomationIdMessage" class="fieldError doorIdMessage" role="status"></p>
         <label class="secLocationField doorLocationField">Placering / Dörrlittra<input id="secLocation"></label>
         <label class="doorStatusField">Slutbedömning<select id="secStatus"><option value="untested">Pågående</option><option value="ok">Godkänd</option><option value="action">Åtgärd krävs</option><option value="fail">Ej godkänd</option></select></label>
-        <label class="doorSignatureField">Teknikerns signatur<input id="secProtocolSignature" readonly placeholder="Projekt"></label>
+        <label class="doorSignatureField">Signatur<input id="secProtocolSignature" readonly placeholder="Projekt"></label>
         <button id="secDelete" class="danger compactDeleteButton">Ta bort objekt</button>
       </div></div>
     </details>
@@ -279,9 +280,11 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
       <label>Postnummer<input id="secCompanyPostalCode" inputmode="numeric"></label>
       <label>Postadress<input id="secCompanyPostalCity"></label>
     </div></section>
-    <section class="projectCard"><div class="projectCardHead"><span>4</span><div><h3>Tekniker & dokument</h3><p>Signatur och logotyp i kundrapporten</p></div></div><div class="grid2">
-      <label>Servicetekniker<input id="secTechnician"></label>
-      <label>Signatur<input id="secSignature" placeholder="Namn / initialer"></label>
+    <section class="projectCard"><div class="projectCardHead"><span>4</span><div><h3>Signatur</h3><p>Signatur och logotyp i kundrapporten</p></div></div><div class="grid2">
+      <input id="secTechnician" type="hidden">
+      <div class="wide revisionSignatureField"><label>Signatur som text<input id="secSignature" placeholder="Namn / initialer"></label>
+<div class="revisionSignatureActions"><button id="revisionSignDraw" type="button" class="secondary">Skriv signatur för hand</button><button id="revisionSignText" type="button" class="secondary">Använd text</button><button id="revisionSignRemove" type="button" class="secondary">Ta bort signatur</button></div>
+<img id="revisionSignaturePreview" alt="Projektets signatur" hidden><p id="revisionSignatureStatus" class="muted">Samma signatur används på alla protokoll i projektet.</p></div>
       <div class="wide secLogoField">
         <span class="secLogoLabel">Företagslogotyp</span>
         <div class="secLogoActions">
@@ -306,9 +309,10 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
 </nav>
 <script src="ui-text-scale-v2.js?v=2"></script><script src="drawing-annotations.js?v=1"></script>
 <script src="session-history.js?v=1"></script>
-<script>window.DOORSERVICE_APP_MODE="all-in-one";</script><script src="offline-work-v2.js?v=2"></script><script src="security-v3.js?v=3"></script><script src="legacy-door-import.js?v=1"></script><script src="revision-callout-profile-v2.js?v=2"></script><script src="all-in-one-v2.js?v=2"></script>
+<script>window.DOORSERVICE_APP_MODE="all-in-one";</script><script src="offline-work-v2.js?v=2"></script><script src="security-v4.js?v=4"></script><script src="legacy-door-import.js?v=1"></script><script src="revision-callout-profile-v4.js?v=4"></script><script src="all-in-one-v2.js?v=2"></script>
+<script src="revision-signature-v4.js?v=4"></script>
 <script src="drawing-transfer-v2.js?v=2"></script>
-<script src="offline-v3.js?v=3"></script>
+<script src="offline-v4.js?v=4"></script>
 <script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let observer=null;function reveal(){if(root.hasAttribute('data-auth-pending')){if(!observer){observer=new MutationObserver(reveal);observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}return}if(observer){observer.disconnect();observer=null}root.classList.add('tillsyno-nav-ready')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',reveal)})();</script>
-<script src="tillsyno-appearance-v3.js?v=3"></script>
+<script src="tillsyno-appearance-v4.js?v=4"></script>
 </body></html>

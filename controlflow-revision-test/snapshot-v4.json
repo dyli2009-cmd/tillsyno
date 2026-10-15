@@ -1,0 +1,15 @@
+{
+  "testVersion": 4,
+  "previousEntry": "v3/all-in-one.html",
+  "dataCompatibility": "same storage and work-PDF format as TEST v2/v3; additive project signature fields",
+  "files": {
+    "all-in-one.html": "37ab67847d1a96c7808cf144cd97c836375c31840ed5bd80571203157f2656d5",
+    "security-v4.js": "b176cb262421de82f33143f388409960c99653c7b9be6a70ac77c7a7949d9332",
+    "tillsyno-appearance-v4.js": "b3936edf5dd5450c2fd724bd9ba4f4f064a9639c706efa607d8f8c0440742999",
+    "offline-v4.js": "06c7a17f571abb04805d3575cbbaf5f3ba8b5dd0d49da77b1897682fe8df3c27",
+    "revision-callout-profile-v4.js": "6bad71b38cc6df8e3b106ed9e5762e1a5bf49edb1544f45f9c5de1c3fed9fba1",
+    "revision-signature-v4.js": "2a0d1398e3e82756b21e6d506f88d7ac74b9620d671a9b33f2185cbf374881c8",
+    "revision-signature-v4.css": "311361f654189886bb745e48d366ad82cfe0950268421c6b25e1d79022e6dea6",
+    "sw.js": "3eeeb6d61f4cce7c644d27bf0da061e5a3bde59def0af34d6e467b2e99cb44af"
+  }
+}
