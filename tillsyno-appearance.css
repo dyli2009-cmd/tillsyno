@@ -1,4 +1,4 @@
-/* Tillsyno appearance v2.4.296. Shared UI-only theme. Never touches PDF pixels, rendered canvases, data or status semantics. */
+/* Tillsyno appearance v2.4.300. Shared UI-only theme. Never touches PDF pixels, rendered canvases, data or status semantics. */
 html[data-tillsyno-theme="ice"]{--ta-page:#edf6fb;--ta-sidebar:#e2f1f8;--ta-soft:#dceef7;--ta-soft2:#eaf5fb;--ta-card:#fff;--ta-header:#e1f0f8;--ta-ink:#173f55;--ta-muted:#587b8d;--ta-blue:#2b7192;--ta-blue-dark:#1e5b78;--ta-border:#c3dce9;--ta-line:#d5e6ef;--ta-highlight:#cce8f5;--ta-shadow:0 10px 27px #173e570e}
 html[data-tillsyno-theme="mist"]{--ta-page:#ebf1f5;--ta-sidebar:#e2edf3;--ta-soft:#dfeef3;--ta-soft2:#edf5f8;--ta-card:#fff;--ta-header:#e2eef4;--ta-ink:#233f52;--ta-muted:#617d8d;--ta-blue:#356e86;--ta-blue-dark:#285b73;--ta-border:#cbdde6;--ta-line:#dce8ee;--ta-highlight:#d6ecf5;--ta-shadow:0 10px 27px #234d600e}
 html[data-tillsyno-theme="coast"]{--ta-page:#edf7f6;--ta-sidebar:#e2f3f0;--ta-soft:#d9f0ef;--ta-soft2:#e8f6f3;--ta-card:#fff;--ta-header:#dcf0eb;--ta-ink:#1d4852;--ta-muted:#587e82;--ta-blue:#247f85;--ta-blue-dark:#1b626c;--ta-border:#c3dedb;--ta-line:#d9ebe7;--ta-highlight:#d9f2ee;--ta-shadow:0 10px 27px #164e490d}
@@ -341,4 +341,117 @@ html[data-tillsyno-theme] body #pwEmpty .pwEmptyCard h1{color:var(--ta-ink)!impo
 html[data-tillsyno-theme] body #pwEmpty #pwHomeStatus{color:var(--ta-muted)!important}
 html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{
  background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important;
+}
+
+/* v2.4.300 CE project visual harmonization */
+/* Palettes in top menus, not in floating corners for SmartMatch and CE. */
+html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar{
+ grid-column:1;grid-row:1;display:flex;align-items:center;gap:6px;justify-self:start;min-width:0;z-index:2
+}
+html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar .pwHome{flex:none}
+html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar .ta-launcher,
+html[data-tillsyno-theme] body > header.ceTop > .ta-launcher{
+ position:relative!important;inset:auto!important;right:auto!important;bottom:auto!important;
+ width:34px!important;min-width:34px!important;height:34px!important;min-height:34px!important;
+ padding:6px!important;margin:0!important;z-index:3!important;flex:none!important;
+ border-radius:9px!important;box-shadow:none!important;opacity:1!important;
+ color:var(--ta-blue-dark)!important;background:var(--ta-card)!important;border-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] body > header.ceTop > .ta-launcher{margin-left:auto!important;margin-right:6px!important}
+html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar .ta-launcher svg,
+html[data-tillsyno-theme] body > header.ceTop > .ta-launcher svg{width:19px;height:19px}
+@media(max-width:520px){
+ html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar{gap:3px}
+ html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar .pwHome{
+  font-size:0!important;min-height:34px;min-width:34px;padding:5px 6px
+ }
+ html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar .pwHome svg{width:17px;height:17px}
+ html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar .ta-launcher{min-width:32px!important;width:32px!important}
+}
+/* CE start cards and recent projects, override older dark-blue !important rules. */
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeBrandText :is(strong,small),
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeHero h2,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeHistoryHeading h3{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeHero p,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeHistoryHeading span,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeFootnote,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeHistory>p{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeBrandMark,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeActionIcon,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHistoryFileIcon{
+ background:var(--ta-soft)!important;color:var(--ta-blue)!important;border-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeActions button{
+ color:var(--ta-ink)!important;background:var(--ta-card)!important;
+ border-color:var(--ta-border)!important;box-shadow:var(--ta-shadow)!important;backdrop-filter:none!important
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeActions button.ceHomePrimary{
+ background:var(--ta-soft2)!important;border-color:var(--ta-blue)!important
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeActions button:hover:not(:disabled){
+ background:var(--ta-soft2)!important;border-color:var(--ta-blue)!important
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeActionCopy strong,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHistoryInfo strong{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeActionCopy small,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHistoryInfo small{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeActionArrow,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeHistoryHeading svg{color:var(--ta-blue-dark)!important}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHistoryRow{
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;
+ box-shadow:var(--ta-shadow)!important
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHistoryButtons button:not(:last-child){
+ background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeHistoryHeading{border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #ceWorkspace{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #ceWorkspace .ceWorkspaceCaption strong{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body #ceWorkspace .ceWorkspaceClose{
+ background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important
+}
+/* "Starta nytt projekt" dialog is CE only; keep its event handlers and data unchanged. */
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog{
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;box-shadow:0 22px 60px #143c5040!important
+}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog .ceNewDialogHeader{
+ background:var(--ta-header)!important;color:var(--ta-ink)!important;border-bottom-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog .ceNewDialogHeader strong{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog :is(.ceNewDialogIcon,.ceNewDialogButtonIcon){
+ background:var(--ta-soft)!important;color:var(--ta-blue-dark)!important
+}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog #ceNewProjectMessage{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog .ceNewProjectActions button:not(#ceNewProjectDiscard){
+ background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog .ceNewProjectActions #ceNewProjectStart{
+ background:var(--ta-soft)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-blue)!important
+}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog .ceNewProjectActions button:hover:not(:disabled){
+ background:var(--ta-highlight)!important;border-color:var(--ta-blue)!important
+}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog .ceNewProjectActions #ceNewProjectCancel{
+ background:var(--ta-card)!important;color:var(--ta-muted)!important;border-color:var(--ta-border)!important
+}
+/* CE headers and toolbar, not PDF previews or status/checklist colors. */
+html[data-tillsyno-theme] body .ceTop .ceTopIdentity small{
+ background:var(--ta-soft2)!important;color:var(--ta-muted)!important;border-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] body .ceTop .ceTopIdentity strong{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body .ceToolbarMenu>summary,
+html[data-tillsyno-theme] body .ceToolbarMenu .ceMenuPanel{
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] body .ceToolbarMenu .ceMenuPanel button:not(.ceMenuDanger){
+ background:var(--ta-soft2)!important;color:var(--ta-ink)!important
+}
+html[data-tillsyno-theme] dialog.ta-modal .ta-head{
+ background:var(--ta-soft2)!important;border-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] dialog.ta-modal .ta-head strong{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] dialog.ta-modal .ta-head small{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] dialog.ta-modal .ta-foot .ta-apply{
+ background:var(--ta-blue)!important;border-color:var(--ta-blue)!important
 }
