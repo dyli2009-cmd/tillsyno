@@ -59,7 +59,7 @@ async function refresh(){
 function commit(){save();drawMarkers();refresh();}
 function resize(factor){if(busy)return;const list=selected?visibleItems().filter(o=>o.uid===selected):visibleItems();list.forEach(o=>{o.customerStampScale=Math.round(clamp(scale(o)*factor,.5,3)*10000)/10000;});commit();}
 arrowWidth.onchange=()=>{if(busy)return;const value=Number(arrowWidth.value);if(![1,1.5,2,3].includes(value))return;const list=selected?visibleItems().filter(o=>o.uid===selected):visibleItems();list.forEach(o=>{o.customerArrowScale=value;});commit();};
-reset.onclick=()=>{if(busy)return;visibleItems().forEach(o=>{o.customerStampScale=1;});selected=null;commit();};
+reset.onclick=()=>{if(busy)return;visibleItems().forEach(o=>{o.customerStampScale=1.77;});selected=null;commit();};
 smaller.onclick=()=>resize(1/1.1);larger.onclick=()=>resize(1.1);target.onchange=()=>{selected=target.value==='all'?null:target.value;paint();};
 toggle.onclick=()=>{editing=!editing;selected=null;paint();};done.onclick=()=>{editing=false;paint();};exportButton.onclick=()=>{if(busy)return;editing=false;dialog.close();document.getElementById('securityExport').click();};
 const touchDistance=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
