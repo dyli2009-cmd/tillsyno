@@ -1,0 +1,12 @@
+{
+  "testVersion": 9,
+  "previousEntry": "v8/all-in-one.html",
+  "dataCompatibility": "same project keys/work-PDF format; additive aoNumber and sourceFileName fields; historical agreement preserved",
+  "files": {
+    "all-in-one.html": "f91aedbb1a142244d8db8eae0e1aade6e68592bf792e6c267bd02c980e839c8d",
+    "security-v9.js": "a942e89dd32ae3e018cffef9e9f80aea97489396d7c3428f7cca0458ffcc7d13",
+    "tillsyno-appearance-v9.js": "0b9b07f3704d1dad7ce40e1df4b87be1260e9f99afd896af54ea12a0d4428e99",
+    "offline-v9.js": "aa934353464a07c46ae63d383d73e586b3a248bfdf361e3b9050066a9e6b1a6d",
+    "sw.js": "a6fe67769be9131300df57f124b6b2134148f876c3d4a18eeeb5d2b5c9fab839"
+  }
+}
