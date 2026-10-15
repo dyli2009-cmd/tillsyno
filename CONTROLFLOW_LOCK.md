@@ -76,3 +76,5 @@ När låset är aktivt:
 2026-10-15, Tillsyno v2.4.321: användaren rapporterade kvarvarande mörkblå färg efter Spara PDF. Endast sparrutans rubrik, bakgrund, alternativ, ikoner och texter kopplas till vald palett på samtliga enheter. Export och dokumentinnehåll bevaras. **Kontrollflödet är åter LÅST.**
 
 2026-10-15, Tillsyno v2.4.322: Användaren rapporterade mörkblå rubrik och plus/minus-knappar i Kundmall. Rubrik, sidindikator, undertitel, navigerings-/textstorleksknappar och stängknapp följer nu vald palett. Själva dokumentets färger och pixlar lämnas orörda. **Kontrollflödet är åter LÅST efter denna beställda temarättning.**
+
+2026-10-15, Tillsyno v2.4.324: användaren godkände större rubriker, beskrivningar och ikoner endast i datorns områdesval. Kortens geometri, telefon/iPad, färgteman, checklistor och funktioner bevaras. **Kontrollflödet är åter LÅST efter den avgränsade ändringen.**
