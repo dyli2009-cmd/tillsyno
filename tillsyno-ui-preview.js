@@ -67,7 +67,7 @@ function navTo(next,add){
  if(next==='ceOpen'){action('ceOpen');return;}
  if(!screens[next])return;
  if(['area','areaSecurity','areaFire'].includes(next)&&state.screen!==next)state.selected=[];
- state.modal='';state.drawer=false;state.accountMenu=false;
+ state.modal='';state.drawer=false;state.accountMenu=false;state.showPalette=false;
  if(add!==false&&state.screen!==next)state.history.push(state.screen);
  state.screen=next;render();scrollTo(0,0);
 }
