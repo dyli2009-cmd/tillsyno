@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.329**
+Aktuell version: **v2.4.330**
 
 Regler:
 - Samma appversion gäller Kontrollflöde, Dörrautomatik, Säkerhetsservice, Brand, Projektflöde och Ritningsverktyg.
@@ -227,3 +227,11 @@ Texter och benämningar ska vara identiska på dator, iPhone och iPad. När text
 
 
 2026-10-15, Tillsyno v2.4.329: Användaren bekräftade samma synliga områdesrubrik och checklistnamn i alla tre områden på dator, iPhone och iPad efter Fortsätt till ritningen. Revisionssidans kompakta CSS dolde checklistnamnen på små enheter. Kontexttext visas nu med normal radbrytning på alla enheter; större mått kvarstår endast på dator. Verifierat i 18 Chromium-flöden genom protokollvalet i två teman och tre enhetsvyer, med synlighetskontroll av underrubriken. Protokollval och befintliga textstorlekar bevaras. Ingen fysisk enhet eller ny TestFlight-build testad. Kontrollflödet är åter LÅST.
+
+
+## Gemensamt innehåll och visuella delar på alla enheter
+
+Användarbeslut 15 oktober 2026: alla ändringar av texter, logotyper, ikoner och andra visuella delar ska gälla dator, iPhone och iPad. Endast storlek, placering, radbrytning och layout anpassas till skärmen. Detta är en generell utvecklingsregel; ingen extra designändring beställs genom regeln.
+
+
+2026-10-15, Tillsyno v2.4.330: Beställd temarättning av Sparad servicefil hittad efter öppning av arbets-PDF. Dialogens bakgrund, rubrik, text, hjälptext, knappar och backdrop följer vald palett på alla enheter. Ingen ändring av Ny service/Fortsätt ändra, PDF-innehåll eller projektdata. 105 färg- och fortsättkontroller passerade i Chromium: sju teman på telefon, iPad och dator med en riktig arbets-PDF med ett objekt. Fortsätt behåller objektet och visar ritningen utan runtime-fel. Ljus iPad-vy bildgranskad. Kontrollflödet är åter LÅST.
