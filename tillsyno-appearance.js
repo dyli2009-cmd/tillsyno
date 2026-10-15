@@ -148,7 +148,8 @@ function attach(){
  const btn=document.createElement('button');btn.type='button';btn.className='ta-launcher';btn.id='tillsynoAppearanceButton';
  btn.title='Färger och enhet';btn.setAttribute('aria-label','Välj färger, iPhone, iPad, dator eller TV');btn.innerHTML=svg('palette');launcher=btn;
  btn.addEventListener('click',open);
- document.body.appendChild(btn);
+ const homeHeader=document.querySelector('#appHome .homeBrand');
+ if(homeHeader){homeHeader.insertBefore(btn,homeHeader.querySelector('#homeProfile')||null);}else document.body.appendChild(btn);
  const d=document.createElement('dialog');d.className='ta-modal';d.id='tillsynoAppearanceDialog';
  d.setAttribute('aria-label','Tillsynos utseende och enhet');
  d.innerHTML='<div class="ta-head"><div><strong>Tillsynos utseende</strong><small>Välj färger och enhetsläge</small></div><button type="button" class="ta-close" aria-label="Stäng">'+svg('close')+'</button></div>'+
