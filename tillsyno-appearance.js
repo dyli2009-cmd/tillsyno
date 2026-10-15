@@ -1,4 +1,4 @@
-/* Tillsyno appearance v2.4.296 — a UI-only layer. NO domain data, PDF, canvas, checklist or authentication mutations. */
+/* Tillsyno appearance v2.4.300 — a UI-only layer. NO domain data, PDF, canvas, checklist or authentication mutations. */
 (function(){
 'use strict';
 const KEY='tillsyno-ui-appearance-v1';
@@ -83,24 +83,6 @@ function open(){
  draft={...current};updateChoices();
  if(!dialog.open)try{dialog.showModal();}catch(_){dialog.setAttribute('open','');}
 }
-function firstOpen(){
- if(saved||!document.querySelector('#appHome'))return;
- const el=document.documentElement;
- const attempt=()=>{
-  if(saved||!dialog)return;
-  if(el.hasAttribute('data-auth-pending'))return;
-  if(!document.querySelector('#appHome')||document.getElementById('appHome').hidden)return;
-  open();
- };
- attempt();
- if(el.hasAttribute('data-auth-pending')){
-  const ob=new MutationObserver(()=>{
-   if(!el.hasAttribute('data-auth-pending')){ob.disconnect();attempt();}
-  });
-  ob.observe(el,{attributes:true,attributeFilter:['data-auth-pending']});
-  setTimeout(()=>ob.disconnect(),15000);
- }
-}
 const ruleList=[
  ["#appHome .homeToolsLink","tool"],
  ["#ceProjectHome .ceHomeActions button","folder"],
@@ -149,7 +131,19 @@ function attach(){
  btn.title='Färger och enhet';btn.setAttribute('aria-label','Välj färger, iPhone, iPad, dator eller TV');btn.innerHTML=svg('palette');launcher=btn;
  btn.addEventListener('click',open);
  const homeHeader=document.querySelector('#appHome .homeBrand');
- if(homeHeader){homeHeader.insertBefore(btn,homeHeader.querySelector('#homeProfile')||null);}else document.body.appendChild(btn);
+ const smartHeader=document.querySelector('body > header.pwHeader');
+ const ceHeader=document.querySelector('body > header.ceTop');
+ if(homeHeader){
+   homeHeader.insertBefore(btn,homeHeader.querySelector('#homeProfile')||null);
+ }else if(smartHeader){
+   const homeLink=smartHeader.querySelector(':scope > .pwHome');
+   if(homeLink){
+     const group=document.createElement('div');group.className='ta-smartmatch-topbar';
+     smartHeader.insertBefore(group,homeLink);group.appendChild(homeLink);group.appendChild(btn);
+   }else smartHeader.prepend(btn);
+ }else if(ceHeader){
+   ceHeader.insertBefore(btn,ceHeader.querySelector('.ceBackHome')||null);
+ }else document.body.appendChild(btn);
  const d=document.createElement('dialog');d.className='ta-modal';d.id='tillsynoAppearanceDialog';
  d.setAttribute('aria-label','Tillsynos utseende och enhet');
  d.innerHTML='<div class="ta-head"><div><strong>Tillsynos utseende</strong><small>Välj färger och enhetsläge</small></div><button type="button" class="ta-close" aria-label="Stäng">'+svg('close')+'</button></div>'+
@@ -185,7 +179,7 @@ function attach(){
   }
  });
  observer.observe(document.body,{childList:true,subtree:true});
- firstOpen();
+ // Palette dialog opens only by explicit button click.
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attach,{once:true});else attach();
 window.TillsynoAppearance={open,get:()=>({...current})};
