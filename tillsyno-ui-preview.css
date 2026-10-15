@@ -103,3 +103,9 @@
 .drawer-panel button svg{width:18px;height:18px}
 .drawer-panel button.active{background:#fff;border-color:#c6deeb}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+
+/* Stable inline icons in labels, breadcrumbs, notices and mock dialog panels. */
+.breadcrumb svg{display:block;flex:none;width:12px;height:12px;stroke-width:1.8}
+.screen-note svg{width:15px;height:15px;display:inline-block;vertical-align:-3px;margin-right:5px}
+.row>svg{display:block;width:20px;height:20px;flex:none}
+.empty>svg{display:block;width:34px;height:34px}
