@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="sv" data-auth-pending>
-<head>
+<head><meta charset="utf-8">
 <script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}var page={ice:'#edf6fb',mist:'#ebf1f5',coast:'#edf7f6',sand:'#f7f5f1',night:'#081523',graphite:'#12151c',pine:'#091c1e'}[theme];document.documentElement.style.setProperty('--tillsyno-route-bg',page);document.documentElement.style.setProperty('background',page,'important');document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
 <style id="tillsyno-route-transition">html{background:var(--tillsyno-route-bg,#ebf1f5)!important}#tillsynoNavCurtain{position:fixed;inset:0;z-index:2147483647;background:var(--tillsyno-route-bg,#ebf1f5);opacity:1;pointer-events:auto;transition:opacity .15s ease}html.tillsyno-nav-ready #tillsynoNavCurtain{opacity:0;pointer-events:none}html.tillsyno-nav-leaving #tillsynoNavCurtain{opacity:1;pointer-events:auto}@media(prefers-reduced-motion:reduce){#tillsynoNavCurtain{transition:none}}</style>
 
 <style id="tillsyno-auth-screen">html[data-auth-pending] body{visibility:hidden!important}</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.275"></script><script src="auth/guard.js?v=2.4.275" defer></script>
 
-<meta charset="utf-8">
+
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="theme-color" content="#132b38">
