@@ -16,11 +16,86 @@
 <meta http-equiv="Expires" content="0">
 <title>Kontrollflöde – Tillsyno</title>
 <link rel="stylesheet" href="style.css?v=2.4.251">
-<link rel="stylesheet" href="security.css?v=2.4.256"><link rel="stylesheet" href="security-compact.css?v=2.4.215"><link rel="stylesheet" href="all-in-one.css?v=2.4.291">
+<link rel="stylesheet" href="security.css?v=2.4.256"><link rel="stylesheet" href="security-compact.css?v=2.4.215"><link rel="stylesheet" href="all-in-one.css?v=2.4.294">
 <script src="vendor/pdf.min.js"></script>
 <script src="vendor/jspdf.umd.min.js"></script>
 <script src="vendor/pdf-lib.min.js"></script>
 <link rel="manifest" href="manifest.webmanifest?v=2.4.256"><meta name="apple-mobile-web-app-title" content="Tillsyno">
+<style id="tillsyno-v294-ce12-picker">
+/* Only the control-flow selection dialog. The drawing and checklist runtime are unchanged. */
+body.allInOneApp #allProtocolDialog .allProtocolGroup>summary{
+ display:flex!important;align-items:center!important;gap:11px!important;text-align:left!important;
+ min-height:70px!important;padding:12px 13px!important;
+}
+body.allInOneApp #allProtocolDialog .allProtocolGroup>summary .allAreaIcon,
+body.allInOneApp #allProtocolDialog .allProtocolChildren .allProtocolIcon{
+ box-sizing:border-box!important;display:grid!important;place-items:center!important;flex:0 0 38px!important;
+ width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;
+ border:1px solid #c0e4f23b!important;border-radius:10px!important;background:#c8eaf50d!important;color:#c6e4f0!important;
+}
+body.allInOneApp #allProtocolDialog .allProtocolChildren .allProtocolIcon{
+ flex-basis:32px!important;width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;border-radius:8px!important;
+}
+body.allInOneApp #allProtocolDialog .allAreaIcon svg{width:23px;height:23px;stroke-width:1.8}
+body.allInOneApp #allProtocolDialog .allProtocolIcon svg{width:19px;height:19px;stroke-width:1.8}
+body.allInOneApp #allProtocolDialog .allProtocolGroup>summary .allAreaCopy{
+ display:flex!important;flex-direction:column!important;min-width:0!important;gap:3px!important;flex:1!important;
+}
+body.allInOneApp #allProtocolDialog .allProtocolGroup>summary .allAreaCopy strong{
+ font-size:13px!important;font-weight:650!important;color:#ebf7fc!important;line-height:1.3!important;
+}
+body.allInOneApp #allProtocolDialog .allProtocolGroup>summary .allAreaCopy small{
+ font-size:10px!important;font-weight:430!important;color:#a9cbd8!important;line-height:1.4!important;
+}
+body.allInOneApp #allProtocolDialog .allProtocolGroup>summary::after{margin-left:auto!important;font-size:23px!important}
+body.allInOneApp #allProtocolDialog .allProtocolChildren label{
+ gap:10px!important;min-height:61px!important;padding:9px 11px!important;
+}
+body.allInOneApp #allProtocolDialog .allProtocolChildren label>.allProtocolText{
+ flex:1!important;display:flex!important;flex-direction:column!important;gap:3px!important;min-width:0!important;
+}
+body.allInOneApp #allProtocolDialog .allProtocolChildren label>.allProtocolText strong{
+ font-size:12px!important;font-weight:610!important;line-height:1.3!important;
+}
+body.allInOneApp #allProtocolDialog .allProtocolChildren label>.allProtocolText small{
+ font-size:10px!important;line-height:1.4!important;overflow-wrap:anywhere!important;
+}
+body.allInOneApp #allProtocolDialog .allProtocolChildren label input{flex-shrink:0!important}
+/* CE is a navigation card, NEVER a checkbox or a part of protocol selection. */
+body.allInOneApp #allProtocolDialog .allCeStandalone{
+ display:flex!important;align-items:center!important;gap:11px!important;
+ box-sizing:border-box!important;min-height:67px!important;padding:11px 13px!important;margin-top:6px!important;
+ border:1px solid #90becf!important;border-radius:10px!important;
+ background:linear-gradient(135deg,#1b455c,#15364a)!important;
+ color:#eefaff!important;text-align:left!important;text-decoration:none!important;
+}
+body.allInOneApp #allProtocolDialog .allCeStandalone:focus-visible{
+ outline:2px solid #8ad7f0!important;outline-offset:3px!important;
+}
+body.allInOneApp #allProtocolDialog .allCeStandalone:hover{
+ background:linear-gradient(135deg,#215874,#1b475d)!important;border-color:#b8e5f3!important;
+}
+body.allInOneApp #allProtocolDialog .allCeStandalone .allProtocolIcon{
+ background:#d1f2fb17!important;border-color:#bbe2f050!important;color:#e0f7ff!important;
+}
+body.allInOneApp #allProtocolDialog .allCeStandaloneText{
+ display:flex!important;flex:1 1 auto!important;min-width:0!important;flex-direction:column!important;gap:3px!important;
+}
+body.allInOneApp #allProtocolDialog .allCeStandaloneText strong{
+ font-size:13px!important;color:#effbff!important;font-weight:700!important;line-height:1.35!important;
+}
+body.allInOneApp #allProtocolDialog .allCeStandaloneText small{
+ font-size:10px!important;line-height:1.45!important;color:#b4d6e3!important;overflow-wrap:anywhere!important;
+}
+body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
+ flex:none;font-size:23px;font-weight:350;line-height:1;color:#daf3fc;
+}
+@media(max-width:600px){
+ body.allInOneApp #allProtocolDialog .allProtocolGroup>summary{min-height:65px!important;padding:11px!important;gap:9px!important}
+ body.allInOneApp #allProtocolDialog .allProtocolChildren label{gap:8px!important;padding:9px!important}
+ body.allInOneApp #allProtocolDialog .allCeStandalone{padding:10px!important;gap:9px!important}
+}
+</style>
 </head>
 <body class="securityApp allInOneApp" data-view="drawing">
 <div id="tillsynoNavCurtain" aria-hidden="true"></div>
@@ -138,27 +213,32 @@
   </div>
   <div class="allProtocolChoices">
     <details class="allProtocolGroup">
-      <summary><span><strong>Dörrautomatik / Lås</strong><small>Revision · egenkontroll · lås</small></span></summary>
+      <summary><span class="allAreaIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V3h14v18M8 21V6h8v15"/><path d="M11 13h2M3 21h18"/></svg></span><span class="allAreaCopy"><strong>Dörrautomatik / Lås</strong><small>Revision · egenkontroll · CE-märkning</small></span></summary>
       <div class="allProtocolChildren">
-        <label><input type="checkbox" value="automation"><span><strong>Checklista revision dörrautomatik</strong><small>Befintlig revisionschecklista · 18 kontrollpunkter</small></span></label>
-        <label><input type="checkbox" value="automation_selfcheck"><span><strong>Egenkontroll dörrautomatik</strong><small>Provisorisk egenkontroll · punkterna justerar vi senare</small></span></label>
-        <label><input type="checkbox" value="lock_revision"><span><strong>Checklista revision lås</strong><small>Revision av lås · 11 kontrollpunkter</small></span></label>
+        <label><input type="checkbox" value="automation"><span class="allProtocolIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5zM8 8h7m-7 4h7m-7 4h4"/><path d="m15 16 2 2 3-4"/></svg></span><span class="allProtocolText"><strong>Checklista revision dörrautomatik</strong><small>Befintlig revisionschecklista · 18 kontrollpunkter</small></span></label>
+        <label><input type="checkbox" value="automation_selfcheck"><span class="allProtocolIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h6m-6 4 2 2 4-4"/></svg></span><span class="allProtocolText"><strong>Egenkontroll dörrautomatik</strong><small>Kontrollpunkter för dörrautomatiken</small></span></label>
+        <label><input type="checkbox" value="lock_revision"><span class="allProtocolIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/></svg></span><span class="allProtocolText"><strong>Checklista revision lås</strong><small>Revision av lås · 11 kontrollpunkter</small></span></label>
+        <a class="allCeStandalone" href="ce-markning.html?v=1.2" aria-label="Öppna CE-märkning version 1.2 i en separat arbetsyta">
+ <span class="allProtocolIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h8l4 4v14H7zM15 3v5h4M10 13h6M10 17h4"/><path d="m16 17 2 2 3-4"/></svg></span>
+ <span class="allCeStandaloneText"><strong>CE-märkning</strong><small>Version 1.2 · Separat projekt och dokumentation</small></span>
+ <span class="allCeStandaloneArrow" aria-hidden="true">›</span>
+</a>
       </div>
     </details>
     <details class="allProtocolGroup">
-      <summary><span><strong>Säkerhetsservice</strong><small>Inbrott, lås och passer</small></span></summary>
+      <summary><span class="allAreaIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 20 6v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="allAreaCopy"><strong>Säkerhetsservice</strong><small>Larm · dörrmiljö · passerkontroll</small></span></summary>
       <div class="allProtocolChildren">
-        <label><input type="checkbox" value="alarm"><span><strong>Inbrottslarm</strong><small>Service och funktionskontroll</small></span></label>
-        <label><input type="checkbox" value="lock"><span><strong>Lås &amp; Dörrmiljö</strong><small>Lås, dörrmiljö och utrymning</small></span></label>
-        <label><input type="checkbox" value="access"><span><strong>Passer</strong><small>Passersystem och dörrfunktion</small></span></label>
+        <label><input type="checkbox" value="alarm"><span class="allProtocolIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 17h12l-1.5-3v-4a4.5 4.5 0 0 0-9 0v4L6 17Zm4 3h4"/><path d="M4 8 2 6m18 2 2-2"/></svg></span><span class="allProtocolText"><strong>Inbrottslarm</strong><small>Service och funktionskontroll</small></span></label>
+        <label><input type="checkbox" value="lock"><span class="allProtocolIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4zM9 4v16"/><circle cx="15" cy="12" r="2"/></svg></span><span class="allProtocolText"><strong>Lås &amp; Dörrmiljö</strong><small>Lås, dörrmiljö och utrymning</small></span></label>
+        <label><input type="checkbox" value="access"><span class="allProtocolIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h7M7 13h4m6-4 2 2-2 2"/></svg></span><span class="allProtocolText"><strong>Passer</strong><small>Passersystem och dörrfunktion</small></span></label>
       </div>
     </details>
     <details class="allProtocolGroup">
-      <summary><span><strong>Brand</strong><small>Brandcentral · detektorer · branddörr</small></span></summary>
+      <summary><span class="allAreaIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3c0 4-4 6-4 10-1-2-2-3-2-3-3 3-3 7-1 10 3 4 10 4 13 0 4-6-2-10-2-10 0 3-2 5-4 6 1-5 3-8 0-13Z"/></svg></span><span class="allAreaCopy"><strong>Brandsäkerhet</strong><small>Brandcentral · detektorer · branddörrar</small></span></summary>
       <div class="allProtocolChildren">
-        <label><input type="checkbox" value="fire_panel"><span><strong>Brandcentral</strong><small>Provisorisk checklista</small></span></label>
-        <label><input type="checkbox" value="fire_detector"><span><strong>Branddetektorer</strong><small>Provisorisk checklista</small></span></label>
-        <label><input type="checkbox" value="fire_door"><span><strong>Branddörr / dörrhållning</strong><small>Provisorisk checklista</small></span></label>
+        <label><input type="checkbox" value="fire_panel"><span class="allProtocolIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h2m3 0h3M8 16h8"/></svg></span><span class="allProtocolText"><strong>Brandcentral</strong><small>Kontroll av brandskydd och funktion</small></span></label>
+        <label><input type="checkbox" value="fire_detector"><span class="allProtocolIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11a7 7 0 0 1 14 0l2 5H3l2-5Zm-3 8h20"/><path d="M9 8h6"/></svg></span><span class="allProtocolText"><strong>Branddetektorer</strong><small>Kontroll av brandskydd och funktion</small></span></label>
+        <label><input type="checkbox" value="fire_door"><span class="allProtocolIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18H6zM9 6h6v12H9z"/><path d="m12 9 2 3-2 3"/></svg></span><span class="allProtocolText"><strong>Branddörr / dörrhållning</strong><small>Kontroll av brandskydd och funktion</small></span></label>
       </div>
     </details>
   </div>
@@ -223,7 +303,7 @@
 </nav>
 <script src="ui-text-scale.js?v=2.4.215"></script><script src="drawing-annotations.js?v=2.4.215"></script>
 <script src="session-history.js?v=2.4.215"></script>
-<script>window.DOORSERVICE_APP_MODE="all-in-one";</script><script src="offline-work.js?v=2.4.256"></script><script src="security.js?v=2.4.292"></script><script src="legacy-door-import.js?v=2.4.215"></script><script src="all-in-one.js?v=2.4.291"></script>
+<script>window.DOORSERVICE_APP_MODE="all-in-one";</script><script src="offline-work.js?v=2.4.256"></script><script src="security.js?v=2.4.292"></script><script src="legacy-door-import.js?v=2.4.215"></script><script src="all-in-one.js?v=2.4.294"></script>
 <script src="drawing-transfer.js?v=2.4.215"></script>
 <script src="offline.js?v=2.4.256"></script>
 <script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let observer=null;function reveal(){if(root.hasAttribute('data-auth-pending')){if(!observer){observer=new MutationObserver(reveal);observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}return}if(observer){observer.disconnect();observer=null}root.classList.add('tillsyno-nav-ready')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',reveal)})();</script>
