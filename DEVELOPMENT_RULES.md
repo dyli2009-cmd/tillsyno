@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.328**
+Aktuell version: **v2.4.329**
 
 Regler:
 - Samma appversion gäller Kontrollflöde, Dörrautomatik, Säkerhetsservice, Brand, Projektflöde och Ritningsverktyg.
@@ -224,3 +224,6 @@ Beställd områdesrubrik, checklistrad och större ritningsstart på dator enlig
 ## Gemensamma texter på alla enheter – användarbeslut 15 oktober 2026
 
 Texter och benämningar ska vara identiska på dator, iPhone och iPad. När text ändras ska motsvarande text uppdateras för samtliga enheter och i webb-/iOS-källorna. Endast storlek, radbrytning och layout får anpassas till skärmen; enhetsvillkor får inte lämna kvar gamla formuleringar.
+
+
+2026-10-15, Tillsyno v2.4.329: Användaren bekräftade samma synliga områdesrubrik och checklistnamn i alla tre områden på dator, iPhone och iPad efter Fortsätt till ritningen. Revisionssidans kompakta CSS dolde checklistnamnen på små enheter. Kontexttext visas nu med normal radbrytning på alla enheter; större mått kvarstår endast på dator. Verifierat i 18 Chromium-flöden genom protokollvalet i två teman och tre enhetsvyer, med synlighetskontroll av underrubriken. Protokollval och befintliga textstorlekar bevaras. Ingen fysisk enhet eller ny TestFlight-build testad. Kontrollflödet är åter LÅST.

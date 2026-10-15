@@ -44,7 +44,7 @@
   catch(_){return new Set()}
  }
  function write(){try{localStorage.setItem(KEY,JSON.stringify([...active]))}catch(_){}}
- // Shared text across devices; larger layout remains desktop-only.
+ // Desktop presentation only. Protocol state, PDF data and mobile copy are untouched.
  const desktopQuery=matchMedia('(min-width:1100px) and (hover:hover) and (pointer:fine)');
  const contextTitle=document.querySelector('.secAppHeader .brand strong');
  const contextSubtitle=document.querySelector('.secAppHeader .headerSubtitle');
@@ -54,6 +54,7 @@
   const device=document.documentElement.getAttribute('data-tillsyno-device');
   const enabled=desktopQuery.matches&&device!=='phone'&&device!=='tablet'&&active.size>0;
   document.body.toggleAttribute('data-desktop-protocol-context',enabled);
+  document.body.toggleAttribute('data-protocol-context',active.size>0);
   const areas=groups.filter(group=>[...group.querySelectorAll('input[value]')].some(input=>active.has(input.value))).map(group=>group.querySelector('summary strong').textContent.trim());
   const names=TYPES.filter(type=>active.has(type)).map(type=>dialog.querySelector('input[value="'+type+'"]')?.closest('label')?.querySelector('strong')?.textContent.trim()||type);
   const texts=active.size>0?[areas.join(' · ')||'Kontrollflöde',names.join(' · '),areas.join(' · ')||'Kontrollflöde']:contextOriginals;
