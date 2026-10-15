@@ -1,0 +1,19 @@
+{
+  "testVersion": 15,
+  "previousEntry": "v14/all-in-one.html",
+  "dataCompatibility": "unchanged project keys and work-PDF; layout and success messages only",
+  "files": {
+    "all-in-one.html": "5d70fba77e8cc890feb8d75d0d8a7f2b2e2ea77e7d986b044afa2ed554c5bfaa",
+    "security-v15.js": "134efdfad2cd6239f48b72b6d5dcae3bea84021128fc5cd3a087b736e324da01",
+    "tillsyno-appearance-v15.js": "1509826b0206d7fed9c335858f2cb8758ef66e20c58de2a336c2b961195df988",
+    "offline-v15.js": "5baeef7f76ee817b7da583b6628ac2141b635e3bb606d3b4101f9d56f35e80d4",
+    "revision-inline-v15.js": "1b5941d743ab8a2cf82c94798527dc743335b6cc13c935a72bd5a3ba33a79ca0",
+    "revision-inline-v13.css": "69684938460b166e7d5aa5e3c4d4ed9ba1be29a47a982067e1c948e13cce3016",
+    "revision-compact-v15.css": "f0cad70116b7d968c318112719152f49083dadbb462eb62f3fcc2c47665cd825",
+    "revision-checklist-v14.css": "94a92a30acf52b080bd7e22492a2990817a8f1a1a42454c432cdf5fd0129be2d",
+    "service-overview-v12.js": "764cd3344cb1c77a30f9d201837cd53c1e1b952797aaa07e1a79b9488dcb6626",
+    "service-overview-v12.css": "69a051a7c67a192ed34cf743a9abfa62e3db8143d28a6659b679956d6ec6a0b4",
+    "revision-visibility-v11.css": "449e616212228afba97e212967d1b87c8acc27a5367c44f5cef43a94994c2f80",
+    "sw.js": "47a0144ba55ca4f89e865245a63b923899a15db42b8aa34b3fb21d3772be86cb"
+  }
+}

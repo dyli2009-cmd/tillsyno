@@ -1,0 +1,43 @@
+/* Compact, centered app content. Navigation stays next to the current panel. */
+body.allInOneApp .objectBar{display:grid;grid-template-columns:minmax(55px,1fr) minmax(0,5fr) minmax(55px,1fr);gap:4px;min-height:29px}
+body.allInOneApp .objectBar .objectTitle{grid-column:2;align-items:center;text-align:center;min-width:0}
+body.allInOneApp #securityObject{width:100%;text-align:center}
+body.allInOneApp #securityCount{grid-column:3;justify-self:end;font-size:9px}
+body.allInOneApp .headerDetails{display:none!important}
+#revisionInlineWorkspace{--panel-width:460px}
+#revisionInlineWorkspace .revisionInlineNavigation{width:min(var(--panel-width),calc(100% - 20px));margin:12px auto 0;padding:0;border:0;background:transparent}
+#revisionInlineWorkspace .revisionInlineNavigation button{width:auto;min-height:34px;padding:4px 10px;font-size:12px}
+#revisionInlineWorkspace .revisionInlineContent{flex:0 0 auto;min-height:0;width:min(var(--panel-width),calc(100% - 20px));max-width:100%;margin:8px auto 18px}
+#revisionInlineWorkspace dialog.revisionInlinePage[open]{flex:0 0 auto;padding:12px!important;border:1px solid #d0dce2!important;border-radius:12px!important;overflow:auto}
+#revisionInlineWorkspace #allProtocolDialog[open]{padding:0!important}
+#revisionInlineWorkspace[data-panel="secSaveDialog"],#revisionInlineWorkspace[data-panel="secOpenWorkDialog"],#revisionInlineWorkspace[data-panel="secVisibilityDialog"]{--panel-width:400px}
+#revisionInlineWorkspace[data-panel="secPreviewDialog"],#revisionInlineWorkspace[data-panel="securityOverview"]{--panel-width:1100px}
+#revisionInlineWorkspace[data-panel="secPreviewDialog"] .revisionInlineContent{flex:1 1 auto;min-height:0;margin-bottom:10px}
+#revisionInlineWorkspace #secPreviewDialog[open]{flex:1 1 auto;padding:0!important;border-radius:8px!important}
+#revisionInlineWorkspace .secSaveDialog[open],#revisionInlineWorkspace .secOpenWorkDialog[open]{padding:0!important}
+body.allInOneApp #allProtocolDialog .allProtocolHead{padding:14px 12px 10px!important}
+body.allInOneApp #allProtocolDialog .allProtocolHead .eyebrow,body.allInOneApp #allProtocolDialog .allProtocolLead{display:none!important}
+body.allInOneApp #allProtocolDialog .allProtocolHead h2{font-size:18px!important;margin:3px 0!important}
+body.allInOneApp #allProtocolDialog .allProtocolChoices{padding:10px 12px!important;max-height:none;justify-items:center;gap:8px}
+body.allInOneApp #allProtocolDialog .allProtocolGroup{width:min(100%,340px);margin:0 auto}
+body.allInOneApp #allProtocolDialog .allProtocolGroup>summary{position:relative;justify-content:center;min-height:54px!important;padding:10px 30px 10px 12px!important}
+body.allInOneApp #allProtocolDialog .allProtocolGroup>summary::after{position:absolute;right:12px}
+body.allInOneApp #allProtocolDialog .allAreaCopy{flex:0 1 auto;text-align:center}
+body.allInOneApp #allProtocolDialog .allAreaCopy small{display:none!important}
+body.allInOneApp #allProtocolDialog .allAreaCopy strong{font-size:13px!important;font-weight:600!important}
+body.allInOneApp #allProtocolDialog .allProtocolActions{display:flex!important;flex-wrap:wrap!important;align-items:center!important;justify-content:center!important;gap:8px!important;padding:10px 12px!important}
+body.allInOneApp #allProtocolDialog .allProtocolActions a{display:inline-flex!important;justify-content:center!important;align-items:center!important;flex:0 0 42px!important;width:42px!important;min-width:42px!important;height:42px!important;min-height:42px!important;margin:0!important;padding:0!important;gap:0!important}
+body.allInOneApp #allProtocolDialog .allProtocolActions a span{display:none!important}
+body.allInOneApp #allProtocolDialog .allProtocolActions a svg{width:19px!important;height:19px!important}
+body.allInOneApp #allProtocolDialog #allProtocolApply{flex:0 1 auto!important;width:auto!important;min-width:0!important;min-height:42px!important;max-width:180px;margin:0!important;padding:7px 12px!important;font-size:11px!important}
+body.allInOneApp #allProtocolDialog .allProtocolChildren label{min-height:50px!important;padding:8px!important}
+#revisionInlineWorkspace .secOpenWorkHead{padding:12px;text-align:center}
+#revisionInlineWorkspace .secOpenWorkActions{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;padding:10px 12px}
+#revisionInlineWorkspace .secOpenWorkActions button{flex:0 1 auto;width:auto;min-height:40px;padding:7px 12px}
+#revisionInlineWorkspace .secOpenWorkDialog>p{margin:8px 0;padding:0 12px;font-size:12px;line-height:1.4}
+#revisionInlineWorkspace .secSaveChoices{padding:10px;gap:8px}
+#revisionInlineWorkspace .secSaveChoice{min-height:58px;padding:9px 10px}
+@media(max-width:360px){#revisionInlineWorkspace .revisionInlineContent,#revisionInlineWorkspace .revisionInlineNavigation{width:calc(100% - 12px)}body.allInOneApp #allProtocolDialog .allProtocolActions{gap:6px!important;padding:9px!important}}
+body.allInOneApp #allProtocolDialog .allProtocolGroup>summary{padding:10px 44px!important}
+body.allInOneApp #allProtocolDialog .allProtocolGroup>summary .allAreaIcon{position:absolute;left:12px}
+body.allInOneApp #allProtocolDialog .allAreaCopy{display:block;width:100%;text-align:center}
