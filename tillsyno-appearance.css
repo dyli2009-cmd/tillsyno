@@ -334,3 +334,11 @@ html[data-tillsyno-theme] body:not(.securityApp):not(.allInOneApp) .shell :is(.c
 }
 /* TV mode keeps large label layout, but it never sets canvas transform or PDF zoom. */
 html[data-tillsyno-device="tv"] body .ta-modal .ta-choice{min-height:71px!important}
+
+/* SmartMatch's original dark landing uses stronger ID selectors. Ensure accessible
+   contrast when switching to white project cards. */
+html[data-tillsyno-theme] body #pwEmpty .pwEmptyCard h1{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body #pwEmpty #pwHomeStatus{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{
+ background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important;
+}
