@@ -44,7 +44,7 @@
   catch(_){return new Set()}
  }
  function write(){try{localStorage.setItem(KEY,JSON.stringify([...active]))}catch(_){}}
- // Desktop presentation only. Protocol state, PDF data and mobile copy are untouched.
+ // Shared text across devices; larger layout remains desktop-only.
  const desktopQuery=matchMedia('(min-width:1100px) and (hover:hover) and (pointer:fine)');
  const contextTitle=document.querySelector('.secAppHeader .brand strong');
  const contextSubtitle=document.querySelector('.secAppHeader .headerSubtitle');
@@ -56,7 +56,7 @@
   document.body.toggleAttribute('data-desktop-protocol-context',enabled);
   const areas=groups.filter(group=>[...group.querySelectorAll('input[value]')].some(input=>active.has(input.value))).map(group=>group.querySelector('summary strong').textContent.trim());
   const names=TYPES.filter(type=>active.has(type)).map(type=>dialog.querySelector('input[value="'+type+'"]')?.closest('label')?.querySelector('strong')?.textContent.trim()||type);
-  const texts=enabled?[areas.join(' · ')||'Kontrollflöde',names.join(' · '),areas.join(' · ')||'Kontrollflöde']:contextOriginals;
+  const texts=active.size>0?[areas.join(' · ')||'Kontrollflöde',names.join(' · '),areas.join(' · ')||'Kontrollflöde']:contextOriginals;
   [contextTitle,contextSubtitle,emptyTitle].forEach((node,index)=>{if(node&&node.textContent!==texts[index])node.textContent=texts[index]});
  }
  desktopQuery.addEventListener('change',renderDesktopContext);
