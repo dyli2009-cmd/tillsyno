@@ -4,7 +4,7 @@
 const dialog=document.getElementById('secPreviewDialog'),wrap=document.getElementById('secPreviewWrap'),canvas=document.getElementById('secPreviewCanvas'),head=dialog?.querySelector('.secPreviewHead');
 if(!head||typeof buildSecurityDrawingPdf!=='function')return;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
-let editing=false,busy=false,selected=null,drag=null,renderSerial=0;
+let editing=false,busy=false,selected=null,drag=null,renderSerial=0,pinch=null;
 const toggle=document.createElement('button');toggle.type='button';toggle.id='customerStampEdit';toggle.textContent='Justera stämplar';toggle.setAttribute('aria-pressed','false');toggle.hidden=true;head.querySelector('div').append(toggle);
 const tools=document.createElement('div');tools.className='customerStampTools';tools.hidden=true;tools.setAttribute('role','group');tools.setAttribute('aria-label','Justera stämplar');
 const label=document.createElement('label');label.textContent='Storlek för ';const target=document.createElement('select');target.id='customerStampTarget';target.setAttribute('aria-label','Ändra storlek för');label.append(target);
@@ -34,7 +34,7 @@ function paint(){
  overlay.replaceChildren();for(const rect of previewStampRects.filter(r=>r.pageIndex===previewPage-1)){
   const o=items.find(o=>o.uid===rect.uid);if(!o)continue;const handle=document.createElement('button');handle.type='button';handle.className='customerStampHandle';handle.classList.toggle('is-selected',selected===o.uid);handle.dataset.uid=o.uid;handle.setAttribute('aria-label','Flytta stämpel '+securityDrawingLabel(o));handle.setAttribute('aria-pressed',String(selected===o.uid));handle.title='Dra för att flytta '+securityDrawingLabel(o);handle.style.left=rect.x*100+'%';handle.style.top=rect.y*100+'%';handle.style.width=Math.max(24,rect.width*c.width)+'px';handle.style.height=Math.max(24,rect.height*c.height)+'px';
   handle.addEventListener('pointerdown',event=>{
-   if(busy||event.button!==0)return;event.preventDefault();event.stopPropagation();selected=o.uid;target.value=o.uid;overlay.querySelectorAll('.customerStampHandle').forEach(h=>{h.classList.toggle('is-selected',h===handle);h.setAttribute('aria-pressed',String(h===handle));});syncControls();drag={id:event.pointerId,o,handle,rect,startX:event.clientX,startY:event.clientY,x:o.labelX,y:o.labelY,width:c.width,height:c.height,nextX:o.labelX,nextY:o.labelY};handle.setPointerCapture(event.pointerId);
+   if(busy||pinch||event.button!==0)return;event.preventDefault();event.stopPropagation();selected=o.uid;target.value=o.uid;overlay.querySelectorAll('.customerStampHandle').forEach(h=>{h.classList.toggle('is-selected',h===handle);h.setAttribute('aria-pressed',String(h===handle));});syncControls();drag={id:event.pointerId,o,handle,rect,startX:event.clientX,startY:event.clientY,x:o.labelX,y:o.labelY,width:c.width,height:c.height,nextX:o.labelX,nextY:o.labelY};handle.setPointerCapture(event.pointerId);
   });
   handle.addEventListener('pointermove',event=>{
    if(drag?.id!==event.pointerId)return;event.preventDefault();const x=drag.x+(event.clientX-drag.startX)/drag.width,y=drag.y+(event.clientY-drag.startY)/drag.height;
@@ -62,6 +62,21 @@ arrowWidth.onchange=()=>{if(busy)return;const value=Number(arrowWidth.value);if(
 reset.onclick=()=>{if(busy)return;visibleItems().forEach(o=>{o.customerStampScale=1;});selected=null;commit();};
 smaller.onclick=()=>resize(1/1.1);larger.onclick=()=>resize(1.1);target.onchange=()=>{selected=target.value==='all'?null:target.value;paint();};
 toggle.onclick=()=>{editing=!editing;selected=null;paint();};done.onclick=()=>{editing=false;paint();};exportButton.onclick=()=>{if(busy)return;editing=false;dialog.close();document.getElementById('securityExport').click();};
+const touchDistance=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+wrap.addEventListener('touchstart',event=>{
+ if(previewMode!=='drawing'||!dialog.open||event.touches.length!==2||busy)return;
+ event.preventDefault();drag=null;const rect=canvas.getBoundingClientRect(),bounds=wrap.getBoundingClientRect(),midX=(event.touches[0].clientX+event.touches[1].clientX)/2,midY=(event.touches[0].clientY+event.touches[1].clientY)/2;
+ pinch={distance:Math.max(1,touchDistance(event.touches)),zoom:customerPreviewZoom,width:rect.width,height:rect.height,x:(midX-rect.left)/rect.width,y:(midY-rect.top)/rect.height};wrap.style.justifyContent='safe center';paint();
+},{passive:false});
+wrap.addEventListener('touchmove',event=>{
+ if(!pinch||event.touches.length!==2)return;event.preventDefault();
+ customerPreviewZoom=clamp(pinch.zoom*touchDistance(event.touches)/pinch.distance,.5,6);const ratio=customerPreviewZoom/pinch.zoom;
+ canvas.style.width=pinch.width*ratio+'px';canvas.style.height=pinch.height*ratio+'px';
+ const rect=canvas.getBoundingClientRect(),midX=(event.touches[0].clientX+event.touches[1].clientX)/2,midY=(event.touches[0].clientY+event.touches[1].clientY)/2;
+ wrap.scrollLeft+=rect.left+pinch.x*rect.width-midX;wrap.scrollTop+=rect.top+pinch.y*rect.height-midY;paint();
+},{passive:false});
+function endPinch(event){if(!pinch||event.touches.length>=2)return;pinch=null;renderCustomerPreview();}
+wrap.addEventListener('touchend',endPinch);wrap.addEventListener('touchcancel',endPinch);
 const originalRender=renderCustomerPreview;renderCustomerPreview=async function(...args){await originalRender(...args);paint();};
-dialog.addEventListener('close',()=>{editing=false;selected=null;drag=null;paint();});window.addEventListener('revision-inline-view',event=>{if(event.detail.id!=='secPreviewDialog'){editing=false;selected=null;drag=null;}paint();});window.addEventListener('resize',()=>requestAnimationFrame(paint));
+dialog.addEventListener('close',()=>{pinch=null;customerPreviewZoom=1;wrap.style.justifyContent='';editing=false;selected=null;drag=null;paint();});window.addEventListener('revision-inline-view',event=>{if(event.detail.id!=='secPreviewDialog'){editing=false;selected=null;drag=null;}paint();});window.addEventListener('resize',()=>requestAnimationFrame(paint));
 })();
