@@ -1381,7 +1381,7 @@ async function openCustomerPreview(forceReport=false){
    previewMode='drawing';const built=await buildSecurityDrawingPdf();previewStampRects=built.stampRects;previewOverviewLinks=built.overviewLinks;previewPdf=await pdfjsLib.getDocument({data:await built.out.save()}).promise;previewPage=Math.max(1,Math.min(previewPdf.numPages,page));$('secPreviewTitle').textContent='Ritning · sida '+previewPage;
   }else{
    previewMode='report';const report=reportDoc(),pageMap=report.__protocolPages||{},bytes=new Uint8Array(report.output('arraybuffer'));previewPdf=await pdfjsLib.getDocument({data:bytes}).promise;
-   if(!forceReport&&!overviewOpen&&(view==='protocol'||view==='detectors'&&o?.type==='detector')&&o&&pageMap[o.uid]){previewPage=pageMap[o.uid];$('secPreviewTitle').textContent=SYSTEMS[o.type].label+' · '+o.id}
+   if(!forceReport&&!overviewOpen&&view==='protocol'&&o&&pageMap[o.uid]){previewPage=pageMap[o.uid];$('secPreviewTitle').textContent=SYSTEMS[o.type].label+' · '+o.id}
    else{previewPage=1;$('secPreviewTitle').textContent=(forceReport||overviewOpen)?'Objekt och anmärkningar':'Kundrapport'}
   }
   $('secPreviewDialog').showModal();await renderCustomerPreview();

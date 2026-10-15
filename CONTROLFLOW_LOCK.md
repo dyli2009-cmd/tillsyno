@@ -160,3 +160,6 @@ När låset är aktivt:
 
 
 2026-10-15, Tillsyno v2.4.352: Beställt detektorprotokoll i Kundmall. Från detektorfliken öppnas vald detektors egen protokollsida direkt. PDF-sidan har rubriken DETEKTORPROTOKOLL, detektornummer, namn/kod, placering och bedömning, samt samma projekt-/kundrutor och kontrollresultat som övriga serviceprotokoll. PDF och sidval verifierade. Webb/native-källor speglas; TestFlight ej verifierat. Kontrollflödet är åter LÅST.
+
+
+2026-10-15, Tillsyno v2.4.353: Beställd samordning av detektorer med befintliga Protokoll. Den extra Detektorer-fliken och specialvyn tas bort. Detektorns ritningsikon och översiktskort öppnar ordinarie protokoll med objektuppgifter, kontrollpunkter och anmärkningar. Kundmall från Protokoll öppnar vald detektors ifyllda PDF-protokoll direkt. Borttagning utan popup och Ångra bevaras. Flöde, PDF-resultat och ångra kontrollerade i telefon-, surfplatte- och datorbredder. Webb/native-källor speglas. Kontrollflödet är åter LÅST.
