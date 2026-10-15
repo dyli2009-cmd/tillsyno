@@ -4,7 +4,7 @@
 <script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}var page={ice:'#edf6fb',mist:'#ebf1f5',coast:'#edf7f6',sand:'#f7f5f1',night:'#081523',graphite:'#12151c',pine:'#091c1e'}[theme];document.documentElement.style.setProperty('--tillsyno-route-bg',page);document.documentElement.style.setProperty('background',page,'important');document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><title>Användare – Tillsyno</title>
 <link rel="stylesheet" href="admin.css?v=2.4.280"><style>html[data-auth-pending] body{visibility:hidden}</style>
 <script src="../vendor/supabase-2.49.10.min.js"></script><script src="../auth-config.js"></script><script src="client.js?v=2.4.280"></script><script src="guard.js?v=2.4.280" defer></script><script src="admin.js?v=2.4.308" defer></script>
-<link rel="stylesheet" href="../tillsyno-appearance.css?v=2.4.353">
+<link rel="stylesheet" href="../tillsyno-appearance.css?v=2.4.354">
 </head>
 <body data-require-role="admin">
 <header class="topbar"><a class="brand ta-brandlockup ta-admin-brand" href="../index.html"><span class="ta-brandmark" aria-hidden="true">T</span><span class="ta-brandcopy"><strong>Tillsyno</strong><small>Kontroll · dokumentation · tillsyn</small></span></a><nav class="toplinks"><a href="../index.html">← Startsidan</a><button type="button" data-logout>Logga ut</button></nav></header>
@@ -63,5 +63,5 @@
 <label for="approvalDays">Licenstid</label><select id="approvalDays" name="licenseDays" required><option value="2">2 dagar</option><option value="7" selected>7 dagar</option><option value="30">30 dagar</option><option value="365">365 dagar</option></select>
 <p id="approvalError" class="notice error" role="alert" hidden></p>
 <button id="approveUser" type="submit" class="primary">Godkänn och aktivera</button></form></dialog>
-<script src="../tillsyno-appearance.js?v=2.4.353"></script>
+<script src="../tillsyno-appearance.js?v=2.4.354"></script>
 </body></html>

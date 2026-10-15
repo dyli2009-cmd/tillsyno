@@ -925,6 +925,14 @@ function buildChecklist(o){
  const box=$('secChecklist');box.replaceChildren();const checks=allChecks(o),editing=securityCheckEditUid===o.uid;
  const group=document.createElement('details');group.className='checkGroup secCheckGroup';group.open=true;
  const summary=document.createElement('summary');summary.textContent='Kontrollpunkter';const count=document.createElement('span');summary.appendChild(count);group.appendChild(summary);
+ const symbolChecks=['alarm','detector','lock','access'].includes(o.type),table=symbolChecks?document.createElement('div'):group;
+ if(symbolChecks){
+  table.className='revisionCheckTable securityCheckTable';
+  const columns=document.createElement('div');columns.className='revisionCheckColumns';
+  const textColumn=document.createElement('span');textColumn.textContent='Kontrollpunkt';columns.append(textColumn);
+  [['Ingår ej','Ingår ej'],['Klart utan anmärkning','Utan anm.'],['Klart med anmärkning','Med anm.']].forEach(([full,short])=>{const cell=document.createElement('span');cell.title=full;const wide=document.createElement('span'),narrow=document.createElement('span');wide.className='revisionColumnFull';wide.textContent=full;narrow.className='revisionColumnShort';narrow.textContent=short;cell.append(wide,narrow);columns.append(cell)});
+  table.append(columns);group.append(table);
+ }
  checks.forEach(([n,title])=>{
   const c=o.checks[n]||{result:'',note:''};o.checks[n]=c;
   const row=document.createElement('div');row.className='checkrow secCheck'+(c.result?' result-'+c.result:'');
@@ -944,7 +952,8 @@ function buildChecklist(o){
   row.appendChild(head);
   const choices=document.createElement('div');choices.className='quickBtns secChoices';
   [['na','Ingår ej'],['ok','Klart utan anmärkning'],['remark','Klart med anmärkning']].forEach(([value,label])=>{
-   const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.v=value;b.classList.toggle('active',c.result===value);
+   const b=document.createElement('button');b.type='button';b.textContent=symbolChecks?{na:'–',ok:'✓',remark:'×'}[value]:label;b.dataset.v=value;b.classList.toggle('active',c.result===value);
+   if(symbolChecks){b.title=label;b.setAttribute('aria-pressed',String(c.result===value));b.setAttribute('aria-label',label+', kontrollpunkt '+n)}
    b.onclick=()=>{c.result=value;o.checks[n]=c;if(value==='remark'&&!c.note)c.note='';if(value!=='remark'&&c.note)c.note='';o.manualFail=false;syncStatus(o);save();buildChecklist(o);$('secStatus').value=o.status;drawMarkers();updateProgress(o);showOverview()};
    choices.appendChild(b)
   });
@@ -965,7 +974,7 @@ function buildChecklist(o){
    fault.append(select,input,back);
    row.appendChild(fault)
   }
-  group.appendChild(row)
+  table.appendChild(row)
  });
  box.appendChild(group);count.textContent=checks.filter(([n])=>!!o.checks[n]?.result).length+' / '+checks.length;updateProgress(o)
 }
