@@ -60,3 +60,5 @@ När låset är aktivt:
 2026-10-15, Tillsyno v2.4.314: användaren beställde dörrens befintliga löpnummer först i filnamnen vid CE-export av valda filer till ZIP. Prefix fylls med nollor för korrekt namnsortering och omnumrerar inte urval. PDF-innehåll, sparade data och övriga exporttyper bevaras. Native speglar endast versionsmärkningen eftersom CE-modulen saknas där. **Kontrollflödet är fortsatt LÅST.**
 
 2026-10-15, Tillsyno v2.4.315: användaren beställde vänsterställda rubriker vid Projektuppgifter och Dörrar och dörrautomatik i CE-arbetsytan. Ändringen avser enbart CE-HTML/CSS, ingen projektdata, PDF eller funktion. Native saknar CE och speglar endast gemensam versionsmärkning. **Kontrollflödet är fortsatt LÅST.**
+
+2026-10-15, Tillsyno v2.4.316: användaren rapporterade att CE-dörradens text åter hamnade i mitten efter laddning. En fördröjd generisk mappikon skapade tre flexbarn med space-between. Dörraden renderar nu en egen SVG-mappikon direkt; textdelen fyller kvarvarande utrymme och status ligger till höger. Ingen ändring av data, PDF, godkännanden eller kontrollflöde. Native saknar CE och speglar endast versionen. **Kontrollflödet är fortsatt LÅST.**

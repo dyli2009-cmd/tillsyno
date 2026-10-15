@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.316 – stabil vänsterställd CE-dörrad
+
+Rättar den fördröjda mappikonen som sköt dörrtexten mot mitten. Se [orsak och verifiering](CE_DOOR_ROW_316.md).
+
 ## Tillsyno v2.4.315 – CE-rubriker till vänster
 
 Projektuppgifter och Dörrar och dörrautomatik håller vänsterkanten. Se [ändring och verifiering](CE_HEADINGS_315.md).

@@ -432,7 +432,8 @@ function ceDoorIcon(name){
  const paths={
   copy:'M6 2h7v9H6zM4 5H2v9h8v-2',
   edit:'M3 11l-1 3 3-1 8-8-2-2-8 8M9 5l2 2',
-  trash:'M3 4h10M6 2h4M5 4l.6 10h4.8L11 4M7 6v6M9 6v6'
+  trash:'M3 4h10M6 2h4M5 4l.6 10h4.8L11 4M7 6v6M9 6v6',
+  folder:'M1.5 4.5V3h5L8 4.5h6.5v9h-13zM1.5 6.5h13'
  };
  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
  svg.setAttribute('viewBox','0 0 16 16');svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
@@ -446,9 +447,10 @@ function renderDoors(){
  for(const door of state.doors){
   const row=document.createElement('div');row.className='ceDoorRow';
   const open=document.createElement('button');open.type='button';open.className='ceDoorOpen';open.dataset.door=door.id;open.setAttribute('aria-label','Öppna CE-dokument för '+door.sourceText);
+  const folder=document.createElement('span');folder.className='ceDoorFolderIcon';folder.setAttribute('aria-hidden','true');folder.append(ceDoorIcon('folder'));
   const info=document.createElement('span');info.className='ceDoorInfo';const name=document.createElement('strong');name.textContent=door.sourceText;
   const sub=document.createElement('small');sub.textContent=door.location+' · '+(profileType(door)==='glass'?'Med glas':'Utan glas');const variants=module.getDoorCustomizations(door);const scope=document.createElement('small');scope.className='ceDoorScope'+(variants.length?' has-custom':'');scope.textContent=variants.length?'Anpassad · '+variants.length+' '+(variants.length===1?'mapp':'mappar'):'Gemensam standard';scope.title=variants.length?'Anpassade dokument: '+variants.join(', '):'Alla ifyllnadsval följer standarden för dörrtypen';info.append(name,sub,scope);if(door.copiedFrom){const copyMeta=document.createElement('small');copyMeta.className='ceDoorCopied';copyMeta.textContent='Kopia av '+door.copiedFrom+' · kontrollera';info.append(copyMeta);}
-  const progress=module.getProgress(door),badge=document.createElement('span');badge.className='cePercent'+(progress===100?' done':progress?' partial':'');badge.textContent=progress+' % ›';open.append(info,badge);open.onclick=()=>void openDoor(door);
+  const progress=module.getProgress(door),badge=document.createElement('span');badge.className='cePercent'+(progress===100?' done':progress?' partial':'');badge.textContent=progress+' % ›';open.append(folder,info,badge);open.onclick=()=>void openDoor(door);
   const copy=document.createElement('button');copy.type='button';copy.className='ceDoorCopy';copy.append(ceDoorIcon('copy'));copy.title='Kopiera '+door.sourceText;copy.setAttribute('aria-label','Kopiera dörr '+door.sourceText);copy.onclick=()=>copyDoorForm(door);
   const edit=document.createElement('button');edit.type='button';edit.className='ceDoorEdit';edit.append(ceDoorIcon('edit'));edit.setAttribute('aria-label','Ändra nummer och placering för '+door.sourceText);edit.onclick=()=>editDoor(door);
   const remove=document.createElement('button');remove.type='button';remove.className='ceDoorRemove';
