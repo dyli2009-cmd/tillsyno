@@ -1,0 +1,62 @@
+/* Customer stamp editing shares the drawing builder and saved item coordinates. */
+(()=>{
+'use strict';
+const dialog=document.getElementById('secPreviewDialog'),wrap=document.getElementById('secPreviewWrap'),canvas=document.getElementById('secPreviewCanvas'),head=dialog?.querySelector('.secPreviewHead');
+if(!head||typeof buildSecurityDrawingPdf!=='function')return;
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+let editing=false,busy=false,selected=null,drag=null,renderSerial=0;
+const toggle=document.createElement('button');toggle.type='button';toggle.id='customerStampEdit';toggle.textContent='Justera stämplar';toggle.setAttribute('aria-pressed','false');toggle.hidden=true;head.querySelector('div').append(toggle);
+const tools=document.createElement('div');tools.className='customerStampTools';tools.hidden=true;tools.setAttribute('role','group');tools.setAttribute('aria-label','Justera stämplar');
+const label=document.createElement('label');label.textContent='Storlek för ';const target=document.createElement('select');target.id='customerStampTarget';target.setAttribute('aria-label','Ändra storlek för');label.append(target);
+const smaller=button('customerStampSmaller','Stämpel −','Mindre stämplar'),larger=button('customerStampLarger','Stämpel +','Större stämplar'),status=document.createElement('span'),done=button('customerStampDone','Klart'),exportButton=button('customerStampExport','Spara PDF');status.id='customerStampSize';status.setAttribute('role','status');
+const hint=document.createElement('small');hint.textContent='Dra etiketten för att flytta den. Pilspetsen ligger kvar. Justeringarna sparas i projektet.';
+tools.append(label,smaller,larger,status,done,exportButton,hint);head.after(tools);
+const overlay=document.createElement('div');overlay.className='customerStampOverlay';overlay.hidden=true;wrap.append(overlay);
+function button(id,text,aria=text){const b=document.createElement('button');b.type='button';b.id=id;b.textContent=text;b.setAttribute('aria-label',aria);return b;}
+function visibleItems(){return items.filter(o=>(!ALL_IN_ONE||allInOneProtocolActive(o.type)));}
+function scale(o){return securityCustomerStampScale(o);}
+function syncControls(){
+ const available=dialog.open&&previewMode==='drawing';toggle.hidden=!available;tools.hidden=!available||!editing;toggle.setAttribute('aria-pressed',String(editing));
+ const pageItems=visibleItems().filter(o=>o.page===previewPage);if(selected&&!pageItems.some(o=>o.uid===selected))selected=null;
+ const options=[['all','Alla stämplar'],...pageItems.map(o=>[o.uid,securityDrawingLabel(o)])];const key=JSON.stringify(options);
+ if(target.dataset.options!==key){target.replaceChildren(...options.map(([value,text])=>new Option(text,value)));target.dataset.options=key;}
+ target.value=selected||'all';const list=selected?pageItems.filter(o=>o.uid===selected):visibleItems();
+ const percentages=[...new Set(list.map(o=>Math.round(scale(o)*100)))];status.textContent=percentages.length===1?percentages[0]+'%':percentages.length?'Olika storlekar':'Inga stämplar';
+ smaller.disabled=busy||!list.length||list.every(o=>scale(o)<=.5);larger.disabled=busy||!list.length||list.every(o=>scale(o)>=3);target.disabled=busy;exportButton.disabled=busy;done.disabled=busy;
+}
+function paint(){
+ syncControls();const active=editing&&dialog.open&&previewMode==='drawing';overlay.hidden=!active;
+ if(!active){overlay.replaceChildren();return;}
+ const c=canvas.getBoundingClientRect(),w=wrap.getBoundingClientRect();overlay.style.left=(c.left-w.left+wrap.scrollLeft)+'px';overlay.style.top=(c.top-w.top+wrap.scrollTop)+'px';overlay.style.width=c.width+'px';overlay.style.height=c.height+'px';overlay.classList.toggle('is-busy',busy);
+ overlay.replaceChildren();for(const rect of previewStampRects.filter(r=>r.pageIndex===previewPage-1)){
+  const o=items.find(o=>o.uid===rect.uid);if(!o)continue;const handle=document.createElement('button');handle.type='button';handle.className='customerStampHandle';handle.classList.toggle('is-selected',selected===o.uid);handle.dataset.uid=o.uid;handle.setAttribute('aria-label','Flytta stämpel '+securityDrawingLabel(o));handle.setAttribute('aria-pressed',String(selected===o.uid));handle.title='Dra för att flytta '+securityDrawingLabel(o);handle.style.left=rect.x*100+'%';handle.style.top=rect.y*100+'%';handle.style.width=Math.max(24,rect.width*c.width)+'px';handle.style.height=Math.max(24,rect.height*c.height)+'px';
+  handle.addEventListener('pointerdown',event=>{
+   if(busy||event.button!==0)return;event.preventDefault();event.stopPropagation();selected=o.uid;target.value=o.uid;overlay.querySelectorAll('.customerStampHandle').forEach(h=>{h.classList.toggle('is-selected',h===handle);h.setAttribute('aria-pressed',String(h===handle));});syncControls();drag={id:event.pointerId,o,handle,rect,startX:event.clientX,startY:event.clientY,x:o.labelX,y:o.labelY,width:c.width,height:c.height,nextX:o.labelX,nextY:o.labelY};handle.setPointerCapture(event.pointerId);
+  });
+  handle.addEventListener('pointermove',event=>{
+   if(drag?.id!==event.pointerId)return;event.preventDefault();const x=drag.x+(event.clientX-drag.startX)/drag.width,y=drag.y+(event.clientY-drag.startY)/drag.height;
+   drag.nextX=bounded(x,drag.rect.width/2);drag.nextY=bounded(y,drag.rect.height/2);handle.style.left=drag.nextX*100+'%';handle.style.top=drag.nextY*100+'%';handle.classList.add('is-dragging');handle.textContent=securityDrawingLabel(o);
+  });
+  handle.addEventListener('pointerup',event=>{if(drag?.id!==event.pointerId)return;const d=drag;drag=null;handle.releasePointerCapture(event.pointerId);if(d.nextX!==o.labelX||d.nextY!==o.labelY){o.labelX=d.nextX;o.labelY=d.nextY;commit();}else paint();});
+  handle.addEventListener('pointercancel',()=>{drag=null;paint();});
+  handle.addEventListener('keydown',event=>{const delta={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[event.key];if(!delta||busy)return;event.preventDefault();selected=o.uid;const step=event.shiftKey?10:1;o.labelX=bounded(o.labelX+delta[0]*step/c.width,rect.width/2);o.labelY=bounded(o.labelY+delta[1]*step/c.height,rect.height/2);commit();});overlay.append(handle);
+ }
+}
+function bounded(value,half){const h=Math.min(.49,Math.max(0,half));return clamp(value,h,1-h);}
+async function refresh(){
+ const serial=++renderSerial;busy=true;syncControls();overlay.classList.add('is-busy');
+ try{
+  const built=await buildSecurityDrawingPdf(),bytes=await built.out.save(),newDoc=await pdfjsLib.getDocument({data:bytes}).promise;
+  if(serial!==renderSerial){await newDoc.destroy();return;}
+  const old=previewPdf;previewPdf=newDoc;previewStampRects=built.stampRects;previewOverviewLinks=built.overviewLinks;previewPage=Math.min(previewPage,newDoc.numPages);
+  if(dialog.open&&previewMode==='drawing')await renderCustomerPreview();if(old&&old!==newDoc)await old.destroy();
+ }catch(error){console.error(error);status.textContent='Kunde inte uppdatera förhandsvisningen.';msg('Justeringen är sparad lokalt, men kundmallen kunde inte uppdateras.',true);}
+ finally{if(serial===renderSerial){busy=false;paint();}}
+}
+function commit(){save();drawMarkers();refresh();}
+function resize(factor){if(busy)return;const list=selected?visibleItems().filter(o=>o.uid===selected):visibleItems();list.forEach(o=>{o.customerStampScale=Math.round(clamp(scale(o)*factor,.5,3)*10000)/10000;});commit();}
+smaller.onclick=()=>resize(1/1.1);larger.onclick=()=>resize(1.1);target.onchange=()=>{selected=target.value==='all'?null:target.value;paint();};
+toggle.onclick=()=>{editing=!editing;selected=null;paint();};done.onclick=()=>{editing=false;paint();};exportButton.onclick=()=>{if(busy)return;editing=false;dialog.close();document.getElementById('securityExport').click();};
+const originalRender=renderCustomerPreview;renderCustomerPreview=async function(...args){await originalRender(...args);paint();};
+dialog.addEventListener('close',()=>{editing=false;selected=null;drag=null;paint();});window.addEventListener('revision-inline-view',event=>{if(event.detail.id!=='secPreviewDialog'){editing=false;selected=null;drag=null;}paint();});window.addEventListener('resize',()=>requestAnimationFrame(paint));
+})();
