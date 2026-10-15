@@ -274,7 +274,8 @@ html[data-auth-pending] body{visibility:hidden}
  #appHome .homeChoice:hover,#appHome .homeToolsLink:hover{transform:none!important}
 }
 
-</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.287"></script><script src="auth/guard.js?v=2.4.287" defer></script><link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.296">
+</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.287"></script><script src="auth/guard.js?v=2.4.287" defer></script><script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop','tv'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
+<link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.296">
 </head><body data-view="drawing" class="homeMode">
 <div id="tillsynoNavCurtain" aria-hidden="true"></div>
 <section id="appHome" class="appHome" aria-label="Välj arbetsläge">
