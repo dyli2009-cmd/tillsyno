@@ -1,4 +1,4 @@
-/* Tillsyno appearance v2.4.332. Shared UI-only theme. Never touches PDF pixels, rendered canvases, data or status semantics. */
+/* Tillsyno appearance v2.4.333. Shared UI-only theme. Never touches PDF pixels, rendered canvases, data or status semantics. */
 html[data-tillsyno-theme="ice"]{--ta-page:#edf6fb;--ta-sidebar:#e2f1f8;--ta-soft:#dceef7;--ta-soft2:#eaf5fb;--ta-card:#fff;--ta-header:#e1f0f8;--ta-ink:#173f55;--ta-muted:#587b8d;--ta-blue:#2b7192;--ta-blue-dark:#1e5b78;--ta-border:#c3dce9;--ta-line:#d5e6ef;--ta-highlight:#cce8f5;--ta-shadow:0 10px 27px #173e570e}
 html[data-tillsyno-theme="mist"]{--ta-page:#ebf1f5;--ta-sidebar:#e2edf3;--ta-soft:#dfeef3;--ta-soft2:#edf5f8;--ta-card:#fff;--ta-header:#e2eef4;--ta-ink:#233f52;--ta-muted:#617d8d;--ta-blue:#356e86;--ta-blue-dark:#285b73;--ta-border:#cbdde6;--ta-line:#dce8ee;--ta-highlight:#d6ecf5;--ta-shadow:0 10px 27px #234d600e}
 html[data-tillsyno-theme="coast"]{--ta-page:#edf7f6;--ta-sidebar:#e2f3f0;--ta-soft:#d9f0ef;--ta-soft2:#e8f6f3;--ta-card:#fff;--ta-header:#dcf0eb;--ta-ink:#1d4852;--ta-muted:#587e82;--ta-blue:#247f85;--ta-blue-dark:#1b626c;--ta-border:#c3dedb;--ta-line:#d9ebe7;--ta-highlight:#d9f2ee;--ta-shadow:0 10px 27px #164e490d}
@@ -920,7 +920,7 @@ html[data-tillsyno-theme] body.ceProjectPickerOpen > .ta-page-version {
 /* CE has an additional header version; it stays hidden after the single version moves to the footer. */
 html[data-tillsyno-theme] body .ceTopIdentity > small[hidden]{display:none!important}
 
-/* Tillsyno v2.4.332: optional dark UI palettes. Never filter/invert PDF or canvas pixels. */
+/* Tillsyno v2.4.333: optional dark UI palettes. Never filter/invert PDF or canvas pixels. */
 html[data-tillsyno-theme="night"]{color-scheme:dark;--ta-page:#081523;--ta-sidebar:#0c1d2c;--ta-soft:#203b50;--ta-soft2:#102638;--ta-card:#152b3e;--ta-header:#102334;--ta-ink:#e5eef5;--ta-muted:#adc0cf;--ta-blue:#336a96;--ta-blue-dark:#a5d8ff;--ta-border:#3f5d73;--ta-line:#2d475b;--ta-highlight:#254c68;--ta-shadow:0 12px 32px #0005}
 html[data-tillsyno-theme="graphite"]{color-scheme:dark;--ta-page:#12151c;--ta-sidebar:#171c25;--ta-soft:#2c3543;--ta-soft2:#1e2632;--ta-card:#232a35;--ta-header:#1b202a;--ta-ink:#eef0f7;--ta-muted:#bcc5d5;--ta-blue:#526886;--ta-blue-dark:#c1d2f2;--ta-border:#455468;--ta-line:#364150;--ta-highlight:#344861;--ta-shadow:0 12px 32px #0005}
 html[data-tillsyno-theme="pine"]{color-scheme:dark;--ta-page:#091c1e;--ta-sidebar:#0d2326;--ta-soft:#204447;--ta-soft2:#112b2d;--ta-card:#163436;--ta-header:#10272a;--ta-ink:#e5f4f0;--ta-muted:#a9c9c3;--ta-blue:#32776c;--ta-blue-dark:#a0dcd2;--ta-border:#3f6562;--ta-line:#2d514e;--ta-highlight:#285752;--ta-shadow:0 12px 32px #0005}
@@ -994,7 +994,7 @@ html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-til
 
 @media(max-width:540px){.ta-modal .ta-swatches i{width:7px;height:32px}.ta-modal .ta-swatches i:first-child{width:10px}}
 
-/* v2.4.332: desktop workspaces only. Real touch devices and phone/tablet preferences retain their existing UI. */
+/* v2.4.333: desktop workspaces only. Real touch devices and phone/tablet preferences retain their existing UI. */
 @media (min-width:1100px) and (hover:hover) and (pointer:fine){
 html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body{background:var(--ta-page)!important;color:var(--ta-ink)!important}
 html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #revisionInlineWorkspace{background:transparent!important}
@@ -1054,7 +1054,7 @@ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno
 html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body .ceTop .ceBackHome,html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body .ceTop .ceBackHome span{color:var(--ta-blue-dark)!important}
 }
 
-/* v2.4.332: one saved palette for all work views and devices; geometry and document/status pixels stay unchanged. */
+/* v2.4.333: one saved palette for all work views and devices; geometry and document/status pixels stay unchanged. */
 html[data-tillsyno-theme] body{background:var(--ta-page)!important;color:var(--ta-ink)!important;}
 html[data-tillsyno-theme] body #revisionInlineWorkspace,
 html[data-tillsyno-theme] body .revisionInlineContent,
@@ -1199,7 +1199,7 @@ html[data-tillsyno-theme] body #projectPanel :is(input:not([type="checkbox"]):no
 html[data-tillsyno-theme] body #protocolPanel :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea),
 html[data-tillsyno-theme] body #overviewDialog :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
 
-/* v2.4.332: PDF save-choice UI uses the saved palette; exported documents untouched. */
+/* v2.4.333: PDF save-choice UI uses the saved palette; exported documents untouched. */
 html[data-tillsyno-theme] body #secSaveDialog{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
 html[data-tillsyno-theme] body #secSaveDialog::backdrop{background:color-mix(in srgb,var(--ta-page) 65%,transparent)!important}
 html[data-tillsyno-theme] body #secSaveDialog .secSaveHead{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
@@ -1212,7 +1212,7 @@ html[data-tillsyno-theme] body #secSaveDialog .secSaveChoice.primary{background:
 html[data-tillsyno-theme] body #secSaveDialog .secSaveChoice.primary :is(strong,small,.secSaveChoiceIcon){color:#fff!important}
 html[data-tillsyno-theme] body #secSaveDialog .secSaveChoice.primary .secSaveChoiceIcon{background:#ffffff1c!important}
 
-/* v2.4.332: customer-preview header/controls only. PDF canvas and export pixels stay unchanged. */
+/* v2.4.333: customer-preview header/controls only. PDF canvas and export pixels stay unchanged. */
 html[data-tillsyno-theme] body #secPreviewDialog .secPreviewHead,
 html[data-tillsyno-theme] body #customerPreviewPane .customerPreviewHead{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
 html[data-tillsyno-theme] body #secPreviewDialog .secPreviewHead :is(strong,span),
@@ -1222,7 +1222,7 @@ html[data-tillsyno-theme] body #customerPreviewPane .customerPreviewHead #custom
 html[data-tillsyno-theme] body #secPreviewDialog .secPreviewControls button,
 html[data-tillsyno-theme] body #customerPreviewPane .customerPreviewControls button{background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important}
 
-/* v2.4.332: enlarge Home only for desktop mouse/trackpad layouts. */
+/* v2.4.333: enlarge Home only for desktop mouse/trackpad layouts. */
 @media (min-width:1100px) and (hover:hover) and (pointer:fine){
  html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.homeMode #appHome .homeShell{
   width:min(700px,100%)!important;max-width:700px!important;padding:28px 24px!important;
@@ -1245,7 +1245,7 @@ html[data-tillsyno-theme] body #customerPreviewPane .customerPreviewControls but
  html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.homeMode #appHome .homeFooterAccount{font-size:14px!important}
 }
 
-/* v2.4.332: improve desktop area-picker legibility; keep card geometry. */
+/* v2.4.333: improve desktop area-picker legibility; keep card geometry. */
 @media (min-width:1100px) and (hover:hover) and (pointer:fine){
  html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allProtocolHead h2{font-size:28px!important}
  html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allProtocolLead{font-size:15px!important}
@@ -1259,7 +1259,7 @@ html[data-tillsyno-theme] body #customerPreviewPane .customerPreviewControls but
 
 }
 
-/* v2.4.332: desktop checklist selection for all three areas only. */
+/* v2.4.333: desktop checklist selection for all three areas only. */
 @media (min-width:1100px) and (hover:hover) and (pointer:fine){
 html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolHead h2{font-size:28px!important}
 html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolLead{font-size:15px!important}
@@ -1274,7 +1274,7 @@ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno
 html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolActions :is(a,#allProtocolApply){font-size:16px!important;min-height:48px!important}
 }
 
-/* v2.4.332: desktop drawing entry header; current protocols supplied by revision picker. */
+/* v2.4.333: desktop drawing entry header; current protocols supplied by revision picker. */
 @media (min-width:1100px) and (hover:hover) and (pointer:fine){
 html[data-tillsyno-theme] body[data-desktop-protocol-context] .secAppHeader{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:10px 24px!important;padding:18px 28px!important}
 html[data-tillsyno-theme] body[data-desktop-protocol-context] .secAppHeader .brand{min-width:0!important;max-width:none!important;white-space:normal!important;margin:0!important}
@@ -1323,3 +1323,31 @@ html[data-tillsyno-theme] body #mobileBar button :is(.navLabel,.navIcon,svg){col
 html[data-tillsyno-theme] body #mobileBar button.active{background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important}
 html[data-tillsyno-theme] body #mobileBar button:not(.active):hover{background:var(--ta-soft2)!important}
 html[data-tillsyno-theme] body #mobileBar button:focus-visible{outline-color:var(--ta-blue)!important}
+
+/* Shared toolbar icons; workspace geometry changes only on desktop with a PDF. */
+body.allInOneApp #securityDrawing .pagebar .workspaceControlIcon{width:18px;height:18px;display:block;pointer-events:none}
+@media (min-width:1100px) and (hover:hover) and (pointer:fine){
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .secAppHeader{padding:8px 20px!important;gap:3px 16px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .secAppHeader .brand strong{font-size:20px!important;line-height:1.25!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .secAppHeader .headerSubtitle{font-size:12px!important;line-height:1.4!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .objectBar{min-height:28px!important;padding:4px 20px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] #securityObject{font-size:16px!important;line-height:1.3!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] #securityDrawing .pagebar{display:flex!important;flex-wrap:wrap!important;align-items:center!important;justify-content:center!important;gap:6px!important;padding:5px 16px!important;overflow:visible!important;background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] #securityDrawing .pagebar>.sessionHistoryBar{display:flex!important;flex:0 1 auto!important;align-items:center!important;gap:6px!important;width:auto!important;min-height:0!important;padding:0 12px 0 0!important;margin:0 8px 0 0!important;border:0!important;border-right:1px solid var(--ta-border)!important;background:transparent!important;overflow:visible!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar .sessionHistoryCenter{display:flex!important;flex:0 1 auto!important;gap:6px!important;position:static!important;transform:none!important;margin:0!important;min-width:0!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar .historyChangeDrawing{position:static!important;transform:none!important;margin:0!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar :is(.historyStatus,.historyTextControls){margin:0!important;padding:0!important;border:0!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar :is(.historyIconButton,.historyTextButton,.serviceToolLauncher,.historyChangeDrawing),
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar>button:not([hidden]){display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:none!important;width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;padding:8px!important;border-radius:10px!important;background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border:1px solid var(--ta-border)!important;font-size:14px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar button:disabled{opacity:.4!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar button.active{background:var(--ta-blue)!important;color:#fff!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar button svg{width:22px!important;height:22px!important;flex:none!important;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] :is(#secPage,#secZoom){font-size:14px!important;line-height:1.3!important;white-space:nowrap!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .serviceToolsMenu{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;padding:8px!important;gap:8px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .serviceToolsMenu .serviceIconButton{width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;border-radius:10px!important;background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .securityTools{padding:4px 12px!important;gap:6px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .securityTools button:not([hidden]){min-height:40px!important;font-size:13px!important;padding:7px 12px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] #mobileBar{padding-top:3px!important;padding-bottom:3px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] #mobileBar>button{min-height:44px!important;font-size:13px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] #mobileBar .navLabel{font-size:13px!important}
+}

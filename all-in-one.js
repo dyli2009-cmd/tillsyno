@@ -83,7 +83,7 @@
  function applyPicker(){
   const chosen=new Set([...dialog.querySelectorAll('input[type=checkbox][value]:checked')].map(x=>x.value).filter(x=>TYPES.includes(x)));
   if(!chosen.size)return
-  if(['automation','automation_selfcheck','lock_revision'].some(type=>chosen.has(type))){const target=new URL('controlflow-revision/all-in-one.html',location.href);target.searchParams.set('protocols',[...chosen].join(','));target.searchParams.set('v','2.4.332');location.assign(target.href);return}
+  if(['automation','automation_selfcheck','lock_revision'].some(type=>chosen.has(type))){const target=new URL('controlflow-revision/all-in-one.html',location.href);target.searchParams.set('protocols',[...chosen].join(','));target.searchParams.set('v','2.4.333');location.assign(target.href);return}
   active=chosen;
   write();
   refresh();
