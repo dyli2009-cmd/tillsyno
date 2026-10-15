@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.323 – större startsida på dator
+
+Större kort, text och ikoner på dator. Telefon, iPad och färgteman bevaras. Se [ändring och verifiering](DESKTOP_HOME_323.md).
+
 ## Tillsyno v2.4.322 – kundmallens rubrik följer temat
 
 Se [ändring och verifiering](CUSTOMER_PREVIEW_THEME_322.md).
