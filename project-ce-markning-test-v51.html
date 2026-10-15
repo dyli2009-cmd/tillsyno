@@ -659,12 +659,7 @@ width:14px!important;height:14px!important;min-width:14px!important}}
 </div></details>
 <span class="ceToolbarHint">Autosparas på denna enhet</span>
 </div>
-<dialog id="ceNewProjectDialog" class="ceNewProjectDialog">
-<header><strong>Stäng aktuellt CE-projekt</strong></header><main>
-<p id="ceNewProjectMessage" role="status"></p>
-<div class="ceNewProjectActions"><button id="ceNewProjectSave" type="button">1. Spara projekt-PDF</button><button id="ceNewProjectStart" type="button" disabled>2. Starta nytt projekt</button><button id="ceNewProjectCancel" type="button">Avbryt</button></div>
-<button id="ceNewProjectDiscard" type="button">Starta nytt utan projekt-PDF</button>
-</main></dialog>
+
  <form id="ceDoorForm" hidden class="ceDoorForm"><p id="ceDoorCopyHint" class="ceDoorCopyHint" role="status" hidden></p><div class="ceGrid">
   <label>Objektnummer<input id="ceDoorObject" required placeholder="Från projektuppgifterna"></label>
   <label>Maskintyp<select id="ceDoorCode"></select><input id="ceDoorCustomCode" hidden inputmode="numeric" placeholder="Egen maskintyp"></label>
@@ -681,6 +676,12 @@ width:14px!important;height:14px!important;min-width:14px!important}}
  <p id="ceStorageStatus" class="ceMuted" role="status" aria-live="polite"></p>
 </div>
 </main>
+<dialog id="ceNewProjectDialog" class="ceNewProjectDialog">
+<header><strong>Stäng aktuellt CE-projekt</strong></header><main>
+<p id="ceNewProjectMessage" role="status"></p>
+<div class="ceNewProjectActions"><button id="ceNewProjectSave" type="button">1. Spara projekt-PDF</button><button id="ceNewProjectStart" type="button" disabled>2. Starta nytt projekt</button><button id="ceNewProjectCancel" type="button">Avbryt</button></div>
+<button id="ceNewProjectDiscard" type="button">Starta nytt utan projekt-PDF</button>
+</main></dialog>
 <div id="ceNotice" role="status" aria-live="polite" hidden></div>
 </body>
 </html>
