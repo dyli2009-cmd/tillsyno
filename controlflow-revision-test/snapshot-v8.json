@@ -1,0 +1,13 @@
+{
+  "testVersion": 8,
+  "previousEntry": "v7/all-in-one.html",
+  "dataCompatibility": "same project keys, items and work-PDF format as TEST v7; view interaction only",
+  "files": {
+    "all-in-one.html": "ec487348a488808aa2dc62d37e62b5e85ceda57e837cbb9a941a4b5058db3fc4",
+    "security-v8.js": "dd696353d41249831a471e7f9a82890a2fcee24792bb7f1cef52bf9354176e7d",
+    "revision-gestures-v8.css": "6651628437faa9869e899b974e80050d060b0965d0e95649cdeaf89d998931a6",
+    "tillsyno-appearance-v8.js": "7e16e1d2d9cf7ca6ef66a7646fe6e7a72d44260a7f112cc200eedbe3fb119bdf",
+    "offline-v8.js": "b83bccf424a3950f5255a403d2196acd5ae38175264e93ae4c99f0daf7375038",
+    "sw.js": "678981e65dbae632518bce12208646f702137011fd7714810499898a9298420c"
+  }
+}
