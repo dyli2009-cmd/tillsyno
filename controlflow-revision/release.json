@@ -1,5 +1,5 @@
 {
-  "release": "2.4.313",
+  "release": "2.4.314",
   "approvedSource": "TEST v16",
   "sourceSnapshot": "controlflow-revision-test/snapshot-v16.json",
   "routing": "Dörrautomatik/Lås protocols; mixed selections retained together",
@@ -15,14 +15,14 @@
   "files": {
     "all-in-one-v2.js": "6ae2cd72dc88f456126bff276ea7ef253310fb6e388c4dc333ba4f22b361e871",
     "all-in-one.css": "d149b3357f7361250d37d8fc2d043860d4b8be199f61b276254ed3d0f2dc7ef0",
-    "all-in-one.html": "d3108544780a0fa6f04bd8b8fd5a97f1e275c77eeb45e1ce6b371c7defece7db",
+    "all-in-one.html": "ec92cb2d7d3f162af6a363a1397736034f6b0ee30f1cd9ddc59e03976fe8cbb7",
     "customer-preview-v310.css": "d533d879d55abe0c30ea879e99839eedde7029809ce8db5c51662fd018852795",
     "customer-preview-v310.js": "f4478434a5b36a8877b149e2936ab9a7ab419d9f79e30d81a398c63685090be2",
     "drawing-annotations.js": "a363c7e34c5d9c801560bb7be20fce4e305a5c9c3bed09573bdaa147472529be",
     "drawing-transfer-v2.js": "c54c783b1596f9573449f776367b6ef8eaaa0d11b1473e52dbe7e0c4dee26188",
     "legacy-door-import.js": "77cba02bd60779804c9e3e6c1b509e54b1b23ab44b627df993ec5194c7dc4ab9",
     "offline-work-v2.js": "933cfa6b2f3f5dc5f79c614a44727165ab087759162c631d1bcdac94dd7c6747",
-    "offline.js": "c4c0a4e470e82b94caae22b31191b51ee86ae73fb67fe97dbab9935f081070be",
+    "offline.js": "f6b5dc5318494a3ef1f98679ddb73341e73b90c521cdd2a68e058dc1e04af35b",
     "revision-callout-profile-v4.js": "6bad71b38cc6df8e3b106ed9e5762e1a5bf49edb1544f45f9c5de1c3fed9fba1",
     "revision-checklist-v14.css": "94a92a30acf52b080bd7e22492a2990817a8f1a1a42454c432cdf5fd0129be2d",
     "revision-compact-v15.css": "f0cad70116b7d968c318112719152f49083dadbb462eb62f3fcc2c47665cd825",
@@ -43,7 +43,7 @@
     "service-overview-v12.js": "764cd3344cb1c77a30f9d201837cd53c1e1b952797aaa07e1a79b9488dcb6626",
     "session-history.js": "c93983fa8e5f33afb537625164ebccd8f4b6186a3ccde654d2ef9ca22012d2ae",
     "style.css": "5ce4226bbf01d7375cda5b91e427cc24a82265592e67e08f978545fb31b3f1af",
-    "tillsyno-appearance-v16.js": "217dee4862f9d37328537a3123eff287137419c70d0d60945f057fc57470064f",
+    "tillsyno-appearance-v16.js": "67b263b73d873b8585ee50236fad82d0016a9a2b089395bddf4285c2d4f3e22e",
     "tillsyno-appearance.css": "0c6cbb7f5cc85313f80618870f8b392c30e819adb6560237255c8b4fde74b844",
     "ui-text-scale-v2.js": "9ed26172f70fc45f6b9936e2673ac2eed9356dce37a2be27de16630a04160e03"
   },

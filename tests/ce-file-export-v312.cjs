@@ -65,7 +65,7 @@ const server=http.createServer((req,res)=>{
   },buffer.toString('base64'));
   assert.equal(contents.length,30);
   for(let n=1;n<=10;n++)for(const [prefix,content]of [['Loggbok','Log'],['EG-försäkran','EG'],['Egenkontroll','Check']]){
-   const file=contents.find(f=>f.name===prefix+'-57617-14-24-'+n+'.pdf');assert(file,file?.name);assert(file.text.includes('57617-14-24-'+n));assert(file.text.includes(content+' '+n));assert(!file.name.includes('/'));
+   const file=contents.find(f=>f.name===String(n).padStart(2,'0')+'-'+prefix+'-57617-14-24-'+n+'.pdf');assert(file,file?.name);assert(file.text.includes('57617-14-24-'+n));assert(file.text.includes(content+' '+n));assert(!file.name.includes('/'));
   }
   await page.locator('#ceFilesNone').click();assert(await page.locator('#ceFilesBuild').isDisabled());
   await page.locator('#ceFilesDoors input').nth(1).check();await page.locator('#ceFilesDoors input').nth(7).check();
@@ -82,6 +82,12 @@ const server=http.createServer((req,res)=>{
    api.setProjectSignature('');
    await expect(()=>api.buildFileArchive([doors[0]],['Egenkontroll'],bridge),'Signatur saknas');
    const partial=await api.buildFileArchive([doors[0]],['Loggbok'],bridge);if(partial.files!==1)throw Error('Unrelated signature blocked logbook');
+   const subset=await JSZip.loadAsync((await api.buildFileArchive([doors[1],doors[7]],['Loggbok'],bridge)).bytes);
+   if(!subset.files['02-Loggbok-57617-14-24-2.pdf']||!subset.files['08-Loggbok-57617-14-24-8.pdf'])throw Error('Subset renumbered doors');
+   doors[9].serialNumber='100';
+   const wide=await JSZip.loadAsync((await api.buildFileArchive([doors[0]],['Loggbok'],bridge)).bytes);
+   if(!wide.files['001-Loggbok-57617-14-24-1.pdf'])throw Error('Numeric sorting width must use the whole project');
+   doors[9].serialNumber='10';
    await expect(()=>api.buildFileArchive([doors[0]],[],bridge),'Välj minst ett dokument');
    await expect(()=>api.buildFileArchive([],['Loggbok'],bridge),'Välj minst en dörr');
    await expect(()=>api.buildFileArchive([doors[0]],['Loggbok'],bridge,()=>{meta.projectName='Mutation';}),'Projektet ändrades');

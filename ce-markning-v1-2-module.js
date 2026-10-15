@@ -2021,6 +2021,7 @@ async function slrPhotoForZip(photo){
 }
 const slrFormatMegabytes=bytes=>(bytes/(1024*1024)).toFixed(1).replace('.',',')+' MB';
 const fileExportAssetIds=new WeakMap();let fileExportAssetSerial=0;
+function fileExportSerial(obj){return String(obj.serialNumber??'').trim()||String(obj.sourceText||'').match(/-(\d+)$/)?.[1]||'';}
 function fileExportAssetId(asset){if(!asset||typeof asset!=='object')return 0;if(!fileExportAssetIds.has(asset))fileExportAssetIds.set(asset,++fileExportAssetSerial);return fileExportAssetIds.get(asset);}
 function fileExportRevision(context=bridge){
  const assets=Object.entries(templates).map(([cat,bytes])=>[cat,fileExportAssetId(bytes)]);
@@ -2052,6 +2053,7 @@ async function buildFileArchive(selected,selectedCategories,context=bridge,onPro
   if(categories.includes('Egenkontroll'))slrRequirePointSignatures(obj);
  }
  const revision=fileExportRevision(bridge),zip=new window.JSZip(),used=new Set();
+ const numberWidth=Math.max(2,...[...live.values()].map(obj=>/^\d+$/.test(fileExportSerial(obj))?fileExportSerial(obj).length:0));
  const categorySizes=Object.fromEntries(categories.map(cat=>[cat,0]));
  let sourceSize=0,count=0;
  for(const obj of selected)for(const cat of categories){
@@ -2059,7 +2061,8 @@ async function buildFileArchive(selected,selectedCategories,context=bridge,onPro
   const bytes=photo?await slrPhotoForZip(photo):await compose(cat,obj);
   const ext=photo?(photo.type==='image/png'?'png':'jpg'):cat==='CE-skylt'?(names[cat]?.match(/\.(png|jpe?g)$/i)?.[1]||'pdf').toLowerCase():'pdf';
   const title=cat==='Tillverkarens försäkran'?'EG-försäkran':labelFor(cat);
-  const stem=slrFolderName(title)+'-'+slrFolderName(slrDoorDesignation(obj));
+  const serial=fileExportSerial(obj),prefix=serial?slrFolderName(/^\d+$/.test(serial)?serial.padStart(numberWidth,'0'):serial)+'-':'';
+  const stem=prefix+slrFolderName(title)+'-'+slrFolderName(slrDoorDesignation(obj));
   let name=stem+'.'+ext,n=2;
   while(used.has(name.toLocaleLowerCase('sv-SE')))name=stem+' ('+(n++)+').'+ext;
   used.add(name.toLocaleLowerCase('sv-SE'));
