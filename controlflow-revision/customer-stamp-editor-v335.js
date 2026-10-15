@@ -4,7 +4,7 @@
 const dialog=document.getElementById('secPreviewDialog'),wrap=document.getElementById('secPreviewWrap'),canvas=document.getElementById('secPreviewCanvas'),head=dialog?.querySelector('.secPreviewHead');
 if(!head||typeof buildSecurityDrawingPdf!=='function')return;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
-let editing=false,busy=false,selected=null,drag=null,renderSerial=0,pinch=null;
+let editing=false,busy=false,selected=null,drag=null,renderSerial=0,pinch=null,wheelTimer=null;
 const toggle=document.createElement('button');toggle.type='button';toggle.id='customerStampEdit';toggle.textContent='Justera stämplar';toggle.setAttribute('aria-pressed','false');toggle.hidden=true;head.querySelector('div').append(toggle);
 const tools=document.createElement('div');tools.className='customerStampTools';tools.hidden=true;tools.setAttribute('role','group');tools.setAttribute('aria-label','Justera stämplar');
 const label=document.createElement('label');label.textContent='Storlek för ';const target=document.createElement('select');target.id='customerStampTarget';target.setAttribute('aria-label','Ändra storlek för');label.append(target);
@@ -76,7 +76,14 @@ wrap.addEventListener('touchmove',event=>{
  wrap.scrollLeft+=rect.left+pinch.x*rect.width-midX;wrap.scrollTop+=rect.top+pinch.y*rect.height-midY;paint();
 },{passive:false});
 function endPinch(event){if(!pinch||event.touches.length>=2)return;pinch=null;renderCustomerPreview();}
+wrap.title='Zooma med två fingrar eller Ctrl + mushjul (⌘ på Mac).';
+wrap.addEventListener('wheel',event=>{
+ if(previewMode!=='drawing'||!dialog.open||busy||pinch||(!event.ctrlKey&&!event.metaKey))return;
+ event.preventDefault();const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width,y=(event.clientY-rect.top)/rect.height,previous=customerPreviewZoom,delta=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?wrap.clientHeight:1);
+ customerPreviewZoom=clamp(previous*Math.exp(-delta*.002),.5,6);const ratio=customerPreviewZoom/previous;wrap.style.justifyContent='safe center';canvas.style.width=rect.width*ratio+'px';canvas.style.height=rect.height*ratio+'px';
+ const next=canvas.getBoundingClientRect();wrap.scrollLeft+=next.left+x*next.width-event.clientX;wrap.scrollTop+=next.top+y*next.height-event.clientY;paint();clearTimeout(wheelTimer);wheelTimer=setTimeout(()=>renderCustomerPreview(),120);
+},{passive:false});
 wrap.addEventListener('touchend',endPinch);wrap.addEventListener('touchcancel',endPinch);
 const originalRender=renderCustomerPreview;renderCustomerPreview=async function(...args){await originalRender(...args);paint();};
-dialog.addEventListener('close',()=>{pinch=null;customerPreviewZoom=1;wrap.style.justifyContent='';editing=false;selected=null;drag=null;paint();});window.addEventListener('revision-inline-view',event=>{if(event.detail.id!=='secPreviewDialog'){editing=false;selected=null;drag=null;}paint();});window.addEventListener('resize',()=>requestAnimationFrame(paint));
+dialog.addEventListener('close',()=>{pinch=null;clearTimeout(wheelTimer);customerPreviewZoom=1;wrap.style.justifyContent='';editing=false;selected=null;drag=null;paint();});window.addEventListener('revision-inline-view',event=>{if(event.detail.id!=='secPreviewDialog'){editing=false;selected=null;drag=null;}paint();});window.addEventListener('resize',()=>requestAnimationFrame(paint));
 })();
