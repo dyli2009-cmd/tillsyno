@@ -294,3 +294,18 @@ html[data-tillsyno-device="desktop"] body :is(#appHome .homeChoice,#appHome .hom
 /* Keep the PDF status colors and access-control locked/disabled states intact. */
 html[data-tillsyno-theme] :is(.status-ok,.status-warning,.status-error,.s-ok,.s-action,.s-fail,.s-untested,.doorTarget,.pwStatusChip,.smartStatus){color:inherit}
 @media(prefers-reduced-motion:reduce){.ta-launcher,.ta-modal *{transition:none!important}}
+
+/* On the home screen, show the appearance icon beside the existing account icon,
+   never over the version number or the bottom of the home page. */
+html[data-tillsyno-theme] body #appHome .homeBrand>.ta-launcher{
+ position:relative!important;right:auto!important;bottom:auto!important;
+ width:40px!important;height:40px!important;min-height:40px!important;min-width:40px!important;
+ margin:0!important;flex:none!important;border-radius:11px!important;
+ background:var(--ta-card)!important;border-color:var(--ta-border)!important;
+ box-shadow:none!important;z-index:50!important;
+}
+@media(max-width:620px){
+ html[data-tillsyno-theme] body #appHome .homeBrand>.ta-launcher{
+  width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;
+ }
+}
