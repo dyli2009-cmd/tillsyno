@@ -35,6 +35,7 @@ const paths={
  login:'<path d="M10 4H4v16h6M15 8l4 4-4 4M8 12h11"/>',
  clipboard:'<path d="M8 4h8M9 3h6v3H9zM6 5H4v16h16V5h-2M9 12h6M9 16h6"/>',
  menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+ palette:'<circle cx="13.5" cy="6.5" r="1"/><circle cx="7.5" cy="9" r="1"/><circle cx="7.5" cy="15" r="1"/><circle cx="16" cy="16" r="1"/><path d="M12 2a10 10 0 0 0 0 20h1.4a2.6 2.6 0 0 0 2-4.3 2 2 0 0 1 1.4-3.4h2.8A3.4 3.4 0 0 0 23 11 10 10 0 0 0 12 2Z"/>',
  calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/>',
  smartphone:'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 19h2"/>',
  tablet:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M11 19h2"/>',
@@ -59,7 +60,7 @@ return '<div class="plan"><div class="plan-head"><span>DEMO-RITNING · PLAN 1</s
 }
 const navitems=[['home','Hem','home'],['control','Kontrollflöde','control'],['smartHome','SmartMatch','smart'],['toolsHome','Ritningsverktyg','tool'],['ceHome','CE-märkning','file'],['account','Mitt konto','account'],['admin','Administration','users'],['login','Inloggning','login']];
 const folderNames=['Riskanalys','Beskrivning av maskin','Loggbok','EG-försäkran','Egenkontroll','Produktlista','CE-skylt'];
-const state={screen:'home',history:[],device:'auto',area:'automation',selected:[],modal:'',drawer:false,doorProfile:'glass',ceFolder:'Riskanalys',imported:false,pin:'GS2',smartTab:'ritning',tool:'rensa',layer:true,checked:{},ceChecks:{},accountMenu:false,ceProjectName:'Demoprojekt – Entréplan'};
+const state={screen:'home',history:[],device:'auto',theme:'mist',showPalette:false,area:'automation',selected:[],modal:'',drawer:false,doorProfile:'glass',ceFolder:'Riskanalys',imported:false,pin:'GS2',smartTab:'ritning',tool:'rensa',layer:true,checked:{},ceChecks:{},accountMenu:false,ceProjectName:'Demoprojekt – Entréplan'};
 let toastTimer=0;
 function navTo(next,add){
  if(next==='ceNew'){action('ceNew');return;}
@@ -72,8 +73,19 @@ function navTo(next,add){
 }
 function back(){const prev=state.history.pop();if(prev){state.screen=prev;state.modal='';render();scrollTo(0,0);}else navTo('home',false);}
 function activeArea(){return ['area','areaSecurity','areaFire','controlDrawing','protocol'].includes(state.screen)?'control':state.screen.startsWith('ce')?'ceHome':state.screen.startsWith('smart')?'smartHome':state.screen.startsWith('tools')?'toolsHome':['admin','login'].includes(state.screen)?'account':state.screen;}
-function side(){return '<aside class="sidebar"><div class="brand"><span class="brand-mark">T</span><span class="brand-text"><strong>Tillsyno</strong><small>UI Preview · ljusblå design</small></span></div><div class="side-label">Arbetsområden</div><nav class="side-nav">'+navitems.map(function(x){return '<button type="button" class="'+(activeArea()===x[0]?'active':'')+'" data-nav="'+x[0]+'">'+icon(x[2])+x[1]+'</button>';}).join('')+'</nav><div class="side-lower"><div class="side-label">Förhandsvisning</div><div class="small">Inga riktiga projekt eller filer ändras. Testa fritt bland de olika vyerna.</div><a class="btn small" href="index.html">Till riktiga Tillsyno '+icon('arrow')+'</a></div></aside>';}
-function top(){return '<header class="topbar"><div class="top-left"><button class="icon-button mobile-menu" data-action="drawer" aria-label="Öppna menyn">'+icon('menu')+'</button><div class="top-title"><strong>Tillsyno</strong><small> / '+(titles[state.screen]||'Förhandsvisning')+'</small></div></div><div class="top-right"><div class="device-bar" aria-label="Förhandsgranska enhet">'+[['phone','Mobil','smartphone'],['tablet','iPad','tablet'],['auto','Dator','desktop']].map(function(x){return '<button type="button" class="btn '+(state.device===x[0]?'active':'')+'" data-device="'+x[0]+'" title="Visa '+x[1]+'">'+icon(x[2])+x[1]+'</button>';}).join('')+'</div><span class="preview-badge">DESIGNDEMO</span><button class="icon-button" data-nav="account" aria-label="Mitt konto">'+icon('account')+'</button></div></header>';}
+function side(){return '<aside class="sidebar"><div class="brand"><span class="brand-mark">T</span><span class="brand-text"><strong>Tillsyno</strong><small>UI Preview · fyra färgteman</small></span></div><div class="side-label">Arbetsområden</div><nav class="side-nav">'+navitems.map(function(x){return '<button type="button" class="'+(activeArea()===x[0]?'active':'')+'" data-nav="'+x[0]+'">'+icon(x[2])+x[1]+'</button>';}).join('')+'</nav><div class="side-lower"><div class="side-label">Förhandsvisning</div><div class="small">Inga riktiga projekt eller filer ändras. Testa fritt bland de olika vyerna.</div><a class="btn small" href="index.html">Till riktiga Tillsyno '+icon('arrow')+'</a></div></aside>';}
+const palettes=[
+ {id:'ice',name:'Isblå',subtitle:'Nuvarande ljusblå',swatches:['#edf6fb','#ffffff','#2b7192']},
+ {id:'mist',name:'Nordisk dimblå',subtitle:'Min favorit · lugn blågrå',swatches:['#ebf1f5','#ffffff','#356e86']},
+ {id:'coast',name:'Havsbris',subtitle:'Mild turkosblå',swatches:['#edf7f6','#ffffff','#247f85']},
+ {id:'sand',name:'Sand & blå',subtitle:'Varm, ljus och elegant',swatches:['#f7f5f1','#ffffff','#356b81']}
+];
+function paletteMenu(){
+ return '<div class="palette-wrap"><button type="button" class="icon-button palette-toggle" data-action="palette" aria-label="Välj färgtema" aria-expanded="'+state.showPalette+'" title="Byt färger">'+icon('palette')+'</button>'+
+ (state.showPalette?'<div class="palette-menu" role="group" aria-label="Färgteman"><strong class="palette-heading">Prova färger</strong><p>Precis samma sidor och funktioner – bara färgerna ändras.</p>'+
+ palettes.map(function(p){return '<button type="button" class="palette-option '+(state.theme===p.id?'chosen':'')+'" data-theme-option="'+p.id+'" aria-pressed="'+(state.theme===p.id)+'"><span class="palette-swatches">'+p.swatches.map(function(color){return '<span style="background:'+color+'"></span>';}).join('')+'</span><span class="palette-option-copy"><strong>'+p.name+'</strong><small>'+p.subtitle+'</small></span>'+icon(state.theme===p.id?'check':'arrow')+'</button>';}).join('')+'</div>':'')+'</div>';
+}
+function top(){return '<header class="topbar"><div class="top-left"><button class="icon-button mobile-menu" data-action="drawer" aria-label="Öppna menyn">'+icon('menu')+'</button><div class="top-title"><strong>Tillsyno</strong><small> / '+(titles[state.screen]||'Förhandsvisning')+'</small></div></div><div class="top-right"><div class="device-bar" aria-label="Förhandsgranska enhet">'+[['phone','Mobil','smartphone'],['tablet','iPad','tablet'],['auto','Dator','desktop']].map(function(x){return '<button type="button" class="btn '+(state.device===x[0]?'active':'')+'" data-device="'+x[0]+'" title="Visa '+x[1]+'">'+icon(x[2])+x[1]+'</button>';}).join('')+'</div><span class="preview-badge">DESIGNDEMO</span>'+paletteMenu()+'<button class="icon-button" data-nav="account" aria-label="Mitt konto">'+icon('account')+'</button></div></header>';}
 function bottom(){const links=[['home','Hem','home'],['control','Kontroll','control'],['smartHome','SmartMatch','smart'],['toolsHome','Verktyg','tool'],['account','Mer','account']];return '<nav class="bottom-nav" aria-label="Snabbnavigering">'+links.map(function(x){return '<button type="button" class="'+(activeArea()===x[0]?'active':'')+'" data-nav="'+x[0]+'">'+icon(x[2])+'<span>'+x[1]+'</span></button>';}).join('')+'</nav>';}
 function drawer(){return state.drawer?'<div class="mobile-drawer" data-action="closeDrawer"><div class="drawer-panel" onclick="event.stopPropagation()"><div class="row between"><strong>Tillsyno · UI Preview</strong><button data-action="closeDrawer" aria-label="Stäng meny">'+icon('x')+'</button></div><nav>'+navitems.map(function(x){return '<button class="'+(activeArea()===x[0]?'active':'')+'" data-nav="'+x[0]+'">'+icon(x[2])+x[1]+'</button>';}).join('')+'</nav><a class="btn" href="index.html">Till riktiga Tillsyno</a></div></div>':'';}
 function modal(){let title='',body='',footer='';
@@ -239,6 +251,7 @@ const screens={home:screenHome,control:screenControl,area:function(){return scre
 const titles={home:'Hem',control:'Kontrollflöde',area:'Dörrautomatik / Lås',areaSecurity:'Säkerhetsservice',areaFire:'Brandsäkerhet',controlDrawing:'Ritning',protocol:'Protokoll',ceHome:'CE-märkning',ceProject:'CE-projekt',ceMeta:'Projektuppgifter',ceDocs:'CE-dokument',ceDoc:'Dokument',smartHome:'SmartMatch',smartWorkspace:'SmartMatch projekt',toolsHome:'Ritningsverktyg',toolsWorkspace:'PDF-verktyg',account:'Mitt konto',admin:'Administration',login:'Inloggning'};
 function render(){
  root.parentElement.dataset.device=state.device;
+ root.parentElement.dataset.theme=state.theme;
  root.innerHTML=side()+'<div class="shell">'+top()+'<main class="main"><div class="notice">'+icon('info')+' Separat designförhandsvisning · exempeldata · inga riktiga ändringar</div>'+screens[state.screen]()+'</main></div>'+bottom()+drawer()+modal()+'<div id="toastSpot" aria-live="polite"></div>';
  document.title=(titles[state.screen]||'Tillsyno')+' · Tillsyno UI Preview';
 }
@@ -248,7 +261,8 @@ function inform(message){
 }
 function action(key,value){
  switch(key){
-  case 'drawer':state.drawer=true;render();break;
+  case 'drawer':state.drawer=true;state.showPalette=false;render();break;
+  case 'palette':state.showPalette=!state.showPalette;render();break;
   case 'closeDrawer':state.drawer=false;render();break;
   case 'ceImport':state.modal='ceImport';render();break;
   case 'ceNew':state.modal='newCE';render();break;
@@ -278,8 +292,9 @@ function action(key,value){
  }
 }
 document.addEventListener('click',function(e){
- const target=e.target.closest('[data-device],[data-nav],[data-action],[data-profile],[data-smart-tab],[data-tool],[data-ce-folder]');
- if(!target)return;
+ const target=e.target.closest('[data-theme-option],[data-device],[data-nav],[data-action],[data-profile],[data-smart-tab],[data-tool],[data-ce-folder]');
+ if(!target){if(state.showPalette){state.showPalette=false;render();}return;}
+ if(target.hasAttribute('data-theme-option')){const theme=target.dataset.themeOption;if(palettes.some(function(p){return p.id===theme;})){state.theme=theme;state.showPalette=false;render();}return;}
  if(target.hasAttribute('data-device')){state.device=target.dataset.device;render();scrollTo(0,0);return;}
  if(target.hasAttribute('data-nav')){navTo(target.dataset.nav);return;}
  if(target.hasAttribute('data-profile')){state.doorProfile=target.dataset.profile;render();return;}
@@ -294,7 +309,7 @@ document.addEventListener('change',function(e){
  if(target.matches('[data-pcheck]')){state.checked[target.dataset.pcheck]=target.checked;render();}
  if(target.matches('[data-ce-check]')){state.ceChecks[target.dataset.ceCheck]=target.checked;render();}
 });
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(state.modal){state.modal='';render();}else if(state.drawer){state.drawer=false;render();}else back();}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(state.showPalette){state.showPalette=false;render();return;}if(state.modal){state.modal='';render();}else if(state.drawer){state.drawer=false;render();}else back();}});
 window.addEventListener('popstate',function(){back();});
 render();
 })();
