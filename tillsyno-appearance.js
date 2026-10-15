@@ -1,4 +1,4 @@
-/* Tillsyno appearance v2.4.300 — a UI-only layer. NO domain data, PDF, canvas, checklist or authentication mutations. */
+/* Tillsyno appearance v2.4.304 — a UI-only layer. NO domain data, PDF, canvas, checklist or authentication mutations. */
 (function(){
 'use strict';
 const KEY='tillsyno-ui-appearance-v1';
@@ -12,8 +12,7 @@ const DEVICES={
  auto:{name:'Automatiskt',sub:'Anpassas efter skärmen',icon:'monitor-smartphone'},
  phone:{name:'iPhone / telefon',sub:'Kompakt och fingervänligt',icon:'smartphone'},
  tablet:{name:'iPad / surfplatta',sub:'Större knappar och mer utrymme',icon:'tablet'},
- desktop:{name:'Dator',sub:'Skrivbord, mus och tangentbord',icon:'monitor'},
- tv:{name:'TV / stor skärm',sub:'Större text och kontroller',icon:'tv'}
+ desktop:{name:'Dator',sub:'Skrivbord, mus och tangentbord',icon:'monitor'}
 };
 const ICONS={
  palette:'<path d="M12 2a10 10 0 0 0 0 20h1.5c2.2 0 3.2-2.3 1.6-3.9-.6-.7-.3-1.9.8-2.2h2.8c2.1 0 3.3-1.5 3.3-3.7A10 10 0 0 0 12 2Z"/><circle cx="7.6" cy="9" r=".9"/><circle cx="12.7" cy="6.4" r=".9"/><circle cx="17" cy="10" r=".9"/><circle cx="8.7" cy="15" r=".9"/>',
@@ -23,7 +22,6 @@ const ICONS={
  phone:'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 19h2"/>',
  tablet:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M11 19h2"/>',
  desktop:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',
- tv:'<rect x="2" y="5" width="20" height="13" rx="2"/><path d="M8 21h8M12 18v3"/>',
  file:'<path d="M7 3h8l4 4v14H7zM15 3v5h4M10 13h6M10 17h4"/>',
  folder:'<path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10H3zM3 11h18"/>',
  save:'<path d="M5 3h11l3 3v15H5zM8 3v7h8V3M8 20v-7h8v7"/>',
@@ -128,11 +126,13 @@ function decorate(root){
 function attach(){
  if(rendered||!document.body)return;rendered=true;
  const btn=document.createElement('button');btn.type='button';btn.className='ta-launcher';btn.id='tillsynoAppearanceButton';
- btn.title='Färger och enhet';btn.setAttribute('aria-label','Välj färger, iPhone, iPad, dator eller TV');btn.innerHTML=svg('palette');launcher=btn;
+ btn.title='Färger och enhet';btn.setAttribute('aria-label','Välj färger, iPhone, iPad eller dator');btn.innerHTML=svg('palette');launcher=btn;
  btn.addEventListener('click',open);
  const homeHeader=document.querySelector('#appHome .homeBrand');
  const smartHeader=document.querySelector('body > header.pwHeader');
  const ceHeader=document.querySelector('body > header.ceTop');
+ const authShell=document.querySelector('body.loginbody :is(.loginshell,.pendingShell)');
+ const adminHeader=document.querySelector('body[data-require-role="admin"] > header.topbar');
  if(homeHeader){
    homeHeader.insertBefore(btn,homeHeader.querySelector('#homeProfile')||null);
  }else if(smartHeader){
@@ -143,6 +143,10 @@ function attach(){
    }else smartHeader.prepend(btn);
  }else if(ceHeader){
    ceHeader.insertBefore(btn,ceHeader.querySelector('.ceBackHome')||null);
+ }else if(authShell){
+   authShell.insertBefore(btn,authShell.firstChild);
+ }else if(adminHeader){
+   adminHeader.insertBefore(btn,adminHeader.querySelector('.toplinks')||null);
  }else document.body.appendChild(btn);
  const d=document.createElement('dialog');d.className='ta-modal';d.id='tillsynoAppearanceDialog';
  d.setAttribute('aria-label','Tillsynos utseende och enhet');
