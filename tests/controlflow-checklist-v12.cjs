@@ -8,7 +8,7 @@ const geometry=page=>page.evaluate(()=>structuredClone(project.serviceOverview))
 (async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/tmp/chromium',args:['--no-sandbox','--disable-dev-shm-usage']});try{
  const context=await browser.newContext({viewport:{width:820,height:1180},hasTouch:true,acceptDownloads:true,serviceWorkers:'allow'}),page=await context.newPage(),errors=[];page.on('pageerror',e=>{errors.push(e.message);console.error(e.message)});
  const source=await PDFDocument.create(),first=source.addPage([900,1200]);first.setRotation(degrees(Number(process.env.DRAWING_ROTATION)||0));first.drawText('FLOOR PLAN',{x:40,y:1120,size:16});source.addPage([900,1200]);const bytes=Buffer.from(await source.save());
- await page.goto('http://127.0.0.1:'+server.address().port+'/controlflow-revision-test/all-in-one.html');await choose(page);await upload(page,bytes,'Service test.pdf');
+ await page.goto('http://127.0.0.1:'+server.address().port+'/controlflow-revision-test/v12/all-in-one.html');await choose(page);await upload(page,bytes,'Service test.pdf');
 
 
  await page.setViewportSize({width:390,height:844});
