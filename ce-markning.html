@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#132b38">
 <meta http-equiv="Cache-Control" content="no-cache">
-<title>CE-märkning v1.2.1 | Tillsyno</title>
+<title>CE-märkning v1.2.2 | Tillsyno</title>
 <style>html[data-auth-pending] body{visibility:hidden!important}</style>
 <script src="vendor/supabase-2.49.10.min.js"></script>
 <script src="auth-config.js"></script>
@@ -529,7 +529,7 @@ width:14px!important;height:14px!important;min-width:14px!important}}
 <script src="project-ce-markning-test-v6-models.js?v=6"></script>
 <script src="ce-markning-v1-2-module.js?v=1.2"></script><script src="ce-markning-v1-2-optimize.js?v=1.2"></script>
 <script src="project-ce-markning-test-v7-personal.js?v=7"></script>
-<script src="ce-markning-v1-2.js?v=1.2.1" defer></script>
+<script src="ce-markning-v1-2.js?v=1.2.2" defer></script>
 <style id="ceTest50MenuStyles">
 .ceTools.ceToolsMenu{position:relative;z-index:40;overflow:visible!important;display:flex!important;align-items:center;gap:9px;flex-wrap:wrap;padding:8px 0 12px}
 .ceToolsMenu>#ceAddToggle{min-height:44px;flex:0 0 auto}
@@ -992,11 +992,11 @@ dialog.ceImportCEDialog::backdrop{background:#071d2cba}
 <link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.301">
 </head>
 <body>
-<header class="ceTop"><div class="ceTopIdentity"><strong>CE-märkning</strong><small>v1.2.1</small></div><a href="index.html" aria-label="Hem till Tillsyno" title="Hem till Tillsyno" class="ceIcon ceBackHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></svg><span>Hem</span></a></header>
+<header class="ceTop"><div class="ceTopIdentity"><strong>CE-märkning</strong><small>v1.2.2</small></div><a href="index.html" aria-label="Hem till Tillsyno" title="Hem till Tillsyno" class="ceIcon ceBackHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></svg><span>Hem</span></a></header>
 <main class="ceShell">
 <section id="ceProjectHome" class="ceProjectHome" hidden>
  <div class="ceHomeHero">
-   <div class="ceHomeBrand"><span class="ceHomeBrandText"><strong>Tillsyno</strong><small>CE-märkning</small></span><span class="ceHomeVersion">v1.2.1</span></div>
+   <div class="ceHomeBrand"><span class="ceHomeBrandText"><strong>Tillsyno</strong><small>CE-märkning</small></span><span class="ceHomeVersion">v1.2.2</span></div>
  </div>
  <div class="ceHomeActions">
   <button id="ceHomeResume" class="ceHomePrimary" type="button">
@@ -1113,7 +1113,7 @@ dialog.ceImportCEDialog::backdrop{background:#071d2cba}
  <input id="ceImportCEFiles" type="file" multiple hidden accept=".pdf,.zip,application/pdf,application/zip,application/x-zip-compressed">
  <p id="ceImportCEStatus" role="status" aria-live="polite">Inga filer valda.</p>
  <div id="ceImportCEPreview" class="ceImportCEPreview"></div>
- <p class="ceImportCEHint">Du ser vad som finns i projektet och vilka filer som känns igen innan importen. Produktlista och CE-skylt importeras inte här. Bara redigerbara originalmallar kan användas; exporterade, tillplattade PDF-filer går inte att redigera som mallar. Om en mall ersätts behöver berörda dokument godkännas på nytt.</p>
+ <p class="ceImportCEHint">ZIP-filerna sorteras till de befintliga CE-mapparna, utan att skapa nya mappar. Du ser vad som finns i projektet och vilka filer som känns igen innan importen. Produktlista och CE-skylt importeras inte här. Bara redigerbara originalmallar kan användas; exporterade, tillplattade PDF-filer går inte att redigera som mallar. Om en mall ersätts behöver berörda dokument godkännas på nytt.</p>
  <div class="ceImportCEActions"><button id="ceImportCEApply" type="button" disabled>Importera till rätt mappar</button><button id="ceImportCECancel" type="button">Avbryt</button></div>
 </main></dialog>
 <dialog id="ceNewProjectDialog" class="ceNewProjectDialog" aria-labelledby="ceNewProjectTitle" aria-describedby="ceNewProjectMessage">
