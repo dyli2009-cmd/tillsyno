@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.322 – kundmallens rubrik följer temat
+
+Se [ändring och verifiering](CUSTOMER_PREVIEW_THEME_322.md).
+
 ## Tillsyno v2.4.321 – sparrutan följer temat
 
 Rättar fasta mörkblå färger i Spara PDF-rutan. Se [ändring och verifiering](SAVE_PDF_THEME_321.md).
