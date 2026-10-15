@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.354**
+Aktuell version: **v2.4.355**
 
 Regler:
 - Samma appversion gäller Kontrollflöde, Dörrautomatik, Säkerhetsservice, Brand, Projektflöde och Ritningsverktyg.
@@ -136,6 +136,10 @@ Regler:
 - Versionsnumret ska visas på Home så att det är enkelt att kontrollera vilken uppdatering som körs.
 - Tekniskt buildnummer för TestFlight får finnas separat, men den synliga versionsbeteckningen ska följa Tillsyno-versionen.
 - När en ny version görs ska webb och iOS speglas till samma Tillsyno-version.
+
+## Gemensamma datorstorlekar
+
+Läs **[DESKTOP_SIZE_RULES.md](DESKTOP_SIZE_RULES.md)** före nya storleksanpassningar på dator. Användarbeslut 15 oktober 2026: utgå från storleksskalan på Tillsynos första sida (v2.4.323), med 700 px ram, 640 px valkort och 20/14 px korttitel/beskrivning. Guiden anger kompletta mått, enhetsvillkor och den beställda CE-startsidan.
 
 ## 5. Stabil funktion ska inte ändras i onödan
 När en del är godkänd och fungerar ska den betraktas som stabil.
@@ -307,3 +311,6 @@ Användarbeslut 15 oktober 2026: alla ändringar av texter, logotyper, ikoner oc
 
 
 2026-10-15, Tillsyno v2.4.354: På användarens uttryckliga beställning får Säkerhetsservice samma kontrollpunktsuppställning som Checklista revision dörrautomatik: gemensamma kolumnrubriker och – / ✓ / × för Ingår ej, Klart utan anmärkning och Klart med anmärkning. Gäller Inbrottslarm, Detektorer, Lås & Dörrmiljö och Passer; responsiv CSS är avgränsad till dessa checklistor. Befintliga resultatvärden, anmärkningar, statuslogik, PDF-rapport och andra områdens protokoll bevaras. CSS ingår i webbens offlinecache. Samma checklistefunktion och CSS speglas till native-källan med befintliga native-anpassningar kvar. Verifierat i Chromium: 48 protokollflöden i tolv kombinationer av webb/native-källa, telefon/iPad/dator och ljust/mörkt tema, 144 resultatval samt sparning och återöppning av alla fyra objekttyper per kombination. Kolumnplacering och skärmbredd kontrollerade; inga runtime-fel. Telefon- och datorbilder granskade. Fysisk iOS och ny TestFlight-build har inte verifierats. Kontrollflödet är åter LÅST.
+
+
+2026-10-15, Tillsyno v2.4.355: På användarens beställning får CE-märkningens första sida (Öppna projekt-PDF / Nytt projekt) samma datorskala som Tillsynos startsida i v2.4.323: 700 px ram, 640 px valkort, minst 108 px korthöjd, 28/20/14 px rubrik/korttitel/beskrivning och 60 px ikonrutor. Endast dator från 1100 px med hover och precis pekare; uttryckligt telefon-/surfplatteval undantas. Avgränsad CSS under ceProjectPickerOpen; färger och CE-arbetsytans funktioner bevaras. CSS ingår i CE:s offlinecache. Användaren bad även att den gemensamma datorskalan sparas på GitHub: DESKTOP_SIZE_RULES.md är länkad från utvecklingsreglerna och speglas till native-repot. Verifierat i Chromium: 16 före/efter-fall i ljust/mörkt tema; sex datorfall med exakta mått och tio pixelidentiska telefon-/iPad-/manuella enhetsvyer. Nytt projekt, Öppna projekt-PDF och Sparade projekt kontrollerade utan runtime-fel. Ljus dator och mörk låg datorvy bildgranskade. Native saknar CE-modulen och får endast samma synliga appversion och dokumentation. Kontrollflödet är fortsatt LÅST.

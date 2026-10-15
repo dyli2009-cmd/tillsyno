@@ -1,0 +1,28 @@
+/* CE start screen: use Tillsyno Home's desktop scale (v2.4.323). */
+@media (min-width:1100px) and (hover:hover) and (pointer:fine){
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome{
+  box-sizing:border-box;width:min(700px,100%)!important;max-width:700px!important;padding:28px 24px!important;
+ }
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome :is(.ceHomeHero,.ceHomeActions,.ceSavedProjects,.ceHomeHistoryHeading,.ceHomeHistory,.ceHomeFootnote){
+  box-sizing:border-box;width:100%!important;max-width:640px!important;margin-inline:auto!important;
+ }
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHomeBrand{margin-bottom:24px!important;gap:14px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHomeBrandText strong{font-size:28px!important;line-height:1.25!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHomeBrandText small{font-size:14px!important;line-height:1.5!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHomeActions{gap:14px!important;margin-bottom:24px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHomeActions button{
+  min-height:108px!important;padding:18px 20px!important;gap:18px!important;grid-template-columns:60px minmax(0,1fr) 70px!important;border-radius:16px!important;
+ }
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHomeActionIcon{width:60px!important;min-width:60px!important;height:60px!important;border-radius:14px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHomeActionIcon svg{width:32px!important;height:32px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHomeActionCopy strong{font-size:20px!important;line-height:1.3!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHomeActionCopy small{font-size:14px!important;line-height:1.5!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHomeActionArrow{font-size:14px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHomeHistoryHeading{padding:12px 2px!important;margin-bottom:12px!important;gap:12px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHomeHistoryHeading h3{font-size:18px!important;gap:10px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHomeHistoryHeading h3 svg{width:24px!important;height:24px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome :is(.ceHomeHistoryHeading span,.ceHomeFootnote,.ceHistoryInfo small){font-size:14px!important;line-height:1.5!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHistoryRow{padding:14px 16px!important;gap:14px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHistoryInfo strong{font-size:16px!important;line-height:1.4!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.ceProjectPickerOpen #ceProjectHome .ceHistoryButtons button{font-size:14px!important;min-height:44px!important;padding:8px 12px!important}
+}
