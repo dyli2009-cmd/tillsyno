@@ -25,12 +25,12 @@ html[data-auth-pending] body{visibility:hidden}
 <script src="../auth-config.js"></script>
 <script src="client.js?v=2.4.276"></script>
 <script src="pending.js?v=2.4.276" defer></script>
-<script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop','tv'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
-<link rel="stylesheet" href="../tillsyno-appearance.css?v=2.4.296">
+<script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
+<link rel="stylesheet" href="../tillsyno-appearance.css?v=2.4.304">
 </head>
 <body class="loginbody">
 <main class="pendingShell">
-<div class="brand loginbrand pendingLogo">Tillsyno<small>Tillsyn · kontroll · dokumentation</small></div>
+<div class="brand loginbrand ta-brandlockup pendingLogo"><span class="ta-brandmark" aria-hidden="true">T</span><span class="ta-brandcopy"><strong>Tillsyno</strong><small>Kontroll · dokumentation · tillsyn</small></span></div>
 <section class="pendingCard" aria-labelledby="pendingTitle">
 <span class="pendingBadge">⏳ Väntar på godkännande</span>
 <h1 id="pendingTitle">Välkommen till Tillsyno</h1>
@@ -48,5 +48,5 @@ html[data-auth-pending] body{visibility:hidden}
 <p class="pendingMessage" id="pendingMessage" role="status" aria-live="polite">När administratören har godkänt dig kan du öppna appens funktioner.</p>
 </section>
 <p class="pendingHelp">Du behöver internet för att kontrollera om kontot har godkänts.</p>
-</main><script src="../tillsyno-appearance.js?v=2.4.296"></script>
+</main><script src="../tillsyno-appearance.js?v=2.4.304"></script>
 </body></html>
