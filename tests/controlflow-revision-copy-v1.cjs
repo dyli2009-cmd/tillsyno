@@ -9,7 +9,7 @@ const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 for(const [name,entry] of Object.entries(manifest.files)){
  const original=execFileSync('git',['show',manifest.sourceCommit+':'+name],{cwd:root,maxBuffer:5*1024*1024});
  assert.equal(hash(original),entry.sourceSha256,name+': source hash');
- assert.equal(hash(fs.readFileSync(path.join(dir,name))),entry.testSha256,name+': test snapshot hash');
+ assert.equal(hash(name==='all-in-one.html'?fs.readFileSync(path.join(dir,'v1/all-in-one.html'),'utf8').replace('<head>\n<base href="../">','<head>'):fs.readFileSync(path.join(dir,name))),entry.testSha256,name+': test snapshot hash');
 }
 assert.equal(fs.readFileSync(path.join(dir,'legacy-door-import.js'),'utf8'),execFileSync('git',['show',manifest.sourceCommit+':legacy-door-import.js'],{cwd:root,encoding:'utf8'}),'Legacy importer must be identical');
 const html=fs.readFileSync(path.join(dir,'all-in-one.html'),'utf8');

@@ -1,0 +1,19 @@
+{
+  "testVersion": 2,
+  "lockedBaselineSnapshot": "snapshot.json",
+  "lockedImporter": "legacy-door-import.js",
+  "v1Entry": "v1/all-in-one.html",
+  "files": {
+    "all-in-one.html": "06bdef65b41c57faa71fcdba7762a22dabef0fd63b4a42781ca67cf6374270d5",
+    "security-v2.js": "6d9238f0ac6bfd12bd2df2f6c055d58690c1fdf6e40be0e8dcfd823aba1b7130",
+    "all-in-one-v2.js": "a0be2f3b77bdb13ce980d8ec99801991e7fcdd4b55070b49f0405d5f3a9e7fe6",
+    "offline-work-v2.js": "31f5c0eb1012a79ab60bd7bfde94e88ac9da90de32ef7da85c4d997988733cca",
+    "drawing-transfer-v2.js": "5f73e5385e6dfb7587e6c08130d87acf2fc32040055ebc6dba13fbd43fc12820",
+    "ui-text-scale-v2.js": "828cf7731174103b6024fcf7fbe626cd07d295a72a657b35375cf5aa2f0046b9",
+    "tillsyno-appearance-v2.js": "d7f77fbe530f5eac255e79597851898f32618ae3add84ac23222ebff7bc409e3",
+    "offline-v2.js": "cebee66b3eebd7e3025963f9c7b3578d7ed4797fa4044f5f8d3c5385a24f8e06",
+    "revision-callout-profile-v2.js": "9be0a9b7358bc69576fd38211deca6154e5607b84ea0f41e3dbd3296bd540fcf",
+    "revision-import-v2.css": "faac420384cf09a866f6ac75cf65258ede03c7bce5e034e83e7bb623fb3cfa30",
+    "sw.js": "48180c015f0f618f0b932e82e15f8cd252816b7f91a7d72fe8773fe47fc713f0"
+  }
+}

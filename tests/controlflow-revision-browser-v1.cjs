@@ -58,7 +58,7 @@ async function openBytes(page,bytes,name='Service DA test.pdf'){
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/tmp/chromium',args:['--no-sandbox','--disable-dev-shm-usage']});
  try{
   const bytes=await legacyFixture(),contexts=[],results=[];
-  for(const route of ['/all-in-one.html','/controlflow-revision-test/all-in-one.html']){
+  for(const route of ['/all-in-one.html','/controlflow-revision-test/v1/all-in-one.html']){
    const context=await contextFor(browser,undefined,{viewport:{width:1024,height:850}});contexts.push(context);
    const page=await context.newPage(),errors=[];page.on('pageerror',error=>{errors.push(error.message);console.error('PAGE ERROR',error.message);});page.on('console',message=>{if(message.type()==='error')console.error('CONSOLE',message.text());});
    await page.goto(base+route);await choose(page);await openBytes(page,bytes);
@@ -100,7 +100,7 @@ async function openBytes(page,bytes,name='Service DA test.pdf'){
   }
   for(const viewport of [{width:390,height:844},{width:820,height:1180}]){
    const context=await contextFor(browser,undefined,{viewport,hasTouch:true}),page=await context.newPage();
-   await page.goto(base+'/controlflow-revision-test/all-in-one.html');
+   await page.goto(base+'/controlflow-revision-test/v1/all-in-one.html');
    if(process.env.QA_DIR){fs.mkdirSync(process.env.QA_DIR,{recursive:true});await page.locator('#allProtocolDialog[open]').waitFor();await page.screenshot({path:path.join(process.env.QA_DIR,'revision-picker-'+viewport.width+'.png')});}
    await choose(page);await openBytes(page,bytes);
    if(process.env.QA_DIR)await page.screenshot({path:path.join(process.env.QA_DIR,'revision-drawing-'+viewport.width+'.png')});
@@ -108,13 +108,13 @@ async function openBytes(page,bytes,name='Service DA test.pdf'){
    console.log('PASS viewport '+viewport.width+': chooser and PDF usable.');await context.close();
   }
   const deniedContext=await contextFor(browser,['smartmatch']),denied=await deniedContext.newPage();
-  await denied.goto(base+'/controlflow-revision-test/all-in-one.html');
+  await denied.goto(base+'/controlflow-revision-test/v1/all-in-one.html');
   await denied.locator('#tillsynoAccessDenied').waitFor();assert((await denied.locator('#tillsynoAccessDenied').innerText()).includes('behörighet'));
   console.log('PASS control-module authorization rejects SmartMatch-only access.');
   await deniedContext.close();for(const context of contexts)await context.close();
   offlineTestTransport=true;
   const offlineContext=await contextFor(browser,undefined,{serviceWorkers:'allow'}),offline=await offlineContext.newPage();
-  await offline.goto(base+'/controlflow-revision-test/all-in-one.html');await choose(offline);await openBytes(offline,bytes);
+  await offline.goto(base+'/controlflow-revision-test/v1/all-in-one.html');await choose(offline);await openBytes(offline,bytes);
   await offline.waitForFunction(()=>navigator.serviceWorker.controller?.scriptURL.includes('/controlflow-revision-test/sw.js'));
   await offline.evaluate(async()=>{const cache=await caches.open('ordinary-cache-preserved');await cache.put('/keep',new Response('keep'));});
   await offlineContext.setOffline(true);await offline.reload();await choose(offline);await openBytes(offline,bytes);

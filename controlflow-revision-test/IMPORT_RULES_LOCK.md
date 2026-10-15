@@ -19,6 +19,6 @@ Referens: TEST v1, grundkopia av Tillsyno 2.4.308, `snapshot.json`. Befintlig `l
 
 Nya PDF-upplägg ska få **separata läsprofiler**, med egen identifiering och egna tester. De får inte ändra den låsta importens matchning, reservregler, prioritet eller koordinatberäkningar. Okänd fil får inte väljas som känd profil enbart för att några nummer liknar varandra.
 
-En profil för ritningspilar utan P-länkar och protokolluppgifter i textmarkeringar är under analys. Den är **inte implementerad eller låst genom detta dokument**. Kontrollera hela maskin-ID:t innan en sådan koppling betraktas som säker. Avvikande ID kräver synlig avvikelse och ett uttryckligt manuellt val.
+Profilen för ritningspilar utan P-länkar och protokolluppgifter i textmarkeringar godkändes för separat implementation och publicering i TEST v2 den 2026-10-15. Den är **inte en ändring i arbetssätt 1 och låses inte genom detta dokument**. Se `IMPORT_PROFILE_V2.md`. Kontrollera hela maskin-ID:t innan en sådan koppling betraktas som säker. Avvikande ID kräver synlig avvikelse och ett uttryckligt manuellt val.
 
 Den låsta funktionen får endast ändras efter en ny uttrycklig beställning från användaren. Uppdatera inte versionssiffror eller referenshashar för att kringgå låset.

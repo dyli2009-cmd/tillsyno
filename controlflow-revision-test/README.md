@@ -1,12 +1,12 @@
-# Checklista revision dörrautomatik – TEST v1
+# Checklista revision dörrautomatik – TEST v2
 
-Separat grundkopia av Kontrollflödet från Tillsyno 2.4.308, commit `60b07179296dcf095d2c0bc0603b6af59fc13dc7`.
+Aktiv separat testversion med en ny läsprofil för textmärkningar och pilar utan P-länkar. Grundkopia: Tillsyno 2.4.308, commit `60b07179296dcf095d2c0bc0603b6af59fc13dc7`. [Profil och verifiering för TEST v2](IMPORT_PROFILE_V2.md). Föregående [TEST v1](v1/all-in-one.html) och dess runtime-filer är bevarade.
 
 Öppna `all-in-one.html`. Följ samma väg som i ordinarie app: Dörrautomatik / Lås → Checklista revision dörrautomatik → Fortsätt till ritning → Öppna PDF. Ritning, Dörrar, Protokoll och Projekt, alla 18 kontrollpunkter samt kundmall och PDF-export är kopierade från originalet.
 
 ## Låst befintligt arbetssätt
 
-Användaren låste den befintliga logiken 2026-10-15. Se [låsta importregler](IMPORT_RULES_LOCK.md). Nya arbetssätt utvecklas som separata läsprofiler. Detta är dokumentation; TEST v1 och alla runtime-filer är oförändrade.
+Användaren låste den befintliga logiken 2026-10-15. Se [låsta importregler](IMPORT_RULES_LOCK.md). Nya arbetssätt utvecklas som separata läsprofiler. Arbetssätt 1 och dess gamla runtime-filer är oförändrade. TEST v2 har separata versionsmärkta filer och egen lokal lagring.
 
 ## Avgränsning
 
@@ -19,7 +19,7 @@ Användaren låste den befintliga logiken 2026-10-15. Se [låsta importregler](I
 
 `snapshot.json` dokumenterar ursprung, filhashar och samtliga tillåtna kopieringsändringar. Kontrollera med `node tests/controlflow-revision-copy-v1.cjs`. Webbläsartestet är `node tests/controlflow-revision-browser-v1.cjs` (Playwright och Chromium krävs; ange `CHROMIUM_PATH` vid behov).
 
-Nästa steg är att lägga till ett separat lässätt utifrån användarens faktiska service-PDF. Befintlig import ska förbli referens och bevaras. Verifiera rätt dörr, pilspets, etikett, beställare och utförande företag innan nya importer godkänns. Ingen automatisk ersättning av ordinarie app är beställd.
+TEST v2 kompletterar den låsta importen genom en separat läsprofil. Fullständigt ID krävs för automatisk koppling. Avvikelser och protokoll utan koppling följer med i arbets-PDF och lokal lagring. Ordinarie app ersätts inte.
 
 ## Verifierat för TEST v1
 
