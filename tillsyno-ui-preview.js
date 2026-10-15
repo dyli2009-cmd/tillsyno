@@ -61,9 +61,17 @@ const navitems=[['home','Hem','home'],['control','Kontrollflöde','control'],['s
 const folderNames=['Riskanalys','Beskrivning av maskin','Loggbok','EG-försäkran','Egenkontroll','Produktlista','CE-skylt'];
 const state={screen:'home',history:[],device:'auto',area:'automation',selected:[],modal:'',drawer:false,doorProfile:'glass',ceFolder:'Riskanalys',imported:false,pin:'GS2',smartTab:'ritning',tool:'rensa',layer:true,checked:{},ceChecks:{},accountMenu:false,ceProjectName:'Demoprojekt – Entréplan'};
 let toastTimer=0;
-function navTo(next,add){if(!screens[next])return;state.modal='';state.drawer=false;state.accountMenu=false;if(add!==false&&state.screen!==next)state.history.push(state.screen);state.screen=next;render();scrollTo(0,0);}
+function navTo(next,add){
+ if(next==='ceNew'){action('ceNew');return;}
+ if(next==='ceOpen'){action('ceOpen');return;}
+ if(!screens[next])return;
+ if(['area','areaSecurity','areaFire'].includes(next)&&state.screen!==next)state.selected=[];
+ state.modal='';state.drawer=false;state.accountMenu=false;
+ if(add!==false&&state.screen!==next)state.history.push(state.screen);
+ state.screen=next;render();scrollTo(0,0);
+}
 function back(){const prev=state.history.pop();if(prev){state.screen=prev;state.modal='';render();scrollTo(0,0);}else navTo('home',false);}
-function activeArea(){return ['area','controlDrawing','protocol'].includes(state.screen)?'control':state.screen.startsWith('ce')?'ceHome':state.screen.startsWith('smart')?'smartHome':state.screen.startsWith('tools')?'toolsHome':['admin','login'].includes(state.screen)?'account':state.screen;}
+function activeArea(){return ['area','areaSecurity','areaFire','controlDrawing','protocol'].includes(state.screen)?'control':state.screen.startsWith('ce')?'ceHome':state.screen.startsWith('smart')?'smartHome':state.screen.startsWith('tools')?'toolsHome':['admin','login'].includes(state.screen)?'account':state.screen;}
 function side(){return '<aside class="sidebar"><div class="brand"><span class="brand-mark">T</span><span class="brand-text"><strong>Tillsyno</strong><small>UI Preview · ljusblå design</small></span></div><div class="side-label">Arbetsområden</div><nav class="side-nav">'+navitems.map(function(x){return '<button type="button" class="'+(activeArea()===x[0]?'active':'')+'" data-nav="'+x[0]+'">'+icon(x[2])+x[1]+'</button>';}).join('')+'</nav><div class="side-lower"><div class="side-label">Förhandsvisning</div><div class="small">Inga riktiga projekt eller filer ändras. Testa fritt bland de olika vyerna.</div><a class="btn small" href="index.html">Till riktiga Tillsyno '+icon('arrow')+'</a></div></aside>';}
 function top(){return '<header class="topbar"><div class="top-left"><button class="icon-button mobile-menu" data-action="drawer" aria-label="Öppna menyn">'+icon('menu')+'</button><div class="top-title"><strong>Tillsyno</strong><small> / '+(titles[state.screen]||'Förhandsvisning')+'</small></div></div><div class="top-right"><div class="device-bar" aria-label="Förhandsgranska enhet">'+[['phone','Mobil','smartphone'],['tablet','iPad','tablet'],['auto','Dator','desktop']].map(function(x){return '<button type="button" class="btn '+(state.device===x[0]?'active':'')+'" data-device="'+x[0]+'" title="Visa '+x[1]+'">'+icon(x[2])+x[1]+'</button>';}).join('')+'</div><span class="preview-badge">DESIGNDEMO</span><button class="icon-button" data-nav="account" aria-label="Mitt konto">'+icon('account')+'</button></div></header>';}
 function bottom(){const links=[['home','Hem','home'],['control','Kontroll','control'],['smartHome','SmartMatch','smart'],['toolsHome','Verktyg','tool'],['account','Mer','account']];return '<nav class="bottom-nav" aria-label="Snabbnavigering">'+links.map(function(x){return '<button type="button" class="'+(activeArea()===x[0]?'active':'')+'" data-nav="'+x[0]+'">'+icon(x[2])+'<span>'+x[1]+'</span></button>';}).join('')+'</nav>';}
@@ -260,7 +268,10 @@ function action(key,value){
   case 'addDoor':inform('Exempelknapp: här skulle du placera en ny dörr.');break;
   case 'drawingTab':if(value==='Protokoll')navTo('protocol');else if(value==='Projekt')inform('Demo: projektuppgifter öppnas här.');else inform('Du valde fliken '+value+'.');break;
   case 'startCE':state.modal='';navTo('ceProject');break;
-  case 'openSample':state.modal='';navTo('controlDrawing');break;
+  case 'openSample':{
+ const destination=state.screen.startsWith('smart')?'smartWorkspace':state.screen.startsWith('tools')?'toolsWorkspace':state.screen.startsWith('ce')?'ceProject':'controlDrawing';
+ state.modal='';navTo(destination);break;
+}
   case 'ceDone':inform(esc(state.ceFolder)+' har markerats som klart i designexemplet.');break;
   case 'demoConfirm':inform('Det här är en designförhandsvisning. Inga riktiga ändringar gjordes.');if(state.modal){state.modal='';render();}break;
   default:inform('Det här är en klickbar design-demo – ingen riktig funktion körs.');
