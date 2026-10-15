@@ -916,3 +916,6 @@ html[data-tillsyno-theme] body.ceProjectPickerOpen > .ta-page-version {
  html[data-tillsyno-theme] body #appHome .homeBrand > .homeBrandIdentity.ta-brandlockup {gap:7px!important}
  html[data-tillsyno-theme] body > .ta-page-version {font-size:9px!important;padding:2px 3px!important}
 }
+
+/* CE has an additional header version; it stays hidden after the single version moves to the footer. */
+html[data-tillsyno-theme] body .ceTopIdentity > small[hidden]{display:none!important}
