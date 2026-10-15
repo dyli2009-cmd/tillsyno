@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.311 – Färger och enhet på Hem
+
+Utseendeknappen finns endast på startsidan. Sparade val gäller fortfarande i arbetsytorna. Se [ändring och verifiering](APPEARANCE_HOME_ONLY_311.md).
+
 ## Tillsyno v2.4.310 – flyttbar kundmall
 
 Kundmallen i Dörrautomatik / Lås öppnas centrerat nära full höjd och kan flyttas via rubriken. X stänger; Tillbaka-raden tas bort endast där. Se [ändring och verifiering](CONTROLFLOW_CUSTOMER_FLOATING_310.md).

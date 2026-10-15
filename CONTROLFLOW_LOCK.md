@@ -49,3 +49,6 @@ När låset är aktivt:
 
 
 2026-10-15, Tillsyno v2.4.310: användaren beställde en centrerad och flyttbar kundmall inom Dörrautomatik / Lås, nära full skärmhöjd, med X i stället för Tillbaka. Endast kundmallens visningsfönster och dess pek-/touchförflyttning ändras. PDF-innehåll, import, projektdata och övriga valvyer bevaras. Webb och iOS-kod speglas. **Kontrollflödet är åter LÅST efter denna avgränsade ändring.**
+
+
+2026-10-15, Tillsyno v2.4.311: användaren beställde att Färger och enhet endast ska synas på startsidan. Utseendelagret behåller läsning/tillämpning av sparade inställningar på arbetsytorna men visar och tillåter öppning av inställningsknappen endast i startsidans homeMode. Ingen ändring i domänfunktion, projektdata, PDF eller auth. Webb och iOS speglas. **Kontrollflödet är fortsatt LÅST.**

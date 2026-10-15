@@ -77,7 +77,7 @@ function close(commit){
  if(dialog.open)dialog.close();
 }
 function open(){
- if(!dialog)return;
+ if(!dialog||launcher?.hidden)return;
  draft={...current};updateChoices();
  if(!dialog.open)try{dialog.showModal();}catch(_){dialog.setAttribute('open','');}
 }
@@ -143,7 +143,7 @@ function placeVersionAtBottom(){
   if(topVersion)topVersion.hidden=true;
  }else if(['all-in-one.html','project-flow.html','security.html'].includes(page)){
   node=document.createElement('small');
-  node.textContent='v2.4.310';
+  node.textContent='v2.4.311';
  }
  if(!node)return;
  node.classList.add('ta-page-version');
@@ -157,25 +157,17 @@ function attach(){
  btn.title='Färger och enhet';btn.setAttribute('aria-label','Välj färger, iPhone, iPad eller dator');btn.innerHTML=svg('palette');launcher=btn;
  btn.addEventListener('click',open);
  const homeHeader=document.querySelector('#appHome .homeBrand');
- const smartHeader=document.querySelector('body > header.pwHeader');
- const ceHeader=document.querySelector('body > header.ceTop');
- const authShell=document.querySelector('body.loginbody :is(.loginshell,.pendingShell)');
- const adminHeader=document.querySelector('body[data-require-role="admin"] > header.topbar');
- if(homeHeader){
-   homeHeader.insertBefore(btn,homeHeader.querySelector('#homeProfile')||null);
- }else if(smartHeader){
-   const homeLink=smartHeader.querySelector(':scope > .pwHome');
-   if(homeLink){
-     const group=document.createElement('div');group.className='ta-smartmatch-topbar';
-     smartHeader.insertBefore(group,homeLink);group.appendChild(homeLink);group.appendChild(btn);
-   }else smartHeader.prepend(btn);
- }else if(ceHeader){
-   ceHeader.insertBefore(btn,ceHeader.querySelector('.ceBackHome')||null);
- }else if(authShell){
-   authShell.insertBefore(btn,authShell.firstChild);
- }else if(adminHeader){
-   adminHeader.insertBefore(btn,adminHeader.querySelector('.toplinks')||null);
- }else document.body.appendChild(btn);
+ const home=document.getElementById('appHome');
+ const isStartPage=()=>/(?:\/|\/index\.html)$/.test(location.pathname)&&!!homeHeader&&document.body.classList.contains('homeMode')&&!home?.hidden;
+ if(homeHeader)homeHeader.insertBefore(btn,homeHeader.querySelector('#homeProfile')||null);else document.body.appendChild(btn);
+ function refreshLauncher(){
+  const visible=isStartPage();btn.hidden=!visible;btn.style.setProperty('display',visible?'inline-flex':'none','important');
+  if(!visible&&dialog?.open)close(false);
+ }
+ refreshLauncher();
+ const visibilityObserver=new MutationObserver(refreshLauncher);
+ visibilityObserver.observe(document.body,{attributes:true,attributeFilter:['class']});
+ if(home)visibilityObserver.observe(home,{attributes:true,attributeFilter:['hidden']});
  const d=document.createElement('dialog');d.className='ta-modal';d.id='tillsynoAppearanceDialog';
  d.setAttribute('aria-label','Tillsynos utseende och enhet');
  d.innerHTML='<div class="ta-head"><div><strong>Tillsynos utseende</strong><small>Välj färger och enhetsläge</small></div><button type="button" class="ta-close" aria-label="Stäng">'+svg('close')+'</button></div>'+
