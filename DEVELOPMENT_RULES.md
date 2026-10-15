@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.345**
+Aktuell version: **v2.4.346**
 
 Regler:
 - Samma appversion gäller Kontrollflöde, Dörrautomatik, Säkerhetsservice, Brand, Projektflöde och Ritningsverktyg.
@@ -280,3 +280,6 @@ Användarbeslut 15 oktober 2026: alla ändringar av texter, logotyper, ikoner oc
 
 
 2026-10-15, Tillsyno v2.4.345: Beställd mindre detektorikon på arbetsritningen i Säkerhetsservice. Synlig storlek 22×28 px dator, 20×26 px iPad/surfplatta och 18×24 px telefon; manuellt enhetsval följs. Pekskärm behåller 44×44 px transparent tryckyta. Endast CSS för ritningsikonen ändras; statusfärger, checklistor, placering, PDF-symboler och data bevaras. Webb/native-källor speglas. Kontrollflödet är åter LÅST.
+
+
+2026-10-15, Tillsyno v2.4.346: Beställd lagom stor knapp Visa på ritningen i detektorprotokollet. Global danger-marginal på grannknappen sträckte flexraden och gav 76 px knapphöjd. Marginal nollställs endast i detektorredigerarens åtgärdsrad; knappar centreras och Visa på ritningen behåller 44 px tryckhöjd. Kontrollerat vid 390, 820 och 1440 px. Text, navigering och övriga knappar utanför denna rad bevaras. Webb/native-källor speglas. Kontrollflödet är åter LÅST.

@@ -22,3 +22,8 @@ html[data-tillsyno-device="tablet"] #secStage .secTarget.detectorIcon{--detector
 html[data-tillsyno-device="phone"] #secStage .secTarget.detectorIcon{--detector-icon-width:18px;--detector-icon-height:24px}
 @media(pointer:coarse){#secStage .secTarget.detectorIcon::after{content:"";position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%);background:transparent}}
 html[data-tillsyno-device="phone"] #secStage .secTarget.detectorIcon::after,html[data-tillsyno-device="tablet"] #secStage .secTarget.detectorIcon::after{content:"";position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%);background:transparent}
+
+/* Keep the two detector editor actions aligned; global danger margins must not stretch the drawing button. */
+#securityDetectors .detectorActions{align-items:center}
+#securityDetectors .detectorActions>button{margin:0}
+#securityDetectors #detectorDrawing{flex:0 0 auto;width:auto;min-height:44px;padding:8px 12px}
