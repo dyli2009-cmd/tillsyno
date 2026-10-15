@@ -1,5 +1,5 @@
 /* CE-märkning v1.2: only the standalone CE page, never Kontrollflöde. */
-const CACHE='tillsyno-ce-markning-2.4.343-assets';
+const CACHE='tillsyno-ce-markning-2.4.344-assets';
 const FILES=[
  'ce-markning.html','tillsyno-appearance.css','tillsyno-appearance.js','ce-markning-v1-2.js','ce-markning-v1-2-module.js','ce-markning-v1-2-optimize.js','ce-file-export-v312.js','ce-file-export-v312.css',
  'project-ce-markning-test-v6.css','project-ce-markning-test-v7.css',

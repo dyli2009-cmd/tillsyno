@@ -98,7 +98,7 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
 }
 </style>
 
-<link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.343">
+<link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.344">
 </head>
 <body class="securityApp allInOneApp" data-view="drawing">
 <div id="tillsynoNavCurtain" aria-hidden="true"></div>
@@ -128,6 +128,7 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
     <button data-add="automation">＋ Checklista revision dörrautomatik</button>
     <button data-add="automation_selfcheck">＋ Egenkontroll dörrautomatik</button>
     <button data-add="lock_revision">＋ Checklista revision lås</button>
+    <button data-add="detector">＋ Detektor</button>
     <button data-add="alarm">＋ Inbrottslarm</button>
     <button data-add="lock">＋ Lås & Dörrmiljö</button>
     <button data-add="access">＋ Passer</button>
@@ -231,6 +232,7 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
     <details class="allProtocolGroup">
       <summary><span class="allAreaIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 20 6v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="allAreaCopy"><strong>Säkerhetsservice</strong><small>Larm · dörrmiljö · passerkontroll</small></span></summary>
       <div class="allProtocolChildren">
+        <label><input type="checkbox" value="detector"><span class="allProtocolIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="4"/><circle cx="12" cy="7" r="1"/><path d="M8 12h8l-1 7H9zM9 15h6M12 12v7"/></svg></span><span class="allProtocolText"><strong>Detektorer</strong><small>Nummer, kod, bedömning och anmärkning</small></span></label>
         <label><input type="checkbox" value="alarm"><span class="allProtocolIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 17h12l-1.5-3v-4a4.5 4.5 0 0 0-9 0v4L6 17Zm4 3h4"/><path d="M4 8 2 6m18 2 2-2"/></svg></span><span class="allProtocolText"><strong>Inbrottslarm</strong><small>Service och funktionskontroll</small></span></label>
         <label><input type="checkbox" value="lock"><span class="allProtocolIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4zM9 4v16"/><circle cx="15" cy="12" r="2"/></svg></span><span class="allProtocolText"><strong>Lås &amp; Dörrmiljö</strong><small>Lås, dörrmiljö och utrymning</small></span></label>
         <label><input type="checkbox" value="access"><span class="allProtocolIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h7M7 13h4m6-4 2 2-2 2"/></svg></span><span class="allProtocolText"><strong>Passer</strong><small>Passersystem och dörrfunktion</small></span></label>
@@ -306,9 +308,9 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
 </nav>
 <script src="ui-text-scale.js?v=2.4.215"></script><script src="drawing-annotations.js?v=2.4.215"></script>
 <script src="session-history.js?v=2.4.215"></script>
-<script>window.DOORSERVICE_APP_MODE="all-in-one";</script><script src="offline-work.js?v=2.4.256"></script><script src="security.js?v=2.4.343"></script><script src="legacy-door-import.js?v=2.4.215"></script><script src="all-in-one.js?v=2.4.343"></script>
+<script>window.DOORSERVICE_APP_MODE="all-in-one";</script><script src="offline-work.js?v=2.4.256"></script><script src="security.js?v=2.4.344"></script><script src="legacy-door-import.js?v=2.4.215"></script><script src="all-in-one.js?v=2.4.344"></script>
 <script src="drawing-transfer.js?v=2.4.215"></script>
-<script src="offline.js?v=2.4.343"></script>
+<script src="offline.js?v=2.4.344"></script>
 <script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let observer=null;function reveal(){if(root.hasAttribute('data-auth-pending')){if(!observer){observer=new MutationObserver(reveal);observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}return}if(observer){observer.disconnect();observer=null}root.classList.add('tillsyno-nav-ready')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',reveal)})();</script>
-<script src="tillsyno-appearance.js?v=2.4.343"></script>
-<script src="controlflow-workspace-ui-v335.js?v=2.4.343"></script><script src="controlflow-revision/customer-stamp-editor-v335.js?v=2.4.343"></script></body></html>
+<script src="tillsyno-appearance.js?v=2.4.344"></script>
+<script src="controlflow-workspace-ui-v335.js?v=2.4.344"></script><script src="controlflow-revision/customer-stamp-editor-v335.js?v=2.4.344"></script><link rel="stylesheet" href="security-detectors-v344.css?v=2.4.344"><script src="security-detectors-v344.js?v=2.4.344"></script></body></html>

@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.343**
+Aktuell version: **v2.4.344**
 
 Regler:
 - Samma appversion gäller Kontrollflöde, Dörrautomatik, Säkerhetsservice, Brand, Projektflöde och Ritningsverktyg.
@@ -274,3 +274,6 @@ Användarbeslut 15 oktober 2026: alla ändringar av texter, logotyper, ikoner oc
 
 
 2026-10-15, Tillsyno v2.4.343: Beställd hand/panorering i kundmallens ritningsvy. Vänster musknapp drar ritningen, handmarkör visar läget och klick efter dragning undertrycks. Stämpelhandtag behåller separat etikettflyttning. Samma redigerare i alla tre kontrollområden, webb/native-källor speglas. Zoom, PDF och projektdata bevaras. Kontrollflödet är åter LÅST.
+
+
+2026-10-15, Tillsyno v2.4.344: Användaren beställde och godkände publicering av Detektorer som eget protokoll och egen flik under Säkerhetsservice. Ikon per fysisk detektor, automatisk lägsta lediga positiva nummer, namn/kod, placering, fyra bedömningar och anmärkning. Samma statusregler, översikt, projektlagring och arbets-/kund-PDF används. Andra objekttyper behåller sin numrering. Blandat val med Dörrautomatik/Lås stöds. Webb och native-källa speglas; fysisk iOS/TestFlight har inte verifierats. Kontrollflödet är åter LÅST efter den avgränsade beställningen.
