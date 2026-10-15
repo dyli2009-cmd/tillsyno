@@ -1021,7 +1021,7 @@ catch(err){announce(err.message,true)}};
 async function open(o,b,verification){
  if(!o)return;
  const category=slrEditingCategory;if(item?.id!==o.id){slrEditingCategory="";slrEditScope="door";openedFolders.clear();}item=o;bridge=b;verificationByDoor[o.id]=verification||{};setup();slrClearEditor();bridge?.onOpen?.(o);
- const d=$("slrFlowTestDialog");if(!d.open)d.showModal();
+ const d=$("slrFlowTestDialog");if(!window.TillsynoCEDesktop?.present(d)&&!d.open)d.showModal();
  $("slrTestHeading").textContent="CE · "+slrDoorDesignation(o);
  $("slrTestSource").textContent=String(o.location||"");
  announce("Öppnar CE-mallar från projekt-PDF…");

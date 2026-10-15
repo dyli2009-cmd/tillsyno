@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.357 – justerbar CE-vy och temakopplad underskrift
+
+Delad datorvy med tydligare text och menyer högst upp. Samma enkla Ny dörr-ikon på dator, iPhone och iPad. Underskriftens datumfält och omgivning följer valt färgtema. Se [ändring och verifiering](CE_DESKTOP_357.md).
+
 ## Tillsyno v2.4.326 – tydligare ritningsstart på dator
 
 Aktuellt område och valda checklistor visas i datorns ritningsrubrik. Större ritningsstart; telefon/iPad och färgteman bevaras. Se [ändring och verifiering](DESKTOP_DRAWING_HEADER_326.md).

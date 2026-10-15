@@ -1,0 +1,76 @@
+/* One consistent plus on all devices; workspace rules require the desktop gate. */
+#ceWorkspace #ceAddToggle>.ceAddIcon{width:18px;height:18px;vertical-align:middle;margin-right:5px;flex:none}
+html[data-ce-desktop] body:not(.ceProjectPickerOpen){overflow:hidden}
+html[data-ce-desktop] body:not(.ceProjectPickerOpen) .ceTop{padding:10px 24px!important;box-sizing:border-box;min-height:58px}
+html[data-ce-desktop] body:not(.ceProjectPickerOpen) .ceTopIdentity strong{font-size:18px!important}
+html[data-ce-desktop] body:not(.ceProjectPickerOpen) .ceShell{width:100%!important;max-width:none!important;box-sizing:border-box;padding:14px 24px 28px!important;margin:0!important}
+html[data-ce-desktop] body #ceWorkspace{--ce-text-scale:1;box-sizing:border-box;margin:0!important;padding:0!important;border:1px solid var(--ta-border)!important;background:var(--ta-card)!important;height:calc(100dvh - 102px);display:flex;flex-direction:column;box-shadow:var(--ta-shadow)!important;overflow:visible!important}
+html[data-ce-desktop] body #ceWorkspace[hidden]{display:none!important}
+html[data-ce-desktop] body #ceWorkspace .ceWorkspaceHeader{flex:none;box-sizing:border-box;min-height:78px!important;padding:14px 18px!important;margin:0!important;gap:18px!important;background:var(--ta-header);border-radius:13px 13px 0 0;border-color:var(--ta-border)!important;position:relative;z-index:50}
+html[data-ce-desktop] body #ceWorkspace .ceWorkspaceCaption{flex:1;gap:5px}
+html[data-ce-desktop] body #ceWorkspace .ceWorkspaceCaption>span{font-size:13px!important;color:var(--ta-muted)!important}
+html[data-ce-desktop] body #ceWorkspace .ceWorkspaceCaption>strong{font-size:calc(20px * var(--ce-text-scale))!important;color:var(--ta-ink)!important}
+html[data-ce-desktop] body #ceWorkspace .ceWorkspaceClose{width:44px!important;height:44px!important;min-height:44px!important;min-width:44px!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopTopActions{display:flex;align-items:center;gap:10px;flex:none}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopTopActions summary{min-height:44px;font-size:15px!important;gap:8px;padding:10px 13px;background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;font-weight:600}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopTopActions summary svg{width:19px;height:19px;flex:none}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopTopActions summary svg:last-child{width:15px;height:15px}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopTopActions .ceMenuPanel{left:auto;right:0;background:var(--ta-card)!important;border-color:var(--ta-border)!important;max-height:calc(100dvh - 180px);overflow:auto}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopTopActions .ceMenuPanel button,html[data-ce-desktop] body #ceWorkspace .ceDesktopTopActions .ceMenuPanel .ceButton{font-size:15px!important;min-height:48px;background:var(--ta-soft2)!important;color:var(--ta-ink)!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopTopActions .ceMenuPanel small{font-size:12px!important;color:var(--ta-muted)!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopTextTools{display:flex;align-items:center;gap:7px;padding:10px 5px;color:var(--ta-ink);font-size:14px}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopTextTools span{flex:1}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopTextTools button{width:52px!important;display:block!important;text-align:center!important;padding:8px!important;min-height:42px!important}
+html[data-ce-desktop] body #ceWorkspace>.ceToolsMenu{display:none!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopColumns{display:grid;grid-template-columns:var(--ce-list-width,390px) 14px minmax(0,1fr);grid-template-areas:'doors divider document';flex:1;min-height:0;min-width:0;padding:12px;gap:0}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopColumns.is-reversed{grid-template-columns:minmax(0,1fr) 14px var(--ce-list-width,390px);grid-template-areas:'document divider doors'}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar{grid-area:doors;min-width:0;overflow:auto;overscroll-behavior:contain;padding:14px;box-sizing:border-box;background:var(--ta-soft2);border:1px solid var(--ta-border);border-radius:10px}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar>.ceListHead{display:flex!important;flex-wrap:wrap;align-items:center;gap:9px!important;margin:0 0 16px!important;padding:0!important;border:0}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar>.ceListHead>strong{font-size:calc(16px * var(--ce-text-scale))!important;font-weight:600;color:var(--ta-ink)!important;flex:1 1 200px}
+html[data-ce-desktop] body #ceWorkspace #ceDoorTotal{font-size:14px!important;margin:0!important;color:var(--ta-muted)}
+html[data-ce-desktop] body #ceWorkspace #ceAddToggle{display:flex!important;align-items:center;justify-content:center;gap:9px;width:100%;min-height:46px!important;margin:4px 0 0!important;padding:10px 14px!important;font-size:calc(16px * var(--ce-text-scale))!important;font-weight:600!important;background:var(--ta-blue)!important;color:#fff!important;border:1px solid var(--ta-blue)!important;border-radius:9px}
+html[data-ce-desktop] body #ceWorkspace #ceAddToggle svg{width:20px;height:20px;flex:none}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar #ceProject{margin:0 0 12px!important;border-color:var(--ta-border)!important;background:var(--ta-card)!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar #ceProject>summary{padding:12px!important;min-height:44px;box-sizing:border-box;flex-wrap:wrap}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar #ceProject>summary .ceProjectLabel{font-size:15px!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar .ceProjectColumns,html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar .ceGrid{grid-template-columns:minmax(0,1fr)!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar .ceProjectColumn{min-width:0;padding:12px!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar :is(label,.ceMetaIntro,.ceProjectColumn>p){font-size:14px!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar :is(input,select){font-size:16px!important;min-height:42px}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar .ceSignatureGroup .ceSignOptions{grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar .ceSignatureGroup .ceSignOptions label span{min-height:0;line-height:1.4}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar .ceFileExport .ceFilesColumns{grid-template-columns:minmax(0,1fr)}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar .ceDoorRow{grid-template-columns:minmax(0,1fr) 36px 36px 36px!important;gap:4px!important;padding:5px!important;margin-bottom:8px!important;border-color:var(--ta-border)!important;background:var(--ta-card)!important;border-radius:10px}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar .ceDoorRow>.ceDoorOpen{padding:10px 8px!important;min-height:76px!important;background:transparent!important;box-shadow:none!important;border:1px solid transparent!important;border-radius:7px}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar #ceDoorList .ceDoorOpen.is-selected{background:var(--ta-highlight)!important;border-color:var(--ta-blue)!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar .ceDoorInfo>strong{font-size:calc(15px * var(--ce-text-scale))!important;line-height:1.4!important;overflow-wrap:anywhere}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar .ceDoorInfo>small{font-size:calc(12px * var(--ce-text-scale))!important;line-height:1.5!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar .cePercent{font-size:13px!important;white-space:nowrap}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar .ceDoorRow>button:not(.ceDoorOpen){min-height:38px!important;padding:7px!important;width:36px!important;align-self:center}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopSidebar .ceDoorRow>button:not(.ceDoorOpen) svg{width:18px;height:18px}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDivider{grid-area:divider;cursor:col-resize;touch-action:none;position:relative;outline-offset:-2px;border-radius:6px}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDivider:after{content:'';position:absolute;top:40%;bottom:40%;left:5px;width:4px;border-radius:4px;background:var(--ta-border)}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDivider:hover:after,html[data-ce-desktop] body #ceWorkspace .ceDesktopDivider:focus-visible:after{background:var(--ta-blue)}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDetail{grid-area:document;min-width:0;min-height:0;position:relative;border:1px solid var(--ta-border);background:var(--ta-card);border-radius:10px;overflow:hidden}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDetail.is-floating{position:fixed;z-index:75;box-shadow:0 18px 65px #0005;border-color:var(--ta-blue);min-width:480px;min-height:330px}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopEmpty{display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;box-sizing:border-box;padding:32px;color:var(--ta-muted);height:100%;min-width:0;font-size:16px;line-height:1.6}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopEmpty h2{font-size:22px;font-weight:600;color:var(--ta-ink);margin:18px 0 0}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopEmpty p{max-width:400px}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopEmpty>svg{width:42px;height:42px;color:var(--ta-blue)}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDetail:has(#slrFlowTestDialog[open])>.ceDesktopEmpty,html[data-ce-desktop] body #ceWorkspace .ceDesktopDockHint[hidden]{display:none}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDockHint{grid-area:document}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDetail #slrFlowTestDialog[open]{position:relative!important;z-index:0!important;inset:auto!important;display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:hidden!important;background:var(--ta-card)!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDetail #slrFlowTestDialog>header{flex:none!important;flex-wrap:wrap!important;gap:6px!important;padding:14px!important;background:var(--ta-header)!important;color:var(--ta-ink)!important;border-bottom:1px solid var(--ta-border)}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDetail #slrFlowTestDialog>header>div{flex:1 1 190px;min-width:0}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDetail #slrTestHeading{font-size:calc(18px * var(--ce-text-scale))!important;overflow-wrap:anywhere}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDetail #slrFlowTestDialog>header button{min-width:42px!important;min-height:42px!important;margin:0!important;font-size:16px!important;padding:6px 10px!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDetail #slrFlowTestDialog>main{flex:1 1 auto!important;min-height:0!important;max-height:none!important;overflow:auto!important;padding:18px!important;overscroll-behavior:contain}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDetail #slrFlowTestDialog .slrFolder>summary{font-size:calc(16px * var(--ce-text-scale))!important;min-height:48px!important;padding:12px!important;box-sizing:border-box}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDetail #slrFlowTestDialog .slrFolder>summary strong{font-size:calc(16px * var(--ce-text-scale))!important;line-height:1.4!important;font-weight:600!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDetail #slrFlowTestDialog .slrFolder>summary small{font-size:calc(12px * var(--ce-text-scale))!important;line-height:1.5!important}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopDetail.is-floating #slrFlowTestDialog>header{cursor:move;touch-action:none;user-select:none}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopResize{display:none!important}
+html[data-ce-desktop] body #ceWorkspace .is-floating>.ceDesktopResize{display:grid!important;place-items:center!important;position:absolute!important;right:0!important;bottom:0!important;margin:0!important;width:28px!important;height:28px!important;min-height:28px!important;padding:4px!important;border:0!important;border-radius:8px 0 0;background:var(--ta-header)!important;color:var(--ta-blue)!important;cursor:nwse-resize;touch-action:none;z-index:2}
+html[data-ce-desktop] body #ceWorkspace .ceDesktopResize svg{width:20px;height:20px}
+html[data-ce-desktop] body.ceDesktopDragging{cursor:grabbing;user-select:none}
+html[data-ce-desktop] body #ceNotice{pointer-events:none}

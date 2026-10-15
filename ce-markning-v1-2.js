@@ -39,7 +39,7 @@ for(const [id,field] of [['ceSignDate','date'],['ceSignDateFormat','format'],['c
  });
 }
 function openProjectSignature(){
- const d=document.createElement('dialog');d.style.cssText='width:min(600px,94vw);border:1px solid #8eafc0;border-radius:12px;padding:16px;background:#fff;color:#17394c';
+ const d=document.createElement('dialog');d.className='ceProjectSignatureDialog';d.style.cssText='width:min(600px,94vw);border:1px solid #8eafc0;border-radius:12px;padding:16px;background:#fff;color:#17394c';
  const heading=document.createElement('h3');heading.textContent='Ansvarigs underskrift';heading.style.fontWeight='400';d.append(heading);
  const tip=document.createElement('p');tip.textContent='Skriv en gång. Underskriften förs över till dokumenten för både Med glas och Utan glas. I Egenkontroll signeras bara valda kontrollpunkter.';d.append(tip);
  const canvas=document.createElement('canvas');canvas.width=700;canvas.height=200;canvas.style.cssText='display:block;width:100%;height:160px;background:white;border:1px solid #aec8d6;touch-action:none';
@@ -478,7 +478,7 @@ function renderDoors(){
  }
 }
 function prepareDoorDialog(door){
- state.selected=door.id;
+ state.selected=door.id;window.TillsynoCEDesktop?.selectDoor(door.id);
  const dialog=$('slrFlowTestDialog'),header=dialog.querySelector('header'),exit=$('slrTestExit');
  if(!$('cePreviousDoor')){
   for(const [id,label,glyph,direction] of [['cePreviousDoor','Föregående dörr','‹',-1],['ceNextDoor','Nästa dörr','›',1]]){
