@@ -1,0 +1,189 @@
+{
+  "testVersion": 1,
+  "sourceCommit": "60b07179296dcf095d2c0bc0603b6af59fc13dc7",
+  "sourceAppVersion": "2.4.308",
+  "files": {
+    "all-in-one.html": {
+      "sourceSha256": "4c256e5202a849c8f3abb97a9754acf7756af1c9f0764ae3d1ef1078d9e6d728",
+      "testSha256": "1316cda678313c9ce8ea68ac52bfc0f5e70e939782eace1af4baf5de60897a92",
+      "changes": [
+        [
+          "src=\"vendor/",
+          "src=\"../vendor/"
+        ],
+        [
+          "src=\"auth/",
+          "src=\"../auth/"
+        ],
+        [
+          "src=\"auth-config.js\"",
+          "src=\"../auth-config.js\""
+        ],
+        [
+          "href=\"manifest.webmanifest",
+          "href=\"../manifest.webmanifest"
+        ],
+        [
+          "href=\"./\"",
+          "href=\"../\""
+        ],
+        [
+          "href=\"drawing-tools.html\"",
+          "href=\"../drawing-tools.html\""
+        ],
+        [
+          "href=\"ce-markning.html",
+          "href=\"../ce-markning.html"
+        ],
+        [
+          "<title>Kontrollflöde – Tillsyno</title>",
+          "<title>Checklista revision dörrautomatik – TEST v1</title>"
+        ],
+        [
+          "<strong>Kontrollflöde</strong>",
+          "<strong>Kontrollflöde · TEST</strong>"
+        ],
+        [
+          ">KONTROLLFLÖDE</span>",
+          ">KONTROLLFLÖDE · TEST</span>"
+        ],
+        [
+          "tillsyno-ui-appearance-v1",
+          "tillsyno-revision-test-ui-appearance-v1"
+        ]
+      ]
+    },
+    "all-in-one.css": {
+      "sourceSha256": "d149b3357f7361250d37d8fc2d043860d4b8be199f61b276254ed3d0f2dc7ef0",
+      "testSha256": "d149b3357f7361250d37d8fc2d043860d4b8be199f61b276254ed3d0f2dc7ef0",
+      "changes": []
+    },
+    "all-in-one.js": {
+      "sourceSha256": "2d8858ae1bf4e475f6d17a52a9248b4428b4df164dc5fb7880030ec789bbb05f",
+      "testSha256": "a9bbd1a4abbb3bfcf40b0ba612a0f0f2239003446489a9412dac499091371dbe",
+      "changes": [
+        [
+          "doorservice-all-in-one-active-protocols",
+          "tillsyno-revision-test-active-protocols"
+        ]
+      ]
+    },
+    "style.css": {
+      "sourceSha256": "5ce4226bbf01d7375cda5b91e427cc24a82265592e67e08f978545fb31b3f1af",
+      "testSha256": "5ce4226bbf01d7375cda5b91e427cc24a82265592e67e08f978545fb31b3f1af",
+      "changes": []
+    },
+    "security.css": {
+      "sourceSha256": "ebf0520dc0926ece88f3a78628526d754e869eefae19cd3d3d07923129266932",
+      "testSha256": "ebf0520dc0926ece88f3a78628526d754e869eefae19cd3d3d07923129266932",
+      "changes": []
+    },
+    "security-compact.css": {
+      "sourceSha256": "2cb4d2f8b0be6a2ad97c95cc7ca7afcb09c6fd4ff84d65b1cd54100ab5feb4c2",
+      "testSha256": "2cb4d2f8b0be6a2ad97c95cc7ca7afcb09c6fd4ff84d65b1cd54100ab5feb4c2",
+      "changes": []
+    },
+    "security.js": {
+      "sourceSha256": "5b12b6a312618e086055411408850c566d48d66c3ed97910d41d5a15ceb9b086",
+      "testSha256": "7ba99ad62e8826843f0a341d627f865dafdef9810e36b91539f68cb17eb828e3",
+      "changes": [
+        [
+          "workerSrc='vendor/",
+          "workerSrc='../vendor/"
+        ],
+        [
+          "ALL_IN_ONE?'doorservice-all-in-one:':'security-service:'",
+          "ALL_IN_ONE?'tillsyno-revision-test-all-in-one:':'tillsyno-revision-test-security-service:'"
+        ],
+        [
+          "'doorservice-protocol-size'",
+          "'tillsyno-revision-test-protocol-size'"
+        ],
+        [
+          "'doorservice-security-overview-size'",
+          "'tillsyno-revision-test-security-overview-size'"
+        ],
+        [
+          "'doorservice-security-customer-preview-size'",
+          "'tillsyno-revision-test-security-customer-preview-size'"
+        ]
+      ]
+    },
+    "legacy-door-import.js": {
+      "sourceSha256": "77cba02bd60779804c9e3e6c1b509e54b1b23ab44b627df993ec5194c7dc4ab9",
+      "testSha256": "77cba02bd60779804c9e3e6c1b509e54b1b23ab44b627df993ec5194c7dc4ab9",
+      "changes": []
+    },
+    "ui-text-scale.js": {
+      "sourceSha256": "9ed26172f70fc45f6b9936e2673ac2eed9356dce37a2be27de16630a04160e03",
+      "testSha256": "ae3d7b142d5b4eb92132c6f2ed0bbd982abd07afb256b54f69d5ca2ebbbe08da",
+      "changes": [
+        [
+          "doorservice-ui-text-level",
+          "tillsyno-revision-test-ui-text-level"
+        ],
+        [
+          "doorservice-protocol-size",
+          "tillsyno-revision-test-protocol-size"
+        ],
+        [
+          "doorservice-overview-size",
+          "tillsyno-revision-test-overview-size"
+        ],
+        [
+          "doorservice-security-overview-size",
+          "tillsyno-revision-test-security-overview-size"
+        ]
+      ]
+    },
+    "drawing-annotations.js": {
+      "sourceSha256": "a363c7e34c5d9c801560bb7be20fce4e305a5c9c3bed09573bdaa147472529be",
+      "testSha256": "a363c7e34c5d9c801560bb7be20fce4e305a5c9c3bed09573bdaa147472529be",
+      "changes": []
+    },
+    "session-history.js": {
+      "sourceSha256": "c93983fa8e5f33afb537625164ebccd8f4b6186a3ccde654d2ef9ca22012d2ae",
+      "testSha256": "c93983fa8e5f33afb537625164ebccd8f4b6186a3ccde654d2ef9ca22012d2ae",
+      "changes": []
+    },
+    "offline-work.js": {
+      "sourceSha256": "933cfa6b2f3f5dc5f79c614a44727165ab087759162c631d1bcdac94dd7c6747",
+      "testSha256": "644f5c76807a392ea2f4e4ba34894145117ddc0d5a271fe42370c0c24a9b93f5",
+      "changes": [
+        [
+          "tillsyno-offline-work",
+          "tillsyno-revision-test-offline-work-v1"
+        ]
+      ]
+    },
+    "drawing-transfer.js": {
+      "sourceSha256": "c54c783b1596f9573449f776367b6ef8eaaa0d11b1473e52dbe7e0c4dee26188",
+      "testSha256": "71ff650caf6956185b8c6d2d11fbbfeebdc747f2972c501b236eeb0f0df4ac9a",
+      "changes": [
+        [
+          "doorservice-drawing-transfer-v1",
+          "tillsyno-revision-test-drawing-transfer-v1"
+        ]
+      ]
+    },
+    "tillsyno-appearance.css": {
+      "sourceSha256": "0c6cbb7f5cc85313f80618870f8b392c30e819adb6560237255c8b4fde74b844",
+      "testSha256": "0c6cbb7f5cc85313f80618870f8b392c30e819adb6560237255c8b4fde74b844",
+      "changes": []
+    },
+    "tillsyno-appearance.js": {
+      "sourceSha256": "7bc965e5d1899d385a7df9d8a04b010faf8c60fc85690fb1c6855d35b382641b",
+      "testSha256": "e127820104f5e31e9b06dc36550e38d5f2be9573d16383eb79f5370723266956",
+      "changes": [
+        [
+          "tillsyno-ui-appearance-v1",
+          "tillsyno-revision-test-ui-appearance-v1"
+        ],
+        [
+          "node.textContent='v2.4.307'",
+          "node.textContent='TEST v1 · grundkopia 2.4.308'"
+        ]
+      ]
+    }
+  }
+}
