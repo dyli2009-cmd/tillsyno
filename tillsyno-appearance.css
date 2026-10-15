@@ -10,7 +10,7 @@ html[data-tillsyno-theme] .ta-inline-icon{display:inline-flex;vertical-align:mid
 html[data-tillsyno-theme] .ta-inline-icon svg{width:16px;height:16px;display:block;stroke:currentColor;fill:none}
 html[data-tillsyno-theme] :is(button,a):has(>.ta-inline-icon){align-items:center;gap:5px}
 /* Shared light application header / primary surfaces, without affecting the original canvas or document preview. */
-html[data-tillsyno-theme] body:is(.securityApp,.pwStartMode) :is(.appHeader,.pwHeader),
+html[data-tillsyno-theme] body :is(.appHeader,.pwHeader),
 html[data-tillsyno-theme] body .toolHeader,
 html[data-tillsyno-theme] body .pfHeader,
 html[data-tillsyno-theme] body .ceTop{
