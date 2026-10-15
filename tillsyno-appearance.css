@@ -1,4 +1,4 @@
-/* Tillsyno appearance v2.4.318. Shared UI-only theme. Never touches PDF pixels, rendered canvases, data or status semantics. */
+/* Tillsyno appearance v2.4.319. Shared UI-only theme. Never touches PDF pixels, rendered canvases, data or status semantics. */
 html[data-tillsyno-theme="ice"]{--ta-page:#edf6fb;--ta-sidebar:#e2f1f8;--ta-soft:#dceef7;--ta-soft2:#eaf5fb;--ta-card:#fff;--ta-header:#e1f0f8;--ta-ink:#173f55;--ta-muted:#587b8d;--ta-blue:#2b7192;--ta-blue-dark:#1e5b78;--ta-border:#c3dce9;--ta-line:#d5e6ef;--ta-highlight:#cce8f5;--ta-shadow:0 10px 27px #173e570e}
 html[data-tillsyno-theme="mist"]{--ta-page:#ebf1f5;--ta-sidebar:#e2edf3;--ta-soft:#dfeef3;--ta-soft2:#edf5f8;--ta-card:#fff;--ta-header:#e2eef4;--ta-ink:#233f52;--ta-muted:#617d8d;--ta-blue:#356e86;--ta-blue-dark:#285b73;--ta-border:#cbdde6;--ta-line:#dce8ee;--ta-highlight:#d6ecf5;--ta-shadow:0 10px 27px #234d600e}
 html[data-tillsyno-theme="coast"]{--ta-page:#edf7f6;--ta-sidebar:#e2f3f0;--ta-soft:#d9f0ef;--ta-soft2:#e8f6f3;--ta-card:#fff;--ta-header:#dcf0eb;--ta-ink:#1d4852;--ta-muted:#587e82;--ta-blue:#247f85;--ta-blue-dark:#1b626c;--ta-border:#c3dedb;--ta-line:#d9ebe7;--ta-highlight:#d9f2ee;--ta-shadow:0 10px 27px #164e490d}
@@ -920,7 +920,7 @@ html[data-tillsyno-theme] body.ceProjectPickerOpen > .ta-page-version {
 /* CE has an additional header version; it stays hidden after the single version moves to the footer. */
 html[data-tillsyno-theme] body .ceTopIdentity > small[hidden]{display:none!important}
 
-/* Tillsyno v2.4.318: optional dark UI palettes. Never filter/invert PDF or canvas pixels. */
+/* Tillsyno v2.4.319: optional dark UI palettes. Never filter/invert PDF or canvas pixels. */
 html[data-tillsyno-theme="night"]{color-scheme:dark;--ta-page:#081523;--ta-sidebar:#0c1d2c;--ta-soft:#203b50;--ta-soft2:#102638;--ta-card:#152b3e;--ta-header:#102334;--ta-ink:#e5eef5;--ta-muted:#adc0cf;--ta-blue:#336a96;--ta-blue-dark:#a5d8ff;--ta-border:#3f5d73;--ta-line:#2d475b;--ta-highlight:#254c68;--ta-shadow:0 12px 32px #0005}
 html[data-tillsyno-theme="graphite"]{color-scheme:dark;--ta-page:#12151c;--ta-sidebar:#171c25;--ta-soft:#2c3543;--ta-soft2:#1e2632;--ta-card:#232a35;--ta-header:#1b202a;--ta-ink:#eef0f7;--ta-muted:#bcc5d5;--ta-blue:#526886;--ta-blue-dark:#c1d2f2;--ta-border:#455468;--ta-line:#364150;--ta-highlight:#344861;--ta-shadow:0 12px 32px #0005}
 html[data-tillsyno-theme="pine"]{color-scheme:dark;--ta-page:#091c1e;--ta-sidebar:#0d2326;--ta-soft:#204447;--ta-soft2:#112b2d;--ta-card:#163436;--ta-header:#10272a;--ta-ink:#e5f4f0;--ta-muted:#a9c9c3;--ta-blue:#32776c;--ta-blue-dark:#a0dcd2;--ta-border:#3f6562;--ta-line:#2d514e;--ta-highlight:#285752;--ta-shadow:0 12px 32px #0005}
@@ -994,10 +994,9 @@ html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-til
 
 @media(max-width:540px){.ta-modal .ta-swatches i{width:7px;height:32px}.ta-modal .ta-swatches i:first-child{width:10px}}
 
-/* v2.4.318: desktop workspaces only. Real touch devices and phone/tablet preferences retain their existing UI. */
+/* v2.4.319: desktop workspaces only. Real touch devices and phone/tablet preferences retain their existing UI. */
 @media (min-width:1100px) and (hover:hover) and (pointer:fine){
-html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)){color-scheme:light;--ta-page:#d1dbe3;--ta-sidebar:#cad5de;--ta-card:#dce3e9;--ta-header:#c9d4de;--ta-soft:#cbd7e0;--ta-soft2:#e4eaef;--ta-ink:#263d4e;--ta-muted:#4c6374;--ta-blue:#396685;--ta-blue-dark:#315b79;--ta-border:#acbccc;--ta-line:#b6c4cf;--ta-highlight:#bdcddd;--ta-shadow:0 18px 48px #0003;--navy:var(--ta-header);--page:var(--ta-page);--card:var(--ta-card);--ink:var(--ta-ink)}
-html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body{background:radial-gradient(ellipse at 50% 24%,#233d50,transparent 68%),#0d1c29!important;color:var(--ta-ink)!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body{background:var(--ta-page)!important;color:var(--ta-ink)!important}
 html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #revisionInlineWorkspace{background:transparent!important}
 html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #revisionInlineWorkspace[data-panel="allProtocolDialog"]{--panel-width:1020px}
 html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #revisionInlineWorkspace:is([data-panel="secSaveDialog"],[data-panel="secOpenWorkDialog"],[data-panel="secVisibilityDialog"]){--panel-width:560px}
@@ -1054,3 +1053,148 @@ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno
 html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #securityProtocol .secChoices button{justify-self:center}
 html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body .ceTop .ceBackHome,html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body .ceTop .ceBackHome span{color:var(--ta-blue-dark)!important}
 }
+
+/* v2.4.319: one saved palette for all work views and devices; geometry and document/status pixels stay unchanged. */
+html[data-tillsyno-theme] body{background:var(--ta-page)!important;color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body #revisionInlineWorkspace,
+html[data-tillsyno-theme] body .revisionInlineContent,
+html[data-tillsyno-theme] body #securityProject,
+html[data-tillsyno-theme] body #securityDoors,
+html[data-tillsyno-theme] body #securityProtocol,
+html[data-tillsyno-theme] body #secEmpty{background:var(--ta-page)!important;color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body #securityProject .projectCard,
+html[data-tillsyno-theme] body #securityProject.revisionProjectLayout .projectCard,
+html[data-tillsyno-theme] body #securityOverview,
+html[data-tillsyno-theme] body #secOverviewSummary .overviewStat,
+html[data-tillsyno-theme] body #securityDoors .secDoorRow,
+html[data-tillsyno-theme] body #securityProtocol .secCheck,
+html[data-tillsyno-theme] body #securityProtocol .secCheckGroup,
+html[data-tillsyno-theme] body #securityProtocol .revisionCheckEditor,
+html[data-tillsyno-theme] body #revisionInlineWorkspace dialog.revisionInlinePage:not(#secPreviewDialog){background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #securityOverview .secSummaryCard{background:var(--ta-card)!important;color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body #securityProtocol .protocolMetaPanel,
+html[data-tillsyno-theme] body #securityProtocol .doorDetails,
+html[data-tillsyno-theme] body #securityProtocol .securityDetails{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #securityProtocol .protocolMetaPanel>summary{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #securityProtocol .doorCheckActions button:not(.approveAll){background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #securityProtocol .protocolMetaPanel :is(label,.protocolMetaHint),
+html[data-tillsyno-theme] body #securityProtocol .progressLine{color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body #securityProject .revisionColumnHead,
+html[data-tillsyno-theme] body #securityProject .sheetHead,
+html[data-tillsyno-theme] body #securityOverview .overviewHead,
+html[data-tillsyno-theme] body #securityOverview .overviewFilters,
+html[data-tillsyno-theme] body #securityProtocol .sheetHead,
+html[data-tillsyno-theme] body #securityProtocol .secCheckGroup>summary,
+html[data-tillsyno-theme] body #securityProtocol .revisionCheckColumns,
+html[data-tillsyno-theme] body .revisionInlineNavigation,
+html[data-tillsyno-theme] body .bottomNav,
+html[data-tillsyno-theme] body .sessionHistoryBar,
+html[data-tillsyno-theme] body #securityDrawing .securityTools{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #securityProject :is(h2,h3,label,.secLogoLabel),
+html[data-tillsyno-theme] body #securityProtocol :is(h2,h3,label,.secCheckHead,.secCheckHead strong,.secCheckText),
+html[data-tillsyno-theme] body #securityOverview :is(h2,h3,label,.overviewStat strong),
+html[data-tillsyno-theme] body #securityDoors :is(h2,h3,strong){color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body #securityProject :is(.projectCardHead p,.revisionColumnHead p,.muted),
+html[data-tillsyno-theme] body #securityOverview :is(.secSummaryMeta,.overviewStat small,.overviewMeaning),
+html[data-tillsyno-theme] body #securityDoors small{color:var(--ta-muted)!important;}
+html[data-tillsyno-theme] body #securityProject :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea),
+html[data-tillsyno-theme] body #securityProtocol :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea),
+html[data-tillsyno-theme] body #securityOverview :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea),
+html[data-tillsyno-theme] body #securityDoors :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #securityProject :is(button.secondary,.revisionSignatureActions button),
+html[data-tillsyno-theme] body #securityProtocol .secChoices button:not(.active),
+html[data-tillsyno-theme] body #securityProtocol .secEditCheck,
+html[data-tillsyno-theme] body #securityProject .sheetHead button,
+html[data-tillsyno-theme] body #securityOverview .overviewHead button,
+html[data-tillsyno-theme] body .revisionInlineNavigation button,
+html[data-tillsyno-theme] body .sessionHistoryBar button{background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #securityProject :is(button.primary,label.primary),
+html[data-tillsyno-theme] body #secEmpty label.primary{background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important;}
+html[data-tillsyno-theme] body #securityDrawing .securityTools button:not(.active):not([aria-pressed="true"]){background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #ceWorkspace,
+html[data-tillsyno-theme] body #ceWorkspace :is(.ceProject,.ceProjectColumn,.ceMetaGroup,.ceDoorForm,.ceDoorOpen,.ceEmpty,.ceSignaturePreview),
+html[data-tillsyno-theme] body .ceMenuPanel,
+html[data-tillsyno-theme] body .ceMenuPane,
+html[data-tillsyno-theme] body .ceFileExport,
+html[data-tillsyno-theme] body .ceFileExport fieldset,
+html[data-tillsyno-theme] body .ceFileExport label{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #ceWorkspace .ceProject>summary,
+html[data-tillsyno-theme] body #ceWorkspace .ceMetaGroup>summary,
+html[data-tillsyno-theme] body #ceWorkspace .ceSignaturePreviewTop,
+html[data-tillsyno-theme] body .ceMenuPanel header,
+html[data-tillsyno-theme] body .ceFileExport header{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #ceWorkspace :is(h2,h3,legend,label,.ceListHead,.ceDoorInfo strong),
+html[data-tillsyno-theme] body .ceMenuPanel :is(h2,h3,strong),
+html[data-tillsyno-theme] body .ceMenuPane :is(h2,h3,strong){color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body #ceWorkspace :is(.ceMetaIntro,.ceMetaSub,.ceSignIntro,.ceImportCEHint,.ceDoorInfo small,.ceDoorScope,.ceWorkspaceCaption>span),
+html[data-tillsyno-theme] body .ceMenuPanel small,
+html[data-tillsyno-theme] body .ceMenuPane small{color:var(--ta-muted)!important;}
+html[data-tillsyno-theme] body #ceWorkspace :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea),
+html[data-tillsyno-theme] body .ceFileExport :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #ceWorkspace button:not(.cePrimary):not(.ceDoorRemove):not(.ceDoorDeleteYes):not(.danger),
+html[data-tillsyno-theme] body #ceWorkspace .ceButton:not(.cePrimary),
+html[data-tillsyno-theme] body .ceTop .ceBackHome,
+html[data-tillsyno-theme] body .ceTop .ceBackHome span{background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #ceWorkspace .cePrimary{background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important;}
+html[data-tillsyno-theme] body #slrFlowTestDialog>header,
+html[data-tillsyno-theme] body #slrFlowTestDialog .slrFolder>summary,
+html[data-tillsyno-theme] body #slrFlowTestDialog .slrEditToolbar,
+html[data-tillsyno-theme] body #slrFlowTestDialog .ceProductHead{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #slrFlowTestDialog .slrFolder,
+html[data-tillsyno-theme] body #slrFlowTestDialog .ceProductRows,
+html[data-tillsyno-theme] body #slrFlowTestDialog .ceProductTableRow,
+html[data-tillsyno-theme] body #slrFlowTestDialog .ceImportNextToProfile,
+html[data-tillsyno-theme] body #slrFlowTestDialog .slrProfileSettings,
+html[data-tillsyno-theme] body #slrExportDialog,
+html[data-tillsyno-theme] body #ceImportCEDialog{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #slrFlowTestDialog .ceImportNextToProfile small,
+html[data-tillsyno-theme] body #slrFlowTestDialog .slrFolder small,
+html[data-tillsyno-theme] body #slrFlowTestDialog #slrDoorProfileCaption{color:var(--ta-muted)!important;}
+html[data-tillsyno-theme] body #slrFlowTestDialog #ceSizeRefresh{background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(.slrFolderTitle,.slrEditToolbar h3,.ceProductHead),
+html[data-tillsyno-theme] body #slrExportDialog :is(h2,h3,label),
+html[data-tillsyno-theme] body #ceImportCEDialog :is(h2,h3,label){color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body .toolIntro,
+html[data-tillsyno-theme] body .toolPanel,
+html[data-tillsyno-theme] body .previewPane,
+html[data-tillsyno-theme] body .outputActions,
+html[data-tillsyno-theme] body .resultCard,
+html[data-tillsyno-theme] body .sizeCompare{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body .toolIntro :is(h1,h2,.eyebrow),
+html[data-tillsyno-theme] body .toolPanel :is(h2,label),
+html[data-tillsyno-theme] body .sizeCompare :is(strong,h2){color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body .toolIntro p,
+html[data-tillsyno-theme] body .toolPanel :is(p,small,.hint),
+html[data-tillsyno-theme] body .previewPane :is(.previewNote,#pageState),
+html[data-tillsyno-theme] body .sizeCompare :is(p,small),
+html[data-tillsyno-theme] body #drawingDoorCount{color:var(--ta-muted)!important;}
+html[data-tillsyno-theme] body .toolIntro .openBtn{background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important;}
+html[data-tillsyno-theme] body .toolPanel :is(.toggleRow,.drawingDoorEditor),
+html[data-tillsyno-theme] body .sizeCompare .sizeStats>div,
+html[data-tillsyno-theme] body .previewToolbar{background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body .toolPanel :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body .toolPanel button:not(.active):not(.dangerBtn):not(#deleteDrawingDoor),
+html[data-tillsyno-theme] body .previewToolbar button,
+html[data-tillsyno-theme] body .outputActions button:not(.primary){background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body .toolHeader .globalTextControls,
+html[data-tillsyno-theme] body .toolHeader .globalTextControls button{background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #projectPanel,
+html[data-tillsyno-theme] body #protocolPanel,
+html[data-tillsyno-theme] body #overviewDialog{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #projectPanel .projectCard,
+html[data-tillsyno-theme] body #protocolPanel .protocolMetaPanel,
+html[data-tillsyno-theme] body #protocolPanel .doorDetails,
+html[data-tillsyno-theme] body #protocolPanel .checkGroup,
+html[data-tillsyno-theme] body #protocolPanel .check{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #projectPanel .sheetHead,
+html[data-tillsyno-theme] body #protocolPanel .sheetHead,
+html[data-tillsyno-theme] body #protocolPanel .protocolMetaPanel>summary,
+html[data-tillsyno-theme] body #overviewDialog .overviewHead{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #projectPanel :is(h2,h3,label),
+html[data-tillsyno-theme] body #protocolPanel :is(h2,h3,label),
+html[data-tillsyno-theme] body #overviewDialog :is(h2,h3,label){color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body #projectPanel .projectCardHead p,
+html[data-tillsyno-theme] body #protocolPanel .protocolMetaHint{color:var(--ta-muted)!important;}
+html[data-tillsyno-theme] body #projectPanel :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea),
+html[data-tillsyno-theme] body #protocolPanel :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea),
+html[data-tillsyno-theme] body #overviewDialog :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}

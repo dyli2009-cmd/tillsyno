@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.319 – samma tema genom arbetsflödena
+
+Rättar fasta färger och datorns palettöverskrivning. Temavalet följer projekt, protokoll, översikt, CE och Ritningsverktyg på alla enheter. Se [ändring och verifiering](THEME_CONSISTENCY_319.md).
+
 ## Tillsyno v2.4.318 – större och lugnare datorvy
 
 Större arbetsytor och mappkort, mörkblå omgivning och dämpade blågrå fält. Telefon, iPad och startsida bevaras. Se [ändring och verifiering](DESKTOP_LAYOUT_318.md).
