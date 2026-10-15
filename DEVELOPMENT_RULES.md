@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.324**
+Aktuell version: **v2.4.325**
 
 Regler:
 - Samma appversion gäller Kontrollflöde, Dörrautomatik, Säkerhetsservice, Brand, Projektflöde och Ritningsverktyg.
@@ -205,3 +205,7 @@ Endast datorns startsida förstoras enligt DESKTOP_HOME_323.md. Telefon, iPad oc
 ## Områdesval på dator – v2.4.324
 
 Godkänd avgränsad förstoring av text/ikoner enligt DESKTOP_AREA_324.md. Telefon/iPad, kortmått, färger och checklistor bevaras. Kontrollflödet är åter låst.
+
+## Checklistval på dator – v2.4.325
+
+Godkänd förstoring av checklistvyn i alla tre områden enligt DESKTOP_CHECKLISTS_325.md. Telefon/iPad, färger och protokollinnehåll bevaras. Kontrollflödet är åter låst.

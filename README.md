@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.325 – tydligare checklistval på dator
+
+Större text, ikoner och kryssrutor för alla tre områden på dator. Telefon/iPad och färgteman bevaras. Se [ändring och verifiering](DESKTOP_CHECKLISTS_325.md).
+
 ## Tillsyno v2.4.324 – tydligare områdesval på dator
 
 Större rubriker, text och ikoner i områdeskorten. Samma kortmått, teman och mobil-/iPad-vyer. Se [ändring och verifiering](DESKTOP_AREA_324.md).
