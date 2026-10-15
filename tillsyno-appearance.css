@@ -1,4 +1,4 @@
-/* Tillsyno appearance v2.4.300. Shared UI-only theme. Never touches PDF pixels, rendered canvases, data or status semantics. */
+/* Tillsyno appearance v2.4.301. Shared UI-only theme. Never touches PDF pixels, rendered canvases, data or status semantics. */
 html[data-tillsyno-theme="ice"]{--ta-page:#edf6fb;--ta-sidebar:#e2f1f8;--ta-soft:#dceef7;--ta-soft2:#eaf5fb;--ta-card:#fff;--ta-header:#e1f0f8;--ta-ink:#173f55;--ta-muted:#587b8d;--ta-blue:#2b7192;--ta-blue-dark:#1e5b78;--ta-border:#c3dce9;--ta-line:#d5e6ef;--ta-highlight:#cce8f5;--ta-shadow:0 10px 27px #173e570e}
 html[data-tillsyno-theme="mist"]{--ta-page:#ebf1f5;--ta-sidebar:#e2edf3;--ta-soft:#dfeef3;--ta-soft2:#edf5f8;--ta-card:#fff;--ta-header:#e2eef4;--ta-ink:#233f52;--ta-muted:#617d8d;--ta-blue:#356e86;--ta-blue-dark:#285b73;--ta-border:#cbdde6;--ta-line:#dce8ee;--ta-highlight:#d6ecf5;--ta-shadow:0 10px 27px #234d600e}
 html[data-tillsyno-theme="coast"]{--ta-page:#edf7f6;--ta-sidebar:#e2f3f0;--ta-soft:#d9f0ef;--ta-soft2:#e8f6f3;--ta-card:#fff;--ta-header:#dcf0eb;--ta-ink:#1d4852;--ta-muted:#587e82;--ta-blue:#247f85;--ta-blue-dark:#1b626c;--ta-border:#c3dedb;--ta-line:#d9ebe7;--ta-highlight:#d9f2ee;--ta-shadow:0 10px 27px #164e490d}
@@ -455,3 +455,225 @@ html[data-tillsyno-theme] dialog.ta-modal .ta-head small{color:var(--ta-muted)!i
 html[data-tillsyno-theme] dialog.ta-modal .ta-foot .ta-apply{
  background:var(--ta-blue)!important;border-color:var(--ta-blue)!important
 }
+
+/* v2.4.301: deep SmartMatch and CE surfaces; appearance only.
+   Do not alter rendered PDF/canvas, stamp/GS alignment, checkboxes,
+   completion colors, warnings or user-entered content. */
+
+/* SmartMatch dialogs: automation, revision, SLR folders, protocols and saving. */
+html[data-tillsyno-theme] body :is(
+ #pwDALinkDialog,#pwDADoorDialog,#pwSLRDialog,#pwAutomationDialog,
+ #pwAutomationPreviewDialog,#pwProtocol,#pwSelfcheckExportDialog,
+ #pwItemEditor,#pwSmartActionDialog,#smartExportDialog,
+ #labDiagnosticDialog,#pwFinishDialog,#pwRefreshDialog){
+ background:var(--ta-page)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDAHead,.pwAutomationHead,.pwProtocolHeader,.pwItemEditorHead,
+ .pwSmartActionDialog form>header,.smartExportHeader,.labDiagnosticHead,
+ .smFinishHead,.smRefreshHead){
+ background:var(--ta-header)!important;color:var(--ta-ink)!important;
+ border-bottom:1px solid var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDAHead strong,.pwAutomationHead strong,.pwProtocolHeader strong,
+ .pwItemEditorHead strong,.smartExportHeader h2,.labDiagnosticHead h2,
+ .pwProtocolIdentity strong,.pwAutomationHead h2,.smFinishHead strong){
+ color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDAHead small,.pwAutomationHead small,.pwProtocolIdentity small,
+ .pwProtocolIdentity span,.pwItemEditorHead span,.labDiagnosticHead small){
+ color:var(--ta-muted)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDAHead button,.pwAutomationHeadActions button,#pwAutomationClose,
+ #pwProtocolClose,#pwBack,#pwItemEditorClose,#pwSLRClose,
+ #pwDADoorClose,#pwDALinkClose,.labDiagnosticHead button,
+ .smartExportHeader button,.pwSmartActionDialog form>header button){
+ color:var(--ta-blue-dark)!important;background:var(--ta-card)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDABody,.pwAutomationBody,.pwSelfcheckExportBody,.pwItemEditorBody,
+ #pwSmartActionForm,.pwChecklistPane,.pwRevisionProjectBody){
+ background:var(--ta-page)!important;color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwProtocolTools,.pwChecklistHead,.pwProtocolPreviewNav,
+ .smRevisionSizeBar,.pwAutomationProject>summary,.pwAutomationMeta>summary,
+ .pwRevisionAdvanced>summary,.pwDAGsEdit,.pwSLRList,
+ .pwSmartActionDialog form>footer,.pwSelfcheckExportFooter){
+ background:var(--ta-soft2)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDADoorChoices>button,.pwDAActions button,.pwDAGsManualMatches button,
+ .pwSLRSection:not(.active),.pwProtocolZoomTools button,
+ .pwChecklistHeadActions button,.pwAutomationHeadActions button,
+ .pwSmartActionDialog form>footer button,.pwSelfcheckExportFooterButtons button,
+ .pwItemEditorBody button,.smSizeControls button,
+ .smSaveModes button,.smSaveActions button){
+ background:var(--ta-card)!important;color:var(--ta-blue-dark)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDADoorChoices>button,.pwSLRSection,.pwDAActions button,
+ .smSaveModes button,.smSaveActions button):hover:not(:disabled){
+ background:var(--ta-soft)!important;border-color:var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body :is(
+ #pwDASaveLink,#pwDAManual,#pwDARevisionSave,
+ #pwSelfcheckExportCreate,#smartExportBuild,#pwSmartActionSave,
+ #pwItemEditorSave,#pwDAExportRevision):not(:disabled){
+ background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body .pwSLRSection.active{
+ background:var(--ta-soft)!important;border-color:var(--ta-blue)!important;
+ color:var(--ta-blue-dark)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwSLRSection small,.pwDASub,.pwDAFeedback,
+ .pwProtocolMouseHint,.pwChecklistHead small,.pwRevisionData label small){
+ color:var(--ta-muted)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwAutomationProject,.pwAutomationMeta,.pwRevisionParty,.pwRevisionBasics,
+ .pwRevisionAdvanced,.pwAutomationChecks,.pwSLRRow,.pwDADoorDivider,
+ .pwChecklistReference,.pwRevisionData .pwRevisionParty){
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwAutomationProject,.pwAutomationMeta,.pwRevisionParty,.pwRevisionBasics,
+ .pwRevisionAdvanced,.pwAutomationChecks,.pwRevisionData .pwRevisionParty){
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body .pwRevisionData .pwRevisionParty h3{
+ color:var(--ta-ink)!important;border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDABody input,.pwDABody select,
+ #pwAutomationDialog .pwRevisionData input:not([type="file"]),
+ #pwAutomationDialog .pwRevisionData select,
+ #pwAutomationDialog .pwAutomationNotes textarea,
+ .smSaveDialog input,.pwSmartActionDialog input,
+ .pwItemEditor input,.pwItemEditor textarea){
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+/* Preserve selected, pending, approved, remark and action-required meanings. */
+html[data-tillsyno-theme] body .pwAutomationProgress[data-inspection-status="pending"]{
+ background:var(--ta-soft2)!important;border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body .pwProtocol .pwCheckComment{
+ background:var(--ta-soft2)!important;color:var(--ta-muted)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body .smSaveDialog .smSaveModes .smModeActive{
+ background:var(--ta-soft)!important;color:var(--ta-blue-dark)!important;
+ border:1px solid var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body .smSaveDialog :is(.smSaveSummary,.smartFileReviewMeta){
+ background:var(--ta-soft2)!important;border-color:var(--ta-border)!important;
+ color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body #labDiagnosticDialog :is(
+ .smartReport,.smartScanAudit,.smartDiscoveryNotice,.smartDiagnosticSection,
+ .smartFileSizeCard,.smartReportsList>section){
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+/* CE document folders, import dialogs and menus (including injected SLR content). */
+html[data-tillsyno-theme] body :is(
+ #slrFlowTestDialog,#slrPdfPreviewDialog,.ceSensorPicker,
+ #ceImportCEDialog){
+ background:var(--ta-page)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ #slrFlowTestDialog>header,#slrPdfPreviewDialog>header,
+ #ceImportCEDialog .ceImportCEHeader){
+ background:var(--ta-header)!important;color:var(--ta-ink)!important;
+ border-bottom:1px solid var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ #slrFlowTestDialog>header strong,
+ #slrPdfPreviewDialog>header strong,
+ #ceImportCEDialog .ceImportCEHeader strong){
+ color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body :is(
+ #slrFlowTestDialog>main,#ceImportCEDialog .ceImportCEBody){
+ background:var(--ta-page)!important;color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ #slrProfilesPanel,.slrFolder,.slrDocSection,.slrPdfTip,
+ .slrChoiceInfo,.ceDocMenu,.slrEditToolbar,.ceProductTools,
+ .ceProductRow,.ceProductTableRow){
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ .slrFolder>summary,.ceProductHead,.ceDocMore>summary,
+ .slrZoomOptions,.slrEditToolbar,.ceProductTools){
+ background:var(--ta-soft2)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ .slrFolder>summary strong,.ceProductHead,
+ #slrEditHeading,.slrFolderIcon,#slrTestHeading){
+ color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ .slrFolder>summary small,.slrFolderFile,.ceFolderSize,
+ #slrDoorProfileCaption,#slrTestSource){
+ color:var(--ta-muted)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ .slrFolderActions>button:not(.ceReviewed),
+ .ceDocActions>button:not(.ceReviewed),
+ .ceDocMenu button,.slrZoomOptions button,
+ #slrProfilesPanel button,.ceProductTools button,
+ .ceSensorShortcuts button,.ceImportNextToProfile button){
+ background:var(--ta-card)!important;color:var(--ta-blue-dark)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ .ceDocActions>button:not(.ceReviewed),.ceDocMenu button,
+ .slrZoomOptions button):hover:not(:disabled){
+ background:var(--ta-soft)!important;border-color:var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ .ceDocMore>summary,.ceDocMenu,.ceFolderSize,
+ #slrProfilesPanel,#slrDoorProfile){
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ #slrDoorProfile,#slrFields input:not([type="checkbox"]),
+ #slrFields select,#slrFields textarea,
+ .ceProductTableRow input,.ceProductTableRow select){
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ #ceImportCEDialog .ceImportCERow,#ceImportCEDialog #ceImportCEChoose,
+ .ceSensorPicker input,.ceSensorPicker select,.ceSensorPresets button){
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body #ceImportCEDialog .ceImportCEBody>p{
+ color:var(--ta-muted)!important;
+}
+html[data-tillsyno-theme] body #ceImportCEDialog .ceImportCEActions button:not(:disabled){
+ background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ #slrFlowTestDialog>header button,#slrPdfPreviewDialog>header button,
+ #ceImportCEDialog .ceImportCEHeader button){
+ background:var(--ta-card)!important;color:var(--ta-blue-dark)!important;
+ border-color:var(--ta-border)!important;
+}
+/* Do not re-theme overlay marks (slrOverlayTick, slrOverlayText), document
+   completion badges, red/green statuses, progress bars or PDF previews. */
