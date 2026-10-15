@@ -289,6 +289,7 @@ function customerProtocolTitle(type){
   automation:'CHECKLISTA REVISION DÖRRAUTOMATIK',
   automation_selfcheck:'EGENKONTROLL DÖRRAUTOMATIK',
   alarm:'INBROTTSLARM',
+  detector:'DETEKTORPROTOKOLL',
   lock:'LÅS & DÖRRMILJÖ',
   access:'PASSER',
   fire_panel:'BRANDCENTRAL',
@@ -1296,7 +1297,7 @@ function reportDoc(){
   cell('Telefon:',project.companyPhone,left,y,93);cell('Telefon:',project.phone,left+93,y,93);y+=7;
   cell('Adress:',project.companyAddress,left,y,93);cell('Adress:',project.address,left+93,y,93);y+=7;
   cell('Postnummer / Postadress:',[project.companyPostalCode,project.companyPostalCity].filter(Boolean).join(' '),left,y,93);cell('Postnummer / Postadress:',[project.postalCode,project.postalCity].filter(Boolean).join(' '),left+93,y,93);y+=7;
-  cell('ID / märkning:',o.id,left,y,54,8,true);cell('Placering:',o.location,left+54,y,66,8);cell('AO nummer:',project.order,left+120,y,66,8,true);y+=8;
+  if(o.type==='detector'){const code=o.id==='Detektor '+o.number?'':o.id;cell('Detektor nr:',o.number,left,y,36,8,true);cell('Namn / kod:',code,left+36,y,66,8,true);cell('Placering:',o.location,left+102,y,84,8);y+=8;cell('Bedömning:',securityStatusText(o),left,y,93,8,true);cell('AO nummer:',project.order,left+93,y,93,8,true);y+=8;}else{cell('ID / märkning:',o.id,left,y,54,8,true);cell('Placering:',o.location,left+54,y,66,8);cell('AO nummer:',project.order,left+120,y,66,8,true);y+=8;}
  }
  function checkHeader(){
   const ws=[9,101,14,21,25,16],titles=['Nr','Benämning / kontrollpunkt','Ingår ej','Klart utan\nanmärkning','Klart med\nanmärkning','Signatur'];let x=left;
@@ -1380,7 +1381,7 @@ async function openCustomerPreview(forceReport=false){
    previewMode='drawing';const built=await buildSecurityDrawingPdf();previewStampRects=built.stampRects;previewOverviewLinks=built.overviewLinks;previewPdf=await pdfjsLib.getDocument({data:await built.out.save()}).promise;previewPage=Math.max(1,Math.min(previewPdf.numPages,page));$('secPreviewTitle').textContent='Ritning · sida '+previewPage;
   }else{
    previewMode='report';const report=reportDoc(),pageMap=report.__protocolPages||{},bytes=new Uint8Array(report.output('arraybuffer'));previewPdf=await pdfjsLib.getDocument({data:bytes}).promise;
-   if(!forceReport&&!overviewOpen&&view==='protocol'&&o&&pageMap[o.uid]){previewPage=pageMap[o.uid];$('secPreviewTitle').textContent=SYSTEMS[o.type].label+' · '+o.id}
+   if(!forceReport&&!overviewOpen&&(view==='protocol'||view==='detectors'&&o?.type==='detector')&&o&&pageMap[o.uid]){previewPage=pageMap[o.uid];$('secPreviewTitle').textContent=SYSTEMS[o.type].label+' · '+o.id}
    else{previewPage=1;$('secPreviewTitle').textContent=(forceReport||overviewOpen)?'Objekt och anmärkningar':'Kundrapport'}
   }
   $('secPreviewDialog').showModal();await renderCustomerPreview();

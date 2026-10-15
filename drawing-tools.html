@@ -23,7 +23,7 @@
 .toolIntro .openBtn{background:#d9edf5!important;color:#13394c!important;border-color:#bedde8!important;font-weight:750!important}
 @media(max-width:620px){.toolIntro{padding:13px!important}}
 </style>
-<link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.351">
+<link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.352">
 </head>
 <body>
 <div id="tillsynoNavCurtain" aria-hidden="true"></div>
@@ -151,6 +151,6 @@
 </main>
 <script src="ui-text-scale.js?v=2.4.163"></script><script src="drawing-tools.js?v=2.4.266"></script>
 <script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let leaving=false;function reveal(){function show(){requestAnimationFrame(function(){requestAnimationFrame(function(){if(!leaving)root.classList.add('tillsyno-nav-ready')})})}if(!root.hasAttribute('data-auth-pending')){show();return}const observer=new MutationObserver(function(){if(!root.hasAttribute('data-auth-pending')){observer.disconnect();show()}});observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',function(event){if(event.persisted){leaving=false;root.classList.remove('tillsyno-nav-leaving');reveal()}});document.addEventListener('click',function(event){if(leaving||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;const link=event.target.closest?.('a[href]');if(!link||link.hasAttribute('download')||(link.target&&link.target!=='_self'))return;let dest;try{dest=new URL(link.href,location.href)}catch(_){return}if(dest.origin!==location.origin)return;const file=dest.pathname.split('/').pop().toLowerCase();if(!['','index.html','all-in-one.html','drawing-tools.html'].includes(file))return;if(dest.href===location.href)return;event.preventDefault();leaving=true;root.classList.remove('tillsyno-nav-ready');root.classList.add('tillsyno-nav-leaving');const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;setTimeout(function(){location.assign(dest.href)},reduce?0:90)},true)})();</script>
-<script src="tillsyno-appearance.js?v=2.4.351"></script>
+<script src="tillsyno-appearance.js?v=2.4.352"></script>
 </body>
 </html>
