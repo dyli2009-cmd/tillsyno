@@ -382,7 +382,7 @@
 
 </style>
 <link rel="stylesheet" href="smartmatch-slr-test-v36-132.css?v=36.132">
-<link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.305">
+<link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.306">
 <style id="tillsyno-smartmatch-visuals">
 /* SmartMatch v1.2: visual-only alignment with Tillsyno's selectable themes.
    Never style the PDF canvas, stamp coordinates or traffic-light states. */
@@ -428,9 +428,13 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
 <body class="pwStartMode">
 <header class="pwHeader">
   <a class="pwHome" href="./" aria-label="Hem"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg>Hem</a>
-  <div class="pwTitle ta-brandlockup ta-work-brand" aria-label="Tillsyno – SmartMatch">
-    <span class="ta-brandmark" aria-hidden="true">T</span>
-    <span class="ta-brandcopy"><strong>Tillsyno</strong><small>Kontroll · dokumentation · tillsyn</small></span>
+  <div class="pwTitle">
+    <strong>SmartMatch</strong>
+    <div class="pwReleaseLine" aria-label="Programversion">
+      <span id="pwBuildVersion" class="pwTitleVersion" data-build="36.132" title="SmartMatch version 1.2">Version 1.2</span>
+      <span id="pwUpdateStatus" class="pwUpdateStatus" hidden aria-hidden="true"></span>
+    </div>
+    <small class="smHeaderSubtitle" aria-hidden="true">Projektflöde</small>
   </div>
   <div class="pwHeaderActions">
       <button id="pwRefreshBuild" class="pwRefreshBuild" type="button" hidden title="Ny version tillgänglig" aria-label="Uppdatera SmartMatch när ritningen är stängd">↻ Uppdatera</button>
@@ -450,8 +454,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
     <button id="pwFinishProject" type="button" class="smFinishProject" title="Stäng ritningen och spara arbetskopian på enheten" aria-label="Stäng ritning och spara lokalt">× <span>Stäng ritning</span></button>
     <button id="smartPdfInspect" class="pwHeaderInspect" type="button" title="Spara lokalt, spara PDF eller skicka mejl" disabled aria-label="Spara projekt eller protokoll">Spara</button>
   </div>
-  <div class="pwReleaseLine ta-smart-context" aria-label="SmartMatch version"><span class="ta-workflow-name">SmartMatch · Projektflöde</span><span id="pwBuildVersion" class="pwTitleVersion" data-build="36.132" title="SmartMatch version 1.2">Version 1.2</span><span id="pwUpdateStatus" class="pwUpdateStatus" hidden aria-hidden="true"></span></div>
-  <input id="pwFile" type="file" accept="application/pdf,.pdf" hidden>
+   <input id="pwFile" type="file" accept="application/pdf,.pdf" hidden>
 </header>
 
 <section class="pwToolbar" aria-label="Ritningskontroller">
