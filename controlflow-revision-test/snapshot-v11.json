@@ -1,0 +1,15 @@
+{
+  "testVersion": 11,
+  "previousEntry": "v10/all-in-one.html",
+  "dataCompatibility": "unchanged project keys and work-PDF; visibility is view-only",
+  "files": {
+    "all-in-one.html": "8e637a25026fd208477038bda8c05cd40ae06cb178e82fb7f5b51704b841bfc2",
+    "security-v11.js": "4155cbfebfa62d15efc2c0aa4266055964a01342cf19b5a3f088ce3d624bb022",
+    "tillsyno-appearance-v11.js": "4dd9e58713f526c4880b0c2a016518ac649b5e18951a5d095ed625c608eed578",
+    "offline-v11.js": "d676a0700212294efb50e07e8de24c54878da470f38bcabb651dbc7bc3bbb3d6",
+    "revision-visibility-v11.css": "449e616212228afba97e212967d1b87c8acc27a5367c44f5cef43a94994c2f80",
+    "service-overview-v10.js": "26442d0408d4f3f1a5827e4053bccdc734a6eb95fd5e4aececd6a64432f26beb",
+    "service-overview-v10.css": "2e51e0dc22de6f44e664163d50e9c1b657f9412c7a4848ee8b6175c490281440",
+    "sw.js": "613bbab4405b89300f20e6a0592401b3c59e591bc4c8872604b7ffa6f9e8ab2f"
+  }
+}
