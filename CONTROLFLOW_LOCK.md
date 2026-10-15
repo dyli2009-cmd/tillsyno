@@ -72,3 +72,5 @@ När låset är aktivt:
 2026-10-15, Tillsyno v2.4.319: användaren beställde uttryckligen gemensamt färgtema genom Kontrollflöde, revision, separata dörrautomatik-/säkerhetssidor, CE och Ritningsverktyg på alla enheter. Endast temaregler ändras; datorns befintliga storleksregler bevaras. Funktion, data, kontrollpunkter och dokumentpixlar ändras inte. **Kontrollflödet är åter LÅST efter denna beställda temarättning.**
 
 2026-10-15, Tillsyno v2.4.320: beställd temarättning efter blå blinkning vid Tillbaka och Kontrollflödets sidbyte. Sparad palett läses först i head; dokumentbakgrund och övergångsgardin följer samma temafärg redan före externa resurser. Navigation, auth och PDF-logik bevaras. **Kontrollflödet är åter LÅST.**
+
+2026-10-15, Tillsyno v2.4.321: användaren rapporterade kvarvarande mörkblå färg efter Spara PDF. Endast sparrutans rubrik, bakgrund, alternativ, ikoner och texter kopplas till vald palett på samtliga enheter. Export och dokumentinnehåll bevaras. **Kontrollflödet är åter LÅST.**

@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.321 – sparrutan följer temat
+
+Rättar fasta mörkblå färger i Spara PDF-rutan. Se [ändring och verifiering](SAVE_PDF_THEME_321.md).
+
 ## Tillsyno v2.4.320 – ingen fast blå laddningsbakgrund
 
 Valt tema gäller redan före externa resurser och under sidbyten. Se [ändring och verifiering](NAVIGATION_THEME_320.md).
