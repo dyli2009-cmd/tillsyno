@@ -1,0 +1,12 @@
+{
+  "testVersion": 5,
+  "previousEntry": "v4/all-in-one.html",
+  "dataCompatibility": "same runtime, project keys and PDF logic as TEST v4; layout only",
+  "files": {
+    "all-in-one.html": "2bf2a2be39bc55812f9a1c205a7ab72cb6b2ce8a4ec5eb25a091579069829b37",
+    "tillsyno-appearance-v5.js": "0206292a86feeedae778ab9cd5ba14d0867bff5e5e348ec1a8750d13b3cd7f97",
+    "offline-v5.js": "4be9f6c939b251a952510f4d2d6d73c694dea2d6de927e4397bb1cda02a82253",
+    "revision-project-v5.css": "da37bb72d42fadedf788d6c4c913891b28430576e02c5abc78c09c1555f20810",
+    "sw.js": "db3fa7e6aa5833d0edeac6392fe52c53d0cb14efe3725e8b1f879b67c63f95d4"
+  }
+}

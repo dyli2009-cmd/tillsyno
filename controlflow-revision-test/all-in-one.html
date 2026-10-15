@@ -14,7 +14,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Checklista revision dörrautomatik – TEST v4</title>
+<title>Checklista revision dörrautomatik – TEST v5</title>
 <link rel="stylesheet" href="style.css?v=1">
 <link rel="stylesheet" href="security.css?v=1"><link rel="stylesheet" href="security-compact.css?v=1"><link rel="stylesheet" href="all-in-one.css?v=1">
 <script src="../vendor/pdf.min.js"></script>
@@ -100,6 +100,7 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
 <link rel="stylesheet" href="tillsyno-appearance.css?v=1">
 <link rel="stylesheet" href="revision-import-v2.css?v=2">
 <link rel="stylesheet" href="revision-signature-v4.css?v=4">
+<link rel="stylesheet" href="revision-project-v5.css?v=5">
 </head>
 <body class="securityApp allInOneApp" data-view="drawing">
 <div id="tillsynoNavCurtain" aria-hidden="true"></div>
@@ -253,26 +254,12 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
   </div>
 </dialog>
 
-<section id="securityProject" class="view">
-  <div class="sheetHead"><div><span class="eyebrow">GEMENSAMT FÖR ALLA OBJEKT</span><h2>Projekt och service</h2></div><button id="secCloseProject">×</button></div>
-  <div class="projectSections">
-    <section class="projectCard"><div class="projectCardHead"><span>1</span><div><h3>Anläggning & jobb</h3><p>Grunduppgifter för hela projektet</p></div></div><div class="grid2">
-      <label class="wide">Anläggning / objekt<input id="secProjectName" placeholder="Exempel: Håsten Skolan"></label>
-      <label>Anläggningsnummer<input id="secFacilityNo"></label>
-      <label>Ordernummer / AO<input id="secOrder"></label>
-      <label>Bokat besök datum<input id="secDate" type="date"></label>
-      <label>Nästa provning datum<input id="secNextDate" type="date"></label>
-    </div></section>
-    <section class="projectCard"><div class="projectCardHead"><span>2</span><div><h3>Beställare</h3><p>Kundens uppgifter</p></div></div><div class="grid2">
-      <label>Beställare / företag<input id="secCustomer"></label>
-      <label>Avtalsnummer<input id="secAgreement"></label>
-      <label>Kontaktperson<input id="secContact"></label>
-      <label>Telefonnummer<input id="secPhone" type="tel"></label>
-      <label>Adress<input id="secAddress"></label>
-      <label>Postnummer<input id="secPostalCode" inputmode="numeric"></label>
-      <label>Postadress<input id="secPostalCity"></label>
-    </div></section>
-    <section class="projectCard"><div class="projectCardHead"><span>3</span><div><h3>Serviceföretag</h3><p>Företaget som utför servicen</p></div></div><div class="grid2">
+<section id="securityProject" class="view revisionProjectLayout">
+  <div class="sheetHead"><div><h2>Projekt och service</h2></div><button id="secCloseProject" aria-label="Tillbaka till ritningen">×</button></div>
+  <div class="projectSections revisionProjectColumns">
+    <section class="revisionProjectColumn" aria-labelledby="revisionServiceTitle">
+      <div class="revisionColumnHead"><h2 id="revisionServiceTitle">Service</h2><p>Utförare, signatur och logotyp</p></div>
+    <section class="projectCard"><div class="projectCardHead"><div><h3>Serviceföretag</h3><p>Företaget som utför servicen</p></div></div><div class="grid2">
       <label>Företag<input id="secCompany"></label>
       <label>Kontaktman på objektet<input id="secCompanyContact"></label>
       <label>Telefonnummer<input id="secCompanyPhone" type="tel"></label>
@@ -280,10 +267,10 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
       <label>Postnummer<input id="secCompanyPostalCode" inputmode="numeric"></label>
       <label>Postadress<input id="secCompanyPostalCity"></label>
     </div></section>
-    <section class="projectCard"><div class="projectCardHead"><span>4</span><div><h3>Signatur</h3><p>Signatur och logotyp i kundrapporten</p></div></div><div class="grid2">
+    <section class="projectCard"><div class="projectCardHead"><div><h3>Signatur och logga</h3><p>Signatur och logotyp i kundrapporten</p></div></div><div class="grid2">
       <input id="secTechnician" type="hidden">
       <div class="wide revisionSignatureField"><label>Signatur som text<input id="secSignature" placeholder="Namn / initialer"></label>
-<div class="revisionSignatureActions"><button id="revisionSignDraw" type="button" class="secondary">Skriv signatur för hand</button><button id="revisionSignText" type="button" class="secondary">Använd text</button><button id="revisionSignRemove" type="button" class="secondary">Ta bort signatur</button></div>
+<div class="revisionSignatureActions"><button id="revisionSignDraw" type="button" class="secondary">Signera för hand</button><button id="revisionSignText" type="button" class="secondary">Använd text</button><button id="revisionSignRemove" type="button" class="secondary">Ta bort signatur</button></div>
 <img id="revisionSignaturePreview" alt="Projektets signatur" hidden><p id="revisionSignatureStatus" class="muted">Samma signatur används på alla protokoll i projektet.</p></div>
       <div class="wide secLogoField">
         <span class="secLogoLabel">Företagslogotyp</span>
@@ -296,7 +283,27 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
       </div>
       <div id="secLogoPreview" class="wide"></div>
     </div></section>
-    <section class="projectCard secNewServiceCard"><div class="projectCardHead"><span>5</span><div><h3>Ny service</h3><p>Behåll projekt, kontaktuppgifter, logga och objekt – nollställ dagens kontroller.</p></div></div><button id="secNewServiceBtn" type="button" class="primary">Starta ny service</button></section>
+    <section class="projectCard secNewServiceCard"><div class="projectCardHead"><div><h3>Ny service</h3><p>Behåll projekt, kontaktuppgifter, logga och objekt – nollställ dagens kontroller.</p></div></div><button id="secNewServiceBtn" type="button" class="primary">Starta ny service</button></section>
+    </section>
+    <section class="revisionProjectColumn" aria-labelledby="revisionProjectTitle">
+      <div class="revisionColumnHead"><h2 id="revisionProjectTitle">Projekt</h2><p>Anläggning, jobb och beställare</p></div>
+    <section class="projectCard"><div class="projectCardHead"><div><h3>Anläggning & jobb</h3><p>Grunduppgifter för hela projektet</p></div></div><div class="grid2">
+      <label class="wide">Anläggning / objekt<input id="secProjectName" placeholder="Exempel: Håsten Skolan"></label>
+      <label>Anläggnings&shy;nummer<input id="secFacilityNo"></label>
+      <label>Ordernummer / AO<input id="secOrder"></label>
+      <label>Bokat besök datum<input id="secDate" type="date"></label>
+      <label>Nästa provning datum<input id="secNextDate" type="date"></label>
+    </div></section>
+    <section class="projectCard"><div class="projectCardHead"><div><h3>Beställare</h3><p>Kundens uppgifter</p></div></div><div class="grid2">
+      <label>Beställare / företag<input id="secCustomer"></label>
+      <label>Avtalsnummer<input id="secAgreement"></label>
+      <label>Kontaktperson<input id="secContact"></label>
+      <label>Telefonnummer<input id="secPhone" type="tel"></label>
+      <label>Adress<input id="secAddress"></label>
+      <label>Postnummer<input id="secPostalCode" inputmode="numeric"></label>
+      <label>Postadress<input id="secPostalCity"></label>
+    </div></section>
+    </section>
   </div>
 </section>
 </main>
@@ -312,7 +319,7 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
 <script>window.DOORSERVICE_APP_MODE="all-in-one";</script><script src="offline-work-v2.js?v=2"></script><script src="security-v4.js?v=4"></script><script src="legacy-door-import.js?v=1"></script><script src="revision-callout-profile-v4.js?v=4"></script><script src="all-in-one-v2.js?v=2"></script>
 <script src="revision-signature-v4.js?v=4"></script>
 <script src="drawing-transfer-v2.js?v=2"></script>
-<script src="offline-v4.js?v=4"></script>
+<script src="offline-v5.js?v=5"></script>
 <script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let observer=null;function reveal(){if(root.hasAttribute('data-auth-pending')){if(!observer){observer=new MutationObserver(reveal);observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}return}if(observer){observer.disconnect();observer=null}root.classList.add('tillsyno-nav-ready')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',reveal)})();</script>
-<script src="tillsyno-appearance-v4.js?v=4"></script>
+<script src="tillsyno-appearance-v5.js?v=5"></script>
 </body></html>

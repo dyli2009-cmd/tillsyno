@@ -15,7 +15,7 @@ const server=http.createServer((req,res)=>{
   const context=await browser.newContext({viewport:{width:1024,height:900},acceptDownloads:true,serviceWorkers:'block'}),page=await context.newPage(),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   const drawing=await PDFDocument.create();drawing.addPage([600,800]);drawing.addPage([600,800]);const bytes=Buffer.from(await drawing.save());
-  await page.goto('http://127.0.0.1:'+server.address().port+'/controlflow-revision-test/all-in-one.html');
+  await page.goto('http://127.0.0.1:'+server.address().port+'/controlflow-revision-test/v4/all-in-one.html');
   await page.locator('#allProtocolDialog[open]').waitFor();await page.locator('.allProtocolGroup summary').first().click();await page.locator('input[value="automation"]').check();await page.locator('#allProtocolApply').click();
   await page.evaluate(async b64=>{const file=new File([Uint8Array.from(atob(b64),c=>c.charCodeAt(0))],'test.pdf',{type:'application/pdf'});await $('securityFile').onchange({target:{files:[file],value:''}});},bytes.toString('base64'));
   await page.evaluate(()=>{
