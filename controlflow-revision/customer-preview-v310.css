@@ -1,0 +1,15 @@
+/* Only the customer preview floats; other app choices retain their layout. */
+body.revisionFloatingPreview>main{display:block!important}
+body #revisionInlineWorkspace[data-panel="secPreviewDialog"]{position:fixed!important;z-index:1800;right:auto;bottom:auto;left:max(8px,calc((100vw - 1100px)/2));top:max(8px,env(safe-area-inset-top));width:min(1100px,calc(100vw - 16px));height:calc(100dvh - max(16px,env(safe-area-inset-top)) - max(8px,env(safe-area-inset-bottom)));min-height:160px;flex:none;overflow:hidden;border:1px solid #8ba6b5;border-radius:10px;background:#e7edf1;box-shadow:0 12px 50px #142d3d55}
+body #revisionInlineWorkspace[data-panel="secPreviewDialog"] .revisionInlineNavigation{display:none!important}
+body #revisionInlineWorkspace[data-panel="secPreviewDialog"] .revisionInlineContent{flex:1 1 auto;width:100%;min-height:0;margin:0!important;max-width:none}
+body #revisionInlineWorkspace[data-panel="secPreviewDialog"] #secPreviewDialog[open]{width:100%!important;flex:1 1 auto;border:0!important;border-radius:0!important;margin:0!important;box-shadow:none!important}
+body #revisionInlineWorkspace[data-panel="secPreviewDialog"] .secPreviewHead{flex:0 0 auto;cursor:move;touch-action:none;user-select:none;gap:8px}
+body #revisionInlineWorkspace[data-panel="secPreviewDialog"] .secPreviewHead>div:first-child{min-width:0;flex:1}
+body #revisionInlineWorkspace[data-panel="secPreviewDialog"] #secPreviewTitle{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+body #revisionInlineWorkspace[data-panel="secPreviewDialog"] .secPreviewControls{flex:0 0 auto;cursor:default}
+body #revisionInlineWorkspace[data-panel="secPreviewDialog"] #secPreviewWrap{flex:1 1 auto;min-height:0;height:auto;overflow:auto;align-items:flex-start}
+@media(max-width:560px){body #revisionInlineWorkspace[data-panel="secPreviewDialog"] .secPreviewHead{flex-wrap:wrap;padding:7px 8px}body #revisionInlineWorkspace[data-panel="secPreviewDialog"] .secPreviewHead>div:first-child{flex:1 1 100%;padding-right:40px}body #revisionInlineWorkspace[data-panel="secPreviewDialog"] .secPreviewControls{gap:5px}body #revisionInlineWorkspace[data-panel="secPreviewDialog"] #secPreviewClose{position:absolute;right:7px;top:7px;width:34px;height:34px;min-height:34px;padding:0;font-size:23px}}
+body #revisionInlineWorkspace[data-panel="secPreviewDialog"] .secPreviewHead{display:flex!important}
+body.revisionFloatingPreview #tillsynoAppearanceButton{display:none!important}
+@media(max-width:560px){body #revisionInlineWorkspace[data-panel="secPreviewDialog"] .secPreviewHead{flex-wrap:wrap!important}body #revisionInlineWorkspace[data-panel="secPreviewDialog"] .secPreviewHead>div:first-child{flex:1 1 100%!important}body #revisionInlineWorkspace[data-panel="secPreviewDialog"] .secPreviewControls{justify-content:flex-start!important}}

@@ -1,5 +1,5 @@
 {
-  "release": "2.4.309",
+  "release": "2.4.310",
   "approvedSource": "TEST v16",
   "sourceSnapshot": "controlflow-revision-test/snapshot-v16.json",
   "routing": "D\u00f6rrautomatik/L\u00e5s protocols; mixed selections retained together",
@@ -15,12 +15,14 @@
   "files": {
     "all-in-one-v2.js": "6ae2cd72dc88f456126bff276ea7ef253310fb6e388c4dc333ba4f22b361e871",
     "all-in-one.css": "d149b3357f7361250d37d8fc2d043860d4b8be199f61b276254ed3d0f2dc7ef0",
-    "all-in-one.html": "c1147c9818653296431d009df8de92a55fce42ab5550dbe9e06e5f2e4a0081af",
+    "all-in-one.html": "3097d65a1f19fadb0097ee2240348da6382aab3615188d3c3b7cb41bd27518a9",
+    "customer-preview-v310.css": "d533d879d55abe0c30ea879e99839eedde7029809ce8db5c51662fd018852795",
+    "customer-preview-v310.js": "f4478434a5b36a8877b149e2936ab9a7ab419d9f79e30d81a398c63685090be2",
     "drawing-annotations.js": "a363c7e34c5d9c801560bb7be20fce4e305a5c9c3bed09573bdaa147472529be",
     "drawing-transfer-v2.js": "c54c783b1596f9573449f776367b6ef8eaaa0d11b1473e52dbe7e0c4dee26188",
     "legacy-door-import.js": "77cba02bd60779804c9e3e6c1b509e54b1b23ab44b627df993ec5194c7dc4ab9",
     "offline-work-v2.js": "933cfa6b2f3f5dc5f79c614a44727165ab087759162c631d1bcdac94dd7c6747",
-    "offline.js": "d6620f8abc8d208376340c66ff4d479ee73b0954314c35feecc682ef24b82314",
+    "offline.js": "69b795aedf2c3639c5c4503d19c6185dd6bf2a21704e5db1a75a20923ffefb69",
     "revision-callout-profile-v4.js": "6bad71b38cc6df8e3b106ed9e5762e1a5bf49edb1544f45f9c5de1c3fed9fba1",
     "revision-checklist-v14.css": "94a92a30acf52b080bd7e22492a2990817a8f1a1a42454c432cdf5fd0129be2d",
     "revision-compact-v15.css": "f0cad70116b7d968c318112719152f49083dadbb462eb62f3fcc2c47665cd825",
@@ -29,6 +31,7 @@
     "revision-import-v2.css": "faac420384cf09a866f6ac75cf65258ede03c7bce5e034e83e7bb623fb3cfa30",
     "revision-inline-v13.css": "69684938460b166e7d5aa5e3c4d4ed9ba1be29a47a982067e1c948e13cce3016",
     "revision-inline-v15.js": "1b5941d743ab8a2cf82c94798527dc743335b6cc13c935a72bd5a3ba33a79ca0",
+    "revision-inline-v310.js": "8e9887abb8ddb6e4a87c670cc3b3e2895fa18a9dacaaa97440f9387c296a3c6b",
     "revision-project-v5.css": "da37bb72d42fadedf788d6c4c913891b28430576e02c5abc78c09c1555f20810",
     "revision-signature-v4.css": "311361f654189886bb745e48d366ad82cfe0950268421c6b25e1d79022e6dea6",
     "revision-signature-v6.js": "2148c359bd8f0845dada076730e840450cd9d7c304a2f8abb4b20e5244839f9f",
@@ -40,8 +43,9 @@
     "service-overview-v12.js": "764cd3344cb1c77a30f9d201837cd53c1e1b952797aaa07e1a79b9488dcb6626",
     "session-history.js": "c93983fa8e5f33afb537625164ebccd8f4b6186a3ccde654d2ef9ca22012d2ae",
     "style.css": "5ce4226bbf01d7375cda5b91e427cc24a82265592e67e08f978545fb31b3f1af",
-    "tillsyno-appearance-v16.js": "dbda71d96d25a1cd6185324477f899b3924a5088b7a798c9208edf68fe0d9286",
+    "tillsyno-appearance-v16.js": "a1b459a1d23d8b4a2a31425610076fc23bbeb231c39eba7d8e55f72443622e0a",
     "tillsyno-appearance.css": "0c6cbb7f5cc85313f80618870f8b392c30e819adb6560237255c8b4fde74b844",
     "ui-text-scale-v2.js": "9ed26172f70fc45f6b9936e2673ac2eed9356dce37a2be27de16630a04160e03"
-  }
+  },
+  "customerPreview": "centered near-full-height floating preview, pointer/touch drag and X close; PDF unchanged"
 }

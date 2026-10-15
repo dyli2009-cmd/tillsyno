@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.310 – flyttbar kundmall
+
+Kundmallen i Dörrautomatik / Lås öppnas centrerat nära full höjd och kan flyttas via rubriken. X stänger; Tillbaka-raden tas bort endast där. Se [ändring och verifiering](CONTROLFLOW_CUSTOMER_FLOATING_310.md).
+
 ## Tillsyno v2.4.309 – godkända TEST v16 införd i Dörrautomatik / Lås
 
 Ordinarie Kontrollflöde öppnar nu den godkända revisionsmodulen för protokoll under Dörrautomatik / Lås. Befintliga arbetsfiler, originalfilnamn, båda importprofilerna, symboltabell, signatur, serviceöversikt och kompakta vyer bevaras. Se [införande och verifiering](CONTROLFLOW_REVISION_RELEASE_309.md). Testkopian och andra fristående moduler är bevarade.

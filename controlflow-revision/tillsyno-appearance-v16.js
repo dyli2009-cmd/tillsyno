@@ -143,7 +143,7 @@ function placeVersionAtBottom(){
   if(topVersion)topVersion.hidden=true;
  }else if(['all-in-one.html','project-flow.html','security.html'].includes(page)){
   node=document.createElement('small');
-  node.textContent='v2.4.309';
+  node.textContent='v2.4.310';
  }
  if(!node)return;
  node.classList.add('ta-page-version');

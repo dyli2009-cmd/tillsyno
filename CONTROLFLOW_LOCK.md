@@ -46,3 +46,6 @@ När låset är aktivt:
 
 
 2026-10-15, Tillsyno v2.4.309: användaren godkände TEST v16 och beställde uttryckligen att ersätta det befintliga flödet under Dörrautomatik / Lås med den godkända versionen. En separat produktionsmodul innehåller v16:s funktioner och kopplas via ordinarie protokollval. Övriga protokoll utan dessa val använder befintlig runtime. Blandade protokollval hålls i samma arbetsfil. TEST v16, äldre importprofil och dess pil-/matchningsregler är bevarade. Ordinarie projektnycklar, lokal ritningslagring och arbets-PDF-format återanvänds; inloggnings-/licensregler ändras inte. Webb och iOS-kod speglas till v2.4.309. **Kontrollflödet är åter LÅST efter denna beställda införing.**
+
+
+2026-10-15, Tillsyno v2.4.310: användaren beställde en centrerad och flyttbar kundmall inom Dörrautomatik / Lås, nära full skärmhöjd, med X i stället för Tillbaka. Endast kundmallens visningsfönster och dess pek-/touchförflyttning ändras. PDF-innehåll, import, projektdata och övriga valvyer bevaras. Webb och iOS-kod speglas. **Kontrollflödet är åter LÅST efter denna avgränsade ändring.**

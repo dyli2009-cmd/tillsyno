@@ -106,9 +106,10 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
 <link rel="stylesheet" href="revision-visibility-v11.css?v=11">
 <link rel="stylesheet" href="revision-checklist-v14.css?v=14">
 <link rel="stylesheet" href="revision-inline-v13.css?v=13">
-<script src="revision-inline-v15.js?v=15"></script>
+<script src="revision-inline-v310.js?v=2.4.310"></script>
 <link rel="stylesheet" href="revision-compact-v15.css?v=15">
 <link rel="stylesheet" href="revision-controls-v16.css?v=16">
+<link rel="stylesheet" href="customer-preview-v310.css?v=2.4.310">
 </head>
 <body class="securityApp allInOneApp" data-view="drawing">
 <div id="tillsynoNavCurtain" aria-hidden="true"></div>
@@ -210,7 +211,7 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
 </dialog>
 
 <dialog id="secPreviewDialog" class="secPreviewDialog">
-  <div class="secPreviewHead"><div><strong>Kundmall</strong><span id="secPreviewTitle">Förhandsvisning</span></div><div class="secPreviewControls"><button id="secPreviewPrev">‹</button><span id="secPreviewPage">1 / 1</span><button id="secPreviewNext">›</button><button id="secPreviewTextSmaller" type="button" aria-label="Mindre kundmall">A−</button><button id="secPreviewTextLarger" type="button" aria-label="Större kundmall">A+</button><button id="secPreviewClose">×</button></div></div>
+  <div class="secPreviewHead"><div><strong>Kundmall</strong><span id="secPreviewTitle">Förhandsvisning</span></div><div class="secPreviewControls"><button id="secPreviewPrev">‹</button><span id="secPreviewPage">1 / 1</span><button id="secPreviewNext">›</button><button id="secPreviewTextSmaller" type="button" aria-label="Mindre kundmall">A−</button><button id="secPreviewTextLarger" type="button" aria-label="Större kundmall">A+</button><button id="secPreviewClose" aria-label="Stäng kundmall" title="Stäng kundmall">×</button></div></div>
   <div id="secPreviewWrap"><canvas id="secPreviewCanvas"></canvas></div>
 </dialog>
 
@@ -327,8 +328,9 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
 <script>window.DOORSERVICE_APP_MODE="all-in-one";</script><script src="offline-work-v2.js?v=2"></script><script src="security-v15.js?v=15"></script><script src="legacy-door-import.js?v=1"></script><script src="revision-callout-profile-v4.js?v=4"></script><script src="all-in-one-v2.js?v=2"></script>
 <script src="revision-signature-v6.js?v=6"></script>
 <script src="service-overview-v12.js?v=12"></script>
+<script src="customer-preview-v310.js?v=2.4.310"></script>
 <script src="drawing-transfer-v2.js?v=2"></script>
-<script src="offline.js?v=2.4.309"></script>
+<script src="offline.js?v=2.4.310"></script>
 <script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let observer=null;function reveal(){if(root.hasAttribute('data-auth-pending')){if(!observer){observer=new MutationObserver(reveal);observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}return}if(observer){observer.disconnect();observer=null}root.classList.add('tillsyno-nav-ready')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',reveal)})();</script>
 <script src="tillsyno-appearance-v16.js?v=16"></script>
 </body></html>
