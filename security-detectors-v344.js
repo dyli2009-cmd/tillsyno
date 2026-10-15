@@ -10,8 +10,16 @@
  panel.innerHTML='<div class="detectorHead"><div><h2>Detektorer</h2><p>Placera en ikon per detektor på ritningen.</p></div><button id="detectorAdd" type="button">＋ Detektor</button></div><div class="detectorLegend"><span class="untested">Ej kontrollerad</span><span class="ok">Godkänd</span><span class="action">Anmärkning</span><span class="fail">Ej godkänd</span></div><p id="detectorCount"></p><div id="detectorList"></div><div id="detectorEditor" hidden><h3 id="detectorTitle"></h3><div class="detectorFields"><label>Namn / kod<input id="detectorCode" maxlength="100" placeholder="Exempel: IR-101"></label><label>Placering<input id="detectorLocation" maxlength="200"></label><label>Bedömning<select id="detectorStatus"><option value="untested">Ej kontrollerad</option><option value="ok">Godkänd</option><option value="action">Anmärkning</option><option value="fail">Ej godkänd</option></select></label><label class="detectorNote">Anmärkning<textarea id="detectorNote" rows="3" placeholder="Beskriv avvikelsen…"></textarea></label></div><div class="detectorActions"><button id="detectorDrawing" type="button">Visa på ritningen</button><button id="detectorDelete" type="button" class="danger">Ta bort detektor</button></div></div>';
  document.querySelector('main').append(panel);
  $('detectorAdd').innerHTML=icon+'<span>Lägg till detektor</span>';
+
+ let deleted=null;
+ const undoNotice=document.createElement('div');undoNotice.id='detectorDeleteNotice';undoNotice.hidden=true;undoNotice.setAttribute('role','status');const undoText=document.createElement('span'),undoDelete=document.createElement('button');undoDelete.id='detectorUndoDelete';undoDelete.type='button';undoDelete.textContent='Ångra';undoNotice.append(undoText,undoDelete);$('detectorList').before(undoNotice);
+ const workSnapshot=()=>JSON.stringify({items,textNotes,drawingExtras,project,logoData});
+ function clearDeleted(){deleted=null;undoNotice.hidden=true;}
+ undoDelete.onclick=()=>{if(!deleted||deleted.scope!==sourceBytes||deleted.state!==workSnapshot()){clearDeleted();return;}clearDeleted();securitySessionHistory.undo();refresh();};
+
  const detector=()=>cur()?.type==='detector'?cur():null;
  function refresh(){
+  if(deleted&&(deleted.scope!==sourceBytes||deleted.state!==workSnapshot()))clearDeleted();
   const enabled=allInOneProtocolActive('detector');nav.hidden=!enabled;
   nav.classList.toggle('active',document.body.dataset.view==='detectors');
   const list=$('detectorList');list.replaceChildren();
@@ -32,7 +40,7 @@
  $('detectorLocation').oninput=()=>{const o=detector();if(!o)return;o.location=$('detectorLocation').value;changed()};
  $('detectorNote').oninput=()=>{const o=detector();if(!o)return;o.checks['1.1'].note=$('detectorNote').value;o.notes='';changed()};
  $('detectorStatus').onchange=()=>{const o=detector();if(!o)return;const value=$('detectorStatus').value;o.manualFail=value==='fail';o.checks['1.1'].result=value==='ok'?'ok':['action','fail'].includes(value)?'remark':'';o.remediationDate='';o.remediationSignature='';changed()};
- $('detectorDelete').onclick=()=>{const o=detector();if(!o||!confirm('Ta bort Detektor '+o.number+'?'))return;items=items.filter(x=>x.uid!==o.uid);selected=null;save();drawMarkers();showSelected();showOverview()};
+ $('detectorDelete').onclick=()=>{const o=detector();if(!o)return;const name='Detektor '+o.number;securitySessionHistory.endGroup();securitySessionHistory.record();items=items.filter(x=>x.uid!==o.uid);selected=null;save();drawMarkers();showSelected();showOverview();deleted={scope:sourceBytes,state:workSnapshot()};undoText.textContent=name+' borttagen.';undoNotice.hidden=false;};
  $('detectorDrawing').onclick=async()=>{const o=detector();if(!o)return;page=o.page;go('drawing');await render();drawMarkers()};
  // Picker/import updates the active protocols independently of work-data saves.
  new MutationObserver(refresh).observe($('allProtocolDialog'),{attributes:true,attributeFilter:['open']});

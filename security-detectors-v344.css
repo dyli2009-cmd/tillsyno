@@ -30,3 +30,7 @@ html[data-tillsyno-device="phone"] #secStage .secTarget.detectorIcon::after,html
 
 /* Let the drawing show through the detector symbol; labels stay fully opaque. */
 #secStage .secTarget.detectorIcon{opacity:.8}
+
+/* Non-modal undo after deleting a detector. */
+#detectorDeleteNotice{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;margin:8px 0;background:var(--ta-soft2,#f3f7f9);color:var(--ta-ink,#173f55);border-radius:8px}
+#detectorDeleteNotice[hidden]{display:none!important}
