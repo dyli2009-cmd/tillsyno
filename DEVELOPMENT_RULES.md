@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.326**
+Aktuell version: **v2.4.327**
 
 Regler:
 - Samma appversion gäller Kontrollflöde, Dörrautomatik, Säkerhetsservice, Brand, Projektflöde och Ritningsverktyg.
@@ -213,3 +213,6 @@ Godkänd förstoring av checklistvyn i alla tre områden enligt DESKTOP_CHECKLIS
 ## Ritningsrubrik på dator – v2.4.326
 
 Beställd områdesrubrik, checklistrad och större ritningsstart på dator enligt DESKTOP_DRAWING_HEADER_326.md. Telefon/iPad, färger och protokollinnehåll bevaras. Kontrollflödet är åter låst.
+
+
+2026-10-15, Tillsyno v2.4.327: Beställd rättning av datorns PDF-start för Säkerhetsservice och Brandsäkerhet. Samma DOM-presentation som i revisionen aktiveras även i ordinarie all-in-one.js. Rätt områdesnamn och valda checklistor visas, befintliga större CSS-mått återanvänds. Routing, PDF, projektdata och telefon/iPad bevaras. Kontrollflödet är åter LÅST.
