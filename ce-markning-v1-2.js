@@ -259,7 +259,7 @@ async function ceClose(){
  finally{ceTransition=false;}
 }
 
-// CE v1.2 ZIP-mappstöd (1.2.1): folder paths guide matching; editable PDF fields verify it.
+// CE v1.2 ZIP-mappstöd (1.2.2): folder paths guide matching; editable PDF fields verify it.
 const CE_IMPORT_SIGS=[
  ['Riskanalys',['4.4 Risknivå','4.6.1']],
  ['Beskrivning av maskin',['Drivsystem','Aktivering 1','Dörrtyp']],
@@ -272,9 +272,8 @@ const CE_IMPORT_MAX=20*1024*1024;
 const ceImportNormalize=value=>String(value||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
 function ceImportFolderType(path){
  const parts=String(path||'').replace(/\\/g,'/').split('/').filter(Boolean);
- // Nearest folder/file name is authoritative, not arbitrary project names.
- for(let i=parts.length-1;i>=0;i--){
-  let name=ceImportNormalize(parts[i]).replace(/\.pdf$/i,'').replace(/^\d+\s*[.)_-]\s*/,'').replace(/[_–—-]+/g,' ').replace(/\s+/g,' ').trim();
+ const classify=part=>{
+  const name=ceImportNormalize(part).replace(/\.pdf$/i,'').replace(/^\d+\s*[.)_-]\s*/,'').replace(/[_–—-]+/g,' ').replace(/\s+/g,' ').trim();
   if(/^riskanalys\b/.test(name))return 'Riskanalys';
   if(/^(beskrivning av maskin|beskrivning maskin|maskinbeskrivning)\b/.test(name))return 'Beskrivning av maskin';
   if(/^loggbok\b/.test(name))return 'Loggbok';
@@ -282,8 +281,12 @@ function ceImportFolderType(path){
   if(/^(tillverkarens forsakran|eg forsakran|eu forsakran|forsakran om overensstammelse)\b/.test(name))return 'Tillverkarens försäkran';
   if(/^produktlista\b/.test(name))return 'Produktlista';
   if(/^ce skylt\b/.test(name))return 'CE-skylt';
- }
- return '';
+  return '';
+ };
+ // The existing ZIP folder determines the destination. Use filename only
+ // for loose PDFs or ZIPs without recognizable folder names.
+ for(let i=parts.length-2;i>=0;i--){const found=classify(parts[i]);if(found)return found;}
+ return classify(parts[parts.length-1]||'');
 }
 function ceImportState(msg,err=false){const el=$('ceImportCEStatus');el.textContent=msg;el.style.color=err?'#933f42':'#547488';}
 function ceImportRow(label,file,status,type=''){
@@ -297,7 +300,7 @@ function ceImportRender(){
  const prior=module.assets()?.templates||{};
  for(const [cat]of CE_IMPORT_SIGS){
   const found=ceImportData.find(i=>i.category===cat),exists=!!prior[cat]?.length;
-  el.append(ceImportRow(cat,found?found.fileName:exists?'Redan sparad i projektet':'Ingen fil vald',found?'✓ Identifierad':exists?'Finns redan':'Saknas',found?'':exists?'':'missing'));
+  el.append(ceImportRow(cat,found?found.fileName:exists?'Redan sparad i projektet':'Ingen fil vald',found?(exists?'↻ Ersätter mall':'✓ Rätt mapp'):exists?'Finns redan':'Saknas',found?'':exists?'':'missing'));
  }
  for(const e of ceImportErrors)el.append(ceImportRow('Kan inte importera',e.fileName,e.message,'error'));
  for(const e of ceImportSkipped.slice(0,8))el.append(ceImportRow('Ingår inte i mallimport',e.fileName,e.message));
