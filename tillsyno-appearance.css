@@ -292,7 +292,7 @@ html[data-tillsyno-device="tv"] body :is(.allProtocolGroup>summary,.allProtocolC
 html[data-tillsyno-device="tv"] body .ta-launcher{width:46px!important;height:46px!important;min-width:46px!important;min-height:46px!important}
 html[data-tillsyno-device="desktop"] body :is(#appHome .homeChoice,#appHome .homeToolsLink){min-height:69px!important}
 /* Keep the PDF status colors and access-control locked/disabled states intact. */
-html[data-tillsyno-theme] :is(.status-ok,.status-warning,.status-error,.s-ok,.s-action,.s-fail,.s-untested,.doorTarget,.pwStatusChip,.smartStatus){color:inherit}
+/* Status colours (green/amber/red) are intentionally left to each module's original CSS. */
 @media(prefers-reduced-motion:reduce){.ta-launcher,.ta-modal *{transition:none!important}}
 
 /* On the home screen, show the appearance icon beside the existing account icon,
