@@ -1,4 +1,4 @@
-/* Tillsyno appearance v2.4.319 — a UI-only layer. NO domain data, PDF, canvas, checklist or authentication mutations. */
+/* Tillsyno appearance v2.4.320 — a UI-only layer. NO domain data, PDF, canvas, checklist or authentication mutations. */
 (function(){
 'use strict';
 const KEY='tillsyno-ui-appearance-v1';
@@ -55,6 +55,8 @@ let dialog,launcher,rendered=false;
 const originalColors={};
 function apply(value){
  current={theme:valid(value.theme,PALETTES,'mist'),device:valid(value.device,DEVICES,'auto')};
+ document.documentElement.style.setProperty('--tillsyno-route-bg',PALETTES[current.theme].page);
+ document.documentElement.style.setProperty('background',PALETTES[current.theme].page,'important');
  document.documentElement.setAttribute('data-tillsyno-theme',current.theme);
  document.documentElement.setAttribute('data-tillsyno-device',current.device);
  const meta=document.querySelector('meta[name="theme-color"]');
@@ -146,10 +148,10 @@ function placeVersionAtBottom(){
   if(topVersion)topVersion.hidden=true;
  }else if(['all-in-one.html','project-flow.html','security.html'].includes(page)){
   node=document.createElement('small');
-  node.textContent='v2.4.319';
+  node.textContent='v2.4.320';
  }
  if(!node)return;
- if(!['smartmatch-slr-test.html','project-workspace-smartmatch-test.html'].includes(page))node.textContent='v2.4.319';
+ if(!['smartmatch-slr-test.html','project-workspace-smartmatch-test.html'].includes(page))node.textContent='v2.4.320';
  node.classList.add('ta-page-version');
  node.setAttribute('data-ta-version-footer','true');
  document.body.appendChild(node);

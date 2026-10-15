@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="sv" data-auth-pending>
 <head>
+<script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}var page={ice:'#edf6fb',mist:'#ebf1f5',coast:'#edf7f6',sand:'#f7f5f1',night:'#081523',graphite:'#12151c',pine:'#091c1e'}[theme];document.documentElement.style.setProperty('--tillsyno-route-bg',page);document.documentElement.style.setProperty('background',page,'important');document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
 <style id="tillsyno-auth-screen">html[data-auth-pending] body{visibility:hidden!important}</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.270"></script><script src="auth/guard.js?v=2.4.270" defer></script>
 
 <meta charset="utf-8">
@@ -10,7 +11,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>SmartMatch – Version 1.2</title>
-<script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
+
 
 <script src="smartmatch-protocol-templates.js"></script>
 <script src="smartmatch-pdf-v36-71.js"></script>
@@ -382,7 +383,7 @@
 
 </style>
 <link rel="stylesheet" href="smartmatch-slr-test-v36-132.css?v=36.132">
-<link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.319">
+<link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.320">
 <style id="tillsyno-smartmatch-visuals">
 /* SmartMatch v1.2: visual-only alignment with Tillsyno's selectable themes.
    Never style the PDF canvas, stamp coordinates or traffic-light states. */
@@ -1038,7 +1039,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
 <script src="smartmatch-protocol-export-v36-96.js?v=36-106"></script>
 <script src="smartmatch-session-v36-77.js?v=36-77"></script>
 <script id="smartmatch-visual-release-v1-2">(function(){var label=document.getElementById('pwBuildVersion');if(!label)return;label.textContent='Version 1.2';label.title='SmartMatch version 1.2';label.setAttribute('aria-label','SmartMatch version 1.2');/* data-build and data-loaded-build remain 36.132 for internal updater. */})();</script>
-<script src="tillsyno-appearance.js?v=2.4.319"></script>
+<script src="tillsyno-appearance.js?v=2.4.320"></script>
 
 <!-- Session module handles refresh + reopen -->
 </body>

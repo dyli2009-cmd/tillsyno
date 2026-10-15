@@ -1,5 +1,6 @@
 <!doctype html><html lang="sv" data-auth-pending><head>
-<style id="tillsyno-route-transition">html{background:#132b38!important}#tillsynoNavCurtain{position:fixed;inset:0;z-index:2147483647;background:#132b38;opacity:1;pointer-events:auto}html.tillsyno-nav-ready #tillsynoNavCurtain{opacity:0;pointer-events:none}</style>
+<script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}var page={ice:'#edf6fb',mist:'#ebf1f5',coast:'#edf7f6',sand:'#f7f5f1',night:'#081523',graphite:'#12151c',pine:'#091c1e'}[theme];document.documentElement.style.setProperty('--tillsyno-route-bg',page);document.documentElement.style.setProperty('background',page,'important');document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
+<style id="tillsyno-route-transition">html{background:var(--tillsyno-route-bg,#ebf1f5)!important}#tillsynoNavCurtain{position:fixed;inset:0;z-index:2147483647;background:var(--tillsyno-route-bg,#ebf1f5);opacity:1;pointer-events:auto}html.tillsyno-nav-ready #tillsynoNavCurtain{opacity:0;pointer-events:none}</style>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#132b38"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Tillsyno"><meta name="format-detection" content="telephone=no"><link rel="manifest" href="manifest.webmanifest?v=2.4.3"><link rel="apple-touch-icon" sizes="180x180" href="icon-180.png?v=2.4.3"><link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2.4.3"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Tillsyno</title><script>(function(){try{
   var fragment=new URLSearchParams(location.hash.slice(1)),query=new URLSearchParams(location.search);
   if(fragment.get('type')!=='recovery'&&query.get('type')!=='recovery')return;
@@ -274,8 +275,8 @@ html[data-auth-pending] body{visibility:hidden}
  #appHome .homeChoice:hover,#appHome .homeToolsLink:hover{transform:none!important}
 }
 
-</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.287"></script><script src="auth/guard.js?v=2.4.287" defer></script><script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
-<link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.319">
+</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.287"></script><script src="auth/guard.js?v=2.4.287" defer></script>
+<link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.320">
 </head><body data-view="drawing" class="homeMode">
 <div id="tillsynoNavCurtain" aria-hidden="true"></div>
 <section id="appHome" class="appHome" aria-label="Välj arbetsläge">
@@ -312,7 +313,7 @@ html[data-auth-pending] body{visibility:hidden}
       <p>Vad vill du arbeta med idag?</p>
     </div>
     <div class="homeChoices">
-      <a class="homeChoice" href="all-in-one.html?v=2.4.319">
+      <a class="homeChoice" href="all-in-one.html?v=2.4.320">
         <span class="homeChoiceIcon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v4H9M9 12l1.5 1.5 2.5-3M9 17l1.5 1.5 2.5-3M15 12h1.5M15 17h1.5"/></svg></span>
         <span class="homeChoiceCopy"><strong>Kontrollflöde</strong><small>Revision · egenkontroll · CE-märkning</small></span>
         <span class="homeChoiceArrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></span>
@@ -336,7 +337,7 @@ html[data-auth-pending] body{visibility:hidden}
         <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12M18.36 5.64l-2.12 2.12M7.76 16.24l-2.12 2.12"/><circle cx="12" cy="12" r="4"/></svg>
         <span>Mitt konto</span>
       </button>
-      <small class="homeVersion">v2.4.319</small>
+      <small class="homeVersion">v2.4.320</small>
     </div>
   </div>
 </section>
@@ -380,7 +381,7 @@ html[data-auth-pending] body{visibility:hidden}
 <button id="mobileOverview"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 5h3v3H5zM11 6.5h8M5 11h3v3H5zM11 12.5h8M5 17h3v3H5zM11 18.5h8"/></svg></span><span class="navLabel">Dörrar</span></button>
 <button id="mobileProtocol"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h8M9 3h6v3H9zM7 5H5v16h14V5h-2"/><path d="m8 13 2 2 5-5"/></svg></span><span class="navLabel">Protokoll</span></button>
 <button id="settingsBtn"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V7l8-4 8 4v13H4Z"/><path d="M8 10h2M14 10h2M8 14h2M14 14h2M10 20v-3h4v3"/></svg></span><span class="navLabel">Projekt</span></button>
-</nav><script src="ui-text-scale.js?v=2.4.217"></script><script src="drawing-annotations.js?v=2.4.217"></script><script src="session-history.js?v=2.4.217"></script><script src="app.js?v=2.4.256"></script><script src="reports.js?v=2.4.217"></script><script src="v2.js?v=2.4.217"></script><script src="customer-preview-pager.js?v=2.4.217"></script><script src="drawing-transfer.js?v=2.4.217"></script><script src="offline.js?v=2.4.319"></script>
+</nav><script src="ui-text-scale.js?v=2.4.217"></script><script src="drawing-annotations.js?v=2.4.217"></script><script src="session-history.js?v=2.4.217"></script><script src="app.js?v=2.4.256"></script><script src="reports.js?v=2.4.217"></script><script src="v2.js?v=2.4.217"></script><script src="customer-preview-pager.js?v=2.4.217"></script><script src="drawing-transfer.js?v=2.4.217"></script><script src="offline.js?v=2.4.320"></script>
 <script id="tillsyno-home-footer-account-v295">(function(){
  'use strict';
  const footer=document.getElementById('homeFooterAccount');
@@ -392,7 +393,7 @@ html[data-auth-pending] body{visibility:hidden}
  });
 })();</script>
 <script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let observer=null;function reveal(){if(root.hasAttribute('data-auth-pending')){if(!observer){observer=new MutationObserver(reveal);observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}return}if(observer){observer.disconnect();observer=null}root.classList.add('tillsyno-nav-ready')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',reveal)})();</script>
-<script src="tillsyno-appearance.js?v=2.4.319"></script>
+<script src="tillsyno-appearance.js?v=2.4.320"></script>
 </body></html>
 
 

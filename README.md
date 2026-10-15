@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.320 – ingen fast blå laddningsbakgrund
+
+Valt tema gäller redan före externa resurser och under sidbyten. Se [ändring och verifiering](NAVIGATION_THEME_320.md).
+
 ## Tillsyno v2.4.319 – samma tema genom arbetsflödena
 
 Rättar fasta färger och datorns palettöverskrivning. Temavalet följer projekt, protokoll, översikt, CE och Ritningsverktyg på alla enheter. Se [ändring och verifiering](THEME_CONSISTENCY_319.md).

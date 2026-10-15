@@ -1,4 +1,4 @@
-/* Tillsyno appearance v2.4.319. Shared UI-only theme. Never touches PDF pixels, rendered canvases, data or status semantics. */
+/* Tillsyno appearance v2.4.320. Shared UI-only theme. Never touches PDF pixels, rendered canvases, data or status semantics. */
 html[data-tillsyno-theme="ice"]{--ta-page:#edf6fb;--ta-sidebar:#e2f1f8;--ta-soft:#dceef7;--ta-soft2:#eaf5fb;--ta-card:#fff;--ta-header:#e1f0f8;--ta-ink:#173f55;--ta-muted:#587b8d;--ta-blue:#2b7192;--ta-blue-dark:#1e5b78;--ta-border:#c3dce9;--ta-line:#d5e6ef;--ta-highlight:#cce8f5;--ta-shadow:0 10px 27px #173e570e}
 html[data-tillsyno-theme="mist"]{--ta-page:#ebf1f5;--ta-sidebar:#e2edf3;--ta-soft:#dfeef3;--ta-soft2:#edf5f8;--ta-card:#fff;--ta-header:#e2eef4;--ta-ink:#233f52;--ta-muted:#617d8d;--ta-blue:#356e86;--ta-blue-dark:#285b73;--ta-border:#cbdde6;--ta-line:#dce8ee;--ta-highlight:#d6ecf5;--ta-shadow:0 10px 27px #234d600e}
 html[data-tillsyno-theme="coast"]{--ta-page:#edf7f6;--ta-sidebar:#e2f3f0;--ta-soft:#d9f0ef;--ta-soft2:#e8f6f3;--ta-card:#fff;--ta-header:#dcf0eb;--ta-ink:#1d4852;--ta-muted:#587e82;--ta-blue:#247f85;--ta-blue-dark:#1b626c;--ta-border:#c3dedb;--ta-line:#d9ebe7;--ta-highlight:#d9f2ee;--ta-shadow:0 10px 27px #164e490d}
@@ -920,7 +920,7 @@ html[data-tillsyno-theme] body.ceProjectPickerOpen > .ta-page-version {
 /* CE has an additional header version; it stays hidden after the single version moves to the footer. */
 html[data-tillsyno-theme] body .ceTopIdentity > small[hidden]{display:none!important}
 
-/* Tillsyno v2.4.319: optional dark UI palettes. Never filter/invert PDF or canvas pixels. */
+/* Tillsyno v2.4.320: optional dark UI palettes. Never filter/invert PDF or canvas pixels. */
 html[data-tillsyno-theme="night"]{color-scheme:dark;--ta-page:#081523;--ta-sidebar:#0c1d2c;--ta-soft:#203b50;--ta-soft2:#102638;--ta-card:#152b3e;--ta-header:#102334;--ta-ink:#e5eef5;--ta-muted:#adc0cf;--ta-blue:#336a96;--ta-blue-dark:#a5d8ff;--ta-border:#3f5d73;--ta-line:#2d475b;--ta-highlight:#254c68;--ta-shadow:0 12px 32px #0005}
 html[data-tillsyno-theme="graphite"]{color-scheme:dark;--ta-page:#12151c;--ta-sidebar:#171c25;--ta-soft:#2c3543;--ta-soft2:#1e2632;--ta-card:#232a35;--ta-header:#1b202a;--ta-ink:#eef0f7;--ta-muted:#bcc5d5;--ta-blue:#526886;--ta-blue-dark:#c1d2f2;--ta-border:#455468;--ta-line:#364150;--ta-highlight:#344861;--ta-shadow:0 12px 32px #0005}
 html[data-tillsyno-theme="pine"]{color-scheme:dark;--ta-page:#091c1e;--ta-sidebar:#0d2326;--ta-soft:#204447;--ta-soft2:#112b2d;--ta-card:#163436;--ta-header:#10272a;--ta-ink:#e5f4f0;--ta-muted:#a9c9c3;--ta-blue:#32776c;--ta-blue-dark:#a0dcd2;--ta-border:#3f6562;--ta-line:#2d514e;--ta-highlight:#285752;--ta-shadow:0 12px 32px #0005}
@@ -994,7 +994,7 @@ html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-til
 
 @media(max-width:540px){.ta-modal .ta-swatches i{width:7px;height:32px}.ta-modal .ta-swatches i:first-child{width:10px}}
 
-/* v2.4.319: desktop workspaces only. Real touch devices and phone/tablet preferences retain their existing UI. */
+/* v2.4.320: desktop workspaces only. Real touch devices and phone/tablet preferences retain their existing UI. */
 @media (min-width:1100px) and (hover:hover) and (pointer:fine){
 html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body{background:var(--ta-page)!important;color:var(--ta-ink)!important}
 html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #revisionInlineWorkspace{background:transparent!important}
@@ -1054,7 +1054,7 @@ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno
 html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body .ceTop .ceBackHome,html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body .ceTop .ceBackHome span{color:var(--ta-blue-dark)!important}
 }
 
-/* v2.4.319: one saved palette for all work views and devices; geometry and document/status pixels stay unchanged. */
+/* v2.4.320: one saved palette for all work views and devices; geometry and document/status pixels stay unchanged. */
 html[data-tillsyno-theme] body{background:var(--ta-page)!important;color:var(--ta-ink)!important;}
 html[data-tillsyno-theme] body #revisionInlineWorkspace,
 html[data-tillsyno-theme] body .revisionInlineContent,
