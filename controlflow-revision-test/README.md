@@ -4,6 +4,10 @@ Separat grundkopia av Kontrollflödet från Tillsyno 2.4.308, commit `60b0717929
 
 Öppna `all-in-one.html`. Följ samma väg som i ordinarie app: Dörrautomatik / Lås → Checklista revision dörrautomatik → Fortsätt till ritning → Öppna PDF. Ritning, Dörrar, Protokoll och Projekt, alla 18 kontrollpunkter samt kundmall och PDF-export är kopierade från originalet.
 
+## Låst befintligt arbetssätt
+
+Användaren låste den befintliga logiken 2026-10-15. Se [låsta importregler](IMPORT_RULES_LOCK.md). Nya arbetssätt utvecklas som separata läsprofiler. Detta är dokumentation; TEST v1 och alla runtime-filer är oförändrade.
+
 ## Avgränsning
 
 - Ordinarie Kontrollflöde, SmartMatch, CE-märkning och iOS/TestFlight ändras inte.
