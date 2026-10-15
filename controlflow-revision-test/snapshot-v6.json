@@ -1,0 +1,13 @@
+{
+  "testVersion": 6,
+  "previousEntry": "v5/all-in-one.html",
+  "dataCompatibility": "same project keys and work-PDF format as TEST v4/v5; additive signature ink metadata",
+  "files": {
+    "all-in-one.html": "ccd446a931ddbcd3b6f2558e081df6192f5526327d0b2403b0939a03a40d4ab7",
+    "security-v6.js": "dc15d98845c57e4e63baf15bac51a895bc8ff620438512fb12236686499107fa",
+    "revision-signature-v6.js": "2148c359bd8f0845dada076730e840450cd9d7c304a2f8abb4b20e5244839f9f",
+    "tillsyno-appearance-v6.js": "5120407898c1b7d670014907f1592235e33c843e9638c35da7f7d14abeb39a29",
+    "offline-v6.js": "e8ee567fbf1966d8ac1da001e41128dee90487bf870af9ee07bd2f6d9cd25c99",
+    "sw.js": "a6e88761e0c8ea896ec893b022e380d239d7f8284ab42420bea0d42f861a5090"
+  }
+}
