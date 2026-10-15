@@ -1,0 +1,12 @@
+{
+  "testVersion": 7,
+  "previousEntry": "v6/all-in-one.html",
+  "dataCompatibility": "same project keys and work-PDF format as TEST v6; customer protocol presentation only",
+  "files": {
+    "all-in-one.html": "9bffebd1f35db75a21815ac90394bd7e8abda75ca938acedbacab1643deeda4f",
+    "security-v7.js": "b74eb4c88cd85a0dbed1a7fa92f850b8fb603e7066c43ff25d4bfafe42576c32",
+    "tillsyno-appearance-v7.js": "52c49f0919774e166de36894bb8e80a99ba10d1dc97fef00e5081efff8763048",
+    "offline-v7.js": "a6b6388e5bda456ae0be4c72ea3fa55e03d59c3a53bcc437936d3e0af8a8152f",
+    "sw.js": "8438afdf5c404e2c790079e71fb3edc56677a3afdbc0e8aa9b199fedaf0dd540"
+  }
+}
