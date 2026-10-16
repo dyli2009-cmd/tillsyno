@@ -1,8 +1,12 @@
 # dorrservice
 
+## Separat Avläsning TEST 8 – zoom där koden markeras
+
+[Testsidan](smartmatch-read-test.html) har zoom med mushjul på dator och två fingrar på pekskärm. Zoomen följer pekaren eller fingrarnas mittpunkt. **Flytta vyn** låter användaren dra runt det inzoomade underlaget med mus eller ett finger. Kod- och tabellmarkeringar behåller sina sidkoordinater. Se [handhavande och verifiering](SMARTMATCH_READ_TEST_V8.md). [TEST 7](smartmatch-read-test-v7.html) är bevarad.
+
 ## Separat Avläsning TEST 7 – markerade områden, text först och GS-arbete
 
-[Testsidan](smartmatch-read-test.html) har tre tydliga söksätt: **Snabb sökning – PDF-stämplar först**, **Sök i text – snabbare, utan bildläsning** och **Sök även i bilder – tar längre tid**. Kod och arbetslista läses inom markerade områden; läsresultat återanvänds mellan kortupptäckt och provläsning. Nya arbetslistor väljer GS:s montage utifrån ansvarskolumnen. Tidigare söksätt, alla arbetsrader och direktöppning av sparade projekt finns kvar. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_V7.md). [TEST 6](smartmatch-read-test-v6.html) är bevarad.
+[TEST 7](smartmatch-read-test-v7.html) har tre tydliga söksätt: **Snabb sökning – PDF-stämplar först**, **Sök i text – snabbare, utan bildläsning** och **Sök även i bilder – tar längre tid**. Kod och arbetslista läses inom markerade områden; läsresultat återanvänds mellan kortupptäckt och provläsning. Nya arbetslistor väljer GS:s montage utifrån ansvarskolumnen. Tidigare söksätt, alla arbetsrader och direktöppning av sparade projekt finns kvar. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_V7.md). [TEST 6](smartmatch-read-test-v6.html) är bevarad.
 
 ## Separat Avläsning TEST 6 – granska en gång, öppna projekt-PDF direkt
 

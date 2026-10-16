@@ -1,6 +1,6 @@
 # SmartMatch – Avläsning TEST 7
 
-Fast testsida: `smartmatch-read-test.html`. Versionssida: `smartmatch-read-test-v7.html`. Intern version `36.141-READ-TEST`. Ändringen gäller den separata avläsningstesten; tidigare testversioner och ordinarie moduler är bevarade.
+Versionssida: `smartmatch-read-test-v7.html`. Intern version `36.141-READ-TEST`. Den fasta testsidan `smartmatch-read-test.html` följer nu [TEST 8](SMARTMATCH_READ_TEST_V8.md). Ändringen gäller den separata avläsningstesten; tidigare testversioner och ordinarie moduler är bevarade.
 
 ## Välj söksätt före läsningen
 
