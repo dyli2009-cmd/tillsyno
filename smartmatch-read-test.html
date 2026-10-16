@@ -10,7 +10,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>SmartMatch – Avläsning TEST 2</title>
+<title>SmartMatch – Avläsning TEST 3</title>
 
 
 <script src="smartmatch-protocol-templates.js"></script>
@@ -432,7 +432,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
   <div class="pwTitle">
     <strong>SmartMatch</strong>
     <div class="pwReleaseLine" aria-label="Programversion">
-      <span id="pwBuildVersion" class="pwTitleVersion" data-build="36.135" title="SmartMatch avläsning TEST 2">Avläsning TEST 2</span>
+      <span id="pwBuildVersion" class="pwTitleVersion" data-build="36.137" title="SmartMatch avläsning TEST 3">Avläsning TEST 3</span>
       <span id="pwUpdateStatus" class="pwUpdateStatus" hidden aria-hidden="true"></span>
     </div>
     <small class="smHeaderSubtitle" aria-hidden="true">Projektflöde</small>
@@ -475,7 +475,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
         <button id="pwToolArrow" type="button" aria-pressed="false"><svg aria-hidden="true" class="smToolSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L19 5m-8 0h8v8"/></svg><span class="smToolLabel">Pil</span><small class="smToolHelp">Rita pil</small></button>
         <button id="pwToolImage" type="button"><svg aria-hidden="true" class="smToolSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M8 5l1-2h6l1 2"/></svg><span class="smToolLabel">Kamera</span><small class="smToolHelp">Ta eller välj foto</small></button>
         <button id="pwDALinkTool" type="button"><svg aria-hidden="true" class="smToolSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.1 0l3-3a5 5 0 0 0-7-7l-2 2"/><path d="M14 11a5 5 0 0 0-7.1 0l-3 3a5 5 0 0 0 7 7l2-2"/></svg><span class="smToolLabel">Koppla DA</span><small class="smToolHelp">Länka till GS</small></button>
-        
+
         <button id="pwToolDelete" class="pwToolDelete" type="button" disabled><svg aria-hidden="true" class="smToolSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3m-9 0 1 13h10l1-13M10 11v6m4-6v6"/></svg><span class="smToolLabel">Ta bort</span><small class="smToolHelp">Markerad notering</small></button>
       </div>
     </div>
@@ -488,7 +488,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
  </div>
 </section>
 
-<div class="rtTestBanner">Separat test · Dörrkort, exempelstämpel och granskade träffar <span id="rtWorkSummary"></span> <a href="smartmatch-slr-test.html?v=36.133">SmartMatch 1.3</a></div>
+<div class="rtTestBanner">Separat test · Visa ett exempel → hitta dörrkorten → sök på ritningen → granska <span id="rtWorkSummary"></span> <a href="smartmatch-slr-test.html?v=36.133">SmartMatch 1.3</a></div>
 <div class="smartCardsTools">
   <!-- Keep the importer internally for existing PDFs/project logic.
        Its button and status no longer clutter the public toolbar. -->
@@ -578,11 +578,11 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
         <div class="pwEmptyMark" aria-hidden="true">
           <svg viewBox="0 0 64 64"><path d="M11 51V14h27v38"/><path d="M18 51V30h13v35"/><circle cx="28" cy="36" r="1.7"/><path d="M38 22h15v35H38"/><path d="M8 51h48"/></svg>
         </div>
-        <h1>Avläsning TEST 2</h1>
+        <h1>Avläsning TEST 3</h1>
         <button id="pwOpenProjectEmpty" class="pwOpen pwOpenLarge" type="button">Öppna ny PDF</button>
         <button id="rtChooseFiles" type="button">Öppna ritning och dörrkort från flera PDF:er</button>
         <input id="rtMultiFiles" type="file" accept="application/pdf,.pdf" multiple hidden>
-        <p id="pwHomeStatus" class="smHomeStatus" role="status" aria-live="polite">Öppna ritning och dörrkort. Välj kodområde och hela tabellen före skanningen.</p>
+        <p id="pwHomeStatus" class="smHomeStatus" role="status" aria-live="polite">Börja här: öppna din PDF. Visa ett dörrkort och markera dess rubrik och tabell. Guiden hjälper dig vidare.</p>
         <div id="pwRecentProjects" class="smRecentProjects" hidden>
           <div class="smRecentHead">
             <div><strong>Lokalt sparade projekt</strong><small id="pwRecentCount">0 lokala projekt</small></div>
@@ -1041,19 +1041,16 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
 <script src="smartmatch-stamp-shapes-v36-78.js?v=36-78"></script>
 <script src="smartmatch-table-layouts-v36-94.js?v=36-106"></script>
 <script src="smartmatch-beslagskod-v36-133.js?v=36.133"></script>
-<link rel="stylesheet" href="smartmatch-read-test-v1.css?v=2">
-<script src="smartmatch-read-match-v2.js?v=2"></script>
-<script src="smartmatch-read-test-v1.js?v=2"></script>
-<script src="smartmatch-read-test-main-v1.js?v=4"></script>
+<link rel="stylesheet" href="smartmatch-read-test-v3.css?v=3">
+<script src="smartmatch-read-match-v3.js?v=3"></script>
+<script src="smartmatch-read-codes-v3.js?v=3"></script>
+<script src="smartmatch-read-test-v3.js?v=3"></script>
+<script src="smartmatch-read-test-main-v3.js?v=3"></script>
 <script src="smartmatch-protocol-export-v36-96.js?v=36-106"></script>
-<script src="smartmatch-read-test-session-v1.js?v=1"></script>
-<script id="smartmatch-visual-release-v1-3">(function(){var label=document.getElementById('pwBuildVersion');if(!label)return;label.textContent='Avläsning TEST 2';label.title='SmartMatch avläsning TEST 2';label.setAttribute('aria-label','SmartMatch avläsning TEST 2');/* data-build and data-loaded-build remain 36.135 for internal updater. */})();</script>
+<script src="smartmatch-read-test-session-v3.js?v=3"></script>
+<script id="smartmatch-visual-release-v1-3">(function(){var label=document.getElementById('pwBuildVersion');if(!label)return;label.textContent='Avläsning TEST 3';label.title='SmartMatch avläsning TEST 3';label.setAttribute('aria-label','SmartMatch avläsning TEST 3');/* data-build and data-loaded-build remain 36.137 for internal updater. */})();</script>
 <script src="tillsyno-appearance.js?v=2.4.361"></script>
 
 <!-- Session module handles refresh + reopen -->
 </body>
 </html>
-
-
-
-

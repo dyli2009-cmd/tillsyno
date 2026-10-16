@@ -1,8 +1,8 @@
 # dorrservice
 
-## Separat Avläsning TEST 1 – egna läsområden
+## Separat Avläsning TEST 3 – visa ett exempel och följ guiden
 
-[Testsidan](smartmatch-read-test.html) låter användaren markera ett kodområde och hela beslagstabellen, provläsa valda sidor och återanvända markeringarna som läsmall. Arbetsrader kan klarmarkeras per stämpel med separat intern status. SmartMatch 1.3 finns kvar på sin tidigare adress. Se [testflöde och avgränsning](SMARTMATCH_READ_TEST_V1.md).
+[Testsidan](smartmatch-read-test.html) visar fyra steg: markera rubrik och tabell på ett exempelkort, föreslå fler dörrkort, läs och sök hela beteckningarna på ritningen, granska och öppna arbetsprojektet. Varje dörr behåller egen arbetsstatus. Se [steg för steg och verifiering](SMARTMATCH_READ_TEST_V3.md). [TEST 2](smartmatch-read-test-v2.html) och SmartMatch 1.3 finns kvar separat.
 
 ## Tillsyno v2.4.361 – SmartMatch 1.3 läser Beslagskod
 
