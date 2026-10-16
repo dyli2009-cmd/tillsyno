@@ -1,6 +1,7 @@
 (() => {
 'use strict';
 const SMARTMATCH_RELEASE='36.136-READ-TEST';
+const SMARTMATCH_TEST_LABEL='Avläsning TEST 2';
 let smartExportRevision=0,smartExportCached=null,smartExportTask=null,smartExportBytesVersion=-1;
 let manualPositions=[],positionEdits={},placement=null;
 // Initialize placement pointer eagerly: PDF loading must never encounter a TDZ after another initialization failure.
@@ -5796,8 +5797,8 @@ async function analyze(file,options={}){
  const restored=(embeddedState&&Object.keys(embeddedState).length)?
   ' · PDF-projektversion '+(embeddedState.projectRevision||'äldre')+' · '+automationItems.length+' automatiker':'';
  if(!matchedProjectInstances().length)
-  setState('SmartMatch TEST v'+SMARTMATCH_RELEASE+': inga kopplade positioner hittades. Använd Placera / koppla för att komplettera.');
- else setState('SmartMatch TEST v'+SMARTMATCH_RELEASE+': '+matchedProjectInstances().length+' positioner med dörrkort hittades'+restored+'.');
+  setState('SmartMatch '+SMARTMATCH_TEST_LABEL+': inga kopplade positioner hittades. Använd Placera / koppla för att komplettera.');
+ else setState('SmartMatch '+SMARTMATCH_TEST_LABEL+': '+matchedProjectInstances().length+' positioner med dörrkort hittades'+restored+'.');
  console.info('[SmartMatch TEST v36]',{seconds:Math.round((performance.now()-scanStart)/100)/10,cards:scanCardCodes.size,linked:matchedProjectInstances().length,irrelevantPages:[...scanPageEligibility.values()].filter(v=>!v).length});
  // Scanning can retain decoded images and operators for many PDF pages.
  // All scan work has finished here; release it before the viewer allocates.
@@ -6415,8 +6416,8 @@ for(const id of ['pwDALinkDialog','pwDADoorDialog']){
 // Render the actual JS release only after all app initialization handlers have attached.
 const buildLabel=document.getElementById('pwBuildVersion');
 if(buildLabel){
- buildLabel.textContent='Version '+SMARTMATCH_RELEASE;
- buildLabel.title='SmartMatch version '+SMARTMATCH_RELEASE+' är laddad';
+ buildLabel.textContent=SMARTMATCH_TEST_LABEL;
+ buildLabel.title='SmartMatch '+SMARTMATCH_TEST_LABEL+' är laddad';
  buildLabel.dataset.loadedBuild=SMARTMATCH_RELEASE;
 }
 })();
