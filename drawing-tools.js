@@ -354,7 +354,7 @@ $('redoDrawing').onclick=()=>restoreHistory(redo,undo,'Ändringen återställdes
 $('removeText').onchange=()=>{invalidate();renderPreview()};
 $('removeAnnotations').onchange=()=>{invalidate();renderPreview()};
 $('removeColors').onchange=()=>{invalidate();renderPreview()};
-$('quality').onchange=()=>{invalidate();updateQualityHint()};
+$('quality').onchange=()=>{if($('quality').value==='lossless')$('removeAnnotations').checked=false;invalidate();updateQualityHint()};
 $('aggressiveClean').onclick=()=>{$('removeText').checked=true;$('removeAnnotations').checked=true;$('removeColors').checked=true;invalidate();renderPreview();message('Text, kommentarer och färgmarkeringar rensas. Kontrollera förhandsvisningen innan du sparar.')};
 $('eraseMode').onclick=()=>{editMode=editMode==='erase'?'':'erase';dragStart=null;$('eraseBox').hidden=true;updateEditButtons();showTools(false);message(editMode==='erase'?'Dra en ruta över det du vill dölja.':'Dölj område är avstängt.')};
 $('cropMode').onclick=()=>{editMode=editMode==='crop'?'':'crop';dragStart=null;$('eraseBox').hidden=true;updateEditButtons();showTools(false);message(editMode==='crop'?'Dra en ruta runt den del av sidan du vill behålla.':'Beskärning är avstängd.')};
