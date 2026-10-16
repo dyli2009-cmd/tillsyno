@@ -40,6 +40,7 @@ function fitPreview(){
  previewWrap.scrollLeft=0;previewWrap.scrollTop=0;renderPreview();
 }
 const QUALITY={
+ lossless:{maxPixels:7000000,maxSide:4200,jpeg:1,label:'Förlustfri',estimateBpp:.145},
  light:{maxPixels:3500000,maxSide:3200,jpeg:.76,label:'Mindre fil',estimateBpp:.095},
  balanced:{maxPixels:7000000,maxSide:4200,jpeg:.85,label:'Balans',estimateBpp:.145},
  clear:{maxPixels:12000000,maxSide:5200,jpeg:.91,label:'Högre kvalitet',estimateBpp:.21}
