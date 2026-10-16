@@ -1,8 +1,8 @@
 # dorrservice
 
-## Separat Avläsning TEST 3 – visa ett exempel och följ guiden
+## Separat Avläsning TEST 4 – flera dörrkort på samma sida
 
-[Testsidan](smartmatch-read-test.html) visar fyra steg: markera rubrik och tabell på ett exempelkort, föreslå fler dörrkort, läs och sök hela beteckningarna på ritningen, granska och öppna arbetsprojektet. Varje dörr behåller egen arbetsstatus. Se [steg för steg och verifiering](SMARTMATCH_READ_TEST_V3.md). [TEST 2](smartmatch-read-test-v2.html) och SmartMatch 1.3 finns kvar separat.
+[Testsidan](smartmatch-read-test.html) hittar upprepade kortområden från ett markerat exempel, även när flera kort delar PDF-sida. Hela beteckningar som KLASSRUM 1 bevaras. Varje kort får eget visningsutsnitt och arbetsinnehåll. Se [steg för steg och verifiering](SMARTMATCH_READ_TEST_V4.md). [TEST 3](smartmatch-read-test-v3.html), [TEST 2](smartmatch-read-test-v2.html) och SmartMatch 1.3 finns kvar separat.
 
 ## Tillsyno v2.4.361 – SmartMatch 1.3 läser Beslagskod
 

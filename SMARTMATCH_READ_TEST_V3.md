@@ -1,6 +1,6 @@
 # SmartMatch – Avläsning TEST 3
 
-Separat test: `smartmatch-read-test-v3.html`. Den fasta avläsningsadressen `smartmatch-read-test.html` visar samma version. TEST 2 finns kvar som `smartmatch-read-test-v2.html` med sina tidigare läsfiler. Ordinarie SmartMatch 1.3, Kontrollflöde och native iOS är inte ändrade. Intern testversion: `36.137-READ-TEST`.
+Separat test: `smartmatch-read-test-v3.html`. Den fasta avläsningsadressen `smartmatch-read-test.html` följer det senaste avläsningstestet. TEST 2 finns kvar som `smartmatch-read-test-v2.html` med sina tidigare läsfiler. Ordinarie SmartMatch 1.3, Kontrollflöde och native iOS är inte ändrade. Intern testversion: `36.137-READ-TEST`.
 
 ## Så provar du
 
