@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.360 - ritningsverktyg med originalkvalitet
+
+Förlustfri PDF-export är standard och stöder beskärning, sidval och dolda områden utan att göra ritningslinjer och text till bilder. Bildimport behåller upplösningen. Stora PDF:er kan delas vid hela sidgränser och varje del sparas separat. Se [ändring och verifiering](DRAWING_TOOLS_360.md).
+
 ## Tillsyno v2.4.359 – tydligare administration
 
 Ansökningar först, filter för väntande/godkända/alla, tydliga modul- och licensuppgifter och kontoradering i en separat meny. Samtliga adminrutor följer färgtemat. Felrättning av godkännandets försök-igen-flöde. Se [ändring och verifiering](ADMIN_UI_359.md).

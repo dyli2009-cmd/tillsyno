@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="sv" data-auth-pending>
+<html lang="sv" data-auth-pending data-app-version="2.4.360">
 <head><meta charset="utf-8">
 <script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}var page={ice:'#edf6fb',mist:'#ebf1f5',coast:'#edf7f6',sand:'#f7f5f1',night:'#081523',graphite:'#12151c',pine:'#091c1e'}[theme];document.documentElement.style.setProperty('--tillsyno-route-bg',page);document.documentElement.style.setProperty('background',page,'important');document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
 <style id="tillsyno-route-transition">html{background:var(--tillsyno-route-bg,#ebf1f5)!important}#tillsynoNavCurtain{position:fixed;inset:0;z-index:2147483647;background:var(--tillsyno-route-bg,#ebf1f5);opacity:1;pointer-events:auto;transition:opacity .15s ease}html.tillsyno-nav-ready #tillsynoNavCurtain{opacity:0;pointer-events:none}html.tillsyno-nav-leaving #tillsynoNavCurtain{opacity:1;pointer-events:auto}@media(prefers-reduced-motion:reduce){#tillsynoNavCurtain{transition:none}}</style>
@@ -11,7 +11,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="theme-color" content="#132b38">
 <title>Ritningsverktyg · Dörrservice</title>
-<link rel="stylesheet" href="drawing-tools.css?v=2.4.266">
+<link rel="stylesheet" href="drawing-tools.css?v=2.4.360">
 <script src="vendor/pdf.min.js"></script>
 <script src="vendor/pdf-lib.min.js"></script>
 <style>
@@ -31,25 +31,25 @@
  <a href="./" class="backBtn">‹ Hem</a>
  <div><strong>Ritningsverktyg</strong><small>Rensa · beskära · optimera</small></div>
  <div class="headerActions">
-  <button id="openPdf" type="button">Öppna PDF</button>
+  <button id="openPdf" type="button">Öppna fil</button>
   <button id="toolsToggle" type="button" aria-controls="toolPanel" aria-expanded="false" disabled>Verktyg</button>
   <button id="savePdf" class="primary" type="button" disabled>Spara PDF</button>
  </div>
- <span class="version">v2.4.291</span>
+ <span class="version">v2.4.360</span>
 </header>
 
 <main class="toolShell">
  <section class="toolIntro">
   <div>
-   <span class="eyebrow">PDF / RITNING</span>
+   <span class="eyebrow">PDF / BILDER / RITNING</span>
    <h1>Gör en ren arbetsritning</h1>
-   <p>Originalfilen ändras aldrig. Rensa, dölj, beskär och optimera en ny arbetskopia.</p>
+   <p>Originalfilen ändras aldrig. Öppna PDF eller bilder, beskär och optimera med originalkvalitet.</p>
   </div>
-  <label class="openBtn" for="toolFile">Öppna PDF</label>
-  <input id="toolFile" type="file" accept="application/pdf" hidden>
+  <label class="openBtn" for="toolFile">Öppna PDF eller bilder</label>
+  <input id="toolFile" type="file" accept="application/pdf,image/jpeg,image/png,image/webp,.pdf,.jpg,.jpeg,.png,.webp" multiple hidden>
  </section>
 
- <div id="toolMessage" role="status">Öppna en PDF för att börja.</div>
+ <div id="toolMessage" role="status">Öppna en PDF eller välj en eller flera bilder för att börja.</div>
  <section id="deepCleanInfo" class="deepCleanInfo" hidden>
    <strong id="deepCleanTitle">Originalritning hittad</strong>
    <span id="deepCleanText"></span>
@@ -74,7 +74,7 @@
    <details class="panelSection">
     <summary>Rensa ritningen</summary>
     <label class="toggleRow"><input id="removeText" type="checkbox"><span><strong>Ta bort text</strong><small>Tar bort synlig PDF-text, till exempel rumsnamn, mått och gamla texter.</small></span></label>
-    <label class="toggleRow"><input id="removeAnnotations" type="checkbox" checked><span><strong>Ta bort markeringar & kommentarer</strong><small>PDF-kommentarer, annotations och gamla markeringar följer inte med.</small></span></label>
+    <label class="toggleRow"><input id="removeAnnotations" type="checkbox"><span><strong>Ta bort markeringar & kommentarer</strong><small>Tar bort PDF-kommentarer och markeringar. Formulärfält behålls vid förlustfri export.</small></span></label>
     <label class="toggleRow"><input id="removeColors" type="checkbox"><span><strong>Ta bort färgmarkeringar</strong><small>Tar bort färgade överstrykningar/markeringar och försöker behålla svart/grå ritningslinjer.</small></span></label>
     <button id="aggressiveClean" class="wideToolBtn" type="button">Rensa allt ovan</button>
    </details>
@@ -93,14 +93,23 @@
     <summary>Optimera PDF</summary>
     <label>Kvalitet
      <select id="quality">
-      <option value="lossless">Förlustfri (behåll allt)</option>
+      <option value="lossless" selected>Förlustfri (originalkvalitet)</option>
       <option value="light">Mindre fil</option>
-      <option value="balanced" selected>Balans</option>
+      <option value="balanced">Balans</option>
       <option value="clear">Högre kvalitet</option>
      </select>
     </label>
-    <p id="qualityHint" class="hint">Balans passar normalt bäst för ritningar. Beräknad storlek visas nedan innan du sparar.</p>
+    <p id="qualityHint" class="hint">Text, bilder och ritningslinjer behåller sin kvalitet. Sidval och beskärning stöds. Storleksminskning kan inte garanteras.</p>
     <button id="analyzeSize" class="wideToolBtn" type="button">Mät exakt</button>
+   </details>
+   <details id="splitTools" class="panelSection">
+    <summary>Dela stor PDF</summary>
+    <label for="splitSize">Målstorlek per del (MB)
+     <input id="splitSize" type="number" min="1" max="500" step="1" value="10" inputmode="numeric">
+    </label>
+    <p class="hint">Delar vid sidgränser med samma kvalitet som din arbetskopia. En enskild stor sida kan överskrida målet.</p>
+    <button id="splitPdf" class="wideToolBtn" type="button">Skapa PDF-delar</button>
+    <div id="splitResults" class="splitResults" aria-live="polite" hidden></div>
    </details>
    <details class="panelSection">
     <summary>Sidor</summary>
@@ -150,8 +159,8 @@
   <span id="resultInfo"></span>
  </section>
 </main>
-<script src="ui-text-scale.js?v=2.4.163"></script><script src="drawing-tools.js?v=2.4.266"></script>
+<script src="ui-text-scale.js?v=2.4.163"></script><script src="drawing-pdf.js?v=2.4.360"></script><script src="drawing-tools.js?v=2.4.360"></script>
 <script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let leaving=false;function reveal(){function show(){requestAnimationFrame(function(){requestAnimationFrame(function(){if(!leaving)root.classList.add('tillsyno-nav-ready')})})}if(!root.hasAttribute('data-auth-pending')){show();return}const observer=new MutationObserver(function(){if(!root.hasAttribute('data-auth-pending')){observer.disconnect();show()}});observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',function(event){if(event.persisted){leaving=false;root.classList.remove('tillsyno-nav-leaving');reveal()}});document.addEventListener('click',function(event){if(leaving||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;const link=event.target.closest?.('a[href]');if(!link||link.hasAttribute('download')||(link.target&&link.target!=='_self'))return;let dest;try{dest=new URL(link.href,location.href)}catch(_){return}if(dest.origin!==location.origin)return;const file=dest.pathname.split('/').pop().toLowerCase();if(!['','index.html','all-in-one.html','drawing-tools.html'].includes(file))return;if(dest.href===location.href)return;event.preventDefault();leaving=true;root.classList.remove('tillsyno-nav-ready');root.classList.add('tillsyno-nav-leaving');const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;setTimeout(function(){location.assign(dest.href)},reduce?0:90)},true)})();</script>
-<script src="tillsyno-appearance.js?v=2.4.359"></script>
+<script src="tillsyno-appearance.js?v=2.4.360"></script>
 </body>
 </html>

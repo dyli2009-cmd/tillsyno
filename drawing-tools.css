@@ -117,3 +117,17 @@ body[data-app-text-size="3"]{--tool-text-factor:1.36}
 .toolPanel .toggleRow strong,.toolPanel .viewLabel,.toolPanel>details>label:not(.toggleRow){font-size:calc(11px * var(--tool-text-factor))}
 
 .previewToolbar #undoDrawing,.previewToolbar #redoDrawing{font-size:20px;line-height:1;padding:5px 7px;min-width:34px;min-height:34px}
+
+/* v2.4.360: individually saveable parts, including on touch devices. */
+#splitSize{width:100%;min-height:36px;border:1px solid #c4d1d7;border-radius:6px;padding:5px 8px;background:transparent;color:inherit}
+#splitPdf{margin-top:9px}
+.splitResults{display:grid;gap:8px;margin-top:10px}
+.splitResults[hidden]{display:none}
+.splitPart{display:grid;gap:6px;padding:9px;border:1px solid #b7c9d2;border-radius:8px;min-width:0}
+.splitPart strong{font-size:11px}
+.splitPart small{font-size:10px;line-height:1.4}
+.splitPart a{display:block;text-align:center;text-decoration:none;color:inherit;border:1px solid #b7c9d2;border-radius:7px;padding:9px;font-size:11px;font-weight:700}
+.splitPart .splitOversize{color:inherit;font-weight:700}
+.toolHeader>div{min-width:0}
+.toolHeader>div:not(.headerActions) strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:560px){.toolIntro{flex-direction:column}.toolIntro .openBtn{width:100%}}
