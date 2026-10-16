@@ -161,8 +161,10 @@ function updateEditButtons(){
  $('cropMode').textContent=editMode==='crop'?'Beskär sida: PÅ':'Beskär sida';
  $('previewWrap').classList.toggle('eraseMode',editMode==='erase');
  $('previewWrap').classList.toggle('cropMode',editMode==='crop');
+ $('previewWrap').classList.toggle('cardHeaderMode',editMode==='card-header');
  $('previewEditMode').hidden=!editMode;
- $('previewEditMode').textContent=(editMode==='crop'?'Beskär':'Dölj område')+' · Avsluta';
+ $('previewEditMode').textContent=(editMode==='card-header'?'Markera rubrik':editMode==='crop'?'Beskär':'Dölj område')+' · Avsluta';
+ window.DrawingCardTool?.refresh();
 }
 function updateBulkControls(){
  $('selectPages').classList.toggle('active',selectPagesMode);
@@ -189,6 +191,7 @@ function renderPageList(){
  const mc=(manualMasks[page]||[]).length,crop=!!cropRects[page];$('pageState').textContent=(keep[page-1]?'Tas med':'Tas bort')+(mc?' · '+mc+' dolda områden':'')+(crop?' · beskuren':'')+(selectPagesMode&&selectedPages.size?' · '+selectedPages.size+' valda':'');
  $('prevPage').disabled=page<=1;$('nextPage').disabled=page>=keep.length;
  updateBulkControls();
+ window.DrawingCardTool?.refresh();
 }
 function previewScale(vp){const wrap=$('previewWrap'),maxW=Math.max(260,wrap.clientWidth-20),maxH=Math.max(330,Math.min(900,wrap.clientHeight||700)-20);return Math.max(.2,Math.min(1.6,maxW/vp.width,maxH/vp.height))}
 function stripColoredMarks(ctx,w,h){
@@ -316,6 +319,7 @@ async function loadFile(file,imageSource=null){
   const uploadedBytes=new Uint8Array(await file.arrayBuffer()),embedded=await inspectKnownWorkPdf(uploadedBytes),drawingBytes=embedded?.drawingBytes||uploadedBytes,candidate=await pdfjsLib.getDocument({data:drawingBytes.slice()}).promise;await candidate.getPage(1);
   if(pdf)try{await pdf.destroy()}catch(_){}
   pdf=candidate;sourceBytes=drawingBytes;uploadedSize=imageSource?.originalSize||uploadedBytes.byteLength;drawingSourceSize=drawingBytes.byteLength;fileName=file.name||'ritning.pdf';workSourceKind=embedded?.kind||'';page=1;keep=Array(pdf.numPages).fill(true);undo=[];redo=[];manualMasks={};cropRects={};editMode='';dragStart=null;selectPagesMode=false;selectedPages=new Set();lastOutput=null;previewPage=0;previewZoom=1;clearParts();
+  window.DrawingCardTool?.reset();
   for(const id of ['removeText','removeAnnotations','removeColors'])$(id).checked=false;
   $('quality').value='lossless';
   historyState=drawingState();updateHistoryButtons();$('undoPage').disabled=true;$('workspace').hidden=false;$('savePdf').disabled=false;$('toolsToggle').disabled=false;$('resultCard').hidden=true;$('sizeCompare').hidden=false;
@@ -396,12 +400,16 @@ function pointerPos(e){
 function showDragBox(a,b){
  const box=$('eraseBox'),x=Math.min(a.x,b.x),y=Math.min(a.y,b.y),w=Math.abs(a.x-b.x),h=Math.abs(a.y-b.y);
  box.classList.toggle('cropSelection',editMode==='crop');box.hidden=false;box.style.left=x+'px';box.style.top=y+'px';box.style.width=w+'px';box.style.height=h+'px';
+ box.classList.toggle('cardHeaderSelection',editMode==='card-header');
 }
 function finishDrag(e){
  if(!dragStart)return;const end=pointerPos(e),start=dragStart;dragStart=null;$('eraseBox').hidden=true;
  const x=Math.min(start.x,end.x),y=Math.min(start.y,end.y),w=Math.abs(start.x-end.x),h=Math.abs(start.y-end.y);
  if(w<8||h<8)return;
  const rect={x:x/end.w,y:y/end.h,w:w/end.w,h:h/end.h};
+ if(editMode==='card-header'){
+  editMode='';window.DrawingCardTool?.setRegion(rect,page);updateEditButtons();return;
+ }
  if(editMode==='crop'){
   if(rect.w<.05||rect.h<.05)return message('Beskärningsområdet är för litet.',true);
   cropRects[page]=rect;editMode='';invalidate();renderPreview();message('Sida '+page+' beskärs till det markerade området.');return;
@@ -494,4 +502,16 @@ $('splitPdf').onclick=()=>withBusy(async()=>{
  }catch(error){console.error(error);clearParts();message(error.message||'Kunde inte dela PDF-filen.',true);}
 });
 window.addEventListener('resize',()=>{if(pdf)renderPreview()});
+window.DrawingToolsBridge=Object.freeze({
+ getPdf:()=>pdf,getPage:()=>page,getKeptPages:keptPages,getEditMode:()=>editMode,
+ withBusy,message,showTools,
+ markCardHeader(){if(!pdf||busy)return;editMode=editMode==='card-header'?'':'card-header';dragStart=null;$('eraseBox').hidden=true;updateEditButtons();showTools(false);message(editMode?'Dra en ruta runt rubriken eller beslagskoden högst upp på ett dörrkort.':'Rubrikmarkering är avstängd.');},
+ async showPage(no){if(!pdf||busy||!Number.isInteger(no)||no<1||no>keep.length)return;page=no;renderPageList();updateEditButtons();showTools(false);await renderPreview();},
+ async removePages(numbers){
+  if(!pdf||busy)return 0;
+  const wanted=new Set(numbers),current=keptPages(),remove=current.filter(no=>wanted.has(no));
+  if(!remove.length)return 0;if(current.length-remove.length<1)throw Error('Minst en sida måste vara kvar.');
+  return withBusy(async()=>{remove.forEach(no=>keep[no-1]=false);selectedPages.clear();selectPagesMode=false;invalidate();renderPageList();await renderPreview();message(remove.length+' extrasidor tas bort från arbetskopian. Du kan ångra ändringen eller välja Spara PDF.');return remove.length;});
+ }
+});
 })();

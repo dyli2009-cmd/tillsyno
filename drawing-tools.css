@@ -131,3 +131,25 @@ body[data-app-text-size="3"]{--tool-text-factor:1.36}
 .toolHeader>div{min-width:0}
 .toolHeader>div:not(.headerActions) strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:560px){.toolIntro{flex-direction:column}.toolIntro .openBtn{width:100%}}
+
+/* v2.4.362: code-only door-card groups within Drawing Tools. */
+#cardGroupTools{color:var(--ta-ink,#173746)}
+#cardGroupTools .wideToolBtn{margin:8px 0;min-height:40px;font-size:12px;background:var(--ta-soft2,#f3f7f9);color:var(--ta-ink,#173746);border-color:var(--ta-border,#b7c9d2);white-space:normal}
+#cardGroupTools .wideToolBtn.active{background:var(--ta-blue,#356e86);color:#fff}
+#cardGroupTools button:disabled{opacity:.45;cursor:default}
+#cardGroupTools select{width:100%;min-height:40px;background:var(--ta-card,#fff);color:var(--ta-ink,#173746);border-color:var(--ta-border,#b7c9d2);font-size:12px}
+#cardGroupTools>label{font-size:12px;margin-top:10px}
+#previewWrap.cardHeaderMode,#previewWrap.cardHeaderMode #previewCanvas{cursor:crosshair;touch-action:none}
+#eraseBox.cardHeaderSelection{border:2px dashed #14769c;background:#14769c18}
+#cardHeaderRect{position:absolute;z-index:5;border:2px solid #14769c;background:#14769c18;pointer-events:none}
+#cardHeaderRect[hidden]{display:none}
+#cardHeaderRect span{position:absolute;left:0;bottom:100%;background:#14769c;color:#fff;font:700 11px/1.4 system-ui;padding:2px 5px;white-space:nowrap}
+.cardCodeGroup,.cardUnresolved{margin:10px 0;padding:6px;border:1px solid var(--ta-border,#c4d1d7);border-radius:8px;background:var(--ta-soft2,#f6f9fa);overflow-wrap:anywhere}
+.cardCodeGroup summary,.cardUnresolved summary{font-size:12px!important;line-height:1.4}
+.cardGroupPage{display:grid;gap:7px;margin-top:9px;padding:8px 2px;border-top:1px solid var(--ta-line,#dce8ee)}
+.cardGroupPage label{display:flex;align-items:center;gap:8px;min-height:30px;font-size:12px;line-height:1.4}
+.cardGroupPage input{width:20px;height:20px;margin:0;flex:none;accent-color:var(--ta-blue,#356e86)}
+.cardGroupPage small{font-size:11px;line-height:1.45;color:var(--ta-muted,#617d8d)}
+.cardGroupPage button,.cardScanDialog button{min-height:40px;padding:8px;border:1px solid var(--ta-border,#c4d1d7);border-radius:7px;background:var(--ta-card,#fff);color:var(--ta-ink,#173746);font-size:12px;font-weight:700}
+.cardScanDialog{width:min(460px,92vw);padding:22px;border:1px solid var(--ta-border,#c4d1d7);border-radius:12px;background:var(--ta-card,#fff);color:var(--ta-ink,#173746)}
+.cardScanDialog::backdrop{background:#102c3b99}.cardScanDialog h2{font-size:20px;margin:0 0 12px}.cardScanDialog p{font-size:14px;line-height:1.5}.cardScanDialog progress{width:100%;height:18px;accent-color:var(--ta-blue,#356e86)}.cardScanDialog button{width:100%;font-size:14px;min-height:44px}

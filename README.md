@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.362 – gruppera dörrkort efter markerad rubrik
+
+[Ritningsverktyget](drawing-tools.html) kan läsa ett markerat rubrikfält, exempelvis **Beslagskod GS23**, och gruppera PDF-sidor med samma kod. Välj en sida att behålla, avmarkera extra exemplar som också behövs och ta bort valda extrasidor i ett ångringsbart steg. Förlustfri PDF-export bevarar kvarvarande sidors innehåll. Text läses först; lokal bildläsning begränsas till markeringen. Se [steg för steg och verifiering](DRAWING_TOOLS_362.md).
+
 ## Separat Avläsning TEST 8 – zoom där koden markeras
 
 [Testsidan](smartmatch-read-test.html) har zoom med mushjul på dator och två fingrar på pekskärm. Zoomen följer pekaren eller fingrarnas mittpunkt. **Flytta vyn** låter användaren dra runt det inzoomade underlaget med mus eller ett finger. Kod- och tabellmarkeringar behåller sina sidkoordinater. Se [handhavande och verifiering](SMARTMATCH_READ_TEST_V8.md). [TEST 7](smartmatch-read-test-v7.html) är bevarad.
