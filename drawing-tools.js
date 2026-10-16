@@ -255,6 +255,16 @@ function rasterScale(base,q){
 }
 async function buildOutput(){
  if(!pdf)return null;const pages=keptPages();if(!pages.length){message('Minst en sida måste vara kvar.',true);return null}
+ if($('quality').value==='lossless'){
+  const bytes=new Uint8Array(sourceBytes);
+  const name=cleanName(fileName)+'-original.pdf',blob=new Blob([bytes],{type:'application/pdf'});
+  lastOutput={blob,name,bytes};
+  $('resultCard').hidden=false;
+  $('resultInfo').textContent=pdf.numPages+' sidor · '+formatBytes(bytes.length)+' · Förlustfri originalkopia';
+  updateSizeComparison(bytes.length,{label:'Förlustfri'});
+  message('Originalkopia klar utan kvalitetsförlust. Filstorleken är oförändrad.');
+  return lastOutput;
+ }
  const q=QUALITY[$('quality').value]||QUALITY.balanced,{PDFDocument}=PDFLib,out=await PDFDocument.create();
  message('Optimerar 0 / '+pages.length+' sidor…');
  for(let n=0;n<pages.length;n++){
