@@ -40,3 +40,7 @@ Verifierat 2026-10-16:
 - TEST 2-snapshot är byte-identisk med tidigare testsida och dess JS/CSS är oförändrade. Den fasta adressens innehåll är identiskt med TEST 3-sidan. Resursreferenser, unika HTML-ID:n, JavaScript-syntax och whitespace är kontrollerade.
 
 Webbläsartesterna ersätter auth-vakten för att kontrollera appens lokala arbetsflöde; de verifierar inte livekonton eller nya behörigheter. Emulerade touchvyer i Chromium ersätter inte ett prov på fysisk iPhone/iPad med Safari. Verifieringen ovan kördes lokalt före publicering. Ingen TestFlight-build ingår.
+
+## Justering efter användarprov
+
+Etiketten `Arbete 0/9` döljs på ritningens dörrpositioner för att frigöra plats. Arbetsrader, Klar-markeringar och arbetsprocent i dörrens arbetslista finns kvar. Endast Avläsning TEST 3:s presentation ändras.
