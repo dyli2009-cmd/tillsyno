@@ -1,8 +1,12 @@
 # dorrservice
 
+## Separat Avläsning TEST 7 – markerade områden, text först och GS-arbete
+
+[Testsidan](smartmatch-read-test.html) har tre tydliga söksätt: **Snabb sökning – PDF-stämplar först**, **Sök i text – snabbare, utan bildläsning** och **Sök även i bilder – tar längre tid**. Kod och arbetslista läses inom markerade områden; läsresultat återanvänds mellan kortupptäckt och provläsning. Nya arbetslistor väljer GS:s montage utifrån ansvarskolumnen. Tidigare söksätt, alla arbetsrader och direktöppning av sparade projekt finns kvar. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_V7.md). [TEST 6](smartmatch-read-test-v6.html) är bevarad.
+
 ## Separat Avläsning TEST 6 – granska en gång, öppna projekt-PDF direkt
 
-[Testsidan](smartmatch-read-test.html) öppnar en sparad projekt-PDF direkt med granskade kopplingar och arbetsstatus. Nya underlag får guidens steg; flerfilsöppningen och Läsområden används för ny granskning. Välj **Spara → Spara PDF** för att ta med kopplingarna i filen. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_V6.md). [TEST 5](smartmatch-read-test-v5.html) är bevarad.
+[TEST 6](smartmatch-read-test-v6.html) öppnar en sparad projekt-PDF direkt med granskade kopplingar och arbetsstatus. Nya underlag får guidens steg; flerfilsöppningen och Läsområden används för ny granskning. Välj **Spara → Spara PDF** för att ta med kopplingarna i filen. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_V6.md). [TEST 5](smartmatch-read-test-v5.html) är bevarad.
 
 ## Separat Avläsning TEST 5 – snabb sökning i stora ritningar
 

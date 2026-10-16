@@ -1,6 +1,7 @@
 /* TEST 6: review once, export the project PDF, then open it directly.
  * Generated documents only. Customer PDFs and downloaded projects stay out of git.
  * SMARTMATCH_DEVICE=desktop|iphone limits the viewport coverage.
+ * SMARTMATCH_READ_VERSION=v6 (default)|v7 selects the reader under test.
  */
 'use strict';
 const assert=require('node:assert/strict');
@@ -9,6 +10,9 @@ const {createHash}=require('node:crypto');
 const {PDFDocument,StandardFonts,PDFName,PDFHexString,rgb}=require('../vendor/pdf-lib.min.js');
 const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright':'playwright');
 const root=path.resolve(__dirname,'..'),metadataKeys=['TillsynoSmartMatchV36Data','TillsynoSmartMatchV30Data'].map(PDFName.of);
+const version=process.env.SMARTMATCH_READ_VERSION||'v6';
+assert(['v6','v7'].includes(version),'SMARTMATCH_READ_VERSION must be v6 or v7');
+const sourcePrefix='tillsyno-read-test-'+version+'-source:',firstCheckPercent=version==='v7'?'4%':'33%';
 const devices=[{name:'desktop',width:1366,height:900},{name:'iphone',width:390,height:844,touch:true}].filter(device=>!process.env.SMARTMATCH_DEVICE||device.name===process.env.SMARTMATCH_DEVICE);
 const server=http.createServer((request,response)=>{
  const file=path.resolve(root,decodeURIComponent(new URL(request.url,'http://localhost').pathname).replace(/^\//,''));
@@ -16,7 +20,7 @@ const server=http.createServer((request,response)=>{
  try{response.setHeader('Content-Type',({'.js':'application/javascript; charset=utf-8','.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8'})[path.extname(file)]||'application/octet-stream');response.end(fs.readFileSync(file));}
  catch(_){response.writeHead(404);response.end();}
 });
-const url=()=>`http://127.0.0.1:${server.address().port}/smartmatch-read-test-v6.html`;
+const url=()=>`http://127.0.0.1:${server.address().port}/smartmatch-read-test-${version}.html`;
 const upload=(bytes,name='project.pdf')=>({name,mimeType:'application/pdf',buffer:bytes});
 const checkedCount=data=>Object.values(data.checks||{}).flatMap(Object.values).filter(Boolean).length;
 function cardData(data){return Object.entries(data.cards).map(([id,card])=>({id,page:card.page,code:card.code,codeRect:card.codeRect,tableRect:card.tableRect,bounds:card.bounds,work:card.work}));}
@@ -32,7 +36,7 @@ async function fixture(){
  }
  plan.node.set(PDFName.of('Annots'),doc.context.obj(annotations));
  card.drawText('Beslagskod GS88',{x:60,y:730,size:20,font});
- const work=['Las ASSA EL580','Dorrautomatik ED100','Handtag HOPPE'];
+ const work=[version==='v7'?'Lashus ASSA EL580':'Las ASSA EL580','Dorrautomatik ED100','Handtag HOPPE'];
  for(const [index,text]of work.entries())card.drawText(text,{x:60,y:650-index*30,size:17,font});
  return {bytes:Buffer.from(await doc.save()),work,codeRect:{x:.09,y:.10,w:.62,h:.06},tableRect:{x:.09,y:.20,w:.70,h:.15}};
 }
@@ -65,6 +69,7 @@ async function exercise(browser,device,input){
   await page.goto(url());await observe(page);
   await page.locator('#pwFile').setInputFiles(upload(input.bytes,'raw-drawing.pdf'));await page.waitForSelector('#rtDialog[open]');
   await setRect(page,'Kod',input.codeRect);await setRect(page,'Tabell',input.tableRect);
+  if(version==='v7')await page.locator('#rtWorkPolicy').selectOption('all');
   await page.locator('#rtDiscover').click();await page.waitForFunction(()=>!document.getElementById('rtPreview').disabled,null,{timeout:60000});
   assert.equal(await page.locator('#rtDiscoveryResults .rtPageChoice input:checked').count(),1,'one example finds the source card');
   await page.locator('#rtPreview').click();await page.waitForFunction(()=>!document.getElementById('rtPreview').disabled,null,{timeout:60000});
@@ -96,7 +101,7 @@ async function exercise(browser,device,input){
     await reopened.goto(url());await observe(reopened,true);
     if(stale){
      const sourceId=createHash('sha256').update(exported).digest('hex');
-     await reopened.evaluate(({sourceId,data})=>localStorage.setItem('tillsyno-read-test-v6-source:'+sourceId,JSON.stringify({...data,sourceId,checks:{}})),{sourceId,data:expected});
+     await reopened.evaluate(({sourceId,data,prefix})=>localStorage.setItem(prefix+sourceId,JSON.stringify({...data,sourceId,checks:{}})),{sourceId,data:expected,prefix:sourcePrefix});
     }
     await reopened.locator('#pwFile').setInputFiles(upload(exported));await ready(reopened);
     assert.deepEqual(await reopened.evaluate(()=>window.__directChecks),{guideOpen:0,scans:0},'normal Open PDF never opens the guide or scans');
@@ -112,7 +117,7 @@ async function exercise(browser,device,input){
     assert.equal(await reopened.locator('#pwProtocolCanvas').getAttribute('data-read-card-id'),Object.values(expected.cards)[0].id,'the saved link opens its specific source crop');
     const canvasRatio=await reopened.locator('#pwProtocolCanvas').evaluate(canvas=>canvas.width/canvas.height),region=Object.values(expected.cards)[0].bounds;
     assert(Math.abs(canvasRatio-(595*region.w)/(842*region.h))<.04,'the card canvas uses the saved crop dimensions');
-    assert(await reopened.locator('.rtWorkRow input').first().isChecked(),'the saved check is visible');assert.match(await reopened.locator('#pwProtocolPercent').textContent(),/33%/);
+    assert(await reopened.locator('.rtWorkRow input').first().isChecked(),'the saved check is visible');assert.equal((await reopened.locator('#pwProtocolPercent').textContent()).trim(),firstCheckPercent+' arbete');
     if(!stale)await reopened.locator('.rtWorkRow input').nth(1).check();
     await reopened.locator('#pwProtocolClose').click();
     if(stale){
@@ -148,12 +153,17 @@ async function exercise(browser,device,input){
    }finally{await fresh.close();}
   }
   if(device.name==='desktop'){
-   const legacyBytes=await modifiedProject(exported,data=>{delete data.matching.review;}),legacyContext=await contextFor(browser,device),legacy=await legacyContext.newPage();
+   const legacyBytes=await modifiedProject(exported,data=>{delete data.matching.review;if(version==='v7')for(const card of Object.values(data.cards)){delete card.workPolicy;delete card.workItems;delete card.tableWords;}}),legacyContext=await contextFor(browser,device),legacy=await legacyContext.newPage();
    try{
     await legacy.goto(url());await observe(legacy,true);
     await legacy.locator('#pwFile').setInputFiles(upload(legacyBytes,'legacy-reviewed-project.pdf'));await ready(legacy);
     assert.deepEqual(await legacy.evaluate(()=>window.__directChecks),{guideOpen:0,scans:0},'legacy reviewed TEST 3–5 project PDFs also open directly');
     assert.equal(await legacy.evaluate(()=>Object.values(SmartMatchReadTest.payload().checks).flatMap(Object.values).filter(Boolean).length),1,'legacy embedded checks remain available');
+    if(version==='v7'){
+     await legacy.locator('#rtOpenSettings').click();await legacy.waitForSelector('#rtDialog[open]');
+     assert.equal(await legacy.locator('#rtWorkPolicy').inputValue(),'all','older saved work retains the previous all-rows policy');
+     await legacy.locator('#rtCancel').click();
+    }
    }finally{await legacyContext.close();}
    for(const [label,change]of [
     ['unapproved review',data=>{data.matching.review={version:1,approved:false};}],
@@ -178,13 +188,13 @@ async function exercise(browser,device,input){
    const rawHash=createHash('sha256').update(input.bytes).digest('hex'),fresh=await contextFor(browser,device),raw=await fresh.newPage();
    try{
     await raw.goto(url());await observe(raw,true);
-    await raw.evaluate(({sourceId,data})=>localStorage.setItem('tillsyno-read-test-v6-source:'+sourceId,JSON.stringify({...data,sourceId})),{sourceId:rawHash,data:expected});
+    await raw.evaluate(({sourceId,data,prefix})=>localStorage.setItem(prefix+sourceId,JSON.stringify({...data,sourceId})),{sourceId:rawHash,data:expected,prefix:sourcePrefix});
     await raw.locator('#pwFile').setInputFiles(upload(input.bytes,'raw-with-browser-cache.pdf'));await raw.waitForSelector('#rtDialog[open]');
     assert.equal(await raw.evaluate(()=>window.__directChecks.guideOpen),1,'a raw PDF still requires review even when approved data exists only in local storage');
     assert.equal(await raw.evaluate(()=>window.__directChecks.scans),0,'raw opening waits for the guide');
    }finally{await fresh.close();}
   }
-  console.log('PASS '+device.name+': review once → exported PDF → direct fresh open; no guide/search, preserved crop, excluded hit and work; explicit settings/multifile review'+(device.name==='desktop'?'; raw PDF cache cannot bypass review':''));
+  console.log('PASS '+version+' '+device.name+': review once → exported PDF → direct fresh open; no guide/search, preserved crop, excluded hit and work; explicit settings/multifile review'+(device.name==='desktop'?'; raw PDF cache cannot bypass review':''));
   return {exported,expected};
  }catch(error){
   console.error('Browser state:',await page.evaluate(()=>({status:document.getElementById('rtStatus')?.textContent,state:document.getElementById('pwState')?.textContent,cards:[...document.querySelectorAll('.rtResult')].map(node=>({code:node.querySelector('input')?.value,work:node.querySelector('textarea')?.value})),positions:window.SmartMatchAppBridge?.getPositions()?.length,dialogs:[...document.querySelectorAll('dialog[open]')].map(node=>node.id),checks:window.__directChecks})).catch(()=>null));throw error;

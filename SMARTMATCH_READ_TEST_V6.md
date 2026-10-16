@@ -1,6 +1,6 @@
 # SmartMatch – Avläsning TEST 6
 
-Fast testsida: `smartmatch-read-test.html`. Versionssida: `smartmatch-read-test-v6.html`. Intern version `36.140-READ-TEST`. TEST 5 och tidigare versionsfiler är bevarade. Ordinarie SmartMatch, Kontrollflöde och native iOS ingår inte i ändringen.
+Versionssida: `smartmatch-read-test-v6.html`. Intern version `36.140-READ-TEST`. Den fasta testsidan `smartmatch-read-test.html` följer nu [TEST 7](SMARTMATCH_READ_TEST_V7.md). TEST 6 och tidigare versionsfiler är bevarade. Ordinarie SmartMatch, Kontrollflöde och native iOS ingår inte i ändringen.
 
 ## Granska en gång och öppna projekt-PDF:en direkt
 
