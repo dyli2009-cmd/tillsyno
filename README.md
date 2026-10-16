@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.359 – tydligare administration
+
+Ansökningar först, filter för väntande/godkända/alla, tydliga modul- och licensuppgifter och kontoradering i en separat meny. Samtliga adminrutor följer färgtemat. Felrättning av godkännandets försök-igen-flöde. Se [ändring och verifiering](ADMIN_UI_359.md).
+
 ## Tillsyno v2.4.358 – ZIP kan sparas när direktdelning stoppas
 
 CE-exporten hämtar den färdiga ZIP-filen även när webbläsaren nekar själva delningen. Avbrott behåller filen utan extra hämtning. Gäller både valda filer och komplett CE-underlag. Se [ändring och verifiering](CE_ZIP_SHARING_358.md).

@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.358**
+Aktuell version: **v2.4.359**
 
 Beställd CE-uppdatering 15 oktober 2026: se [CE_DESKTOP_357.md](CE_DESKTOP_357.md). Delad/flyttbar/storleksjusterbar vy gäller endast dator. Samma enkla Ny dörr-ikon och temakopplad underskrift gäller även iPhone/iPad enligt den kompletterade beställningen. CE-data, PDF-beräkningar, övriga moduler och authregler bevaras. Kontrollflödet är fortsatt låst utanför den fristående CE-modulen.
 
@@ -322,3 +322,6 @@ Användarbeslut 15 oktober 2026: alla ändringar av texter, logotyper, ikoner oc
 
 
 2026-10-15, Tillsyno v2.4.358: Beställd rättning av datorns ZIP-delning i den fristående CE-modulen. Både valda filer och komplett CE-underlag använder samma färdiga ZIP även när webbläsaren nekar direktdelningen. Avbrott ger ingen nedladdning och dubbelklick spärras under delning. Data, PDF-innehåll och godkännanden bevaras. Se CE_ZIP_SHARING_358.md. Kontrollflödet är fortsatt LÅST.
+
+
+2026-10-16, Tillsyno v2.4.359: Beställd förenkling av Administration. Väntande ansökningar först, filtrerbara räknare, tydliga modul- och licensuppgifter, samlad behörighet/licens och separat meny för kontoradering. Admin-specifik CSS följer alla sju teman. Godkännande och radering kan provas igen efter tillfälliga serverfel utan att stänga dialogen. GitHub-kopian av adminservern synkas med redan aktiv Supabase-funktion v9; servern ändras inte. Övriga moduländringar är endast versions-/cachereferenser. Se ADMIN_UI_359.md. Kontrollflödet är fortsatt LÅST.

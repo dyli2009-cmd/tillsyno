@@ -40,6 +40,22 @@ export function makeHandler(clientFactory, getEnv) {
    const goodModules=v=>Array.isArray(v)&&v.length>0&&v.length<=3&&new Set(v).size===v.length&&v.every(x=>kinds.includes(x));
    const goodDays=v=>Number.isInteger(v)&&v>=1&&v<=3650;
    const expiration=(days,base=Date.now())=>new Date(base+days*86400000).toISOString();
+   const CANCELLED='1970-01-01T00:00:00.000Z';
+   const expirationOn=raw=>{
+    if(typeof raw!=='string'||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(raw))return null;
+    const [year,month,day]=raw.split('-').map(Number);
+    const checked=new Date(Date.UTC(year,month-1,day));
+    if(checked.getUTCFullYear()!==year||checked.getUTCMonth()!==month-1||checked.getUTCDate()!==day)return null;
+    const dayParts=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Stockholm',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+    const get=type=>dayParts.find(x=>x.type===type)?.value||'';
+    const current=get('year')+'-'+get('month')+'-'+get('day');
+    if(raw<current||Date.UTC(year,month-1,day)-Date.now()>3650*86400000)return null;
+    // Swedish end of selected calendar day: midnight at the start of the following day.
+    const nextUTC=Date.UTC(year,month-1,day+1);
+    const stockholmHourAtUTC=Number(new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Stockholm',hour:'2-digit',hourCycle:'h23'}).format(new Date(nextUTC)));
+    if(!Number.isFinite(stockholmHourAtUTC))return null;
+    return new Date(nextUTC-stockholmHourAtUTC*3600000).toISOString();
+   };
    const allUsers=async()=>{
     const users=[];
     for(let page=1;page<=100;page++){
@@ -53,8 +69,8 @@ export function makeHandler(clientFactory, getEnv) {
     const roles=new Map(rows.map(row=>[row.user_id,row]));
     return reply({users:users.map(u=>({id:u.id,email:u.email||'',name:String(u.user_metadata?.name||'').slice(0,100),
      role:roles.get(u.id)?.access_role||null,modules:roles.get(u.id)?.allowed_modules||[],expiresAt:roles.get(u.id)?.license_expires_at||null,
-     status:Date.parse(u.banned_until||'')>Date.now()?'removed':roles.has(u.id)?(roles.get(u.id)?.license_expires_at&&Date.parse(roles.get(u.id).license_expires_at)<=Date.now()?'expired':u.email_confirmed_at?'active':'invited'):'pending',
-     createdAt:u.created_at,lastSignIn:u.last_sign_in_at||null,protected:roles.get(u.id)?.access_role==='admin'||u.id===identity.user.id}))});
+     status:Date.parse(u.banned_until||'')>Date.now()?'removed':roles.has(u.id)?(Date.parse(roles.get(u.id)?.license_expires_at||'')===Date.parse(CANCELLED)?'revoked':roles.get(u.id)?.license_expires_at&&Date.parse(roles.get(u.id).license_expires_at)<=Date.now()?'expired':u.email_confirmed_at?'active':'invited'):'pending',
+     emailVerified:!!u.email_confirmed_at,createdAt:u.created_at,lastSignIn:u.last_sign_in_at||null,protected:roles.get(u.id)?.access_role==='admin'||u.id===identity.user.id}))});
    }
    if(body.action==='add'){
     const modules=body.modules===undefined?kinds:body.modules,days=body.licenseDays===undefined?30:body.licenseDays;
@@ -67,24 +83,40 @@ export function makeHandler(clientFactory, getEnv) {
     checked(await admin.from('tillsyno_access').upsert({user_id:data.user.id,access_role:'member',allowed_modules:modules,license_expires_at:expiration(days)}));
     return reply({ok:true,email,link:data.properties.action_link,message:'Användaren är tillagd. Dela den personliga länken så att användaren kan välja lösenord.'});
    }
-   if(!['approve','remove','link','update','extend'].includes(body.action))return reply({error:'Okänd åtgärd.'},400);
+   if(!['approve','remove','delete','link','update','extend','cancelLicense'].includes(body.action))return reply({error:'Okänd åtgärd.'},400);
    if(typeof body.userId!=='string'||!body.userId.match(/^[0-9a-f-]{36}$/i))return reply({error:'Välj en användare.'},400);
    const target=checked(await admin.auth.admin.getUserById(body.userId))?.user;
    if(!target)return reply({error:'Användaren finns inte.'},404);
    const targetAccess=checked(await admin.from('tillsyno_access').select('access_role,license_expires_at').eq('user_id',target.id).maybeSingle());
    if(target.id===identity.user.id||targetAccess?.access_role==='admin')return reply({error:'Ägarkontot kan inte ändras här.'},409);
-   if(body.action==='remove'){
-    // Revoke access first. Existing JWTs cannot bypass the subsequent role check.
-    checked(await admin.from('tillsyno_access').delete().eq('user_id',target.id));
-    checked(await admin.auth.admin.updateUserById(target.id,{ban_duration:'876000h'}));
-    return reply({ok:true,message:'Åtkomsten är borttagen. Användaren kan godkännas igen senare.'});
+   if(body.action==='delete') {
+    // Irreversible hard deletion: this account and its cascading access row disappear.
+    // The owner/admin account is protected by the guard above.
+    if(String(body.confirmEmail||'').trim().toLowerCase()!==(target.email||'').toLowerCase())
+     return reply({error:'Bekräfta användarens e-postadress innan du raderar kontot.'},400);
+    const deletion=await admin.auth.admin.deleteUser(target.id);
+    if(deletion.error)throw deletion.error;
+    return reply({ok:true,message:'Kontot har raderats från Tillsyno och Supabase. E-postadressen kan registreras på nytt.'});
+   }
+   if(body.action==='remove') {
+    // Old cached UI used this action to ban accounts. Prevent misleading partial deletion.
+    return reply({error:'Uppdatera administrationssidan och använd Radera konto för att ta bort kontot helt.'},409);
    }
    if(body.action==='approve'){
+    // Require verified email and explicit administrator-selected modules and license.
+    if(!target.email_confirmed_at)return reply({error:'Användaren måste bekräfta sin e-postadress innan godkännande.'},409);
+    if(!goodModules(body.modules)||!goodDays(body.licenseDays))return reply({error:'Välj moduler och giltig licenstid innan godkännande.'},400);
+    checked(await admin.from('tillsyno_access').upsert({user_id:target.id,access_role:'member',allowed_modules:body.modules,license_expires_at:expiration(body.licenseDays)}));
     checked(await admin.auth.admin.updateUserById(target.id,{ban_duration:'none'}));
-    checked(await admin.from('tillsyno_access').upsert({user_id:target.id,access_role:'member',allowed_modules:kinds,license_expires_at:expiration(7)}));
-    return reply({ok:true,message:'Användaren är godkänd.'});
+    return reply({ok:true,message:'Användaren är godkänd och har fått tilldelad licens.'});
    }
 
+   if(body.action==='cancelLicense'){
+    if(targetAccess?.access_role!=='member'||Date.parse(target.banned_until||'')>Date.now())
+     return reply({error:'Godkänn användaren innan du avslutar licensen.'},409);
+    checked(await admin.from('tillsyno_access').update({license_expires_at:CANCELLED}).eq('user_id',target.id));
+    return reply({ok:true,message:'Licensen har avslutats. Åtkomst nekas vid nästa onlinekontroll. Kontot är kvar och kan få ny licens.'});
+   }
    if(body.action==='update'||body.action==='extend'){
     if(targetAccess?.access_role!=='member'||Date.parse(target.banned_until||'')>Date.now())
      return reply({error:'Godkänn användaren innan du ändrar licensen.'},409);
@@ -94,7 +126,13 @@ export function makeHandler(clientFactory, getEnv) {
       if(!goodModules(body.modules))return reply({error:'Välj minst en giltig modul.'},400);
       changes.allowed_modules=body.modules;
      }
-     if(body.licenseDays!==undefined){
+     if(body.licenseDays!==undefined&&body.licenseExpiresOn!==undefined)
+      return reply({error:'Välj antingen snabbval eller ett eget slutdatum.'},400);
+     if(body.licenseExpiresOn!==undefined){
+      const until=expirationOn(body.licenseExpiresOn);
+      if(!until)return reply({error:'Välj ett giltigt slutdatum från idag och högst tio år framåt.'},400);
+      changes.license_expires_at=until;
+     }else if(body.licenseDays!==undefined){
       if(!goodDays(body.licenseDays))return reply({error:'Ange mellan 1 och 3650 dagar.'},400);
       changes.license_expires_at=expiration(body.licenseDays);
      }

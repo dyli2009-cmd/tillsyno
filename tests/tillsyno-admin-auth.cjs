@@ -19,6 +19,7 @@ function query(){let kind='select',id,changes;
 }
 const api={from:query,rpc:async(_,args)=>ok(args._session_id!==pending),auth:{getUser:async token=>[ownerToken,revokedToken].includes(token)?ok({user:users.get(owner)}):token===memberToken?ok({user:users.get(member)}):{data:{user:null},error:Error('invalid')},admin:{
  listUsers:async()=>ok({users:[...users.values()]}),getUserById:async id=>ok({user:users.get(id)}),
+ deleteUser:async id=>{users.delete(id);roles.delete(id);return ok(null)},
  updateUserById:async(id,data)=>{if(data.ban_duration)users.get(id).banned_until=data.ban_duration==='none'?null:'2100-01-01';return ok({user:users.get(id)})},
  generateLink:async args=>{links++;const id='44444444-4444-4444-8444-444444444444';const user={id,email:args.email};if(args.type==='invite')users.set(id,user);return ok({user,properties:{action_link:'https://example.invalid/personal-link'}})}
 }}};
@@ -36,10 +37,10 @@ async function call(action,data={},token=ownerToken,origin='https://dyli2009-cmd
  assert.equal((await call('list',{},ownerToken,'https://evil.invalid')).status,403,'foreign origin denied');
  const listed=await call('list');assert.equal(listed.status,200);assert.equal(listed.data.users.length,3);assert.ok(listed.data.users.find(u=>u.id===owner).protected);
  assert.equal((await call('remove',{userId:owner})).status,409,'owner cannot remove self');assert.equal(roles.get(owner).access_role,'admin');
- assert.equal((await call('approve',{userId:pending})).status,200);assert.equal(roles.get(pending).access_role,'member','approval never grants admin');
- assert.equal((await call('remove',{userId:member})).status,200);assert.equal(roles.has(member),false);
+ assert.equal((await call('approve',{userId:pending,modules:['drawing'],licenseDays:2})).status,409,'email confirmation required');users.get(pending).email_confirmed_at='2026-01-01';assert.equal((await call('approve',{userId:pending,modules:['drawing'],licenseDays:2})).status,200);assert.deepEqual([...roles.get(pending).allowed_modules],['drawing'],'approval honors selected modules');assert.equal(roles.get(pending).access_role,'member','approval never grants admin');
+ assert.equal((await call('remove',{userId:member})).status,409,'legacy removal is refused');roles.delete(member);users.get(member).banned_until='2100-01-01';
  assert.equal((await call('list',{},memberToken)).status,401,'removed/banned user cannot use former JWT');
- assert.equal((await call('approve',{userId:member})).status,200);assert.equal(roles.get(member).access_role,'member');
+ assert.equal((await call('approve',{userId:member,modules:['smartmatch','control'],licenseDays:7})).status,200);assert.equal(roles.get(member).access_role,'member');
  assert.equal((await call('list',{},memberToken)).status,403,'reactivation still cannot grant admin API');
  assert.equal((await call('add',{email:'bad'})).status,400);assert.equal(links,0);
  assert.equal((await call('add',{email:'member@example.invalid'})).status,409);assert.equal(links,0,'duplicate does not create link');
@@ -55,6 +56,9 @@ async function call(action,data={},token=ownerToken,origin='https://dyli2009-cmd
  assert.equal((await call('update',{userId:member,modules:['fake']})).status,400);
  assert.equal((await call('extend',{userId:member,licenseDays:-20})).status,400);
  assert.equal((await call('update',{userId:owner,modules:['drawing']})).status,409,'admin cannot edit protected owner');
+ assert.equal((await call('cancelLicense',{userId:member})).status,200);assert.equal(roles.get(member).license_expires_at,'1970-01-01T00:00:00.000Z');assert.equal((await call('list')).data.users.find(u=>u.id===member).status,'revoked');
+ assert.equal((await call('update',{userId:member,licenseExpiresOn:'2026-12-31'})).status,200);assert.equal(roles.get(member).license_expires_at,'2026-12-31T23:00:00.000Z');
+ assert.equal((await call('delete',{userId:owner,confirmEmail:'owner@example.invalid'})).status,409);assert.equal((await call('delete',{userId:pending,confirmEmail:'wrong@example.invalid'})).status,400);assert.ok(users.has(pending));assert.equal((await call('delete',{userId:pending,confirmEmail:'pending@example.invalid'})).status,200);assert.equal(users.has(pending),false);assert.equal(roles.has(pending),false);
  assert.equal((await call('promote',{userId:member,role:'admin'})).status,400);
  assert.equal((await call('remove',{userId:'not-a-uuid'})).status,400);
  console.log('PASS admin API: session, CORS, role, account lifecycle, license editing/extension, validation and owner protection.');
@@ -66,7 +70,7 @@ async function call(action,data={},token=ownerToken,origin='https://dyli2009-cmd
  auth.markLogin(member);
  assert.equal((await auth.verify()).role,'member');frontend.navigator.onLine=false;assert.equal((await auth.verify({allowOffline:true})).offline,true);
  await assert.rejects(()=>auth.admin('list'),/internet/);frontend.navigator.onLine=true;await assert.rejects(()=>auth.admin('list'),/administratören/);
- currentRole=null;await assert.rejects(()=>auth.verify(),/inte godkänt/);assert.equal(cache.has('tillsyno-offline-access-v1'),false,'revoked role clears offline grant');
+ currentRole=null;await assert.rejects(()=>auth.verify(),/väntar på administratörens godkännande/);assert.equal(cache.has('tillsyno-offline-access-v1'),false,'revoked role clears offline grant');
  frontend.navigator.onLine=false;await assert.rejects(()=>auth.verify({allowOffline:true}),/Offlineperioden/);
  console.log('PASS client: password freshness, online membership, 7-day offline permission, admin requires network, revoked membership.');
  // Login accepts only explicit same-app destinations, never an external next URL.
