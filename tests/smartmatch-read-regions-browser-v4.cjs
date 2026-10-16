@@ -4,6 +4,7 @@
  * Optional: REAL_MULTI_CARD_PDF=/absolute/path/to/ritning_och_dorrkort.pdf
  * SMARTMATCH_DEVICE=desktop|iphone|ipad, SMARTMATCH_QA_DIR=/tmp/qa,
  * SMARTMATCH_REGION_FIXTURE=alternate-regions|uploaded-multiple-cards.
+ * SMARTMATCH_READ_VERSION=v4|v5 selects the reader (default v4).
  * Uploaded PDFs and exported project files are never stored in the repository.
  */
 'use strict';
@@ -12,6 +13,8 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
 const {createHash}=require('node:crypto');
 const {PDFDocument,StandardFonts,PDFName,rgb}=require('../vendor/pdf-lib.min.js');
 const root=path.resolve(__dirname,'..');
+const readVersion=process.env.SMARTMATCH_READ_VERSION||'v4';
+assert(['v4','v5'].includes(readVersion),'supported isolated reader version');
 const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright':'playwright');
 const devices=[{name:'desktop',width:1366,height:900},{name:'iphone',width:390,height:844,touch:true},{name:'ipad',width:1024,height:1366,touch:true}].filter(d=>!process.env.SMARTMATCH_DEVICE||d.name===process.env.SMARTMATCH_DEVICE);
 const server=http.createServer((req,res)=>{
@@ -82,7 +85,7 @@ async function makeContext(browser,device){
 }
 async function exercise(browser,device,test){
  const context=await makeContext(browser,device),page=await context.newPage(),errors=[],remote=[];
- const url='http://127.0.0.1:'+server.address().port+'/smartmatch-read-test-v4.html';
+ const url='http://127.0.0.1:'+server.address().port+'/smartmatch-read-test-'+readVersion+'.html';
  const total=Object.values(test.counts).reduce((sum,n)=>sum+n,0);
  page.on('pageerror',e=>errors.push(e.message));
  page.on('request',r=>{if(!/^(http:\/\/127\.0\.0\.1:|blob:|data:)/.test(r.url()))remote.push(r.url());});
@@ -204,7 +207,7 @@ async function exercise(browser,device,test){
     const fresh=await makeContext(browser,device),reopened=await fresh.newPage();
     try{
      await reopened.goto(url);
-     if(staleLocal){const stale={...data.readTestData,sourceId:exportedHash,checks:{}};await reopened.evaluate(({key,value})=>localStorage.setItem(key,JSON.stringify(value)),{key:'tillsyno-read-test-v4-source:'+exportedHash,value:stale});}
+     if(staleLocal){const stale={...data.readTestData,sourceId:exportedHash,checks:{}};await reopened.evaluate(({key,value})=>localStorage.setItem(key,JSON.stringify(value)),{key:'tillsyno-read-test-'+readVersion+'-source:'+exportedHash,value:stale});}
      await reopened.locator('#pwFile').setInputFiles({name:'portable.pdf',mimeType:'application/pdf',buffer:exported});
      await reopened.waitForSelector('#rtDialog[open]');assert.equal(await reopened.locator('.rtMatchRow input:checked').count(),total,'the exported PDF restores reviewed links and deselected legend examples');
      await reopened.locator('#rtMatchApproval').check();await reopened.locator('#rtStart').click();

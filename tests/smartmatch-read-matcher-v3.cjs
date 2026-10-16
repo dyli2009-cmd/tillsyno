@@ -2,7 +2,9 @@
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {PDFDocument,StandardFonts}=require('../vendor/pdf-lib.min.js');
 const root=path.resolve(__dirname,'..'),sandbox={window:{}};
-vm.runInNewContext(fs.readFileSync(path.join(root,'smartmatch-read-match-v3.js'),'utf8'),sandbox);
+const readVersion=process.env.SMARTMATCH_READ_VERSION||'v3';
+assert(['v3','v4','v5'].includes(readVersion),'supported isolated matcher version');
+vm.runInNewContext(fs.readFileSync(path.join(root,'smartmatch-read-match-'+readVersion+'.js'),'utf8'),sandbox);
 const matcher=sandbox.window.SmartMatchReadMatcher;
 const word=(text,x=.1,y=.1,w=.12,h=.03)=>({text,x,y,w,h,confidence:99});
 function found(words,codes){return Array.from(matcher.textHits(words,codes),h=>h.code);}
@@ -22,7 +24,7 @@ console.log('PASS whole IDs, case, numeric-leading IDs, title prefixes, split gl
 const server=http.createServer((req,res)=>{
  const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
  if(pathname==='/__matcher_v3_test__'){
-  res.setHeader('Content-Type','text/html; charset=utf-8');return res.end('<!doctype html><meta charset="utf-8"><script src="/vendor/pdf.min.js"></script><script src="/vendor/tesseract/tesseract.min.js"></script><script src="/smartmatch-read-match-v3.js"></script>');
+  res.setHeader('Content-Type','text/html; charset=utf-8');return res.end('<!doctype html><meta charset="utf-8"><script src="/vendor/pdf.min.js"></script><script src="/vendor/tesseract/tesseract.min.js"></script><script src="/smartmatch-read-match-'+readVersion+'.js"></script>');
  }
  const file=path.resolve(root,pathname.replace(/^\//,''));if(!file.startsWith(root+path.sep)){res.writeHead(403);return res.end();}
  try{res.setHeader('Content-Type',file.endsWith('.js')?'application/javascript; charset=utf-8':file.endsWith('.wasm')?'application/wasm':'application/octet-stream');res.end(fs.readFileSync(file));}catch(_){res.writeHead(404);res.end();}
@@ -68,7 +70,7 @@ async function fixture(images){
   assert(!mixed.error,mixed.error);assert(mixed.calls>0,'images get OCR even with native matches and no example');
   assert(mixed.maxPixels<=901*901,'OCR is tiled within a bounded canvas');
   assert.deepEqual(mixed.result.hits.map(h=>h.code).sort(),['1','140C','140C','WC','WC'],'all text and coloured raster labels, without partial IDs: '+JSON.stringify(mixed.trace));
-  assert.equal(mixed.result.version,2,'review payload remains compatible');assert(mixed.result.hits.every(h=>h.page===1&&h.scanSource==='read-tool-v3'));
+  assert.equal(mixed.result.version,2,'review payload remains compatible');assert(mixed.result.hits.every(h=>h.page===1&&h.scanSource==='read-tool-'+readVersion));
   for(const hit of mixed.result.hits){assert(hit.box.x>=0&&hit.box.y>=0&&hit.box.x+hit.box.w<=1.00001&&hit.box.y+hit.box.h<=1.00001);assert.equal(hit.rect.length,4);}
   console.log('PASS mixed native/colour-raster PDF without sample, card exclusion, bounded tiles and local assets');
   const cancelled=await run(bytes,{cancelAfterFirst:true});assert.match(cancelled.error,/avbröts/);assert.equal(cancelled.calls,1,'cancellation prevents another OCR tile');

@@ -1,8 +1,12 @@
 # dorrservice
 
+## Separat Avläsning TEST 5 – snabb sökning i stora ritningar
+
+[Testsidan](smartmatch-read-test.html) läser sparade PDF-stämplars beteckningar och positioner före text- och bildläsning. Snabbsökning är förvald; välj **Sök även i bilder** för att komplettera sparade stämplar med bildinnehåll. Upprepade dörrkort på samma sida, egna arbetslistor och granskningssteget behålls. Se [steg för steg och verifiering](SMARTMATCH_READ_TEST_V5.md). [TEST 4](smartmatch-read-test-v4.html) finns kvar separat.
+
 ## Separat Avläsning TEST 4 – flera dörrkort på samma sida
 
-[Testsidan](smartmatch-read-test.html) hittar upprepade kortområden från ett markerat exempel, även när flera kort delar PDF-sida. Hela beteckningar som KLASSRUM 1 bevaras. Varje kort får eget visningsutsnitt och arbetsinnehåll. Se [steg för steg och verifiering](SMARTMATCH_READ_TEST_V4.md). [TEST 3](smartmatch-read-test-v3.html), [TEST 2](smartmatch-read-test-v2.html) och SmartMatch 1.3 finns kvar separat.
+[TEST 4](smartmatch-read-test-v4.html) hittar upprepade kortområden från ett markerat exempel, även när flera kort delar PDF-sida. Hela beteckningar som KLASSRUM 1 bevaras. Varje kort får eget visningsutsnitt och arbetsinnehåll. Se [steg för steg och verifiering](SMARTMATCH_READ_TEST_V4.md). [TEST 3](smartmatch-read-test-v3.html), [TEST 2](smartmatch-read-test-v2.html) och SmartMatch 1.3 finns kvar separat.
 
 ## Tillsyno v2.4.361 – SmartMatch 1.3 läser Beslagskod
 

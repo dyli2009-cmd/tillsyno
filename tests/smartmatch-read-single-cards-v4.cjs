@@ -2,6 +2,7 @@
  * Optional: SMARTMATCH_REAL_PDF=/absolute/path/to/the/previous/25-position/PDF.pdf
  * The built-in fixture also checks portable exports and TEST 3 page-keyed metadata.
  * SMARTMATCH_DEVICE=desktop|iphone|ipad, SMARTMATCH_QA_DIR=/tmp/qa.
+ * SMARTMATCH_READ_VERSION=v4|v5 selects the reader (default v4).
  * No uploaded PDF or project data is stored in the repository.
  */
 'use strict';
@@ -10,6 +11,8 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
 const {createHash}=require('node:crypto');
 const {PDFDocument,StandardFonts,PDFName,PDFHexString,rgb}=require('../vendor/pdf-lib.min.js');
 const root=path.resolve(__dirname,'..');
+const readVersion=process.env.SMARTMATCH_READ_VERSION||'v4';
+assert(['v4','v5'].includes(readVersion),'supported isolated reader version');
 const playwright=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright':'playwright');
 const devices=[{name:'desktop',width:1366,height:900},{name:'iphone',width:390,height:844,touch:true},{name:'ipad',width:1024,height:1366,touch:true}].filter(d=>!process.env.SMARTMATCH_DEVICE||d.name===process.env.SMARTMATCH_DEVICE);
 const server=http.createServer((req,res)=>{
@@ -52,7 +55,7 @@ async function exercise(browser,device,test){
  const context=await makeContext(browser,device),page=await context.newPage(),errors=[],remote=[];
  page.on('pageerror',e=>errors.push(e.message));
  page.on('request',r=>{if(!/^(http:\/\/127\.0\.0\.1:|blob:|data:)/.test(r.url()))remote.push(r.url());});
- const url='http://127.0.0.1:'+server.address().port+'/smartmatch-read-test-v4.html';
+ const url='http://127.0.0.1:'+server.address().port+'/smartmatch-read-test-'+readVersion+'.html';
  const ready=async n=>{
   await page.waitForFunction(()=>window.SmartMatchAppBridge?.getPdf()&&document.getElementById('pwScanOverlay').hidden,null,{timeout:90000});
   assert.equal(await page.evaluate(()=>SmartMatchAppBridge.getPositions().length),n,'the finished project contains only the reviewed drawing positions');
@@ -149,8 +152,8 @@ async function exercise(browser,device,test){
      await reopened.goto(url);
      if(variant.staleLocal){
       const stale={...data.readTestData,sourceId:exportedHash,checks:{}};
-      await reopened.evaluate(({key,value})=>localStorage.setItem(key,JSON.stringify(value)),{key:'tillsyno-read-test-v4-source:'+exportedHash,value:stale});
-      assert.equal(await reopened.evaluate(key=>Object.values(JSON.parse(localStorage.getItem(key)).checks).length,'tillsyno-read-test-v4-source:'+exportedHash),0,'a conflicting local version exists before opening');
+      await reopened.evaluate(({key,value})=>localStorage.setItem(key,JSON.stringify(value)),{key:'tillsyno-read-test-'+readVersion+'-source:'+exportedHash,value:stale});
+      assert.equal(await reopened.evaluate(key=>Object.values(JSON.parse(localStorage.getItem(key)).checks).length,'tillsyno-read-test-'+readVersion+'-source:'+exportedHash),0,'a conflicting local version exists before opening');
      }
      await reopened.locator('#pwFile').setInputFiles({name:'portable.pdf',mimeType:'application/pdf',buffer:variant.bytes});
      await reopened.waitForSelector('#rtDialog[open]');assert.equal(await reopened.locator('.rtMatchRow').count(),total);

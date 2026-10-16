@@ -1,6 +1,6 @@
 # SmartMatch – Avläsning TEST 4
 
-Fast testsida: `smartmatch-read-test.html`. Versionssida: `smartmatch-read-test-v4.html`. Intern version `36.138-READ-TEST`. TEST 3 och dess filer är bevarade på `smartmatch-read-test-v3.html`; ordinarie SmartMatch 1.3, Kontrollflöde och native iOS har inte ändrats.
+Den fasta testsidan `smartmatch-read-test.html` följer nu TEST 5. Bevarad versionssida för denna version: `smartmatch-read-test-v4.html`. Intern version `36.138-READ-TEST`. TEST 3 och dess filer är bevarade på `smartmatch-read-test-v3.html`; ordinarie SmartMatch 1.3, Kontrollflöde och native iOS har inte ändrats.
 
 ## Varför samma steg inte fungerade i TEST 3
 

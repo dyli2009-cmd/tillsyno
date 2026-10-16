@@ -1,0 +1,222 @@
+/* Drawing reader for isolated Avläsning TEST 5. TEST 2–4 and legacy rules stay intact. */
+(()=>{
+ 'use strict';
+ const clean=s=>String(s||'').normalize('NFC').toUpperCase().replace(/[–—−]/g,'-').replace(/\s+/g,' ').trim();
+ const key=s=>clean(s).replace(/[\s/_.-]+/g,'');
+ const escaped=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+ const pause=()=>new Promise(resolve=>setTimeout(resolve,0));
+ const labelChar=/[\p{L}\p{N}/_.-]/u;
+ function codePattern(code){return new RegExp('(^|[^\\p{L}\\p{N}/_.-])('+[...code].map(escaped).join('[\\s/_.-]*')+')(?=$|[^\\p{L}\\p{N}/_.-])','gu');}
+ function joinedNeighbour(a,b){
+  if(!a||!b||!labelChar.test(clean(a.text).slice(-1))||!labelChar.test(clean(b.text).slice(0,1)))return false;
+  const gap=b.x-a.x-a.w,height=Math.min(a.h,b.h);
+  // PDF writers often split a single ID into glyphs. Such fragments must not
+  // turn WC1 into WC, or 1-45-1 into a door labelled 1.
+  return gap<=Math.max(.0002,height*.22)||
+   /[/_.-]$/.test(clean(a.text))&&gap<=height*.9||/^[/_.-]/.test(clean(b.text))&&gap<=height*.9;
+ }
+ function same(a,b){
+  if(a.page!==b.page||a.code!==b.code)return false;
+  const r=a.box,s=b.box,w=Math.min(r.w,s.w),h=Math.min(r.h,s.h);
+  const overlap=Math.max(0,Math.min(r.x+r.w,s.x+s.w)-Math.max(r.x,s.x))*Math.max(0,Math.min(r.y+r.h,s.y+s.h)-Math.max(r.y,s.y));
+  return overlap/Math.max(.00000001,Math.min(r.w*r.h,s.w*s.h))>.35||
+   Math.abs(r.x+r.w/2-s.x-s.w/2)<w*.45&&Math.abs(r.y+r.h/2-s.y-s.h/2)<h*.65;
+ }
+ function boxOf(words){
+  const x=Math.min(...words.map(w=>w.x)),y=Math.min(...words.map(w=>w.y));
+  return {x,y,w:Math.max(...words.map(w=>w.x+w.w))-x,h:Math.max(...words.map(w=>w.y+w.h))-y};
+ }
+ function textHits(words,codes){
+  codes=[...new Set(codes.map(key).filter(Boolean))].sort((a,b)=>b.length-a.length);
+  const exactCodes=new Set(codes),maxParts=Math.max(1,...codes.map(c=>c.length)),patterns=codes.map(code=>({code,pattern:codePattern(code)}));
+  const rows=[];
+  for(const word of words.filter(w=>clean(w.text)).sort((a,b)=>a.y-b.y||a.x-b.x)){
+   let row=rows.find(r=>Math.abs(r.y-word.y)<=Math.max(.002,Math.min(r.h,word.h)*.55));
+   if(!row){row={y:word.y,h:word.h,words:[]};rows.push(row);}row.words.push(word);
+  }
+  const hits=[];
+  for(const row of rows){
+   const cells=row.words.sort((a,b)=>a.x-b.x);
+   for(let start=0;start<cells.length;start++)for(let end=start;end<Math.min(start+maxParts,cells.length);end++){
+    if(end>start){const a=cells[end-1],b=cells[end];if(b.x-a.x-a.w>Math.max(.003,Math.min(a.h,b.h)*.9))break;}
+    const segment=cells.slice(start,end+1),raw=clean(segment.map(w=>w.text).join(' '));
+    const exact=key(raw);
+    if(exactCodes.has(exact)){
+     if(!joinedNeighbour(cells[start-1],cells[start])&&!joinedNeighbour(cells[end],cells[end+1]))hits.push({code:exact,box:boxOf(segment),confidence:Math.min(...segment.map(w=>w.confidence??100))});
+     continue;
+    }
+    if(end!==start||raw.length>100)continue;
+    for(const {code,pattern} of patterns)for(const m of raw.matchAll(pattern)){
+     // Keep a longer ID such as WC1 intact when a WC card exists as well.
+     const offset=m.index+m[1].length,after=offset+m[2].length,word=cells[start],fraction=offset/Math.max(1,raw.length);
+     if(/[/_.-]\s*$/.test(raw.slice(0,offset))||/^\s*[/_.-]/.test(raw.slice(after)))continue;
+     if(offset===0&&joinedNeighbour(cells[start-1],word)||after===raw.length&&joinedNeighbour(word,cells[start+1]))continue;
+     hits.push({code,box:{x:word.x+word.w*fraction,y:word.y,w:word.w*m[2].length/raw.length,h:word.h},confidence:word.confidence??100});
+    }
+   }
+  }
+  return hits.sort((a,b)=>b.code.length-a.code.length);
+ }
+ function nativeWords(content,vp){
+  return content.items.filter(i=>i.str?.trim()).map(i=>{
+   const x=i.transform[4],y=i.transform[5],h=Math.max(i.height||0,Math.hypot(i.transform[2],i.transform[3]),1);
+   const r=vp.convertToViewportRectangle([x,y-h*.25,x+Math.max(i.width,1),y+h*.95]);
+   return {text:i.str,x:Math.min(r[0],r[2])/vp.width,y:Math.min(r[1],r[3])/vp.height,w:Math.abs(r[2]-r[0])/vp.width,h:Math.abs(r[3]-r[1])/vp.height,confidence:100};
+  });
+ }
+ function ocrWords(data,canvas,region){
+  return (data.words||[]).filter(w=>w.text?.trim()).map(w=>({text:w.text,confidence:Number(w.confidence??data.confidence??0),
+   x:region.x+w.bbox.x0/canvas.width*region.w,y:region.y+w.bbox.y0/canvas.height*region.h,
+   w:(w.bbox.x1-w.bbox.x0)/canvas.width*region.w,h:(w.bbox.y1-w.bbox.y0)/canvas.height*region.h}));
+ }
+ function asPosition(hit,page,vp,source){
+  const r=hit.box,x=Math.min(1,Math.max(0,r.x)),y=Math.min(1,Math.max(0,r.y)),b={x,y,w:Math.max(.000001,Math.min(1,r.x+r.w)-x),h:Math.max(.000001,Math.min(1,r.y+r.h)-y)};
+  const p=vp.convertToPdfPoint(b.x*vp.width,b.y*vp.height),q=vp.convertToPdfPoint((b.x+b.w)*vp.width,(b.y+b.h)*vp.height);
+  return {...hit,box:b,page,rect:[Math.min(p[0],q[0]),Math.min(p[1],q[1]),Math.max(p[0],q[0]),Math.max(p[1],q[1])],source,selected:true};
+ }
+ function annotationBox(rect,vp){
+  if(!Array.isArray(rect)||rect.length!==4||!rect.every(Number.isFinite))return null;
+  const r=vp.convertToViewportRectangle(rect),x=Math.min(r[0],r[2])/vp.width,y=Math.min(r[1],r[3])/vp.height,w=Math.abs(r[2]-r[0])/vp.width,h=Math.abs(r[3]-r[1])/vp.height;
+  if(w<=0||h<=0||x>=1||y>=1||x+w<=0||y+h<=0)return null;
+  return {x,y,w,h};
+ }
+ function annotationHits(annotations,codes,vp,onConflict=()=>{}){
+  const hits=[],patterns=codes.map(code=>({code,pattern:codePattern(code)}));
+  for(const a of annotations){
+   // Invisible, Hidden and NoView annotations do not describe a visible stamp.
+   if((Number(a.flags||a.annotationFlags||0)&35)!==0)continue;
+   const box=annotationBox(a.rect,vp);if(!box)continue;
+   const values=[a.subject,a.contentsObj?.str??a.contents].filter(value=>typeof value==='string'&&value.trim());
+   const found=new Set();
+   for(const value of values){
+    const raw=clean(value),exact=key(raw);
+    if(codes.includes(exact)){found.add(exact);continue;}
+    // Metadata may say "Beslagskod: GS 23". Keep complete identifier
+    // boundaries here too: GS2 must never match GS23 or GS23-A.
+    if(raw.length>300)continue;
+    for(const {code,pattern} of patterns)if([...raw.matchAll(pattern)].some(m=>{
+     const offset=m.index+m[1].length,after=offset+m[2].length;
+     return !/[/_.-]\s*$/.test(raw.slice(0,offset))&&!/^\s*[/_.-]/.test(raw.slice(after));
+    }))found.add(code);
+   }
+   if(found.size>1){onConflict(a,[...found]);continue;}
+   for(const code of found)hits.push({code,box,confidence:100,annotationId:String(a.id??''),structured:String(a.subtype||'').toLowerCase()==='stamp'});
+  }
+  return hits;
+ }
+ function intersectsExample(box,example){
+  const intersection=Math.max(0,Math.min(box.x+box.w,example.x+example.w)-Math.max(box.x,example.x))*Math.max(0,Math.min(box.y+box.h,example.y+example.h)-Math.max(box.y,example.y));
+  return intersection/Math.max(.0000000001,Math.min(box.w*box.h,example.w*example.h))>=.3;
+ }
+ function mergeAnnotations(indexed,annotations){
+  const byId=new Map(indexed.filter(a=>a.id).map(a=>[String(a.id),a])),merged=[...indexed];
+  for(const annotation of annotations){
+   const record=byId.get(String(annotation.id??''));
+   // PDF.js exposes /Contents but omits /Subj. Preserve both raw fields so a
+   // contradictory annotation cannot reappear as a seemingly valid fallback.
+   if(record)merged.push({...annotation,...record});else merged.push(annotation);
+  }
+  return merged;
+ }
+ async function crop(pg,region,scale){
+  const vp=pg.getViewport({scale}),canvas=document.createElement('canvas');
+  canvas.width=Math.max(1,Math.ceil(region.w*vp.width));canvas.height=Math.max(1,Math.ceil(region.h*vp.height));
+  const ctx=canvas.getContext('2d',{alpha:false});ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  await pg.render({canvasContext:ctx,viewport:vp,transform:[1,0,0,1,-region.x*vp.width,-region.y*vp.height]}).promise;
+  return canvas;
+ }
+ async function hasRasterLabels(pg){
+  // A native text hit says nothing about labels embedded in an image on the
+  // same page. Check image operators, including image masks used for stamps.
+  // If an alternative PDF adapter cannot expose operators, image-read it.
+  if(typeof pg.getOperatorList!=='function'||!window.pdfjsLib?.OPS)return true;
+  const ops=window.pdfjsLib.OPS,names=['paintImageXObject','paintInlineImageXObject','paintImageMaskXObject','paintImageMaskXObjectGroup','paintSolidColorImageMask','paintImageXObjectRepeat','paintImageMaskXObjectRepeat','paintInlineImageXObjectGroup'];
+  const images=new Set(names.map(n=>ops[n]).filter(n=>n!==undefined));
+  const list=await pg.getOperatorList();return list.fnArray.some(op=>images.has(op));
+ }
+ async function scan({pdf,cardPages,codes,sample=null,annotationIndex=[],imageMode='auto',getWorker,recognize,onProgress=()=>{},cancelled=()=>false}){
+  codes=[...new Set(codes.map(key).filter(Boolean))].sort((a,b)=>b.length-a.length);
+  if(!codes.length)throw Error('Provläs och välj dörrkortens beteckningar först.');
+  const hits=[],warnings=[],pages=[],add=hit=>{if(!hits.some(old=>same(old,hit)))hits.push(hit);};
+  const warn=message=>{if(!warnings.includes(message))warnings.push(message);};
+  const conflict=(page,found)=>warn('Sida '+page+': en PDF-stämpel har motstridiga beteckningar ('+found.join(', ')+') och behöver kontrolleras med text- eller bildläsning.');
+  const indexed=new Map();
+  for(const annotation of Array.isArray(annotationIndex)?annotationIndex:[]){
+   if(!Number.isInteger(annotation?.page)||annotation.page<1||annotation.page>pdf.numPages)continue;
+   if(!indexed.has(annotation.page))indexed.set(annotation.page,[]);
+   indexed.get(annotation.page).push(annotation);
+  }
+  const check=()=>{if(cancelled())throw Error('Avläsningen avbröts.');};
+  check();
+  let sampleHeight=0;
+  if(sample){
+   if(cardPages.includes(sample.page))throw Error('Exempelstämpeln måste markeras på en ritningssida.');
+   if(!codes.includes(key(sample.code)))throw Error('Välj vilket dörrkort exempelstämpeln ska kopplas till.');
+   const pg=await pdf.getPage(sample.page),vp=pg.getViewport({scale:1}),r=sample.rect;
+   let matches=annotationHits(indexed.get(sample.page)||[],codes,vp,(_,found)=>conflict(sample.page,found)).filter(hit=>hit.code===key(sample.code)&&hit.structured&&intersectsExample(hit.box,r));
+   const structuredExample=matches.length>0;
+   if(!matches.length)matches=textHits(nativeWords(await pg.getTextContent(),vp).filter(w=>w.x+w.w/2>=r.x&&w.x+w.w/2<=r.x+r.w&&w.y+w.h/2>=r.y&&w.y+w.h/2<=r.y+r.h),[key(sample.code)]);
+   if(!matches.length){
+    onProgress('Bildläser exempelstämpeln…');const scale=Math.min(5,Math.sqrt(1800000/(r.w*vp.width*r.h*vp.height))),canvas=await crop(pg,r,scale);
+    try{const worker=await getWorker();await worker.setParameters({tessedit_pageseg_mode:7,preserve_interword_spaces:'1'});const {data}=await recognize(worker,canvas);matches=textHits(ocrWords(data,canvas,r),[key(sample.code)]).filter(h=>h.confidence>=55);}
+    finally{canvas.width=canvas.height=1;}
+   }
+   check();
+   if(!matches.length)throw Error('Kunde inte bekräfta '+sample.code+' i exempelstämpeln. Markera tätt runt beteckningen och försök igen.');
+   // A stamp rectangle encloses the whole appearance, rather than just its
+   // code's glyphs. Its height must not become an OCR text-size constraint.
+   if(!structuredExample)sampleHeight=Math.max(4,matches[0].box.h*vp.height);
+   for(const h of matches)add(asPosition(h,sample.page,vp,structuredExample?'PDF-stämpel':'Exempelstämpel'));
+  }
+  for(let page=1;page<=pdf.numPages;page++){
+   check();if(cardPages.includes(page))continue;
+   onProgress('Läser ritning · sida '+page+' av '+pdf.numPages+'…');
+   const pg=await pdf.getPage(page),vp=pg.getViewport({scale:1}),before=hits.length;
+   let indexedConflict=false;
+   const indexedMatches=annotationHits(indexed.get(page)||[],codes,vp,(_,found)=>{indexedConflict=true;conflict(page,found);}),covered=new Set(indexedMatches.filter(h=>h.structured).map(h=>h.code));
+   for(const h of indexedMatches)add(asPosition(h,page,vp,'PDF-stämpel'));
+   const indexedHits=hits.filter(h=>h.page===page&&h.source==='PDF-stämpel').length;
+   if(imageMode!=='full'&&!indexedConflict&&codes.every(code=>covered.has(code))){
+    // The metadata records already contain positions for every requested ID.
+    // Never parse/replay the huge drawing just because a small logo is an
+    // image. This is a fast result, not proof that no raster labels remain.
+    warn('Sida '+page+': snabb sökning använde sparade PDF-stämplar. Övrig text och bilder kontrollerades inte. Välj ”Sök även i bilder” för att leta efter fler stämplar.');
+    pages.push({page,count:hits.filter(h=>h.page===page).length,scanMode:'stamp-index',imageSkipped:true,indexedHits});
+    check();await pause();continue;
+   }
+   const words=nativeWords(await pg.getTextContent(),vp);
+   for(const h of textHits(words,codes))add(asPosition(h,page,vp,'PDF-text'));
+   // The local index adds /Subj, which PDF.js omits. PDF.js remains the
+   // fallback for annotations from adapters or PDFs without indexed records.
+   for(const h of annotationHits(mergeAnnotations(indexed.get(page)||[],await pg.getAnnotations()),codes,vp,(_,found)=>conflict(page,found)))add(asPosition(h,page,vp,'PDF-stämpel'));
+   let imageRead=imageMode==='full'||!!sample||hits.length===before;
+   if(!imageRead){try{imageRead=await hasRasterLabels(pg);}catch(_){imageRead=true;warnings.push('Sida '+page+': bildinnehållet kunde inte klassificeras; sidan bildlästes.');}}
+   check();
+   if(imageRead){
+    const scale=Math.min(4,Math.max(1.6,sampleHeight?26/sampleHeight:2)),width=Math.ceil(vp.width*scale),height=Math.ceil(vp.height*scale);
+    const step=780,tile=900,total=Math.ceil(width/step)*Math.ceil(height/step);let done=0;
+    const worker=await getWorker();await worker.setParameters({tessedit_pageseg_mode:11,preserve_interword_spaces:'1'});
+    for(let top=0;top<height;top+=step)for(let left=0;left<width;left+=step){
+     check();const region={x:left/width,y:top/height,w:Math.min(tile,width-left)/width,h:Math.min(tile,height-top)/height};
+     onProgress('Bildläser ritning · sida '+page+' · område '+(++done)+'/'+total+'…');
+     const canvas=await crop(pg,region,scale);
+     try{
+      const {data}=await recognize(worker,canvas);check();
+      for(const h of textHits(ocrWords(data,canvas,region),codes)){
+       if(h.confidence<60)continue;
+       if(sampleHeight&&(h.box.h*vp.height<sampleHeight*.4||h.box.h*vp.height>sampleHeight*2.5))continue;
+       add(asPosition(h,page,vp,'Bildläst'));
+      }
+     }finally{canvas.width=canvas.height=1;}
+     await pause();
+    }
+   }
+   pages.push({page,count:hits.filter(h=>h.page===page).length,scanMode:imageRead?'text-and-image':'text',imageSkipped:false,indexedHits});
+   await pause();
+  }
+  hits.sort((a,b)=>a.page-b.page||a.box.y-b.box.y||a.box.x-b.box.x||a.code.localeCompare(b.code));
+  hits.forEach((h,i)=>{h.order=870000+i;h.scanSource='read-tool-v5';h.sourceKind=h.code.startsWith('GS')?'gs':'project-code';h.label=h.code;});
+  return {version:2,hits,pages,warnings};
+ }
+ window.SmartMatchReadMatcher=Object.freeze({scan,textHits,key,same});
+})();
