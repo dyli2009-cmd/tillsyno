@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const SMARTMATCH_RELEASE='36.134-READ-TEST';
+const SMARTMATCH_RELEASE='36.135-READ-TEST';
 let smartExportRevision=0,smartExportCached=null,smartExportTask=null,smartExportBytesVersion=-1;
 let manualPositions=[],positionEdits={},placement=null;
 // Initialize placement pointer eagerly: PDF loading must never encounter a TDZ after another initialization failure.
@@ -5757,9 +5757,18 @@ async function analyze(file,options={}){
  const marked=scanCardCodes.size?await extractLabMarkedPositions():[];
  const cardFirstText=scanCardCodes.size?await smartFindCardFirstTextPositions(marked):[];
  marked.push(...cardFirstText);
+ // The user reviewed these exact positions in the shared reader. Never replace
+ // them with a second scanner's interpretation of the selected card codes.
+ const readSelection=window.SmartMatchReadTest?.drawingSelection?.();
+ if(readSelection){
+  const selectedCodes=new Set(readSelection.codes);
+  for(let i=marked.length-1;i>=0;i--)if(selectedCodes.has(marked[i].code))marked.splice(i,1);
+  marked.push(...readSelection.positions.filter(h=>h.page<=pdf.numPages&&!smartDoorCardPages.has(h.page)));
+ }
  const historical=loadSaved().ocrConfirmed;
  smartConfirmedOcr=Array.isArray(historical)?historical.filter(x=>x&&labStrictAnnotationCode(x.code)===x.code&&Array.isArray(x.rect)&&x.rect.length===4&&x.rect.every(Number.isFinite)&&Number.isInteger(x.page)&&x.page>=1&&x.page<=pdf.numPages):[];
  for(const item of smartConfirmedOcr){
+  if(readSelection?.codes.includes(item.code))continue;
   if(item.page>scanPageLimit()||!scanHasDoorCard(item.code)||labAlreadyLocated(marked,item.page,item.code,item.rect))continue;
   marked.push({code:item.code,page:item.page,rect:item.rect,label:item.code,order:950000+marked.length,
    sourceKind:item.code.startsWith('GS')?'gs':'project-code',subtype:'ocr-reviewed',
