@@ -1,5 +1,9 @@
 # dorrservice
 
+## Separat Avläsning TEST 1 – egna läsområden
+
+[Testsidan](smartmatch-read-test.html) låter användaren markera ett kodområde och hela beslagstabellen, provläsa valda sidor och återanvända markeringarna som läsmall. Arbetsrader kan klarmarkeras per stämpel med separat intern status. SmartMatch 1.3 finns kvar på sin tidigare adress. Se [testflöde och avgränsning](SMARTMATCH_READ_TEST_V1.md).
+
 ## Tillsyno v2.4.361 – SmartMatch 1.3 läser Beslagskod
 
 En separat dörrkortsprofil läser översta tabellrutan i det nya liggande kortformatet, även när rubriken är en bild. Beslagskod WC eller GS10 kopplas till samma beteckning på ritningen. Befintliga läsregler har kvar sin prioritet. Bildläsningen körs lokalt och stöder offline efter att appfilerna har hämtats. Se [ändring och verifiering](SMARTMATCH_BESLAGSKOD_133.md).

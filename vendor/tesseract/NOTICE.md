@@ -1,6 +1,7 @@
 # Local OCR assets
 
-Only the additional `beslagskod-first-cell-v1` card profile loads these files.
+The additional `beslagskod-first-cell-v1` card profile and the separate
+user-selected reading test load these files.
 Images are recognized in the browser; they are not sent to an OCR service.
 
 - `tesseract.min.js` and `worker.min.js`: Tesseract.js 5.1.1, Apache-2.0. https://github.com/naptha/tesseract.js
