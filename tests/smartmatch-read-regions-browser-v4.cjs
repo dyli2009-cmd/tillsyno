@@ -4,7 +4,7 @@
  * Optional: REAL_MULTI_CARD_PDF=/absolute/path/to/ritning_och_dorrkort.pdf
  * SMARTMATCH_DEVICE=desktop|iphone|ipad, SMARTMATCH_QA_DIR=/tmp/qa,
  * SMARTMATCH_REGION_FIXTURE=alternate-regions|uploaded-multiple-cards.
- * SMARTMATCH_READ_VERSION=v4|v5 selects the reader (default v4).
+ * SMARTMATCH_READ_VERSION=v4|v5|v6 selects the reader (default v4).
  * Uploaded PDFs and exported project files are never stored in the repository.
  */
 'use strict';
@@ -14,7 +14,7 @@ const {createHash}=require('node:crypto');
 const {PDFDocument,StandardFonts,PDFName,rgb}=require('../vendor/pdf-lib.min.js');
 const root=path.resolve(__dirname,'..');
 const readVersion=process.env.SMARTMATCH_READ_VERSION||'v4';
-assert(['v4','v5'].includes(readVersion),'supported isolated reader version');
+assert(['v4','v5','v6'].includes(readVersion),'supported isolated reader version');
 const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright':'playwright');
 const devices=[{name:'desktop',width:1366,height:900},{name:'iphone',width:390,height:844,touch:true},{name:'ipad',width:1024,height:1366,touch:true}].filter(d=>!process.env.SMARTMATCH_DEVICE||d.name===process.env.SMARTMATCH_DEVICE);
 const server=http.createServer((req,res)=>{
@@ -209,10 +209,17 @@ async function exercise(browser,device,test){
      await reopened.goto(url);
      if(staleLocal){const stale={...data.readTestData,sourceId:exportedHash,checks:{}};await reopened.evaluate(({key,value})=>localStorage.setItem(key,JSON.stringify(value)),{key:'tillsyno-read-test-'+readVersion+'-source:'+exportedHash,value:stale});}
      await reopened.locator('#pwFile').setInputFiles({name:'portable.pdf',mimeType:'application/pdf',buffer:exported});
-     await reopened.waitForSelector('#rtDialog[open]');assert.equal(await reopened.locator('.rtMatchRow input:checked').count(),total,'the exported PDF restores reviewed links and deselected legend examples');
-     await reopened.locator('#rtMatchApproval').check();await reopened.locator('#rtStart').click();
+     if(readVersion!=='v6'){
+      await reopened.waitForSelector('#rtDialog[open]');assert.equal(await reopened.locator('.rtMatchRow input:checked').count(),total,'the exported PDF restores reviewed links and deselected legend examples');
+      await reopened.locator('#rtMatchApproval').check();await reopened.locator('#rtStart').click();
+     }
      await reopened.waitForFunction(n=>SmartMatchAppBridge.getPositions().length===n&&document.getElementById('pwScanOverlay').hidden,total,{timeout:90000});
      const restored=await reopened.evaluate(()=>SmartMatchReadTest.payload());assert.equal(checkedCount(restored),1,staleLocal?'embedded work wins over conflicting local data':'work restores in a fresh browser');assert.deepEqual(metadata(restored),expectedMetadata,'card clips restore without local state');
+     if(readVersion==='v6'){
+      assert.equal(await reopened.locator('#rtDialog').count(),0,'a reviewed portable PDF opens directly without constructing the guide');
+      assert.equal(restored.matching.hits.filter(h=>h.selected!==false).length,total,'direct opening preserves reviewed links and deselected legend examples');
+      assert.deepEqual(countsOf(await reopened.evaluate(()=>SmartMatchAppBridge.getPositions())),test.counts,'direct opening preserves every reviewed door and excludes deselected legend examples');
+     }
     }finally{await fresh.close();}
    }
   }

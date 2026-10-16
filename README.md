@@ -1,8 +1,12 @@
 # dorrservice
 
+## Separat Avläsning TEST 6 – granska en gång, öppna projekt-PDF direkt
+
+[Testsidan](smartmatch-read-test.html) öppnar en sparad projekt-PDF direkt med granskade kopplingar och arbetsstatus. Nya underlag får guidens steg; flerfilsöppningen och Läsområden används för ny granskning. Välj **Spara → Spara PDF** för att ta med kopplingarna i filen. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_V6.md). [TEST 5](smartmatch-read-test-v5.html) är bevarad.
+
 ## Separat Avläsning TEST 5 – snabb sökning i stora ritningar
 
-[Testsidan](smartmatch-read-test.html) läser sparade PDF-stämplars beteckningar och positioner före text- och bildläsning. Snabbsökning är förvald; välj **Sök även i bilder** för att komplettera sparade stämplar med bildinnehåll. Upprepade dörrkort på samma sida, egna arbetslistor och granskningssteget behålls. Se [steg för steg och verifiering](SMARTMATCH_READ_TEST_V5.md). [TEST 4](smartmatch-read-test-v4.html) finns kvar separat.
+[TEST 5](smartmatch-read-test-v5.html) läser sparade PDF-stämplars beteckningar och positioner före text- och bildläsning. Snabbsökning är förvald; välj **Sök även i bilder** för att komplettera sparade stämplar med bildinnehåll. Upprepade dörrkort på samma sida, egna arbetslistor och granskningssteget behålls. Se [steg för steg och verifiering](SMARTMATCH_READ_TEST_V5.md). [TEST 4](smartmatch-read-test-v4.html) finns kvar separat.
 
 ## Separat Avläsning TEST 4 – flera dörrkort på samma sida
 
