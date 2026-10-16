@@ -24,7 +24,7 @@
  function setRegion(value,page){
   scanVersion++;rect={...value};examplePage=page;result=null;removals.clear();representatives.clear();lastKeep='';
   $('cardGroupResults').replaceChildren();$('cardHeaderInfo').textContent='Rubrikfält valt på sida '+page+'. Tryck Hitta samma rubriker.';
-  status('Avläsningen använder samma markerade plats på de sidor som är kvar.');$('cardGroupTools').open=true;app.showTools(true);refresh();
+  status('Avläsningen använder samma markerade plats på de sidor som är kvar.');$('cardGroupTools').open=true;if($('analysisTools'))$('analysisTools').open=true;app.showTools(true);refresh();
   $('cardMarkHeader').scrollIntoView({block:'nearest'});
  }
  function selectedExtras(){

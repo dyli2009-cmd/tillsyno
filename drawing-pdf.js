@@ -1,9 +1,9 @@
 /* Drawing Tools v2.4.360. Keep original PDF content; never rasterize implicitly. */
 (function(root,factory){
  'use strict';
- if(typeof module==='object'&&module.exports)module.exports=factory(require('./vendor/pdf-lib.min.js'));
- else root.DrawingPdf=factory(root.PDFLib);
-})(typeof globalThis!=='undefined'?globalThis:this,function(lib){
+ if(typeof module==='object'&&module.exports)module.exports=factory(require('./vendor/pdf-lib.min.js'),require('./drawing-analysis.js'));
+ else root.DrawingPdf=factory(root.PDFLib,root.DrawingPdfAnalysis);
+})(typeof globalThis!=='undefined'?globalThis:this,function(lib,analysis){
  'use strict';
  const {PDFDocument,PDFRef,PDFDict,PDFArray,PDFStream,PDFName,rgb}=lib;
  const key=name=>PDFName.of(name);
@@ -37,7 +37,11 @@
    else if(obj instanceof PDFDict)obj.entries().forEach(([,value])=>visit(value));
   }
   Object.values(context.trailerInfo).forEach(visit);visit(doc.catalog);
-  for(const [ref] of context.enumerateIndirectObjects())if(!refs.has(ref.toString()))context.delete(ref);
+  let objects=0,bytes=0;
+  for(const [ref,obj] of context.enumerateIndirectObjects())if(!refs.has(ref.toString())){
+   objects++;try{bytes+=obj.sizeInBytes();}catch(_){}context.delete(ref);
+  }
+  return {objects,bytes};
  }
  function clearAnnotations(page){
   const annotations=page.node.lookupMaybe(key('Annots'),PDFArray);if(!annotations)return;
@@ -79,13 +83,36 @@
    if(crops[index])cropPage(page,crops[index]);
   });
   for(let i=count-1;i>=0;i--)if(!wanted.has(i))doc.removePage(i);
-  discardUnusedObjects(doc);
+  const checkCancelled=()=>{if(options.cancelled?.()){const error=Error('PDF-rensningen avbröts.');error.name='AbortError';throw error;}};
+  checkCancelled();
+  let before=null,merged={imagesMerged:0,imageBytes:0};
+  if(options.deduplicateImages){
+   if(!analysis)throw Error('PDF-analysens lokala filer saknas.');
+   options.onProgress?.({message:'Kontrollerar sidinnehåll, text och stämpeluppgifter…'});
+   before=await analysis.snapshot(doc,options);
+   options.onProgress?.({message:'Återanvänder identiska inbäddade bilder…'});
+   merged=await analysis.compactImages(doc,options);
+  }
+  const unused=discardUnusedObjects(doc);
+  checkCancelled();options.onProgress?.({message:'Sparar den förlustfria arbetskopian…'});
   let packed;
   try{packed=await doc.save({useObjectStreams:true,addDefaultPage:false,objectsPerTick:50,updateFieldAppearances:false});}
-  catch(error){if(changed)throw error;return {bytes:original,original:true,pageCount:count};}
+  catch(error){if(changed||options.deduplicateImages)throw error;return {bytes:original,original:true,pageCount:count};}
   // A requested edit must be kept even if serialization adds a few bytes.
   const useOriginal=!changed&&packed.length>=original.length;
-  return {bytes:useOriginal?original:packed,original:useOriginal,pageCount:selected.length};
+  let verified=false;
+  if(before&&!useOriginal){
+   // Release the old object graph before parsing the output for verification.
+   doc=null;await new Promise(resolve=>setTimeout(resolve,0));checkCancelled();
+   options.onProgress?.({message:'Verifierar arbetskopians sidinnehåll och dokumentdata…'});
+   const verifiedDoc=await PDFDocument.load(packed,{updateMetadata:false});
+   const after=await analysis.snapshot(verifiedDoc,options);
+   if(JSON.stringify(before)!==JSON.stringify(after))throw Error('PDF-kontrollen hittade ändrat innehåll. Ingen rensad fil har godkänts.');
+   verified=true;
+  }else if(before)verified=true;
+  checkCancelled();
+  return {bytes:useOriginal?original:packed,original:useOriginal,pageCount:selected.length,
+   cleanup:options.deduplicateImages?{...merged,unusedObjects:unused.objects,unusedBytes:unused.bytes}:undefined,verified};
  }
  async function split(input,maxBytes,onProgress=()=>{}){
   if(!Number.isFinite(maxBytes)||maxBytes<=0)throw Error('Ange en giltig storlek per del.');

@@ -132,7 +132,7 @@ async function contextFor(browser,device){
 }
 async function ready(page){await page.waitForFunction(()=>document.body.classList.contains('hasDrawing')&&!document.getElementById('workspace').hasAttribute('aria-busy'));}
 async function open(page,bytes){await page.locator('#toolFile').setInputFiles({name:'groups.pdf',mimeType:'application/pdf',buffer:bytes});await ready(page);await page.waitForFunction(()=>document.getElementById('previewCanvas').width>10);}
-async function tools(page){if(await page.locator('#toolPanel').isHidden())await page.locator('#toolsToggle').click();const section=page.locator('#cardGroupTools');if(await section.getAttribute('open')===null)await section.locator('summary').click();}
+async function tools(page){if(await page.locator('#toolPanel').isHidden())await page.locator('#toolsToggle').click();const parent=page.locator('#analysisTools');if(await parent.getAttribute('open')===null)await parent.locator(':scope > summary').click();const section=page.locator('#cardGroupTools');if(await section.getAttribute('open')===null)await section.locator('summary').click();}
 async function dragField(page,device){
  const rect=await page.locator('#previewCanvas').boundingBox(),start={x:rect.x+rect.width*field.x,y:rect.y+rect.height*field.y},end={x:rect.x+rect.width*(field.x+field.w),y:rect.y+rect.height*(field.y+field.h)};
  if(device.touch){const cdp=await page.context().newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[start]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[end]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();}

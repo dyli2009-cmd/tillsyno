@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.364 – samlad PDF-analys i Ritningsverktyg
+
+[Ritningsverktyget](drawing-tools.html) har nu **Analysera PDF** för hela arbetsfilen: jämför sidinnehåll, granska dubblettsidor och se vad som tar plats. Förlustfri rensning återanvänder identiska bilder, tar bort oanvända objekt och visar verklig storlek före/efter. Text, stämplar, lager, formulär, bilagor och projektdata kontrolleras före sparande. Markerad text och exportval finns i samma meny. Se [arbetsgång, avgränsningar och verifiering](DRAWING_TOOLS_364.md).
+
 ## Tillsyno v2.4.363 – gruppera all markerad text
 
 [Ritningsverktyget](drawing-tools.html) jämför nu hela texten i det markerade området, med valfria ord, siffror och tecken. Exempelvis sju **Beslagskod: DBLB upp SD** blir en grupp med ett förvalt exemplar att behålla och sex extrasidor. Kodformat och kända rubriker krävs inte. Bildläst text med låg säkerhet visas för granskning och kan också grupperas. Se [rättning och verifiering](DRAWING_TOOLS_363.md).

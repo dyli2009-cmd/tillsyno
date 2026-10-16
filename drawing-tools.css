@@ -153,3 +153,18 @@ body[data-app-text-size="3"]{--tool-text-factor:1.36}
 .cardGroupPage button,.cardScanDialog button{min-height:40px;padding:8px;border:1px solid var(--ta-border,#c4d1d7);border-radius:7px;background:var(--ta-card,#fff);color:var(--ta-ink,#173746);font-size:12px;font-weight:700}
 .cardScanDialog{width:min(460px,92vw);padding:22px;border:1px solid var(--ta-border,#c4d1d7);border-radius:12px;background:var(--ta-card,#fff);color:var(--ta-ink,#173746)}
 .cardScanDialog::backdrop{background:#102c3b99}.cardScanDialog h2{font-size:20px;margin:0 0 12px}.cardScanDialog p{font-size:14px;line-height:1.5}.cardScanDialog progress{width:100%;height:18px;accent-color:var(--ta-blue,#356e86)}.cardScanDialog button{width:100%;font-size:14px;min-height:44px}
+
+/* v2.4.364: one PDF analysis view; nested comparison and export tools. */
+#analysisTools>.hint{margin:7px 0 10px}#analysisTools>.wideToolBtn{min-height:42px}
+#analysisTools>.analysisSection{border:1px solid #94aeb84d;border-radius:8px;padding:6px 8px;margin:10px 0}
+.pdfAnalysisReport{min-width:0;margin:10px 0}.pdfAnalysisReport[hidden]{display:none}
+.pdfAnalysisStats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pdfAnalysisStat{border:1px solid #94aeb84d;background:#7696a112;border-radius:8px;padding:8px;min-width:0}
+.pdfAnalysisStat small,.pdfAnalysisStat strong{display:block;overflow-wrap:anywhere}.pdfAnalysisStat small{font-size:10px;line-height:1.3;opacity:.8}.pdfAnalysisStat strong{font-size:14px;line-height:1.5}
+.pdfAnalysisDetails,.pdfPageGroup{border:1px solid #94aeb84d;border-radius:8px;padding:6px 8px;margin:8px 0}
+.pdfAnalysisDetails>summary,.pdfPageGroup>summary{font-size:12px;overflow-wrap:anywhere}
+.pdfAnalysisLine{font-size:11px;line-height:1.5;overflow-wrap:anywhere;margin:6px 0}.pdfAnalysisWarning{font-size:11px;line-height:1.5;border-left:3px solid #ba902e;padding-left:8px}
+.pdfDuplicateRow{display:flex;flex-wrap:wrap;align-items:center;gap:5px 9px;padding:6px 0;border-top:1px solid #94aeb833}
+.pdfDuplicateRow label{display:flex;align-items:center;gap:5px;font-size:11px;min-height:36px}
+.pdfDuplicateRow button{border:1px solid #94aeb866;border-radius:6px;padding:6px 8px;background:transparent;color:inherit;font-size:11px;min-height:36px}
+#pdfCleanResult{padding:9px;border:1px solid #4d987975;border-radius:8px;font-size:11px;line-height:1.5}
