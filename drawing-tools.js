@@ -351,6 +351,7 @@ function rasterScale(base,q){
 }
 async function buildOutput(options={}){
  if(!pdf)return null;const pages=keptPages();if(!pages.length){message('Minst en sida måste vara kvar.',true);return null}
+ lastOutput=null;$('resultCard').hidden=true;
  if($('quality').value==='lossless'){
   if($('removeText').checked||$('removeColors').checked)throw Error('Förlustfri kvalitet kan inte kombineras med text- eller färgrensning. Avmarkera rensningen eller välj ett bildbaserat kvalitetsläge.');
   message('Packar om PDF med originalkvalitet…');
@@ -360,7 +361,7 @@ async function buildOutput(options={}){
    if(manualMasks[no]?.length)masks[no-1]=await Promise.all(manualMasks[no].map(rect=>pdfRectangle(no,rect)));
   }
   const result=await DrawingPdf.optimize(sourceBytes,{pages:pages.map(no=>no-1),crops,masks,removeAnnotations:$('removeAnnotations').checked,
-   deduplicateImages:!!options.deduplicateImages,cancelled:options.cancelled,onProgress:options.onProgress});
+   deduplicateImages:options.deduplicateImages!==false,cancelled:options.cancelled,onProgress:options.onProgress});
   const checkCancelled=()=>{if(options.cancelled?.()){const e=Error('PDF-rensningen avbröts.');e.name='AbortError';throw e;}};
   checkCancelled();
   const bytes=result.bytes,check=await pdfjsLib.getDocument({data:bytes.slice()}).promise;
@@ -484,7 +485,7 @@ function downloadPdf(result){
  const url=URL.createObjectURL(result.blob),a=document.createElement('a');a.href=url;a.download=result.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
 }
 $('analyzeSize').onclick=()=>withBusy(async()=>{try{await buildOutput()}catch(e){console.error(e);message(e.message||'Kunde inte mäta filstorleken.',true)}});
-$('savePdf').onclick=()=>withBusy(async()=>{try{const r=await output();if(!r)return;await downloadPdf(r);message('PDF klar. Välj Spara till Filer eller öppna den hämtade filen.')}catch(e){console.error(e);message(e.message||'Kunde inte skapa PDF.',true)}});
+$('savePdf').onclick=()=>withBusy(async()=>{try{const r=await output();if(!r)return;await downloadPdf(r);message('PDF klar · '+formatBytes(sourceBytes.length)+' → '+formatBytes(r.bytes.length)+(r.original?' · Originalfilen behölls.':'.')+' Välj Spara till Filer eller öppna den hämtade filen.')}catch(e){console.error(e);message(e.message||'Kunde inte skapa PDF.',true)}});
 $('splitSize').onchange=clearParts;
 $('splitPdf').onclick=()=>withBusy(async()=>{
  try{

@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.365 – bildrensning följer med när PDF sparas
+
+**Spara PDF** i [Ritningsverktyget](drawing-tools.html) återanvänder nu identiska bilder och verifierar innehållet även när förlustfri export körs direkt. En misslyckad ny rensning kan inte lämna en äldre export som tyst sparas i stället. Slutmeddelandet visar faktisk storlek före/efter. Se [rättning och verifiering](DRAWING_TOOLS_365.md).
+
 ## Tillsyno v2.4.364 – samlad PDF-analys i Ritningsverktyg
 
 [Ritningsverktyget](drawing-tools.html) har nu **Analysera PDF** för hela arbetsfilen: jämför sidinnehåll, granska dubblettsidor och se vad som tar plats. Förlustfri rensning återanvänder identiska bilder, tar bort oanvända objekt och visar verklig storlek före/efter. Text, stämplar, lager, formulär, bilagor och projektdata kontrolleras före sparande. Markerad text och exportval finns i samma meny. Se [arbetsgång, avgränsningar och verifiering](DRAWING_TOOLS_364.md).

@@ -2,6 +2,7 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),http=require('node:http');
 const {fixture,metadata}=require('./drawing-analysis.cjs');
+const analysis=require('../drawing-analysis.js');
 const {PDFDocument}=require('../vendor/pdf-lib.min.js');
 const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright':'playwright');
 const root=path.resolve(__dirname,'..'),qa=process.env.DRAWING_QA_DIR||fs.mkdtempSync(path.join(os.tmpdir(),'drawing-analysis-browser-'));
@@ -28,14 +29,17 @@ async function run(){
    const context=await browser.newContext({viewport:{width:d.width,height:d.height},isMobile:!!d.touch,hasTouch:!!d.touch,acceptDownloads:true});
    // Test-only auth stub on the local server; production guard remains untouched.
    await context.route('**/auth/guard.js*',r=>r.fulfill({contentType:'application/javascript',body:"document.addEventListener('DOMContentLoaded',()=>document.documentElement.removeAttribute('data-auth-pending'));"}));
-   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+   const page=await context.newPage(),errors=[];let downloads=0;page.on('pageerror',e=>errors.push(e.message));page.on('download',()=>downloads++);
    await page.goto('http://127.0.0.1:'+s.address().port+'/drawing-tools.html');
    const ready=()=>page.waitForFunction(()=>document.body.classList.contains('hasDrawing')&&!document.getElementById('workspace').hasAttribute('aria-busy'));
    const open=async()=>{await page.locator('#toolFile').setInputFiles({name:'analysis.pdf',mimeType:'application/pdf',buffer:source});await ready();};
    const tools=async()=>{if(await page.locator('#toolPanel').isHidden())await page.locator('#toolsToggle').click();if(await page.locator('#analysisTools').getAttribute('open')===null)await page.locator('#analysisTools > summary').click();};
    const analyze=async()=>{await tools();await page.locator('#pdfAnalyze').click();await page.waitForFunction(()=>!document.getElementById('pdfAnalysisReport').hidden&&!document.getElementById('workspace').hasAttribute('aria-busy'));};
    const download=async()=>{const pending=page.waitForEvent('download');await page.locator('#savePdf').click();const file=await pending;return fs.readFileSync(await file.path());};
-   await open();await analyze();
+   await open();
+   const direct=await download();assert.equal((await analysis.analyze(direct)).images.extraCopies,0,'Save PDF itself reuses identical images, even without analysis or a separate cleanup click');assert.deepEqual(await metadata(direct),await metadata(source));
+   assert.match(await page.locator('#toolMessage').textContent(),/→/,'save shows actual before/after sizes');
+   await analyze();
    assert.equal(await page.locator('#analysisTools').count(),1);assert.equal(await page.locator('#analysisTools #cardGroupTools').count(),1);assert.equal(await page.locator('#analysisTools #optimizeTools').count(),1);
    assert.equal(await page.locator('[data-pdf-group]').count(),1);assert.match(await page.locator('#pdfAnalysisReport').innerText(),/8 \/ 8/);
    assert(await page.locator('[data-pdf-keep="1"]').isChecked());assert(await page.locator('[data-pdf-remove="1"]').isDisabled());assert(!(await page.locator('[data-pdf-remove="2"]').isChecked()));assert(await page.locator('#pdfRemoveDuplicates').isDisabled());
@@ -59,7 +63,16 @@ async function run(){
    // Block text/annotation removal when using the preservation-focused cleanup.
    await page.locator('#removeAnnotations').evaluate(el=>{el.checked=true;el.dispatchEvent(new Event('change'));});await analyze();await page.locator('#pdfClean').click();
    await page.waitForFunction(()=>document.getElementById('pdfAnalysisStatus').textContent.includes('Avmarkera'));assert(await page.locator('#pdfCleanResult').isHidden());
-   assert.deepEqual(errors,[]);await context.close();console.log('PASS '+d.name+': whole PDF, distinct card products, reviewed deletion, undo/redo, cancellation/retry, exact pixels/text/stamps, metadata and protected cleanup');
+   // A failed fresh cleanup must invalidate an earlier cached output, and Save
+   // must retry the verified cleanup rather than silently export another path.
+   await open();await download();await analyze();
+   await page.evaluate(()=>{window.__realDrawingOptimize=DrawingPdf.optimize;DrawingPdf.optimize=async()=>{throw Error('QA: arbetskopian kunde inte verifieras');};});
+   await page.locator('#pdfClean').click();await page.waitForFunction(()=>document.getElementById('pdfAnalysisStatus').textContent.includes('QA:'));
+   const count=downloads;await page.locator('#savePdf').click();await page.waitForFunction(()=>!document.getElementById('workspace').hasAttribute('aria-busy')&&document.getElementById('toolMessage').textContent.includes('QA:'));
+   assert.equal(downloads,count,'failed cleanup cannot fall back to a cached or uncleaned download');
+   await page.evaluate(()=>{DrawingPdf.optimize=window.__realDrawingOptimize;delete window.__realDrawingOptimize;});
+   const retry=await download();assert.equal((await analysis.analyze(retry)).images.extraCopies,0);assert.deepEqual(await stats(page,retry),before);
+   assert.deepEqual(errors,[]);await context.close();console.log('PASS '+d.name+': direct Save reuses images, failed cleanup blocks cached fallback, retry works; whole PDF, distinct card products, reviewed deletion, undo/redo, cancellation, exact pixels/text/stamps and metadata');
   }
  }finally{if(browser)await browser.close();await new Promise(r=>s.close(r));}
  console.log('QA files: '+qa);
