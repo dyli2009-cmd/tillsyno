@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const SMARTMATCH_RELEASE='36.135-READ-TEST';
+const SMARTMATCH_RELEASE='36.136-READ-TEST';
 let smartExportRevision=0,smartExportCached=null,smartExportTask=null,smartExportBytesVersion=-1;
 let manualPositions=[],positionEdits={},placement=null;
 // Initialize placement pointer eagerly: PDF loading must never encounter a TDZ after another initialization failure.
@@ -3595,7 +3595,8 @@ function smartAllDetectedInstances(){
  // Searching for a GS position NEVER depends on finding a door card.
  return instances;
 }
-function smartVisibleInstances(){return matchedProjectInstances()}
+// TEST 2: keep every detected position visible so unmatched hits can be linked manually.
+function smartVisibleInstances(){return instances}
 async function recalcAll(){
  const arr=matchedProjectInstances();
  for(let i=0;i<arr.length;i++){
