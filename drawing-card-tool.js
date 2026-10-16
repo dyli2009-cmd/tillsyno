@@ -5,7 +5,7 @@
  if(!app||!window.DrawingCardGroups)return;
  let rect=null,examplePage=1,result=null,documentRef=null,lastKeep='',removals=new Set(),representatives=new Map(),scanVersion=0,scanning=false;
  let workerPromise=null,libraryPromise=null,imageRender=null,scanAbort=null;
- const readReasons={empty:'Ingen kod i markeringen',unrecognized:'Rubriken kunde inte tolkas','low-confidence':'Osäker bildläsning – kontrollera markeringen','image-error':'Bildläsningen kunde inte slutföras','text-error':'PDF-texten kunde inte läsas'};
+ const readReasons={empty:'Ingen text i markeringen',unrecognized:'Texten kunde inte läsas','low-confidence':'Osäker bildläsning – kontrollera markeringen','image-error':'Bildläsningen kunde inte slutföras','text-error':'PDF-texten kunde inte läsas'};
  function abortable(promise,signal){
   if(!signal)return promise;
   return new Promise((resolve,reject)=>{
@@ -62,7 +62,8 @@
    if(live.length&&!live.some(item=>item.page===representatives.get(group.key)))representatives.set(group.key,live[0].page);
    const details=document.createElement('details');details.dataset.cardKey=group.key;details.className='cardCodeGroup';details.open=group.pages.length>1;
    const summary=document.createElement('summary');summary.textContent=group.code+' · '+group.pages.length+' sida'+(group.pages.length===1?'':'or')+(live.length!==group.pages.length?' · '+live.length+' kvar':'');details.append(summary);
-   const note=document.createElement('p');note.className='hint';note.textContent=group.pages.length>1?'Välj en sida att behålla. Kryssade extrasidor tas bort när du trycker på knappen nedan.':'En enda sida med denna kod. Den behålls.';details.append(note);
+   const note=document.createElement('p');note.className='hint';note.textContent=group.pages.length>1?'Välj en sida att behålla. Kryssade extrasidor tas bort när du trycker på knappen nedan.':'En enda sida med denna text. Den behålls.';details.append(note);
+   if(group.pages.some(item=>item.lowConfidence)){const notice=document.createElement('p');notice.className='hint cardReadWarning';notice.textContent='Osäker bildläsning finns i gruppen. Kontrollera den avlästa texten innan du tar bort extrasidor.';details.append(notice);}
    for(const item of group.pages){
     const row=document.createElement('div');row.className='cardGroupPage';row.dataset.cardPage=String(item.page);
     const keeper=representatives.get(group.key)===item.page,available=kept.has(item.page);
@@ -78,7 +79,7 @@
    root.append(details);
   }
   if(result.unresolved.length){
-   const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent=result.unresolved.length+' sidor utan säker rubrik – behålls';details.className='cardUnresolved';details.append(summary);
+   const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent=result.unresolved.length+' sidor utan läsbar text – behålls';details.className='cardUnresolved';details.append(summary);
    for(const item of result.unresolved){const row=document.createElement('div');row.className='cardGroupPage';const text=document.createElement('small');text.textContent='Sida '+item.page+' · '+(readReasons[item.reason]||'Kontrollera rubrikfältet');row.append(text,pageButton(item.page));details.append(row);}
    root.append(details);
   }
@@ -91,7 +92,7 @@
    }
    const base=new URL('./',location.href);
    const worker=await Tesseract.createWorker('eng',1,{workerPath:new URL('vendor/tesseract/worker.min.js',base).href,corePath:new URL('vendor/tesseract/tesseract-core-lstm.wasm.js',base).href,langPath:new URL('vendor/tesseract/lang/',base).href,workerBlobURL:false,gzip:true});
-   await worker.setParameters({tessedit_pageseg_mode:7,preserve_interword_spaces:'1'});return worker;
+   await worker.setParameters({tessedit_pageseg_mode:6,preserve_interword_spaces:'1'});return worker;
   })();const guarded=pending.catch(error=>{if(workerPromise===guarded)workerPromise=null;throw error;});workerPromise=guarded;}
   return workerPromise;
  }
@@ -131,7 +132,7 @@
    if(cancelled()||!result){result=null;status('Sökningen avbröts. Inga sidor har tagits bort.');}
    else{
     const duplicates=result.groups.filter(group=>group.pages.length>1),matched=result.groups.reduce((sum,group)=>sum+group.pages.length,0);
-    status(matched+' avlästa sidor · '+result.groups.length+' olika koder · '+duplicates.length+' grupper med extrasidor. Granska och välj vad som ska tas bort.');
+    status(matched+' avlästa sidor · '+result.groups.length+' olika texter · '+duplicates.length+' grupper med extrasidor. Granska och välj vad som ska tas bort.');
    }
   }catch(error){result=null;$('cardGroupResults').replaceChildren();status(cancelled()?'Sökningen avbröts. Inga sidor har tagits bort.':error.message||'Rubrikerna kunde inte läsas.');}
   finally{if(scanAbort===controller)scanAbort=null;scanning=false;refresh();}

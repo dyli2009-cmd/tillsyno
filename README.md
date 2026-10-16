@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.363 – gruppera all markerad text
+
+[Ritningsverktyget](drawing-tools.html) jämför nu hela texten i det markerade området, med valfria ord, siffror och tecken. Exempelvis sju **Beslagskod: DBLB upp SD** blir en grupp med ett förvalt exemplar att behålla och sex extrasidor. Kodformat och kända rubriker krävs inte. Bildläst text med låg säkerhet visas för granskning och kan också grupperas. Se [rättning och verifiering](DRAWING_TOOLS_363.md).
+
 ## Tillsyno v2.4.362 – gruppera dörrkort efter markerad rubrik
 
 [Ritningsverktyget](drawing-tools.html) kan läsa ett markerat rubrikfält, exempelvis **Beslagskod GS23**, och gruppera PDF-sidor med samma kod. Välj en sida att behålla, avmarkera extra exemplar som också behövs och ta bort valda extrasidor i ett ångringsbart steg. Förlustfri PDF-export bevarar kvarvarande sidors innehåll. Text läses först; lokal bildläsning begränsas till markeringen. Se [steg för steg och verifiering](DRAWING_TOOLS_362.md).

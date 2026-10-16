@@ -110,7 +110,7 @@ async function browserTests(bytes,real){
    const download=async selector=>{const pending=page.waitForEvent('download');await page.locator(selector).click();const file=await pending;return fs.readFileSync(await file.path());};
    await open(bytes);
    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'workspace fits viewport');
-   assert.equal(await page.locator('[data-ta-version-footer]').textContent(),'v2.4.362');
+   assert.equal(await page.locator('[data-ta-version-footer]').textContent(),'v2.4.363');
    const result=await download('#savePdf');assert.deepEqual(await pdfStats(page,result),await pdfStats(page,bytes),'unchanged PDF renders and extracts identically');
    for(const r of real){await open(r.uploaded);const exported=await download('#savePdf');assert.deepEqual(await pdfStats(page,exported),await pdfStats(page,r.source),'real drawing content and pixels retained');}
    await open(bytes);await tools('Dölj eller beskär');await page.locator('#cropMode').click();

@@ -6,10 +6,7 @@
 })(typeof window!=='undefined'?window:typeof globalThis!=='undefined'?globalThis:this,function(){
  'use strict';
 
- const LABEL=/^(beslags[\s-]*kod|dörr[\s-]*kort|dorr[\s-]*kort|dörr[\s-]*kod|dorr[\s-]*kod|kod)(?=$|\s|[:=#])/iu;
- const LABEL_ONLY=/^(?:beslags[\s-]*kod|dörr[\s-]*kort|dorr[\s-]*kort|dörr[\s-]*kod|dorr[\s-]*kod|kod)$/iu;
  const clean=value=>String(value==null?'':value).normalize('NFKC').replace(/[\u200b\u00ad\ufeff]/g,'').replace(/\s+/gu,' ').trim();
- const escapeRx=value=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 
  function selectedRect(rect){
   if(!rect||!['x','y','w','h'].every(k=>Number.isFinite(rect[k]))||rect.w<=0||rect.h<=0)throw new TypeError('Ett giltigt markerat kodområde krävs.');
@@ -73,45 +70,12 @@
   }).join('\n').trim();
  }
 
- function codeValue(value,allowLetters,joinWords){
-  value=clean(value);
-  if(!value||LABEL_ONLY.test(value))return null;
-  if((value.startsWith('(')&&value.endsWith(')'))||(value.startsWith('[')&&value.endsWith(']')))value=value.slice(1,-1).trim();
-  if(!value||LABEL_ONLY.test(value))return null;
-  if(joinWords){
-   const parts=value.split(' ');
-   if(parts.length===2&&((/^\p{L}+$/u.test(parts[0])&&/^\p{N}[\p{L}\p{N}._:/\\-]*$/u.test(parts[1]))||(/^\p{N}+$/u.test(parts[0])&&/^\p{L}$/u.test(parts[1]))))value=parts.join('');
-  }
-  if(!/^[\p{L}\p{N}][\p{L}\p{N}._:/\\-]*$/u.test(value))return null;
-  if(!allowLetters&&!/\p{N}/u.test(value))return null;
-  // A list of complete codes is ambiguous, even when written without spaces.
-  if(value.split('/').filter(part=>/[\p{L}]/u.test(part)&&/\p{N}/u.test(part)).length>1)return null;
-  if(/^(?:beslagskod|dörrkort|dorrkort|dörrkod|dorrkod|kod)[:=]/iu.test(value))return null;
-  return value.toLocaleUpperCase('sv-SE');
- }
-
- function parseHeader(text,options){
-  options=options||{};
-  const normalized=clean(text);
-  if(!normalized)return null;
-  let value=normalized,prefix='',labeled=false;
-  const custom=clean(options.prefix).replace(/[\s:=#]+$/u,'');
-  if(custom){
-   const known=LABEL_ONLY.test(custom);
-   const match=known?LABEL.exec(value):new RegExp('^'+escapeRx(custom).replace(/\s+/g,'\\s+')+'(?=$|\\s|[:=#])','iu').exec(value);
-   if(!match)return null;
-   if(known&&clean(match[0]).replace(/[\s-]/g,'').toLocaleUpperCase('sv-SE')!==custom.replace(/[\s-]/g,'').toLocaleUpperCase('sv-SE'))return null;
-   prefix=match[0];value=value.slice(match[0].length);labeled=true;
-  }else{
-   const match=LABEL.exec(value);
-   if(match){prefix=match[0];value=value.slice(match[0].length);labeled=true;}
-  }
-  if(labeled)value=value.replace(/^\s*[:=#]\s*/u,'').trim();
-  const example=clean(options.example);
-  const exampleCode=example&&!LABEL_ONLY.test(example)?codeValue(example,true,true):null;
-  const code=codeValue(value,labeled||!!exampleCode,labeled||!!exampleCode);
-  if(!code)return null;
-  return{key:code,code,text:normalized,prefix:prefix||null};
+ // The selected field is arbitrary text. Only whitespace and case are
+ // normalized; labels, word boundaries and punctuation remain meaningful.
+ function parseHeader(text){
+  const normalized=clean(text);if(!normalized)return null;
+  const key=normalized.toLocaleUpperCase('sv-SE');
+  return{key,code:key,text:normalized,prefix:null};
  }
 
  function abort(){const error=new Error('Avläsningen avbröts.');error.name='AbortError';return error;}
@@ -129,17 +93,15 @@
   if(pages.some(page=>!Number.isInteger(page)||page<1||page>pdf.numPages))throw new RangeError('Ett sidnummer ligger utanför PDF-filen.');
   if(options.examplePage!=null&&(!Number.isInteger(options.examplePage)||options.examplePage<1||options.examplePage>pdf.numPages))throw new RangeError('Exempelsidan ligger utanför PDF-filen.');
   const grouped=new Map(),unresolved=[];
-  let readCount=0,prefix=clean(options.prefix)||null,exampleText=clean(options.example),exampleField=null;
-  async function readField(page,parseOptions,isExample){
+  let readCount=0;
+  async function readField(page){
    let proxy,viewport,text='',source='text',parsed=null,nativeError=null,imageError=null,confidence,lowConfidence=false;
    try{
     proxy=await pdf.getPage(page);checkCancelled(options);
     viewport=proxy.getViewport({scale:1});
     const content=await proxy.getTextContent();checkCancelled(options);
     text=readText(content,viewport,rect);
-    // A deliberately marked raw alphabetic example (e.g. WC) is usable too.
-    const sampleOptions=isExample&&!parseOptions.example?{...parseOptions,example:text}:parseOptions;
-    parsed=parseHeader(text,sampleOptions);
+    parsed=parseHeader(text);
    }catch(error){
     checkCancelled(options);if(error&&error.name==='AbortError')throw error;
     nativeError=error;
@@ -151,10 +113,10 @@
      checkCancelled(options);
      source='image';
      const imageText=typeof image==='string'?image:image&&typeof image.text==='string'?image.text:'';
-     text=clean(imageText);parsed=parseHeader(imageText,isExample&&!parseOptions.example?{...parseOptions,example:imageText}:parseOptions);
+     text=clean(imageText);parsed=parseHeader(imageText);
      if(image&&typeof image==='object'&&Number.isFinite(image.confidence)){
       confidence=image.confidence;
-      if(confidence<75){lowConfidence=true;parsed=null;}
+      if(confidence<75)lowConfidence=true;
      }
     }catch(error){
      checkCancelled(options);if(error&&error.name==='AbortError')throw error;
@@ -164,27 +126,20 @@
    checkCancelled(options);
    return{page,text,source,parsed,nativeError,imageError,confidence,lowConfidence};
   }
-  if(options.examplePage!=null){
-   checkCancelled(options);
-   exampleField=await readField(options.examplePage,options,true);
-   if(!prefix){const label=LABEL.exec(clean(exampleField.text));if(label)prefix=label[0];}
-   if(!exampleText&&!prefix)exampleText=clean(exampleField.text);
-  }
-  const parseOptions={...options,prefix:prefix||undefined,example:exampleText||undefined};
   for(let index=0;index<pages.length;index++){
    checkCancelled(options);
    const page=pages[index];
-   const field=exampleField&&page===options.examplePage?exampleField:await readField(page,parseOptions,false);
+   const field=await readField(page);
    const{text,source,nativeError,imageError,confidence,lowConfidence}=field;
-   // Re-evaluate the sample using its learned heading, without rereading it.
-   const parsed=lowConfidence?null:parseHeader(text,parseOptions);
+   const parsed=field.parsed;
    if(parsed){
     const entry={page,code:parsed.code,text,source};
     if(confidence!=null)entry.confidence=confidence;
+    if(lowConfidence)entry.lowConfidence=true;
     if(!grouped.has(parsed.key))grouped.set(parsed.key,{key:parsed.key,code:parsed.code,pages:[]});
     grouped.get(parsed.key).pages.push(entry);
    }else{
-    const entry={page,reason:lowConfidence?'low-confidence':imageError?'image-error':nativeError?'text-error':text?'unrecognized':'empty',text,source};
+    const entry={page,reason:imageError?'image-error':nativeError?'text-error':text?'unrecognized':'empty',text,source};
     if(confidence!=null)entry.confidence=confidence;
     if(imageError||nativeError)entry.message=String((imageError||nativeError).message||'Sidan kunde inte läsas.');
     unresolved.push(entry);
@@ -195,7 +150,7 @@
    // Do not call page.cleanup(): the drawing tool may share this page proxy
    // with its preview, and PDF.js owns the document-level resource lifetime.
   }
-  return{groups:[...grouped.values()],unresolved,readCount,prefix};
+  return{groups:[...grouped.values()],unresolved,readCount,prefix:null};
  }
 
  return{readText,parseHeader,scan};

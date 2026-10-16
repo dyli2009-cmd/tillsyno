@@ -1,5 +1,7 @@
 # Ritningsverktyg v2.4.362 – dörrkort med samma rubrik
 
+Historisk versionsanteckning. [v2.4.363](DRAWING_TOOLS_363.md) ersätter kod- och rubrikbegränsningarna nedan med jämförelse av all text i markeringen.
+
 Funktionen **Sortera dörrkort efter rubrik** grupperar PDF-sidor efter koden i ett markerat rubrikfält. Exempel: tre kort med **Beslagskod GS23** visas tillsammans även om deras dörrlittera, våning, produkter eller höger/vänster skiljer sig. Endast det valda rubrikfältet styr grupperingen. Funktionerna i SmartMatch och Avläsning TEST ingår inte i ändringen.
 
 ## Så gör du
