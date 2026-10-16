@@ -100,7 +100,7 @@ function recordChange(){
 }
 function updateQualityHint(){
  const q=QUALITY[$('quality').value]||QUALITY.balanced;
- $('qualityHint').textContent=q===QUALITY.light?'Mindre fil prioriterar snabb öppning och lägre storlek.':q===QUALITY.clear?'Högre kvalitet ger skarpare ritning men större fil.':'Balans passar normalt bäst för ritningar.';
+ $('qualityHint').textContent=q===QUALITY.lossless?'Behåller PDF-bilder och text utan rasterisering. Fungerar på oförändrade sidor; storleksminskning kan inte garanteras.':q===QUALITY.light?'Mindre fil prioriterar snabb öppning och lägre storlek.':q===QUALITY.clear?'Högre kvalitet ger skarpare ritning men större fil.':'Balans passar normalt bäst för ritningar.';
 }
 function restoreHistory(from,to,label){
  if(!from.length)return;
@@ -257,13 +257,42 @@ function rasterScale(base,q){
 async function buildOutput(){
  if(!pdf)return null;const pages=keptPages();if(!pages.length){message('Minst en sida måste vara kvar.',true);return null}
  if($('quality').value==='lossless'){
-  const bytes=new Uint8Array(sourceBytes);
-  const name=cleanName(fileName)+'-original.pdf',blob=new Blob([bytes],{type:'application/pdf'});
+  // Keep the source PDF's original image streams, vectors and selectable text.
+  // Never use canvas/JPEG for this mode.
+  const original=new Uint8Array(sourceBytes);
+  const untouched=pages.length===keep.length&&pages.every((v,i)=>v===i+1)
+   &&!Object.keys(manualMasks).some(k=>manualMasks[k]?.length)
+   &&!Object.keys(cropRects).length
+   &&!$('removeText').checked&&!$('removeColors').checked
+   &&!$('removeAnnotations').checked;
+  if(!untouched){
+   message('Förlustfri optimering kräver oförändrade sidor. Återställ rensning och beskärning eller välj ett annat kvalitetsläge.',true);
+   return null;
+  }
+  let bytes=original,verdict='Originalfilen behölls';
+  try{
+   message('Packar om PDF utan att ändra bilder eller text…');
+   const doc=await PDFLib.PDFDocument.load(original,{updateMetadata:false});
+   // Avoid rewriting digitally signed and interactive documents.
+   const form=doc.getForm();
+   const hasFields=form.getFields().length>0;
+   const hasSignatures=/\/ByteRange\s*\[/.test(new TextDecoder('latin1').decode(original.subarray(0,Math.min(original.length,1000000))));
+   if(!hasFields&&!hasSignatures){
+    const packed=await doc.save({useObjectStreams:true,addDefaultPage:false,objectsPerTick:100});
+    if(packed.length<original.length){
+     const check=await pdfjsLib.getDocument({data:packed.slice()}).promise;
+     try{
+      if(check.numPages===pdf.numPages){bytes=packed;verdict='Förlustfritt ompackad PDF';}
+     }finally{await check.destroy();}
+    }
+   }
+  }catch(error){console.warn('Lossless repack unavailable; retaining original PDF',error);}
+  const name=cleanName(fileName)+'-forlustfri.pdf',blob=new Blob([bytes],{type:'application/pdf'});
   lastOutput={blob,name,bytes};
   $('resultCard').hidden=false;
-  $('resultInfo').textContent=pdf.numPages+' sidor · '+formatBytes(bytes.length)+' · Förlustfri originalkopia';
+  $('resultInfo').textContent=pages.length+' sidor · '+formatBytes(bytes.length)+' · '+verdict;
   updateSizeComparison(bytes.length,{label:'Förlustfri'});
-  message('Originalkopia klar utan kvalitetsförlust. Filstorleken är oförändrad.');
+  message(bytes.length<original.length?'Förlustfri optimering klar. Originalet är oförändrat.':'Ingen säker storleksminskning hittades. Originalkvaliteten är bevarad.');
   return lastOutput;
  }
  const q=QUALITY[$('quality').value]||QUALITY.balanced,{PDFDocument}=PDFLib,out=await PDFDocument.create();
