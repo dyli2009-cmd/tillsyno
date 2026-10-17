@@ -1,0 +1,37 @@
+<!doctype html><html lang="sv" data-auth-pending><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SmartMatch 10.1 – SmartScan TEST</title><meta name="theme-color" content="#173b4f"><link rel="icon" href="data:,">
+<style>html[data-auth-pending] body{visibility:hidden}</style>
+<link rel="stylesheet" href="smartmatch10-1.css?v=10.1">
+<script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.372"></script><script src="auth/guard.js?v=2.4.372" defer></script>
+<script src="vendor/pdf.min.js" defer></script><script src="vendor/jszip-3.10.1.min.js" defer></script>
+<script src="smartmatch10-1-core.js?v=10.1" defer></script><script src="smartmatch10-1-pdf.js?v=10.1" defer></script><script src="smartmatch10-1-app.js?v=10.1" defer></script>
+</head><body data-module="smartmatch">
+<header><div><a href="index.html">← Tillsyno</a><h1>SmartMatch 10.1 <small>SMARTSCAN TEST</small></h1></div><div class="actions">
+<label class="file">Lägg till PDF<input id="files" type="file" multiple accept=".pdf,application/pdf"></label>
+<button id="save">Spara lokalt</button><button id="restore">Öppna senaste</button><button id="export">Spara projektfil</button>
+<label class="file">Öppna projektfil<input id="import" type="file" accept=".sm101,.zip"></label></div></header>
+<div class="safety">Original-PDF:erna ändras inte. Separat projektlagring – 10.0 och övriga moduler berörs inte.</div>
+<nav><button id="cardsStep" aria-current="step">1. Hitta och granska dörrkort</button><button id="drawingStep">2. Matcha ritningsstämplar</button><button id="pause" hidden>Pausa efter denna sida</button></nav>
+<div class="workspace"><aside>
+<label>Projektnamn<input id="name" value="Nytt projekt" maxlength="200"></label>
+<section id="cardsPanel"><h2>Du bestämmer läsområdet</h2><p class="help">Öppna en dörrkortssida. Välj <b>Markera kod</b> och dra en ruta runt beteckningen eller hela rubrikraden. Resten bildläses inte.</p>
+<label>Rubrik som ska tas bort<input id="prefix" placeholder="Dörrkort eller Beslagskod" maxlength="100"></label>
+<label>Sidor med denna layout<input id="cardPages" placeholder="Exempel: 2-8. Tomt = alla sidor."></label>
+<p id="regionInfo" class="help">Ingen kodruta vald.</p><div class="actions"><button id="scanCards" class="primary">Hitta dörrkort</button><button id="ocrCards">Bildläs saknade</button><button id="manualCard">+ Lägg till kort</button></div>
+<details><summary>Ignorera områden och fler layouter</summary><p class="help">Med <b>Ignorera område</b> kan du maskera text inne i kodrutan. Välj en annan sida och markera ett nytt kodområde för en annan layout. Välj sidintervall och läs igen. Tidigare kort och rättningar behålls.</p><button id="clearIgnore">Rensa ignorerade områden</button></details>
+<h2>Dörrkort <span id="cardCount">0</span></h2><button id="approve" class="primary">Granskat – godkänn dörrkorten</button><p id="approval" class="help">Granska beteckningarna innan du går vidare.</p>
+<div id="cardEditor"></div><div id="cards" class="records"></div></section>
+<section id="drawingPanel" hidden><h2>Lär appen en riktig stämpel</h2><p class="help">Välj koden och markera <b>hela stämpeln</b>, inklusive ram eller bakgrund. Samma beteckning i vanlig löptext räcker inte.</p>
+<label>Beteckning i exemplet<select id="exampleCode"></select></label><label>Ritningssidor<input id="drawingPages" value="1" placeholder="1, 3-5"></label>
+<div class="actions"><button id="sample">Markera stämpel</button><button id="scanDrawing" class="primary">Hitta märkningar</button><button id="manualStamp">+ Koppla manuellt</button></div>
+<p id="sampleInfo" class="help">Inget stämpelexempel valt.</p>
+<details><summary>Bildbaserad ritning</summary><p class="help">Markera först <b>Sökområde på ritning</b>. Bildläs bara detta område, granska texten och markera därefter stämpelexemplet. För mycket stora områden: dela upp markeringen.</p><button id="ocrDrawing">Bildläs markerat sökområde</button></details>
+<p class="warning">Automatiska träffar är förslag, inte godkännanden. Rätta felaktiga kopplingar eller flytta en markering manuellt.</p>
+<h2>Ritningsträffar <span id="hitCount">0</span></h2><label>Filtrera beteckning<input id="filter" placeholder="WC, 130C, GS10 …"></label><div id="hitEditor"></div><div id="hits" class="records"></div></section>
+</aside><main><div class="toolbar"><select id="source" aria-label="PDF-fil"></select><button id="prev" aria-label="Föregående sida">‹</button><input id="page" type="number" min="1" value="1" aria-label="PDF-sida"><span id="pageTotal">/ 0</span><button id="next" aria-label="Nästa sida">›</button>
+<select id="mode" aria-label="Ritningsverktyg"><option value="pan">Flytta vyn</option><option value="code">Markera kod</option><option value="ignore">Ignorera område</option><option value="sample">Markera stämpel</option><option value="manual">Koppla manuellt</option><option value="search">Sökområde på ritning</option><option value="move">Flytta vald träff</option></select>
+<button id="minus" aria-label="Zooma ut">−</button><span id="zoom">100 %</span><button id="plus" aria-label="Zooma in">+</button><button id="fit">Anpassa</button></div>
+<div id="viewport" tabindex="0" aria-label="PDF. Mushjul zoomar, dra för att flytta. Två fingrar zoomar."><div id="world" hidden><canvas id="canvas"></canvas><div id="overlay"></div></div><div id="empty"><h2>Lägg till PDF för att börja</h2><p>Samma PDF kan innehålla både dörrkort och ritning.<br>Välj sida ovanför visningen.</p></div></div></main></div>
+<footer><div id="status" role="status" aria-live="polite">Redo. Öppna PDF och markera dörrkortets beteckning.</div><span class="version">10.1</span></footer>
+</body></html>
