@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.382 – iPad-anpassad SmartMatch-avläsning
+
+[Avläsning TEST 9.15](smartmatch-read-test.html) använder lägre och tydligt begränsade bildbudgetar på iPad så att zoom, skärpa och stämpelsökning belastar Safari mindre. En missad stämpel kan kopplas direkt med **Koppla bara markerad stämpel** utan bildläsning av hela ritningen. Bildsökning på iPad begränsas till den aktuella ritningssidan, sparad stämpeltext återanvänds utan en ny full PDF-tolkning och onödiga hela PDF-kopior frigörs. Ett kraschskydd stoppar automatisk återöppning av samma tunga projekt efter en avbruten Safari-session. Se [arbetsgång, återställning och verifieringsgränser](SMARTMATCH_READ_TEST_9_15.md).
+
 ## Tillsyno v2.4.381 – koppla tillbaka en borttagen SmartMatch-position
 
 [Avläsning TEST 9.14](smartmatch-read-test.html) visar både kopplade, okopplade och tidigare borttagna stämpelträffar i **Koppla stämplar**. En borttagen fysisk position kan väljas och kopplas tillbaka till rätt dörrkort utan att redan kopplade positioner dupliceras. Återkopplingen och dubblettskyddet följer med i projekt-PDF:en. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_14.md).
