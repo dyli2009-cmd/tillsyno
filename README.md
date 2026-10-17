@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.390 – arbetstid per dörr och material
+
+[Avläsning TEST 9.23](smartmatch-read-test.html) visar beräknad tid på varje fysisk dörr och summerar projektet både **Per produkt** och **Per dörr**. Materialtyp, modell, mängd, standardtid, klart och kvar visas samlat. **＋ Extra tid** lägger krångel eller annat tillkommande arbete på just den öppna dörren. Äldre projekt fortsätter fungera och sparar antal, tidsjusteringar och avprickningar i projekt-PDF:en. Se [arbetsgång och beräkningsregler](SMARTMATCH_READ_TEST_9_23.md).
+
 ## Tillsyno v2.4.389 – läs om ett enda dörrkort
 
 [Avläsning TEST 9.22](smartmatch-read-test.html) kan läsa om arbetslistan på endast det dörrkort som är öppet. Välj en länkad stämpel, tryck **Läs om detta kort**, granska avläsningen och spara produkterna. Nya GS-punkter läggs till, medan ritningskopplingar, tidigare bockningar, egna texter och tider behålls. Samma vy har nu också **＋ Punkt**, **Ändra**, **Ta bort** och redigering av tid per kontrollpunkt. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_22.md).
