@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.380 – hitta tidigare lokala SmartMatch-projekt
+
+[Avläsning TEST 9.13](smartmatch-read-test.html) visar lokalt sparade projekt från äldre TEST-versioner direkt på första sidan. Knappen **Hitta tidigare lokalt sparade projekt** kan köra sökningen igen. Äldre stora PDF-filer läses från sin befintliga lokala lagring utan automatisk kopiering eller ny avläsning. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_13.md).
+
 ## Tillsyno v2.4.379 – lokal säkerhetskopia alltid synlig
 
 [Avläsning TEST 9.12](smartmatch-read-test.html) visar **Spara lokalt nu** före den stora PDF-exportens förlopp. Arbetskopian kan därför sparas direkt i webbläsaren även medan PDF-exporten arbetar eller har stoppats. Knappen visar själv när den sparar och när kopian är klar. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_12.md).
