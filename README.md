@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.389 – läs om ett enda dörrkort
+
+[Avläsning TEST 9.22](smartmatch-read-test.html) kan läsa om arbetslistan på endast det dörrkort som är öppet. Välj en länkad stämpel, tryck **Läs om detta kort**, granska avläsningen och spara produkterna. Nya GS-punkter läggs till, medan ritningskopplingar, tidigare bockningar, egna texter och tider behålls. Samma vy har nu också **＋ Punkt**, **Ändra**, **Ta bort** och redigering av tid per kontrollpunkt. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_22.md).
+
 ## Tillsyno v2.4.388 – tydlig arbetsprocent i iPad-översikten
 
 [Avläsning TEST 9.21](smartmatch-read-test.html) låter procentmärket behålla en liten, skärmbaserad storlek när ritningen zoomas ut. Varje position över 0 % visar därför sin egen procent även när stämpeln blir liten: 28 × 18 bildpunkter i översikten och högst 30 × 20 i normal- och detaljvy. Märket ligger centrerat under stämpelkoden, använder mörk bakgrund under pågående arbete och grön bakgrund vid 100 %. Stämpelreplikan, befintliga projektkopplingar och iPadens minnesgränser är oförändrade. Se [beteende och slutprov](SMARTMATCH_READ_TEST_9_21.md).
