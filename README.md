@@ -1,8 +1,12 @@
 # dorrservice
 
+## Tillsyno v2.4.373 – läs en gång, spara och öppna färdigt projekt
+
+[Avläsning TEST 9.6](smartmatch-read-test.html) sammanfogar bokstavsdelar som sitter ihop på samma textrad, även när PDF:en byter typsnitt vid å, ä eller ö. Rubriken **D ö rrkort 140C** tolkas som **Dörrkort 140C** och ger koden **140C**. Valfria fullständiga beteckningar stöds fortsatt; svenska bokstäver behålls. **Avläsning av ritning och dörrkort** förbereder nya filer i en genomgång. **Spara PDF** tar med avläsning, kopplingar och kontroller; **Öppna PDF** återställer filen utan att starta en ny avläsning. Färdiga produkter har ingen fortsätt-knapp. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_6.md).
+
 ## Tillsyno v2.4.372 – säkrare PDF-sparning
 
-[Avläsning TEST 9.5](smartmatch-read-test.html) förbereder och verifierar projekt-PDF:en innan Windows sparruta öppnas. Skrivfel avbryter filskrivningen och den sparade filen läses tillbaka före lyckat besked. Lokalt arkiverade TEST 9.4-projekt kan återhämtas i den nya, separata lagringen. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_5.md).
+[Avläsning TEST 9.5](smartmatch-read-test-v9-5.html) förbereder och verifierar projekt-PDF:en innan Windows sparruta öppnas. Skrivfel avbryter filskrivningen och den sparade filen läses tillbaka före lyckat besked. Lokalt arkiverade TEST 9.4-projekt kan återhämtas i den nya, separata lagringen. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_5.md).
 
 ## Tillsyno v2.4.371 – produktläsning efter sparad OCR-text
 

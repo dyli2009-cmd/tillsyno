@@ -10,7 +10,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>SmartMatch – Avläsning TEST 9.5</title>
+<title>SmartMatch – Avläsning TEST 9.6</title>
 
 
 <script src="smartmatch-protocol-templates.js"></script>
@@ -432,7 +432,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
   <div class="pwTitle">
     <strong>SmartMatch</strong>
     <div class="pwReleaseLine" aria-label="Programversion">
-      <span id="pwBuildVersion" class="pwTitleVersion" data-build="36.148" title="SmartMatch avläsning TEST 9.5">Avläsning TEST 9.5</span>
+      <span id="pwBuildVersion" class="pwTitleVersion" data-build="36.149" title="SmartMatch avläsning TEST 9.6">Avläsning TEST 9.6</span>
       <span id="pwUpdateStatus" class="pwUpdateStatus" hidden aria-hidden="true"></span>
     </div>
     <small class="smHeaderSubtitle" aria-hidden="true">Projektflöde</small>
@@ -447,7 +447,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
         <button id="pwSavePortable" type="button"><strong>Spara objekt</strong><small>Kompakt PDF utan extra dörrkortskopior.</small></button>
         <button id="pwSaveLocal" type="button"><strong>Spara lokalt</strong><small>Ladda ner eller spara i Filer.</small></button>
         <button id="pwSaveAs" type="button"><strong>Spara som…</strong><small>Välj filnamn och plats.</small></button>
-        <button id="pwSavePdfCopy" type="button"><strong>PDF-kopia</strong><small>Skapa en oförändrad kopia av öppnad PDF.</small></button>
+        <button id="pwSavePdfCopy" type="button"><strong>Projekt-PDF-kopia</strong><small>Ta med avläsning, kopplingar, produkter och avprickningar.</small></button>
         <button id="pwSaveCopy" type="button"><strong>Skicka mejl</strong><small>Granska storlek och bifoga med din mejlapp.</small></button>
       </div>
     </div>
@@ -471,6 +471,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
       <div id="pwToolMenu" class="pwToolMenu" hidden>
         <button id="exOpenExtra" type="button"><span class="smToolLabel">Lägg till kopplingar</span><small class="smToolHelp">Markera och hitta saknade stämplar</small></button>
         <button id="rtMenuSettings" type="button"><span class="smToolLabel">Ställ in avläsning</span><small class="smToolHelp">Välj kod och hela tabellen</small></button>
+        <button id="rtMenuProducts" type="button" hidden><span class="smToolLabel">Läs om produkter</span><small class="smToolHelp">Valfritt, bara om du vill ändra sparad avläsning</small></button>
         <button id="pwToolText" type="button" aria-pressed="false"><svg aria-hidden="true" class="smToolSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M12 6v13M8 19h8"/></svg><span class="smToolLabel">Text</span><small class="smToolHelp">Skriv på ritning</small></button>
         <button id="pwToolCallout" type="button" aria-pressed="false"><svg aria-hidden="true" class="smToolSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13v10H8l-4 4z"/><path d="M13 20l7-7m-5 0h5v5"/></svg><span class="smToolLabel">Text + pil</span><small class="smToolHelp">Text med pil</small></button>
         <button id="pwToolArrow" type="button" aria-pressed="false"><svg aria-hidden="true" class="smToolSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L19 5m-8 0h8v8"/></svg><span class="smToolLabel">Pil</span><small class="smToolHelp">Rita pil</small></button>
@@ -579,11 +580,11 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
         <div class="pwEmptyMark" aria-hidden="true">
           <svg viewBox="0 0 64 64"><path d="M11 51V14h27v38"/><path d="M18 51V30h13v35"/><circle cx="28" cy="36" r="1.7"/><path d="M38 22h15v35H38"/><path d="M8 51h48"/></svg>
         </div>
-        <h1>Avläsning TEST 9.5</h1>
-        <button id="pwOpenProjectEmpty" class="pwOpen pwOpenLarge" type="button" title="Öppna en sparad projekt-PDF direkt med dess granskade kopplingar">Öppna ny PDF</button>
-        <button id="rtChooseFiles" type="button" title="Öppna granskningsguiden, även för en redan kopplad projekt-PDF">Öppna ritning och dörrkort från flera PDF:er</button>
+        <h1>Avläsning TEST 9.6</h1>
+        <button id="pwOpenProjectEmpty" class="pwOpen pwOpenLarge" type="button" title="Öppna färdigt sparat arbete utan ny avläsning">Öppna PDF</button>
+        <button id="rtChooseFiles" type="button" title="Läs nya ritningar och dörrkort från en eller flera PDF-filer och spara som projekt-PDF">Avläsning av ritning och dörrkort</button>
         <input id="rtMultiFiles" type="file" accept="application/pdf,.pdf" multiple hidden>
-        <p id="pwHomeStatus" class="smHomeStatus" role="status" aria-live="polite">Öppna ny PDF: en sparad projekt-PDF öppnas direkt med sina granskade kopplingar. Välj flera PDF:er för att granska eller koppla om. Nya underlag får guidens steg först.</p>
+        <p id="pwHomeStatus" class="smHomeStatus" role="status" aria-live="polite">Ny fil: välj Avläsning av ritning och dörrkort, läs en gång och spara med Spara PDF. Färdigt projekt: välj Öppna PDF. Sparade kopplingar, produkter och avprickningar följer med till en annan dator.</p>
         <div id="pwRecentProjects" class="smRecentProjects" hidden>
           <div class="smRecentHead">
             <div><strong>Lokalt sparade projekt</strong><small id="pwRecentCount">0 lokala projekt</small></div>
@@ -1036,7 +1037,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
   </div>
  </div>
  <p id="smartExportStatus" class="smartExportStatus" role="status" aria-live="polite">Arbetet sparas automatiskt på enheten. Välj hur du vill spara eller dela.</p>
- <p class="smSaveReminder">Välj Spara PDF för att ta med granskade kopplingar och arbetsstatus i filen till nästa öppning eller en annan enhet. Spara lokalt lagrar arbetet i den här webbläsaren på den här enheten.</p>
+ <p class="smSaveReminder">Spara PDF bäddar in avläsning, kopplingar, produkter och avprickningar i filen. Den öppnas direkt på nästa dator utan ny avläsning. Spara lokalt är en arbetskopia i den här webbläsaren.</p>
 </dialog>
 <script src="vendor/jszip-3.10.1.min.js"></script>
 <script src="smartmatch-slr-test-module-v36-132.js?v=36.132"></script>
@@ -1044,20 +1045,21 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
 <script src="smartmatch-stamp-shapes-v36-78.js?v=36-78"></script>
 <script src="smartmatch-table-layouts-v36-94.js?v=36-106"></script>
 <script src="smartmatch-beslagskod-v36-133.js?v=36.133"></script>
-<link rel="stylesheet" href="smartmatch-read-test-v9-5.css?v=9.5">
+<link rel="stylesheet" href="smartmatch-read-test-v9-6.css?v=9.6">
 <script src="smartmatch-read-stamps-v5.js?v=5"></script>
 <script src="smartmatch-read-match-v9-2.js?v=9.2"></script>
-<script src="smartmatch-read-codes-v9-3.js?v=9.3"></script>
+<script src="smartmatch-read-text-v9-6.js?v=9.6"></script>
+<script src="smartmatch-read-codes-v9-6.js?v=9.6"></script>
 <script src="smartmatch-read-image-regions-v7.js?v=7"></script>
 <script src="smartmatch-read-work-v9-4.js?v=9.4"></script>
 <script src="smartmatch-read-progress-v9-1.js?v=9.1"></script>
-<script src="smartmatch-read-test-v9-5.js?v=9.5"></script>
-<script src="smartmatch-read-test-main-v9-5.js?v=9.5"></script>
-<script src="smartmatch-read-extra-v9-5.js?v=9.5"></script>
+<script src="smartmatch-read-test-v9-6.js?v=9.6"></script>
+<script src="smartmatch-read-test-main-v9-6.js?v=9.6"></script>
+<script src="smartmatch-read-extra-v9-6.js?v=9.6"></script>
 <script src="smartmatch-protocol-export-v36-96.js?v=36-106"></script>
-<script src="smartmatch-read-test-session-v9-5.js?v=9.5"></script>
-<script id="smartmatch-visual-release-v1-3">(function(){var label=document.getElementById('pwBuildVersion');if(!label)return;label.textContent='Avläsning TEST 9.5';label.title='SmartMatch avläsning TEST 9.5';label.setAttribute('aria-label','SmartMatch avläsning TEST 9.5');/* data-build and data-loaded-build remain 36.148 for internal updater. */})();</script>
-<script src="tillsyno-appearance.js?v=2.4.372"></script>
+<script src="smartmatch-read-test-session-v9-6.js?v=9.6"></script>
+<script id="smartmatch-visual-release-v1-3">(function(){var label=document.getElementById('pwBuildVersion');if(!label)return;label.textContent='Avläsning TEST 9.6';label.title='SmartMatch avläsning TEST 9.6';label.setAttribute('aria-label','SmartMatch avläsning TEST 9.6');/* data-build and data-loaded-build remain 36.149 for internal updater. */})();</script>
+<script src="tillsyno-appearance.js?v=2.4.373"></script>
 
 <!-- Session module handles refresh + reopen -->
 </body>
