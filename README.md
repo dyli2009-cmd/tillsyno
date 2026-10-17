@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.388 – tydlig arbetsprocent i iPad-översikten
+
+[Avläsning TEST 9.21](smartmatch-read-test.html) låter procentmärket behålla en liten, skärmbaserad storlek när ritningen zoomas ut. Varje position över 0 % visar därför sin egen procent även när stämpeln blir liten: 28 × 18 bildpunkter i översikten och högst 30 × 20 i normal- och detaljvy. Märket ligger centrerat under stämpelkoden, använder mörk bakgrund under pågående arbete och grön bakgrund vid 100 %. Stämpelreplikan, befintliga projektkopplingar och iPadens minnesgränser är oförändrade. Se [beteende och slutprov](SMARTMATCH_READ_TEST_9_21.md).
+
 ## Tillsyno v2.4.387 – kompakt läsbar iPad-stämpel
 
 [Avläsning TEST 9.20](smartmatch-read-test.html) visar en liten stämpelreplika över länkade iPad-positioner när PDF-originalets text blir för mjuk. Replikan använder gul yta, svart kod och kant samt en tunn röd markering. Den följer originalstämpeln när ritningen zoomas ut och slutar växa vid 72 × 36 bildpunkter, så koden blir tydlig efter inzoomning utan att symbolen fortsätter täcka mer av planen. iPadens minnesgränser och befintliga projektkopplingar bevaras. Se [beteende och slutprov](SMARTMATCH_READ_TEST_9_20.md).
