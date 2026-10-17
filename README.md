@@ -1,8 +1,14 @@
 # dorrservice
 
+## Tillsyno v2.4.370 – skilj kortbeteckning från ritningskod och justera ett kort
+
+[Avläsning TEST 9.3](smartmatch-read-test.html) skiljer dörrkortets ursprungliga beteckning, exempelvis **DBL**, från den uttryckliga ritningskopplingen **DBL-1**. Med **Justera läsområdet** kan kod- och tabellmarkeringar ändras för en enda sida eller ett enskilt kort och läsas om med **Läs bara detta kort**. Andra kort och tidigare kopplingar/avprickningar bevaras; en verklig kodändring kräver ny granskning. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_3.md). [TEST 9.2](smartmatch-read-test-v9-2.html) finns kvar separat.
+
+Borttagna sidor i Ritningsverktyget sparas redan via **Spara PDF → Spara mina sidval och ändringar → Spara PDF**. Hur mycket mindre filen blir beror på vilket innehåll som kan tas bort; se [förklaring och verifiering](SMARTMATCH_READ_TEST_9_3.md#spara-pdf-efter-borttagna-sidor).
+
 ## Tillsyno v2.4.369 – GS-produktgrupper, kompletteringar och svensk bildtext
 
-[Avläsning TEST 9.2](smartmatch-read-test.html) visar produktvärden från **Övrigt / Produkt** som checklistor under kortets avsnitt. **GS i Monteras av** avgör vilka rader som följer med. Med **Lägg till kopplingar** markerar du en beteckning på ritningen, söker samma hela text och förvalt samma textfärg, granskar träffarna och väljer kortsida. Befintliga kopplingar och avprickningar bevaras. Saknade dörrkort kan läggas till från fler PDF-filer och produkterna läsas senare. Se [steg för steg och verifiering](SMARTMATCH_READ_TEST_9_2.md). [TEST 9.1](smartmatch-read-test-v9-1.html) finns kvar separat.
+[Avläsning TEST 9.2](smartmatch-read-test-v9-2.html) visar produktvärden från **Övrigt / Produkt** som checklistor under kortets avsnitt. **GS i Monteras av** avgör vilka rader som följer med. Med **Lägg till kopplingar** markerar du en beteckning på ritningen, söker samma hela text och förvalt samma textfärg, granskar träffarna och väljer kortsida. Befintliga kopplingar och avprickningar bevaras. Saknade dörrkort kan läggas till från fler PDF-filer och produkterna läsas senare. Se [steg för steg och verifiering](SMARTMATCH_READ_TEST_9_2.md). [TEST 9.1](smartmatch-read-test-v9-1.html) finns kvar separat.
 
 När alla produktlistor redan är lästa öppnar **Läs produkterna igen** produktsteget för en ny läsning utan att göra om ritningskopplingarna. Finns väntande kort läser **Fortsätt med produkter** dessa och behåller färdiga listor.
 
