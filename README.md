@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.387 – kompakt läsbar iPad-stämpel
+
+[Avläsning TEST 9.20](smartmatch-read-test.html) visar en liten stämpelreplika över länkade iPad-positioner när PDF-originalets text blir för mjuk. Replikan använder gul yta, svart kod och kant samt en tunn röd markering. Den följer originalstämpeln när ritningen zoomas ut och slutar växa vid 72 × 36 bildpunkter, så koden blir tydlig efter inzoomning utan att symbolen fortsätter täcka mer av planen. iPadens minnesgränser och befintliga projektkopplingar bevaras. Se [beteende och slutprov](SMARTMATCH_READ_TEST_9_20.md).
+
 ## Tillsyno v2.4.386 – stämplar i ritningens egen skala
 
 [Avläsning TEST 9.19](smartmatch-read-test.html) visar originalets stämpel, färg och tryckta kod utan ett nytt textlager ovanpå. Den genomskinliga klickytan och procentmärket följer ritningens zoom och täcker därför inte planen när man zoomar ut. Den mörka fristående etiketten är borttagen. iPadens grundritning höjs försiktigt från 1,50 till 1,65 megapixel. Se [beteende, bevarade skydd och slutprov](SMARTMATCH_READ_TEST_9_19.md).
