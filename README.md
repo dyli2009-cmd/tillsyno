@@ -1,8 +1,8 @@
 # dorrservice
 
-## Tillsyno v2.4.377 – förbered en gång, öppna sparat arbete
+## Tillsyno v2.4.378 – stora projekt och tydligt PDF-sparande
 
-[Avläsning TEST 9.10](smartmatch-read-test.html) har två tydliga ingångar: **Förbered ny PDF** för att läsa och granska nya handlingar, och **Öppna färdigt projekt** för sparade kopplingar och arbete. Nästa öppning använder projekt-PDF:ens sparade data direkt utan ny OCR eller ritningssökning. Ändra förberedelse är ett separat val. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_10.md).
+[Avläsning TEST 9.11](smartmatch-read-test.html) rättar exportfelet där stor inbäddad projektinformation inte kunde läsas tillbaka. Sparvyn visar arbetssteg, procent och förfluten tid. **100 % – PDF klar att spara** betyder att exportkontrollen är klar; tryck sedan **Spara PDF**. Vid direkt sparning visar appen även filskrivning och kontroll från disk. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_11.md).
 
 ## Tillsyno v2.4.372 – säkrare PDF-sparning
 

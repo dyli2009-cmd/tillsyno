@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.377**
+Aktuell version: **v2.4.378**
 
 Beställd CE-uppdatering 15 oktober 2026: se [CE_DESKTOP_357.md](CE_DESKTOP_357.md). Delad/flyttbar/storleksjusterbar vy gäller endast dator. Samma enkla Ny dörr-ikon och temakopplad underskrift gäller även iPhone/iPad enligt den kompletterade beställningen. CE-data, PDF-beräkningar, övriga moduler och authregler bevaras. Kontrollflödet är fortsatt låst utanför den fristående CE-modulen.
 
@@ -357,3 +357,5 @@ Kompletterat användarbeslut samma arbetspass, TEST 9.6: skilj Avläsning av rit
 2026-10-17, Tillsyno v2.4.376: Användaren beställde större och tätare datorvy i separata SmartMatch Avläsning TEST 9.9 samt möjlighet att fortsätta med klara kort när vissa beteckningar är dubbla eller olästa. Kortgranskningen ligger under förhandsvisningen med filter, sökning och tydliga orsaker. Ett uttryckligt val kan lägga problemkort åt sidan utan att PDF-sidor tas bort eller kortkoppling gissas. Dubbla koder kräver val av vilket kort som ska användas; oklara kort och läsdata sparas separat för senare rättning. Tidigare kopplingar, arbetslistor, grupper, bortval och arbete bevaras vid riktad fortsättning. 9.8-snapshot, standard-SmartMatch, GS-regler, DA/SLR, Ritningsverktygets funktioner, Kontrollflöde, beta 10 och auth ändras inte. Se SMARTMATCH_READ_TEST_9_9.md.
 
 2026-10-17, Tillsyno v2.4.377: Beställd uppdelning inom separata SmartMatch Avläsning TEST 9.10: Förbered ny PDF för avläsning/granskning och Öppna färdigt projekt för att återställa sparade kopplingar, kontrollpunkter och arbete. Återöppning återanvänder samma fils validerade PDF-data och återställer kortregistret ur sparade data utan ny text-/bildavläsning. Senare ändring av förberedelsen är ett uttryckligt val. 9.9 och tidigare snapshots, standard-SmartMatch, beta 10, GS-regler, DA/SLR, Ritningsverktygets funktioner, Kontrollflöde och auth bevaras. Se SMARTMATCH_READ_TEST_9_10.md för arbetsgång, verifiering och gränser.
+
+2026-10-17, Tillsyno v2.4.378: Beställd rättning i separata Avläsning TEST 9.11 för PDF-export som inte kan läsa tillbaka stor inbäddad projektinformation. UTF-16-projekttext avkodas linjärt i begränsade block, utan stora funktionsargument eller stackkrävande upprepade regexgrupper. Samma läsare används för öppning och exportkontroll. Sparvyn visar färdiga arbetssteg, procent och tid; verifierad PDF klar att spara skiljs från faktisk filskrivning och läsning tillbaka från disk. 9.10 och tidigare snapshots, standard-SmartMatch, beta 10, GS-/DA-/SLR-regler, Ritningsverktygets funktioner, Kontrollflöde och auth bevaras. Se SMARTMATCH_READ_TEST_9_11.md.
