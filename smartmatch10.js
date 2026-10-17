@@ -50,7 +50,7 @@ async function loadFile(file){
  if(store.sources.has(id))return id;
  if(!window.pdfjsLib)throw Error('PDF-läsaren kunde inte laddas.');
  const bytes=new Uint8Array(await file.arrayBuffer());
- const pdf=await pdfjsLib.getDocument({data:bytes.slice(),useSystemFonts:true}).promise;
+ const pdf=await pdfjsLib.getDocument({data:bytes,useSystemFonts:true}).promise;
  store.sources.set(id,{id,name:file.name,size:file.size,lastModified:file.lastModified,doc:pdf});
  return id;
 }
