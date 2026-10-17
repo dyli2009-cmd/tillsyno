@@ -1,8 +1,8 @@
 # dorrservice
 
-## Tillsyno v2.4.374 – rätt projekt sparas och återöppnas
+## Tillsyno v2.4.375 – ändra grupper och koppla rätt stämplar
 
-[Avläsning TEST 9.7](smartmatch-read-test.html) rättar ett reproducerat fel där sparningen efter projektbyte kunde återanvända en tidigare fils PDF. Exporten hör nu till det aktuella projektet och måste innehålla en verifierad, granskad avläsning. Samma PDF-läsare återställer projektinformationen vid exportkontroll och öppning, även genom indirekta PDF-referenser. Tidigare lokala 9.6-arkiv och granskade aktiva utkast kan återhämtas utan att källan ändras. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_7.md).
+[Avläsning TEST 9.8](smartmatch-read-test.html) har **Ändra grupp** för att byta namn och dörrkort för alla gruppens positioner i hela projektet. **Ta bort den här positionen** tar bort en felträff direkt från dörrkortsvyn och bevarar bortvalet. **Koppla stämplar** börjar med en exempelmarkering och kan filtrera samma hela beteckning efter stämpelns bakgrundsfärg och form, så vanlig WC-text väljs bort. Originalkort och varje dörrs eget arbete bevaras. Alla ändringar sparas i projekt-PDF:en. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_8.md).
 
 ## Tillsyno v2.4.372 – säkrare PDF-sparning
 
