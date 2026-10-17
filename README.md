@@ -1,8 +1,12 @@
 # dorrservice
 
+## Tillsyno v2.4.372 – säkrare PDF-sparning
+
+[Avläsning TEST 9.5](smartmatch-read-test.html) förbereder och verifierar projekt-PDF:en innan Windows sparruta öppnas. Skrivfel avbryter filskrivningen och den sparade filen läses tillbaka före lyckat besked. Lokalt arkiverade TEST 9.4-projekt kan återhämtas i den nya, separata lagringen. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_5.md).
+
 ## Tillsyno v2.4.371 – produktläsning efter sparad OCR-text
 
-[Avläsning TEST 9.4](smartmatch-read-test.html) rättar överlappande textfragment i tabellrubriker, exempelvis **Monta + av**, när positionerna bevisar att samma bokstav lästs två gånger. GS krävs fortfarande i montagekolumnen. Misslyckad kolumnläsning blockerar sparning av ett tomt ersättningsresultat och behåller tidigare produkter och kontroller. Produktsteget hänvisar inte längre till ny ritningsmatchning. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_4.md). [TEST 9.3](smartmatch-read-test-v9-3.html) finns kvar separat.
+[Avläsning TEST 9.4](smartmatch-read-test-v9-4.html) rättar överlappande textfragment i tabellrubriker, exempelvis **Monta + av**, när positionerna bevisar att samma bokstav lästs två gånger. GS krävs fortfarande i montagekolumnen. Misslyckad kolumnläsning blockerar sparning av ett tomt ersättningsresultat och behåller tidigare produkter och kontroller. Produktsteget hänvisar inte längre till ny ritningsmatchning. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_4.md). [TEST 9.3](smartmatch-read-test-v9-3.html) finns kvar separat.
 
 ## Tillsyno v2.4.370 – skilj kortbeteckning från ritningskod och justera ett kort
 
