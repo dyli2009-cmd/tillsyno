@@ -28,7 +28,7 @@
  </div>
  <div class="step"><div class="stepTitle"><b>2</b><div><strong>Koppla mot ritning</strong><small>Hela beteckningen måste stämma. Förslag granskas före godkännande.</small></div></div>
   <label class="picker">Välj ritnings-PDF <input id="drawingFile" type="file" accept="application/pdf,.pdf" disabled></label>
-  <div class="row"><button id="sameAsCards" disabled>Använd samma PDF</button><button id="scanDrawing" disabled>Hitta märkningar</button><button id="ocrDrawing" disabled>Bildläs ritningsstämplar</button></div>
+  <div class="row"><button id="sameAsCards" disabled>Använd samma PDF</button><button id="scanDrawing" disabled>Hitta märkningar</button><button id="ocrDrawing" disabled>Bildläs ritningsstämplar</button><button id="manualStamp" disabled>+ Markera stämpel</button></div>
   <small id="drawingSourceInfo">Ingen ritning vald.</small>
  </div>
  <div class="step"><div class="stepTitle"><b>3</b><div><strong>Samla arbetet på kortet</strong><small>Original, uppgifter och kopplade positioner med egen status.</small></div></div>
@@ -46,7 +46,7 @@
   <div class="panelHeading"><h2 id="viewerTitle">PDF-visning</h2><div class="pageNav"><button id="prevPage" disabled aria-label="Föregående sida">‹</button><span id="pageInfo">– / –</span><button id="nextPage" disabled aria-label="Nästa sida">›</button></div></div>
   <div class="legend"><span class="dot candidate"></span>Föreslagen <span class="dot approved"></span>Godkänd <span class="dot uncertain"></span>Otydlig</div>
   <div id="viewer" class="viewer"><div class="empty">När en ritning laddats visas varje hittad stämpel på rätt plats.</div><div id="pageSurface" hidden><canvas id="drawingCanvas"></canvas><div id="markers"></div></div></div>
-  <div class="viewerFoot"><small>Träffar från PDF-text, PDF-stämplar och valfri lokal bildläsning visas som förslag. Tryck på en markering för att öppna rätt dörrkort.</small></div>
+  <div class="viewerFoot"><small>Träffar från PDF-text, PDF-stämplar och valfri lokal bildläsning visas som förslag. Tryck på en markering för att öppna rätt dörrkort. Om en stämpel inte hittas: välj + Markera stämpel och klicka i PDF:en.</small></div>
  </section>
  <aside class="panel infoPanel">
   <div class="panelHeading"><h2>Valt dörrkort</h2><span id="selectedBadge"></span></div>
