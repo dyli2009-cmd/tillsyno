@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.384 – skarpa länkade stämplar på iPad
+
+[Avläsning TEST 9.17](smartmatch-read-test.html) visar redan länkade SmartMatch-stämplar i ett separat, skarpt etikettlager. Grundritningen kan fortsatt vara mjuk i iPadens minnessnåla läge, medan beteckningar som GS1 och GS2 förblir läsbara vid rätt dörr. TEST 9.16:s skydd mot stora GPU- och PDF-bildytor ligger kvar. Se [beteende, bevarade skydd och slutprov](SMARTMATCH_READ_TEST_9_17.md).
+
 ## Tillsyno v2.4.383 – transformfri iPad-zoom i SmartMatch
 
 [Avläsning TEST 9.16](smartmatch-read-test.html) tar bort CSS-transformering från ritningszoom på iOS. En stor A1-sida kunde annars främjas till en GPU-yta på omkring 787 MB vid DPR 2, även när den synliga översiktsbilden var begränsad. På iPad samlas zoomen under fingerrörelsen och verkställs när fingrarna släpps. Ritningsytan begränsas till 8 192 logiska pixlar, PDF-bilder får en separat minnesbudget och automatisk detaljläsning stängs av för projekt över 24 MB för att undvika att screenshot-tunga sidor avkodas igen efter varje zoom. Se [rotorsak, arbetsgång och slutprov](SMARTMATCH_READ_TEST_9_16.md).
