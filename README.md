@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.385 – något tydligare iPad-ritning
+
+[Avläsning TEST 9.18](smartmatch-read-test.html) höjer försiktigt upplösningen på iPadens grundritning från 1,35 till 1,50 megapixel. De skarpa länkade stämpelkoderna från TEST 9.17 ligger kvar, och övriga skydd för zoom, detaljrendering och stora PDF-filer är oförändrade. Se [beteende, minnesgränser och slutprov](SMARTMATCH_READ_TEST_9_18.md).
+
 ## Tillsyno v2.4.384 – skarpa länkade stämplar på iPad
 
 [Avläsning TEST 9.17](smartmatch-read-test.html) visar redan länkade SmartMatch-stämplar i ett separat, skarpt etikettlager. Grundritningen kan fortsatt vara mjuk i iPadens minnessnåla läge, medan beteckningar som GS1 och GS2 förblir läsbara vid rätt dörr. TEST 9.16:s skydd mot stora GPU- och PDF-bildytor ligger kvar. Se [beteende, bevarade skydd och slutprov](SMARTMATCH_READ_TEST_9_17.md).
