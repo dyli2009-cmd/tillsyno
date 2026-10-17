@@ -1,8 +1,8 @@
 # dorrservice
 
-## Tillsyno v2.4.376 – kompakt granskning och fortsättning med klara kort
+## Tillsyno v2.4.377 – förbered en gång, öppna sparat arbete
 
-[Avläsning TEST 9.9](smartmatch-read-test.html) har större granskningsyta på dator och en tät kortlista under förhandsvisningen. Filter och sökning hjälper dig hitta dubbletter och olästa kort. Du kan uttryckligen lägga problemkort åt sidan och fortsätta med klara kort. De åsidosatta korten och deras läsdata följer med i projekt-PDF:en för senare rättning; sidor tas inte bort och dubbletter kopplas inte genom gissning. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_9.md).
+[Avläsning TEST 9.10](smartmatch-read-test.html) har två tydliga ingångar: **Förbered ny PDF** för att läsa och granska nya handlingar, och **Öppna färdigt projekt** för sparade kopplingar och arbete. Nästa öppning använder projekt-PDF:ens sparade data direkt utan ny OCR eller ritningssökning. Ändra förberedelse är ett separat val. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_10.md).
 
 ## Tillsyno v2.4.372 – säkrare PDF-sparning
 
