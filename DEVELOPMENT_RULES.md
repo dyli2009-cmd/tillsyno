@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.380**
+Aktuell version: **v2.4.381**
 
 Beställd CE-uppdatering 15 oktober 2026: se [CE_DESKTOP_357.md](CE_DESKTOP_357.md). Delad/flyttbar/storleksjusterbar vy gäller endast dator. Samma enkla Ny dörr-ikon och temakopplad underskrift gäller även iPhone/iPad enligt den kompletterade beställningen. CE-data, PDF-beräkningar, övriga moduler och authregler bevaras. Kontrollflödet är fortsatt låst utanför den fristående CE-modulen.
 
@@ -363,3 +363,5 @@ Kompletterat användarbeslut samma arbetspass, TEST 9.6: skilj Avläsning av rit
 2026-10-17, Tillsyno v2.4.379: Snabbrättning i separata Avläsning TEST 9.12 efter att Spara lokalt såg ut att vara borttaget under en lång PDF-export. Den befintliga lokala säkerhetskopian ligger nu före exportförloppet, visar egen sparstatus och kan användas medan PDF-förberedelsen arbetar eller har stoppats. Original-PDF och komplett arbetsutkast arkiveras fortsatt lokalt; PDF-exportens metadata-, verifierings- och diskskrivningsskydd från 9.11 är oförändrade. 9.11 och tidigare snapshots, standard-SmartMatch, beta 10, GS-/DA-/SLR-regler, Ritningsverktyget, Kontrollflöde och auth bevaras. Se SMARTMATCH_READ_TEST_9_12.md.
 
 2026-10-17, Tillsyno v2.4.380: Rättning i separata Avläsning TEST 9.13 för lokala projekt som blev osynliga efter en TEST-uppdatering. Förstasidan bygger en skrivskyddad lista från TEST 9.1–9.12 även när den nya lagringen redan innehåller en aktiv fil eller andra projekt. Äldre stora PDF-filer dupliceras inte vid listning; de öppnas från sin befintliga källa med sparade kopplingar, produkter, kontroller och tider och utan ny OCR eller matchning. En tydlig knapp söker äldre lagring igen. 9.12 och tidigare snapshots, standard-SmartMatch, beta 10, GS-/DA-/SLR-regler, Ritningsverktyget, Kontrollflöde och auth bevaras. Se SMARTMATCH_READ_TEST_9_13.md.
+
+2026-10-17, Tillsyno v2.4.381: Beställd återkoppling i separata Avläsning TEST 9.14 för en ritningsposition som tidigare tagits bort. Sökgranskningen visar totalt antal, redan kopplade, okopplade och tidigare borttagna träffar. Redan kopplade positioner är synliga men kan inte väljas igen; en uttryckligen vald borttagen position får en ny manuell koppling till valt dörrkort och börjar obockad. Den gamla automatiska träffen och bortvalet sparas som dubblettskydd även efter helskanning, PDF-export och återöppning. 9.13 och tidigare snapshots, standard-SmartMatch, beta 10, GS-/DA-/SLR-regler, Ritningsverktyget, Kontrollflöde och auth bevaras. Se SMARTMATCH_READ_TEST_9_14.md.

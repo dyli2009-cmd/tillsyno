@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.381 – koppla tillbaka en borttagen SmartMatch-position
+
+[Avläsning TEST 9.14](smartmatch-read-test.html) visar både kopplade, okopplade och tidigare borttagna stämpelträffar i **Koppla stämplar**. En borttagen fysisk position kan väljas och kopplas tillbaka till rätt dörrkort utan att redan kopplade positioner dupliceras. Återkopplingen och dubblettskyddet följer med i projekt-PDF:en. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_14.md).
+
 ## Tillsyno v2.4.380 – hitta tidigare lokala SmartMatch-projekt
 
 [Avläsning TEST 9.13](smartmatch-read-test.html) visar lokalt sparade projekt från äldre TEST-versioner direkt på första sidan. Knappen **Hitta tidigare lokalt sparade projekt** kan köra sökningen igen. Äldre stora PDF-filer läses från sin befintliga lokala lagring utan automatisk kopiering eller ny avläsning. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_13.md).
