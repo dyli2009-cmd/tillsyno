@@ -6,11 +6,11 @@ let pdf=null,sourceBytes=null,fileName='ritning.pdf',page=1,keep=[],undo=[],redo
 let manualMasks={},cropRects={},editMode='',dragStart=null,estimateVersion=0;
 let selectPagesMode=false,selectedPages=new Set(),workSourceKind='';
 let previewZoom=1,previewPage=0,previewWidth=0,previewHeight=0,panDrag=null,zoomTimer=null,previewVersion=0;
-let busy=false,splitUrls=[];
+let busy=false,splitUrls=[],sourceGeneration=0;
 const previewWrap=$('previewWrap');
 async function withBusy(task){
  if(busy)return;busy=true;
- const controls=Array.from(document.querySelectorAll('button,input,select'),el=>[el,el.disabled]);
+ const controls=Array.from(document.querySelectorAll('button,input,select,textarea'),el=>[el,el.disabled]);
  controls.forEach(([el])=>el.disabled=true);$('workspace').setAttribute('aria-busy','true');
  $('workspace').inert=true;document.querySelector('.headerActions').inert=true;
  try{return await task();}
@@ -163,9 +163,11 @@ function updateEditButtons(){
  $('previewWrap').classList.toggle('eraseMode',editMode==='erase');
  $('previewWrap').classList.toggle('cropMode',editMode==='crop');
  $('previewWrap').classList.toggle('cardHeaderMode',editMode==='card-header');
+ $('previewWrap').classList.toggle('ocrAreaMode',editMode==='ocr-area');
  $('previewEditMode').hidden=!editMode;
- $('previewEditMode').textContent=(editMode==='card-header'?'Markera rubrik':editMode==='crop'?'Beskär':'Dölj område')+' · Avsluta';
+ $('previewEditMode').textContent=(editMode==='ocr-area'?'Markera dörrkort':editMode==='card-header'?'Markera rubrik':editMode==='crop'?'Beskär':'Dölj område')+' · Avsluta';
  window.DrawingCardTool?.refresh();
+ window.DrawingOcrTool?.refresh();
 }
 function updateBulkControls(){
  $('selectPages').classList.toggle('active',selectPagesMode);
@@ -320,7 +322,9 @@ async function loadFile(file,imageSource=null){
   const uploadedBytes=new Uint8Array(await file.arrayBuffer()),embedded=await inspectKnownWorkPdf(uploadedBytes),drawingBytes=embedded?.drawingBytes||uploadedBytes,candidate=await pdfjsLib.getDocument({data:drawingBytes.slice()}).promise;await candidate.getPage(1);
   if(pdf)try{await pdf.destroy()}catch(_){}
   pdf=candidate;sourceBytes=drawingBytes;uploadedSize=imageSource?.originalSize||uploadedBytes.byteLength;drawingSourceSize=drawingBytes.byteLength;fileName=file.name||'ritning.pdf';workSourceKind=embedded?.kind||'';page=1;keep=Array(pdf.numPages).fill(true);undo=[];redo=[];manualMasks={};cropRects={};editMode='';dragStart=null;selectPagesMode=false;selectedPages=new Set();lastOutput=null;previewPage=0;previewZoom=1;clearParts();
+  sourceGeneration++;
   window.DrawingCardTool?.reset();
+  window.DrawingOcrTool?.reset();
   window.DrawingAnalysisTool?.reset();
   for(const id of ['removeText','removeAnnotations','removeColors'])$(id).checked=false;
   $('quality').value='lossless';
@@ -405,7 +409,7 @@ async function output(options={}){
  const needsCleanup=$('quality').value==='lossless'&&options.deduplicateImages!==false;
  return lastOutput&&(!needsCleanup||lastOutput.imageCleanup)?lastOutput:await buildOutput(options);
 }
-function invalidate(record=true){if(record)recordChange();lastOutput=null;clearParts();$('resultCard').hidden=true;updateSizeComparison();updateEstimatedSize();window.DrawingAnalysisTool?.changed();}
+function invalidate(record=true){if(record)recordChange();lastOutput=null;clearParts();$('resultCard').hidden=true;updateSizeComparison();updateEstimatedSize();window.DrawingAnalysisTool?.changed();window.DrawingOcrTool?.refresh();}
 function pointerPos(e){
  const cv=$('previewCanvas'),r=cv.getBoundingClientRect();return{x:Math.max(0,Math.min(r.width,e.clientX-r.left)),y:Math.max(0,Math.min(r.height,e.clientY-r.top)),w:r.width,h:r.height}
 }
@@ -413,12 +417,16 @@ function showDragBox(a,b){
  const box=$('eraseBox'),x=Math.min(a.x,b.x),y=Math.min(a.y,b.y),w=Math.abs(a.x-b.x),h=Math.abs(a.y-b.y);
  box.classList.toggle('cropSelection',editMode==='crop');box.hidden=false;box.style.left=x+'px';box.style.top=y+'px';box.style.width=w+'px';box.style.height=h+'px';
  box.classList.toggle('cardHeaderSelection',editMode==='card-header');
+ box.classList.toggle('ocrAreaSelection',editMode==='ocr-area');
 }
 function finishDrag(e){
  if(!dragStart)return;const end=pointerPos(e),start=dragStart;dragStart=null;$('eraseBox').hidden=true;
  const x=Math.min(start.x,end.x),y=Math.min(start.y,end.y),w=Math.abs(start.x-end.x),h=Math.abs(start.y-end.y);
  if(w<8||h<8)return;
  const rect={x:x/end.w,y:y/end.h,w:w/end.w,h:h/end.h};
+ if(editMode==='ocr-area'){
+  editMode='';window.DrawingOcrTool?.setRegion(rect,page);updateEditButtons();return;
+ }
  if(editMode==='card-header'){
   editMode='';window.DrawingCardTool?.setRegion(rect,page);updateEditButtons();return;
  }
@@ -543,8 +551,35 @@ $('splitPdf').onclick=()=>withBusy(async()=>{
 window.addEventListener('resize',()=>{if(pdf)renderPreview()});
 window.DrawingToolsBridge=Object.freeze({
  getPdf:()=>pdf,getPage:()=>page,getKeptPages:keptPages,getEditMode:()=>editMode,
- getSourceBytes:()=>sourceBytes,getStateKey:()=>JSON.stringify(drawingState()),
- withBusy,message,showTools,
+ getSourceBytes:()=>sourceBytes,getStateKey:()=>sourceGeneration+':'+JSON.stringify(drawingState()),getFileName:()=>fileName,
+ getOcrOptions:()=>({excludeRects:JSON.parse(JSON.stringify(manualMasks)),clipRects:JSON.parse(JSON.stringify(cropRects))}),
+ withBusy,message,showTools,downloadPdf,
+ async createSearchableCopy(readings,options={}){
+  if(!pdf||!sourceBytes)return null;
+  if(['removeText','removeAnnotations','removeColors'].some(id=>$(id).checked))throw Error('Avmarkera text-, kommentar- och färgrensning för att spara textlagret med originalets utseende och stämplar.');
+  const checkCancelled=()=>{if(options.signal?.aborted||options.cancelled?.()){const error=Error('Sparandet avbröts.');error.name='AbortError';throw error;}};
+  const selected=keptPages(),wanted=new Set(selected),crops={},masks={};
+  if(!selected.length)throw Error('Minst en sida måste vara kvar.');
+  const pages=(readings.pages||[]).filter(item=>wanted.has(item.page)&&item.words?.length).map(item=>{
+   const vp=item.viewport,clip=cropRects[item.page],excluded=manualMasks[item.page]||[];
+   if(!vp?.width||!vp?.height)throw Error('Avläsningens sidpositioner saknas. Läs området igen.');
+   const words=(item.words||[]).filter(word=>{
+    const x=word.x/vp.width,y=word.y/vp.height,w=word.w/vp.width,h=word.h/vp.height;
+    if(clip&&(x<clip.x||y<clip.y||x+w>clip.x+clip.w||y+h>clip.y+clip.h))return false;
+    return !excluded.some(mask=>x<mask.x+mask.w&&x+w>mask.x&&y<mask.y+mask.h&&y+h>mask.y);
+   });return {...item,words};
+  });
+  for(const no of selected){checkCancelled();if(cropRects[no])crops[no-1]=await pdfRectangle(no,cropRects[no]);if(manualMasks[no]?.length)masks[no-1]=await Promise.all(manualMasks[no].map(rect=>pdfRectangle(no,rect)));}
+  let report;
+  const output=await DrawingPdf.optimize(sourceBytes,{pages:selected.map(no=>no-1),crops,masks,deduplicateImages:false,
+   cancelled:()=>options.signal?.aborted||options.cancelled?.(),onProgress:options.onProgress,
+   addTextLayer:async doc=>{report=await DrawingOcrPdf.appendToDocument(doc,{pages,signal:options.signal,cancelled:options.cancelled,onProgress:options.onProgress});}});
+  checkCancelled();
+  const check=await pdfjsLib.getDocument({data:output.bytes.slice()}).promise;
+  try{if(check.numPages!==selected.length)throw Error('Den sökbara PDF-kopian har fel sidantal.');for(let no=1;no<=check.numPages;no++){checkCancelled();await check.getPage(no);}}finally{await check.destroy();}
+  checkCancelled();
+  return {bytes:output.bytes,blob:new Blob([output.bytes],{type:'application/pdf'}),name:cleanName(fileName)+'-sokbar.pdf',report};
+ },
  async prepareCleanCopy(options={}){
   if(!pdf)return null;
   if(['removeText','removeAnnotations','removeColors'].some(id=>$(id).checked))throw Error('Avmarkera text-, kommentar- och färgrensning under Rensa ritningen för att bevara allt avläsningsunderlag.');
@@ -552,6 +587,7 @@ window.DrawingToolsBridge=Object.freeze({
   return buildOutput({...options,deduplicateImages:true});
  },
  markCardHeader(){if(!pdf||busy)return;editMode=editMode==='card-header'?'':'card-header';dragStart=null;$('eraseBox').hidden=true;updateEditButtons();showTools(false);message(editMode?'Dra en ruta runt rubriken eller beslagskoden högst upp på ett dörrkort.':'Rubrikmarkering är avstängd.');},
+ markOcrArea(){if(!pdf||busy)return;editMode=editMode==='ocr-area'?'':'ocr-area';dragStart=null;$('eraseBox').hidden=true;updateEditButtons();showTools(false);message(editMode?'Dra en ruta runt hela dörrkortet, inklusive rubrik och tabell. Zooma först om det behövs.':'Markering av dörrkort är avstängd.');},
  async showPage(no){if(!pdf||busy||!Number.isInteger(no)||no<1||no>keep.length)return;page=no;renderPageList();updateEditButtons();showTools(false);await renderPreview();},
  async removePages(numbers){
   if(!pdf||busy)return 0;

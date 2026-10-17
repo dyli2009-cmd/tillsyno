@@ -180,3 +180,20 @@ body[data-app-text-size="3"]{--tool-text-factor:1.36}
 .pdfSaveChoices label:has(input:disabled){opacity:.6;cursor:default}
 .pdfSaveActions{display:flex;gap:8px}.pdfSaveActions button{flex:1}
 .pdfSaveActions #pdfSaveConfirm{background:var(--ta-blue,#356e86);color:#fff;border-color:var(--ta-blue,#356e86)}
+/* Prepare whole doorcards once; keep the original drawing visible. */
+#previewWrap.ocrAreaMode,#previewWrap.ocrAreaMode #previewCanvas{cursor:crosshair;touch-action:none}
+#eraseBox.ocrAreaSelection{border:2px dashed #237a77;background:#39a7a120}
+#ocrAreaRect{position:absolute;z-index:3;border:2px solid #237a77;background:#39a7a112;pointer-events:none;box-sizing:border-box}
+#ocrAreaRect[hidden]{display:none}#ocrAreaRect>span{position:absolute;left:0;top:0;padding:3px 6px;background:#185c59;color:#fff;font-size:11px;line-height:1.4;max-width:100%}
+#ocrTools{border-left:3px solid #237a77;padding-left:10px}
+#ocrTools>.wideToolBtn{min-height:44px;font-size:12px;margin:5px 0;white-space:normal}
+.ocrSteps{padding-left:21px;margin:8px 0;font-size:12px;line-height:1.6}.ocrSteps li{margin:7px 0}
+#ocrTools label{font-size:12px;line-height:1.5}#ocrPages{display:block;box-sizing:border-box;width:100%;min-height:44px;padding:8px;margin:6px 0;font-size:16px}
+.ocrApproval{display:flex!important;align-items:flex-start;gap:8px;margin:12px 0}.ocrApproval input{width:21px;height:21px;margin:0;flex:none}
+.ocrPageResult{border:1px solid var(--ta-border,#c4d1d7);border-radius:8px;padding:8px;margin:9px 0;min-width:0}
+.ocrPageResult>summary,.ocrUncertain>summary{font-size:12px!important;line-height:1.5;overflow-wrap:anywhere}
+.ocrPageResult button{min-height:40px;border:1px solid var(--ta-border,#c4d1d7);border-radius:6px;padding:7px;color:inherit;background:transparent;font-size:12px;margin:6px 0}
+.ocrTextPreview{white-space:pre-wrap;overflow-wrap:anywhere;max-height:280px;overflow:auto;font-size:12px;line-height:1.6;background:#879eaa12;padding:8px;border-radius:5px}
+.ocrReviewWord{display:grid;gap:6px;margin:9px 0;padding:8px 0;border-bottom:1px solid #879eaa40}.ocrReviewWord label{display:flex;gap:8px;align-items:center}.ocrReviewWord input[type=checkbox]{width:21px;height:21px;margin:0}.ocrReviewWord input[type=text]{min-width:0;width:100%;box-sizing:border-box;font-size:16px;min-height:44px}.ocrReviewWord small{font-size:11px}
+.ocrReadWarning{border-left:3px solid #bd902d;padding-left:8px;font-size:12px;line-height:1.5}
+.ocrProgressDialog{max-height:90dvh;overflow:auto}.ocrProgressDialog #ocrProgressPercent{font-size:22px;font-weight:700;margin:8px 0}.ocrProgressDialog #ocrProgressTime{font-variant-numeric:tabular-nums}

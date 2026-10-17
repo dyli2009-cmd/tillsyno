@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.366**
+Aktuell version: **v2.4.367**
 
 Beställd CE-uppdatering 15 oktober 2026: se [CE_DESKTOP_357.md](CE_DESKTOP_357.md). Delad/flyttbar/storleksjusterbar vy gäller endast dator. Samma enkla Ny dörr-ikon och temakopplad underskrift gäller även iPhone/iPad enligt den kompletterade beställningen. CE-data, PDF-beräkningar, övriga moduler och authregler bevaras. Kontrollflödet är fortsatt låst utanför den fristående CE-modulen.
 
@@ -328,3 +328,6 @@ Användarbeslut 15 oktober 2026: alla ändringar av texter, logotyper, ikoner oc
 
 
 2026-10-17, Tillsyno v2.4.366: Beställd rättning av Ritningsverktygets sparflöde efter borttagna sidor. Spara PDF får ett tydligt val mellan vanlig export av kvarvarande sidor och separat bildoptimering. Vanlig export kräver inte den valfria jämförelsen av identiska bilder, vars gräns för många korsreferenser annars kunde hindra sparandet. Bildoptimeringens strikta verifiering och skyddet för signerade filer bevaras. Se DRAWING_TOOLS_366.md för arbetsgång och verifieringsstatus. SmartMatch TEST 9, Kontrollflöde och auth ändras inte funktionellt. Ingen tillgänglig native-källkopia eller TestFlight-build har verifierats. Kontrollflödet är fortsatt LÅST.
+
+
+2026-10-17, Tillsyno v2.4.367: Beställd testfunktion i Ritningsverktyget för sökbara dörrkort. Ett markerat helt kort eller annat valt område läses på uttryckligt valda sidor; originalets synliga bilder, tabeller och ritningslinjer behålls medan granskade OCR-ord får ett osynligt textlager på samma plats. En guide, val av sidor med samma format, avläsningsstatus med sida/område/procent/tid, avbrott och separat PDF-/JSON-export tillkommer. Befintlig PDF-text återanvänds; blandade bild-/textsidor kontrolleras inom markeringen. Detta är en webbläsarbaserad testfunktion, inte ett löfte om mindre PDF eller stöd för användarens ej tillgängliga 251 MB-fil. Se DRAWING_TOOLS_367.md för arbetsgång och verifieringsstatus. SmartMatch TEST 9, Kontrollflöde och auth ändras inte funktionellt. Ingen native-källkopia eller TestFlight-build har verifierats. Kontrollflödet är fortsatt LÅST.

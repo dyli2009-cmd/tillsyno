@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.367 – sökbara dörrkort med originalbilden kvar
+
+[Ritningsverktyget](drawing-tools.html) får en testfunktion där du markerar hela dörrkortet, väljer sidor, läser bildtexten lokalt och granskar resultatet. **Spara sökbar PDF** lägger granskad text osynligt på samma plats utan att ersätta originalbilden. Procent, aktuell sida/område och tidsuppskattning visar vad som pågår. Texten kan även sparas som JSON. Första bildläsningen tar tid; senare textläsning kan återanvända resultatet. Se [steg för steg, avgränsningar och verifiering](DRAWING_TOOLS_367.md).
+
 ## Tillsyno v2.4.366 – spara valda sidor utan bildoptimering
 
 **Spara PDF** i [Ritningsverktyget](drawing-tools.html) skiljer nu vanlig export av kvarvarande sidor från **Optimera bilder och spara**. Därmed kan borttagna extrasidor sparas utan att den valfria bildjämförelsens gräns för korsreferenser stoppar exporten. Bildoptimeringens verifiering och skyddet för signerade filer behålls. Se [arbetsgång och verifieringsstatus](DRAWING_TOOLS_366.md).

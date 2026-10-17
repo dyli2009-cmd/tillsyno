@@ -64,7 +64,7 @@
  }
  async function optimize(input,options={}){
   const original=input instanceof Uint8Array?input:new Uint8Array(input),pages=options.pages,crops=options.crops||{},masks=options.masks||{};
-  const edited=!!options.removeAnnotations||Object.keys(crops).length>0||Object.values(masks).some(v=>v.length);
+  const edited=!!options.removeAnnotations||Object.keys(crops).length>0||Object.values(masks).some(v=>v.length)||typeof options.addTextLayer==='function';
   let doc;
   try{doc=await PDFDocument.load(original,{updateMetadata:false});}
   catch(error){if(!edited&&!pages)return {bytes:original,original:true,pageCount:null};throw error;}
@@ -82,9 +82,13 @@
    for(const rect of masks[index]||[])page.drawRectangle({...rect,color:rgb(1,1,1),borderWidth:0});
    if(crops[index])cropPage(page,crops[index]);
   });
-  for(let i=count-1;i>=0;i--)if(!wanted.has(i))doc.removePage(i);
   const checkCancelled=()=>{if(options.cancelled?.()){const error=Error('PDF-rensningen avbröts.');error.name='AbortError';throw error;}};
   checkCancelled();
+  // OCR coordinates refer to the original pages, including their crop/rotation.
+  // Append before removing pages so original page numbers remain meaningful.
+  if(typeof options.addTextLayer==='function')await options.addTextLayer(doc);
+  checkCancelled();
+  for(let i=count-1;i>=0;i--)if(!wanted.has(i))doc.removePage(i);
   let before=null,merged={imagesMerged:0,imageBytes:0};
   if(options.deduplicateImages){
    if(!analysis)throw Error('PDF-analysens lokala filer saknas.');
