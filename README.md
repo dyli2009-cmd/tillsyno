@@ -1,8 +1,8 @@
 # dorrservice
 
-## Tillsyno v2.4.375 – ändra grupper och koppla rätt stämplar
+## Tillsyno v2.4.376 – kompakt granskning och fortsättning med klara kort
 
-[Avläsning TEST 9.8](smartmatch-read-test.html) har **Ändra grupp** för att byta namn och dörrkort för alla gruppens positioner i hela projektet. **Ta bort den här positionen** tar bort en felträff direkt från dörrkortsvyn och bevarar bortvalet. **Koppla stämplar** börjar med en exempelmarkering och kan filtrera samma hela beteckning efter stämpelns bakgrundsfärg och form, så vanlig WC-text väljs bort. Originalkort och varje dörrs eget arbete bevaras. Alla ändringar sparas i projekt-PDF:en. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_8.md).
+[Avläsning TEST 9.9](smartmatch-read-test.html) har större granskningsyta på dator och en tät kortlista under förhandsvisningen. Filter och sökning hjälper dig hitta dubbletter och olästa kort. Du kan uttryckligen lägga problemkort åt sidan och fortsätta med klara kort. De åsidosatta korten och deras läsdata följer med i projekt-PDF:en för senare rättning; sidor tas inte bort och dubbletter kopplas inte genom gissning. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_9.md).
 
 ## Tillsyno v2.4.372 – säkrare PDF-sparning
 
