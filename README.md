@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.383 – transformfri iPad-zoom i SmartMatch
+
+[Avläsning TEST 9.16](smartmatch-read-test.html) tar bort CSS-transformering från ritningszoom på iOS. En stor A1-sida kunde annars främjas till en GPU-yta på omkring 787 MB vid DPR 2, även när den synliga översiktsbilden var begränsad. På iPad samlas zoomen under fingerrörelsen och verkställs när fingrarna släpps. Ritningsytan begränsas till 8 192 logiska pixlar, PDF-bilder får en separat minnesbudget och automatisk detaljläsning stängs av för projekt över 24 MB för att undvika att screenshot-tunga sidor avkodas igen efter varje zoom. Se [rotorsak, arbetsgång och slutprov](SMARTMATCH_READ_TEST_9_16.md).
+
 ## Tillsyno v2.4.382 – iPad-anpassad SmartMatch-avläsning
 
 [Avläsning TEST 9.15](smartmatch-read-test.html) använder lägre och tydligt begränsade bildbudgetar på iPad så att zoom, skärpa och stämpelsökning belastar Safari mindre. En missad stämpel kan kopplas direkt med **Koppla bara markerad stämpel** utan bildläsning av hela ritningen. Bildsökning på iPad begränsas till den aktuella ritningssidan, sparad stämpeltext återanvänds utan en ny full PDF-tolkning och onödiga hela PDF-kopior frigörs. Ett kraschskydd stoppar automatisk återöppning av samma tunga projekt efter en avbruten Safari-session. Se [arbetsgång, återställning och verifieringsgränser](SMARTMATCH_READ_TEST_9_15.md).
