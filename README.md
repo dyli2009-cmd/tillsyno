@@ -1,8 +1,8 @@
 # dorrservice
 
-## Tillsyno v2.4.373 – läs en gång, spara och öppna färdigt projekt
+## Tillsyno v2.4.374 – rätt projekt sparas och återöppnas
 
-[Avläsning TEST 9.6](smartmatch-read-test.html) sammanfogar bokstavsdelar som sitter ihop på samma textrad, även när PDF:en byter typsnitt vid å, ä eller ö. Rubriken **D ö rrkort 140C** tolkas som **Dörrkort 140C** och ger koden **140C**. Valfria fullständiga beteckningar stöds fortsatt; svenska bokstäver behålls. **Avläsning av ritning och dörrkort** förbereder nya filer i en genomgång. **Spara PDF** tar med avläsning, kopplingar och kontroller; **Öppna PDF** återställer filen utan att starta en ny avläsning. Färdiga produkter har ingen fortsätt-knapp. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_6.md).
+[Avläsning TEST 9.7](smartmatch-read-test.html) rättar ett reproducerat fel där sparningen efter projektbyte kunde återanvända en tidigare fils PDF. Exporten hör nu till det aktuella projektet och måste innehålla en verifierad, granskad avläsning. Samma PDF-läsare återställer projektinformationen vid exportkontroll och öppning, även genom indirekta PDF-referenser. Tidigare lokala 9.6-arkiv och granskade aktiva utkast kan återhämtas utan att källan ändras. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_7.md).
 
 ## Tillsyno v2.4.372 – säkrare PDF-sparning
 

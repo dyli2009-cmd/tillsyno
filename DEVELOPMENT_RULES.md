@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.373**
+Aktuell version: **v2.4.374**
 
 Beställd CE-uppdatering 15 oktober 2026: se [CE_DESKTOP_357.md](CE_DESKTOP_357.md). Delad/flyttbar/storleksjusterbar vy gäller endast dator. Samma enkla Ny dörr-ikon och temakopplad underskrift gäller även iPhone/iPad enligt den kompletterade beställningen. CE-data, PDF-beräkningar, övriga moduler och authregler bevaras. Kontrollflödet är fortsatt låst utanför den fristående CE-modulen.
 
@@ -349,3 +349,5 @@ Användarbeslut 15 oktober 2026: alla ändringar av texter, logotyper, ikoner oc
 2026-10-17, Tillsyno v2.4.373: Beställd rättning i separata SmartMatch Avläsning TEST 9.6 för svenska bokstäver och uppdelade rubrikord. Angränsande PDF-textfragment på samma baslinje återförenas geometriskt utan ordlista eller ändring av bokstäver. Hela kända rubrikord kan kännas igen trots interna fragmentmellanrum; okända beteckningar och verkliga bokstavsskillnader behålls. Kundprovet ger 7 kort och 35 ritningskopplingar automatiskt utan OCR. GS-ansvar och övriga modulers logik är oförändrade. Tidigare TEST 9.5 bevaras. Se SMARTMATCH_READ_TEST_9_6.md.
 
 Kompletterat användarbeslut samma arbetspass, TEST 9.6: skilj Avläsning av ritning och dörrkort från Öppna PDF. Full läsning av koder och produkter är förvald; explicit kodläge finns kvar. Sparad granskad avläsning öppnas direkt via båda knapparna när en färdig projekt-PDF väljs; råa eller ogiltiga filer startar ingen automatisk ny avläsning via Öppna PDF. Färdiga produkter visas direkt och omläsning är ett frivilligt verktyg. PDF-kopia sparar projektdata. Lokala original-PDF:er återställs tillsammans med sitt arbetsutkast före avläsningskontrollen. Se SMARTMATCH_READ_TEST_9_6.md.
+
+2026-10-17, Tillsyno v2.4.374: Felrättning i separata SmartMatch Avläsning TEST 9.7 efter återöppningsfel. Reproducerad korsning av exportcache mellan olika projekt rättas med projektägarskap och ogiltigförklaring vid byte/stängning. Ingen projekt-PDF godkänns utan verifierad granskad avläsning. Samma metadataavkodare används före öppning, i projektläsningen och vid exportkontroll; indirekta PDF-referenser stöds och läsfel skiljs från saknade data. Fördröjda sparningar får inte ändra nästa projekts filhandtag eller sparstatus. 9.6-arkiv samt granskade aktiva utkast kan kopieras till 9.7 utan att källan ändras. Föregående versioner, beta 10, GS-regler, Ritningsverktygets funktioner, Kontrollflöde och auth är oförändrade. Se SMARTMATCH_READ_TEST_9_7.md.
