@@ -1,160 +1,33 @@
-/* SmartMatch 10.1 TEST. Pure, isolated logic; no production storage or globals. */
-(function (root, factory) {
-  'use strict';
-  if (typeof module === 'object' && module.exports) module.exports = factory();
-  else root.SM101 = factory();
-})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
-  'use strict';
-  const VERSION = '10.1.1-test', SCHEMA = 'tillsyno-smartmatch-10.1';
-  const normalize = s => String(s || '').normalize('NFC').trim().toLocaleUpperCase('sv-SE').replace(/\s+/g, ' ');
-  const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
-  function box(x, y, w, h) {
-    if (![x, y, w, h].every(Number.isFinite)) throw Error('Ogiltiga koordinater.');
-    const x0 = clamp(Math.min(x, x + w), 0, 1), y0 = clamp(Math.min(y, y + h), 0, 1);
-    return {x: x0, y: y0, w: clamp(Math.max(x, x + w), 0, 1) - x0, h: clamp(Math.max(y, y + h), 0, 1) - y0};
-  }
-  const inside = (a, b) => a.x + a.w / 2 >= b.x && a.x + a.w / 2 <= b.x + b.w && a.y + a.h / 2 >= b.y && a.y + a.h / 2 <= b.y + b.h;
-  function union(items) {
-    const x = Math.min(...items.map(i => i.x)), y = Math.min(...items.map(i => i.y));
-    return {x, y, w: Math.max(...items.map(i => i.x + i.w)) - x, h: Math.max(...items.map(i => i.y + i.h)) - y};
-  }
-  function lines(items) {
-    const groups = [];
-    for (const item of items.filter(i => String(i.text || '').trim()).sort((a, b) => a.y - b.y || a.x - b.x)) {
-      let group = groups.find(g => Math.abs(g.cy - (item.y + item.h / 2)) < Math.min(g.h, item.h) * .45);
-      if (!group) { group = {cy: item.y + item.h / 2, h: item.h, items: []}; groups.push(group); }
-      group.items.push(item);
-    }
-    return groups.flatMap(g => {
-      const parts = [], sorted = g.items.sort((a, b) => a.x - b.x);
-      let run = [];
-      for (const it of sorted) {
-        // Do not join adjacent table columns/door symbols into one code.
-        if (run.length && it.x - (run.at(-1).x + run.at(-1).w) > Math.max(it.h, run.at(-1).h) * 1.5) { parts.push(run); run = []; }
-        run.push(it);
-      }
-      if (run.length) parts.push(run);
-      return parts.map(p => ({...union(p), text: p.map(i => i.text).join(' ').replace(/\s+/g, ' ').trim(), parts: p}));
-    }).sort((a, b) => a.y - b.y || a.x - b.x);
-  }
-  function readRegion(items, area) { return lines(items.filter(i => inside(i, area))).map(i => i.text).join('\n'); }
-  function codeFrom(text, prefix) {
-    const s = String(text || '').normalize('NFC').trim().replace(/\s+/g, ' '), p = String(prefix || '').normalize('NFC').trim();
-    if (!p) return s;
-    if (!normalize(s).startsWith(normalize(p))) return '';
-    const rest = s.slice(p.length);
-    // Prefix must end at a boundary: GS must not strip GS10.
-    if (rest && !/^[\s:–-]/u.test(rest)) return '';
-    return rest.replace(/^[\s:–-]+/u, '').trim();
-  }
-  function pages(value, count) {
-    if (!Number.isInteger(count) || count < 1) throw Error('PDF saknar sidor.');
-    if (!String(value || '').trim()) return Array.from({length: count}, (_, i) => i + 1);
-    const result = new Set();
-    for (const part of String(value).split(',')) {
-      const m = part.trim().match(/^(\d+)(?:\s*-\s*(\d+))?$/);
-      if (!m) throw Error('Ange sidor som 1, 3-8.');
-      const a = Number(m[1]), b = Number(m[2] || m[1]);
-      if (a < 1 || b < a || b > count) throw Error('Sidintervallet ligger utanför PDF:en.');
-      for (let i = a; i <= b; i++) result.add(i);
-    }
-    return [...result].sort((a, b) => a - b);
-  }
-  function key(docId, page, r) { return [docId, page, Math.round(r.x * 10000), Math.round(r.y * 10000)].join(':'); }
-  function matches(code, cards) { const n = normalize(code); return n ? cards.filter(c => !c.removed && normalize(c.code) === n) : []; }
-  function candidates(items, codes) {
-    const keys = new Set(codes.map(normalize).filter(Boolean)), out = [], seen = new Set();
-    for (const line of lines(items)) {
-      const p = line.parts;
-      for (let i = 0; i < p.length; i++) {
-        for (let j = i; j < Math.min(p.length, i + 12); j++) {
-          const text = p.slice(i, j + 1).map(x => x.text).join(' ');
-          if (text.length > 100) break;
-          if (keys.has(normalize(text))) {
-            const r = union(p.slice(i, j + 1)), k = key('', 0, r);
-            if (!seen.has(k)) { out.push({...r, text}); seen.add(k); }
-          }
-        }
-      }
-    }
-    return out;
-  }
-  function merge(existing, incoming) {
-    // Existing IDs include manually corrected and removed cards. Rescanning must not resurrect them.
-    const seen = new Set(existing.map(x => x.id));
-    return existing.concat(incoming.filter(x => { if (seen.has(x.id)) return false; seen.add(x.id); return true; }));
-  }
-  function changeCard(project, id, patch) {
-    const card = project.cards.find(c => c.id === id);
-    if (!card) throw Error('Dörrkortet finns inte.');
-    const old = normalize(card.code);
-    for (const name of ['code', 'notes', 'removed']) if (Object.hasOwn(patch, name)) card[name] = patch[name];
-    card.manual = true; project.approved = false;
-    if (old !== normalize(card.code) || card.removed) {
-      for (const s of project.stamps.filter(s => s.cardId === id)) { s.confirmed = false; if (card.removed) s.cardId = ''; }
-    }
-    return card;
-  }
-  function approve(project) {
-    const cards = project.cards.filter(c => !c.removed);
-    if (!cards.length || cards.some(c => !normalize(c.code))) throw Error('Alla kvarvarande kort behöver en beteckning.');
-    project.approved = true;
-  }
-  function visualScore(a, b) {
-    if (!a || !b || a.length !== 768 || b.length !== 768) return 0;
-    // -1 marks printed text. Compare only surrounding shape and background.
-    let expected = 0, actual = 0, covered = 0, supported = 0;
-    const nearby = (sig, x, y) => {
-      for (let yy = Math.max(0, y - 1); yy <= Math.min(23, y + 1); yy++)
-        for (let xx = Math.max(0, x - 1); xx <= Math.min(31, x + 1); xx++)
-          if (sig[yy * 32 + xx] > .16) return true;
-      return false;
-    };
-    for (let i = 0; i < 768; i++) {
-      if (a[i] < 0 || b[i] < 0) continue;
-      const x = i % 32, y = Math.floor(i / 32);
-      if (a[i] > .16) { expected++; if (nearby(b, x, y)) covered++; }
-      if (b[i] > .16) { actual++; if (nearby(a, x, y)) supported++; }
-    }
-    if (expected < 12 || actual < 12) return 0; // A word on white paper is not a stamp template.
-    const recall = covered / expected, precision = supported / actual;
-    return 2 * recall * precision / (recall + precision || 1);
-  }
-  function validate(p) {
-    const fail = () => { throw Error('Projektfilen är skadad eller har ett annat format.'); };
-    const str = (v, n) => typeof v === 'string' && v.length <= n;
-    const rect = r => r && ['x','y','w','h'].every(k => Number.isFinite(r[k])) && r.x >= 0 && r.y >= 0 && r.w > 0 && r.h > 0 && r.x + r.w <= 1.00001 && r.y + r.h <= 1.00001;
-    if (!p || p.schema !== SCHEMA || p.schemaVersion !== 1 || !str(p.name, 200) || typeof p.approved !== 'boolean') fail();
-    if (!Array.isArray(p.docs) || p.docs.length > 100 || !Array.isArray(p.cards) || p.cards.length > 10000 || !Array.isArray(p.stamps) || p.stamps.length > 50000) fail();
-    const ids = new Map();
-    for (const d of p.docs) {
-      if (!/^[a-f0-9]{64}$/.test(d.id) || d.id !== d.sha256 || !str(d.name, 500) || !Number.isInteger(d.pages) || d.pages < 1 || d.pages > 20000 || ids.has(d.id)) fail();
-      ids.set(d.id, d);
-    }
-    const validateRecord = r => {
-      if (!r || !str(r.id, 300) || !ids.has(r.docId) || !Number.isInteger(r.page) || r.page < 1 || r.page > ids.get(r.docId).pages || !rect(r.box) || !str(r.code, 200)) fail();
-      if (r.notes !== undefined && !str(r.notes, 50000)) fail();
-    };
-    if (!Array.isArray(p.templates) || p.templates.length > p.docs.length) fail();
-    const templateIds = new Set();
-    for (const t of p.templates) {
-      if (!t || !ids.has(t.docId) || templateIds.has(t.docId) || !Number.isInteger(t.page) || t.page < 1 || t.page > ids.get(t.docId).pages || !str(t.prefix, 100) || !t.areas || typeof t.areas !== 'object' || Array.isArray(t.areas)) fail();
-      templateIds.add(t.docId);
-      for (const [k, r] of Object.entries(t.areas)) if (!['code','card','content'].includes(k) || !rect(r)) fail();
-    }
-    const cardIds = new Set(), stampIds = new Set();
-    for (const c of p.cards) { validateRecord(c); if (c.removed !== undefined && typeof c.removed !== 'boolean') fail(); if (cardIds.has(c.id)) fail(); cardIds.add(c.id); }
-    for (const s of p.stamps) {
-      validateRecord(s); if (typeof s.confirmed !== 'boolean' || (s.removed !== undefined && typeof s.removed !== 'boolean')) fail(); if (stampIds.has(s.id)) fail(); stampIds.add(s.id);
-      if (s.cardId && !cardIds.has(s.cardId)) fail();
-      if (s.confirmed && (!s.cardId || p.cards.find(c => c.id === s.cardId).removed)) fail();
-    }
-    if (p.approved && (!p.cards.some(c => !c.removed) || p.cards.some(c => !c.removed && !normalize(c.code)))) fail();
-    // Reject objects that might become prototype pollution if future code merges them.
-    const serialized = JSON.stringify(p);
-    if (serialized.length > 25000000 || /"(?:__proto__|prototype|constructor)"\s*:/.test(serialized)) fail();
-    return p;
-  }
-  function project(name = 'Nytt projekt') { return {schema: SCHEMA, schemaVersion: 1, version: VERSION, name, approved: false, docs: [], cards: [], stamps: [], templates: []}; }
-  return {VERSION, SCHEMA, normalize, clamp, box, inside, union, lines, readRegion, codeFrom, pages, key, matches, candidates, merge, changeCard, approve, visualScore, validate, project};
+/* SmartMatch 10.1: isolated data and matching rules. No production storage. */
+(function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.SM101=factory();})(globalThis,()=>{
+'use strict';
+const VERSION='10.1',FORMAT='tillsyno-smartmatch10.1';
+const clean=s=>String(s??'').normalize('NFKC').replace(/\s+/g,' ').trim();
+const norm=s=>clean(s).toLocaleUpperCase('sv-SE').replace(/\s+/g,'');
+const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
+const uid=()=>globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
+function box(x,y,w,h){if(![x,y,w,h].every(Number.isFinite))throw Error('Ogiltig markering.');const l=clamp(Math.min(x,x+w),0,1),t=clamp(Math.min(y,y+h),0,1);return{x:l,y:t,w:clamp(Math.max(x,x+w),0,1)-l,h:clamp(Math.max(y,y+h),0,1)-t};}
+const validBox=r=>r&&['x','y','w','h'].every(k=>Number.isFinite(r[k]))&&r.x>=0&&r.y>=0&&r.w>0&&r.h>0&&r.x+r.w<=1.00001&&r.y+r.h<=1.00001;
+const inside=(a,b)=>a.x+a.w/2>=b.x&&a.x+a.w/2<=b.x+b.w&&a.y+a.h/2>=b.y&&a.y+a.h/2<=b.y+b.h;
+function union(a){const x=Math.min(...a.map(w=>w.x)),y=Math.min(...a.map(w=>w.y));return{x,y,w:Math.max(...a.map(w=>w.x+w.w))-x,h:Math.max(...a.map(w=>w.y+w.h))-y};}
+function lines(words){const rows=[];for(const w of words.filter(w=>clean(w.text)&&validBox(w)).sort((a,b)=>a.y-b.y||a.x-b.x)){let r=rows.find(r=>Math.abs(r.cy-w.y-w.h/2)<Math.max(.0005,Math.min(r.h,w.h)*.5));if(!r){r={cy:w.y+w.h/2,h:w.h,words:[]};rows.push(r);}r.words.push(w);}return rows.flatMap(r=>{const groups=[];let run=[];for(const w of r.words.sort((a,b)=>a.x-b.x)){const last=run.at(-1);if(last&&w.x-last.x-last.w>Math.max(last.em||last.h,w.em||w.h)*1.5){groups.push(run);run=[];}run.push(w);}if(run.length)groups.push(run);return groups.map(a=>({...union(a),text:a.map(w=>w.text).join(' '),words:a}));}).sort((a,b)=>a.y-b.y||a.x-b.x);}
+function readRegion(words,r,ignored=[]){return lines(words.filter(w=>inside(w,r)&&!ignored.some(b=>inside(w,b)))).map(l=>l.text).join('\n');}
+function codeFrom(raw,prefix=''){if(String(raw).trim().split(/\n/).filter(clean).length>1)return '';const s=clean(raw),p=clean(prefix);if(!p)return s;if(!s.toUpperCase().startsWith(p.toUpperCase()))return '';const rest=s.slice(p.length);if(rest&&!/^[\s:–-]/u.test(rest))return '';return clean(rest.replace(/^[\s:–-]+/u,''));}
+function pages(value,count){if(!Number.isInteger(count)||count<1)throw Error('PDF saknar sidor.');if(!clean(value))return Array.from({length:count},(_,i)=>i+1);const out=new Set();for(const s of value.split(',')){const m=s.trim().match(/^(\d+)(?:\s*-\s*(\d+))?$/);if(!m)throw Error('Ange sidor som 1, 3-8.');const a=+m[1],b=+(m[2]||m[1]);if(a<1||a>b||b>count)throw Error('Sidintervallet ligger utanför PDF:en.');for(let i=a;i<=b;i++)out.add(i);}return[...out].sort((a,b)=>a-b);}
+function candidates(words,codes){const known=new Map(codes.map(c=>[norm(c),c]));return lines(words).filter(l=>known.has(norm(l.text))).map(l=>({...l,code:known.get(norm(l.text))}));}
+function merge(records,item){const old=records.find(c=>c.sourceId===item.sourceId&&c.page===item.page&&Math.abs(c.box.x+c.box.w/2-item.box.x-item.box.w/2)<.006&&Math.abs(c.box.y+c.box.h/2-item.box.y-item.box.h/2)<.006);if(old)return old;records.push(item);return item;}
+function matches(cards,code){return cards.filter(c=>!c.removed&&norm(c.code)===norm(code));}
+function changeCard(p,c,code){const previous=norm(c.code);c.code=clean(code);c.reviewed=false;p.approved=false;for(const h of p.hits)if(h.cardId===c.id&&previous!==norm(code)){h.confirmed=false;h.cardId=null;}return c;}
+function approve(p){const cards=p.cards.filter(c=>!c.removed);if(!cards.length||cards.some(c=>!clean(c.code)))throw Error('Alla kvarvarande dörrkort behöver en beteckning.');cards.forEach(c=>c.reviewed=true);p.approved=true;}
+function visualScore(a,b){if(!a||!b||a.length!==1536||b.length!==1536)return 0;let expected=0,actual=0,covered=0,supported=0;const near=(s,x,y)=>{for(let yy=Math.max(0,y-1);yy<=Math.min(31,y+1);yy++)for(let xx=Math.max(0,x-1);xx<=Math.min(47,x+1);xx++)if(s[yy*48+xx]>.12)return true;return false;};for(let i=0;i<a.length;i++){if(a[i]<0||b[i]<0)continue;const x=i%48,y=Math.floor(i/48);if(a[i]>.12){expected++;if(near(b,x,y))covered++;}if(b[i]>.12){actual++;if(near(a,x,y))supported++;}}if(expected<12||actual<12)return 0;const r=covered/expected,p=supported/actual;return 2*r*p/(r+p||1);}
+function project(){return{format:FORMAT,version:VERSION,id:uid(),name:'Nytt projekt',sources:[],templates:[],cards:[],hits:[],samples:[],jobs:{},views:{},ocrWords:{},approved:false};}
+function validate(p){const fail=()=>{throw Error('Projektfilen är skadad eller har fel format.');};const str=(v,n)=>typeof v==='string'&&v.length<=n;
+if(!p||p.format!==FORMAT||!str(p.id,100)||!str(p.name,200)||typeof p.approved!=='boolean')fail();for(const [k,max]of[['sources',100],['templates',500],['cards',30000],['hits',60000],['samples',200]])if(!Array.isArray(p[k])||p[k].length>max)fail();
+const src=new Map();for(const s of p.sources){if(!/^[a-f0-9]{64}$/.test(s.id)||src.has(s.id)||!str(s.name,500)||!Number.isSafeInteger(s.size)||s.size<1||!Number.isInteger(s.pages)||s.pages<1||s.pages>20000)fail();src.set(s.id,s);}
+const check=r=>{if(!r||!str(r.id,150)||!src.has(r.sourceId)||!Number.isInteger(r.page)||r.page<1||r.page>src.get(r.sourceId).pages||!validBox(r.box))fail();};
+const ids=new Set();for(const c of p.cards){check(c);if(!str(c.code,200)||ids.has(c.id)||typeof c.removed!=='boolean')fail();ids.add(c.id);}const hitIds=new Set();for(const h of p.hits){check(h);if(!str(h.code,200)||typeof h.confirmed!=='boolean'||typeof h.removed!=='boolean'||hitIds.has(h.id)||h.cardId&&!ids.has(h.cardId)||h.note!=null&&!str(h.note,20000))fail();hitIds.add(h.id);if(h.confirmed&&(!h.cardId||p.cards.find(c=>c.id===h.cardId).removed))fail();}
+for(const t of p.templates){check(t);if(!str(t.prefix,100)||!str(t.range,500)||!Array.isArray(t.ignore)||t.ignore.length>50||t.ignore.some(r=>!validBox(r)))fail();}
+for(const s of p.samples){check(s);if(!validBox(s.codeBox)||!Array.isArray(s.signature)||s.signature.length!==1536||s.signature.some(n=>!Number.isFinite(n)||n< -1||n>1)||!str(s.code,200)||!Number.isFinite(s.aspect)||s.aspect<=0)fail();}
+if(!p.jobs||typeof p.jobs!=='object'||Array.isArray(p.jobs)||!p.views||typeof p.views!=='object'||Array.isArray(p.views))fail();if(p.approved&&(!p.cards.some(c=>!c.removed)||p.cards.some(c=>!c.removed&&(!clean(c.code)||c.reviewed!==true))))fail();for(const [k,j]of Object.entries(p.jobs)){if(!/^[a-f0-9]{64}$/.test(k)||!j||!Array.isArray(j.done)||j.done.length>20000||j.done.some(n=>!Number.isInteger(n)||n<1||n>20000)||j.missing&&(!Array.isArray(j.missing)||j.missing.length>20000))fail();}if(p.ocrWords){for(const [k,a]of Object.entries(p.ocrWords)){if(!Array.isArray(a)||a.length>50000||a.some(w=>!validBox(w)||!str(w.text,2000)||!Number.isFinite(w.em)))fail();}}const raw=JSON.stringify(p);if(raw.length>30000000||/"(?:__proto__|prototype|constructor)"\s*:/.test(raw))fail();return p;}
+return{VERSION,FORMAT,clean,norm,clamp,uid,box,validBox,inside,union,lines,readRegion,codeFrom,pages,candidates,merge,matches,changeCard,approve,visualScore,project,validate};
 });
