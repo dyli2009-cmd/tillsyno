@@ -195,16 +195,39 @@ async function ocrLines(src,pageNo){
  const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.ceil(viewport.width));canvas.height=Math.max(1,Math.ceil(viewport.height));
  await page.render({canvasContext:canvas.getContext('2d',{alpha:false}),viewport}).promise;
  const worker=await ocrWorker();
- const result=await worker.recognize(canvas,{}, {text:true,blocks:true});
+ const result=await worker.recognize(canvas,{}, {text:true,blocks:true,tsv:true,hocr:true});
  const words=[];
+ const pushWord=(t,x,y,w,h)=>{
+  if(!clean(t))return;
+  const vals=[x,y,w,h].map(Number);
+  if(vals.some(v=>!Number.isFinite(v)))return;
+  words.push({text:clean(t),x:vals[0]/scale,y:vals[1]/scale,w:Math.max(1,vals[2]/scale),h:Math.max(1,vals[3]/scale)});
+ };
  for(const b of result.data?.blocks||[])for(const para of b.paragraphs||[])for(const line of para.lines||[])for(const w of line.words||[]){
-  if(!w.bbox||!clean(w.text))continue;
-  words.push({text:clean(w.text),x:w.bbox.x0/scale,y:w.bbox.y0/scale,w:Math.max(1,(w.bbox.x1-w.bbox.x0)/scale),h:Math.max(1,(w.bbox.y1-w.bbox.y0)/scale)});
+  if(!w.bbox)continue;
+  pushWord(w.text,w.bbox.x0,w.bbox.y0,w.bbox.x1-w.bbox.x0,w.bbox.y1-w.bbox.y0);
+ }
+ // Tesseract can return HOCR/TSV instead of blocks, depending on its build.
+ // Parse word coordinates so an image-only GS stamp still gets a real position.
+ if(!words.length&&typeof result.data?.tsv==='string'){
+  const rows=result.data.tsv.split(/\r?\n/);
+  for(const row of rows.slice(1)){
+   const cols=row.split('\t');
+   if(cols.length<12||cols[0]!=='5')continue;
+   pushWord(cols.slice(11).join('\t'),Number(cols[6]),Number(cols[7]),Number(cols[8]),Number(cols[9]));
+  }
+ }
+ if(!words.length&&typeof result.data?.hocr==='string'&&typeof DOMParser!=='undefined'){
+  const doc=new DOMParser().parseFromString(result.data.hocr,'text/html');
+  for(const el of doc.querySelectorAll('.ocrx_word')){
+   const box=(el.getAttribute('title')||'').match(/bbox\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/);
+   if(box)pushWord(el.textContent,Number(box[1]),Number(box[2]),Number(box[3])-Number(box[1]),Number(box[4])-Number(box[2]));
+  }
  }
  const lines=groupLines(words);
  if(!lines.length){
-  const chunks=clean(result.data?.text).split(/(?:\r?\n)+/);
-  chunks.forEach((line,i)=>lines.push({text:line,words:[],x:0,y:i*16+20}));
+  // Fallback may identify card titles but never invents marker coordinates.
+  (result.data?.text||'').split(/\r?\n/).map(clean).filter(Boolean).forEach((line,i)=>lines.push({text:line,words:[],x:0,y:i*16+20}));
  }
  store.ocrCache.set(key,lines);return lines;
 }
