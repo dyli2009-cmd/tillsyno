@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.370**
+Aktuell version: **v2.4.371**
 
 Beställd CE-uppdatering 15 oktober 2026: se [CE_DESKTOP_357.md](CE_DESKTOP_357.md). Delad/flyttbar/storleksjusterbar vy gäller endast dator. Samma enkla Ny dörr-ikon och temakopplad underskrift gäller även iPhone/iPad enligt den kompletterade beställningen. CE-data, PDF-beräkningar, övriga moduler och authregler bevaras. Kontrollflödet är fortsatt låst utanför den fristående CE-modulen.
 
@@ -340,3 +340,6 @@ Användarbeslut 15 oktober 2026: alla ändringar av texter, logotyper, ikoner oc
 
 
 2026-10-17, Tillsyno v2.4.370: Beställd fortsättning i separata SmartMatch Avläsning TEST 9.3. Ursprunglig dörrkortsbeteckning och uttryckligen vald ritningsbeteckning redovisas separat, exempelvis DBL på kortet och DBL-1 på ritningen. Individuella kod- och tabellmarkeringar kan sparas per sida eller kort och läsas om riktat utan att andra kort eller befintliga kopplingar tyst ersätts. Avvikande verklig kod kräver ny matchning och granskning. TEST 9.2 bevaras och TEST 9.3 har egen lokal lagring; projekt-PDF används för övergång. GS-regler, ordinarie SmartMatch, automatisk DA-koppling, standardprofilens ID-källa, Ritningsverktygets funktioner, Kontrollflöde och auth ändras inte. Ritningsverktygets redan befintliga vanliga sidvalsexport verifierades på nytt efter användarens fråga om filstorlek; ingen ny sparfunktion införs. Se SMARTMATCH_READ_TEST_9_3.md för steg och verifieringsstatus. Ingen fysisk iOS eller ny TestFlight-build verifierad. Kontrollflödet är fortsatt LÅST.
+
+
+2026-10-17, Tillsyno v2.4.371: Felrättning i separata SmartMatch Avläsning TEST 9.4 efter användarens produktläsningsfel på alla dörrkort. Sparad OCR-text kan innehålla överlappande rubrikfragment som Monta + av. Bara geometriskt bekräftat upprepad bokstav i en fullständig känd kolumnrubrik sammanfogas; produktvärden, koder och GS/DT ändras inte. Produktläsning med olästa montage-/produktkolumner får inte spara över befintliga arbetslistor med tomma resultat. Lokala omläsningar kan rätta de misslyckade korten, och produktvyn hänvisar till sparad ritningskoppling. Tidigare TEST 9.3 bevaras; egen 9.4-lagring och projekt-PDF för övergång. Ingen ändring i Ritningsverktygets funktioner, ordinarie SmartMatch, DA-koppling, standardprofilens ID-källa, Kontrollflöde eller auth. Se SMARTMATCH_READ_TEST_9_4.md för faktisk kundprovning och syntetiska regressionstester. Ingen fysisk iOS eller ny TestFlight-build verifierad.

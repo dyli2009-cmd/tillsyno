@@ -1,8 +1,12 @@
 # dorrservice
 
+## Tillsyno v2.4.371 – produktläsning efter sparad OCR-text
+
+[Avläsning TEST 9.4](smartmatch-read-test.html) rättar överlappande textfragment i tabellrubriker, exempelvis **Monta + av**, när positionerna bevisar att samma bokstav lästs två gånger. GS krävs fortfarande i montagekolumnen. Misslyckad kolumnläsning blockerar sparning av ett tomt ersättningsresultat och behåller tidigare produkter och kontroller. Produktsteget hänvisar inte längre till ny ritningsmatchning. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_4.md). [TEST 9.3](smartmatch-read-test-v9-3.html) finns kvar separat.
+
 ## Tillsyno v2.4.370 – skilj kortbeteckning från ritningskod och justera ett kort
 
-[Avläsning TEST 9.3](smartmatch-read-test.html) skiljer dörrkortets ursprungliga beteckning, exempelvis **DBL**, från den uttryckliga ritningskopplingen **DBL-1**. Med **Justera läsområdet** kan kod- och tabellmarkeringar ändras för en enda sida eller ett enskilt kort och läsas om med **Läs bara detta kort**. Andra kort och tidigare kopplingar/avprickningar bevaras; en verklig kodändring kräver ny granskning. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_3.md). [TEST 9.2](smartmatch-read-test-v9-2.html) finns kvar separat.
+[Avläsning TEST 9.3](smartmatch-read-test-v9-3.html) skiljer dörrkortets ursprungliga beteckning, exempelvis **DBL**, från den uttryckliga ritningskopplingen **DBL-1**. Med **Justera läsområdet** kan kod- och tabellmarkeringar ändras för en enda sida eller ett enskilt kort och läsas om med **Läs bara detta kort**. Andra kort och tidigare kopplingar/avprickningar bevaras; en verklig kodändring kräver ny granskning. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_3.md). [TEST 9.2](smartmatch-read-test-v9-2.html) finns kvar separat.
 
 Borttagna sidor i Ritningsverktyget sparas redan via **Spara PDF → Spara mina sidval och ändringar → Spara PDF**. Hur mycket mindre filen blir beror på vilket innehåll som kan tas bort; se [förklaring och verifiering](SMARTMATCH_READ_TEST_9_3.md#spara-pdf-efter-borttagna-sidor).
 
