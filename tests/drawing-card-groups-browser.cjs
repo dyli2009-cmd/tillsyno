@@ -138,7 +138,7 @@ async function dragField(page,device){
  if(device.touch){const cdp=await page.context().newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[start]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[end]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();}
  else{await page.mouse.move(start.x,start.y);await page.mouse.down();await page.mouse.move(end.x,end.y,{steps:8});await page.mouse.up();}
 }
-async function download(page){const pending=page.waitForEvent('download');await page.locator('#savePdf').click();const file=await pending;return fs.readFileSync(await file.path());}
+async function download(page){const pending=page.waitForEvent('download');await page.locator('#savePdf').click();await page.locator('#pdfSaveConfirm').click();const file=await pending;return fs.readFileSync(await file.path());}
 async function sourceStreams(doc,pageNo){
  const pg=doc.getPage(pageNo),contents=pg.node.Contents(),streams=contents instanceof PDFArray?contents.asArray():[contents];
  return streams.filter(Boolean).map(ref=>{const stream=doc.context.lookup(ref);assert(stream instanceof PDFRawStream);return Buffer.from(decodePDFRawStream(stream).decode()).toString('base64');});

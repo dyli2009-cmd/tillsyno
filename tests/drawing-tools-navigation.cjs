@@ -19,6 +19,8 @@ const server=http.createServer((req,res)=>{
   const bytes=Buffer.from(await pdf.save());
   for(const mobile of [false,true]){
    const context=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1366,height:900},hasTouch:mobile,isMobile:mobile,acceptDownloads:true});
+   // Keep authentication outside this local drawing-navigation regression.
+   await context.route('**/auth/guard.js*',route=>route.fulfill({contentType:'application/javascript',body:"document.addEventListener('DOMContentLoaded',()=>document.documentElement.removeAttribute('data-auth-pending'));"}));
    const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
    await page.goto('http://127.0.0.1:'+server.address().port+'/drawing-tools.html');
    assert(await page.locator('#savePdf').isDisabled());
@@ -81,7 +83,7 @@ const server=http.createServer((req,res)=>{
    assert(await page.locator('#redoDrawing').isEnabled());
    await page.locator('#redoDrawing').click();
    await page.waitForFunction(()=>document.querySelector('#pageState').textContent.includes('beskuren'));
-   const download=page.waitForEvent('download');await page.locator('#savePdf').click();
+   const download=page.waitForEvent('download');await page.locator('#savePdf').click();await page.locator('#pdfSaveConfirm').click();
    const doc=await PDFDocument.load(fs.readFileSync(await (await download).path()));
    assert.equal(doc.getPageCount(),2);
    const size=doc.getPage(0).getSize();

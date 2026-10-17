@@ -107,10 +107,10 @@ async function browserTests(bytes,real){
    const ready=()=>page.waitForFunction(()=>document.body.classList.contains('hasDrawing')&&!document.getElementById('workspace').hasAttribute('aria-busy'));
    const open=async buffer=>{await page.locator('#toolFile').setInputFiles({name:'test.pdf',mimeType:'application/pdf',buffer:Buffer.from(buffer)});await ready();};
    const tools=async title=>{if(await page.locator('#toolPanel').isHidden())await page.locator('#toolsToggle').click();const summary=page.locator('#toolPanel summary').filter({hasText:title});if(await summary.locator('..').getAttribute('open')===null)await summary.click();};
-   const download=async selector=>{const pending=page.waitForEvent('download');await page.locator(selector).click();const file=await pending;return fs.readFileSync(await file.path());};
+   const download=async selector=>{const pending=page.waitForEvent('download');await page.locator(selector).click();if(selector==='#savePdf')await page.locator('#pdfSaveConfirm').click();const file=await pending;return fs.readFileSync(await file.path());};
    await open(bytes);
    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'workspace fits viewport');
-   assert.equal(await page.locator('[data-ta-version-footer]').textContent(),'v2.4.365');
+   assert.equal(await page.locator('[data-ta-version-footer]').textContent(),'v2.4.366');
    const result=await download('#savePdf');assert.deepEqual(await pdfStats(page,result),await pdfStats(page,bytes),'unchanged PDF renders and extracts identically');
    for(const r of real){await open(r.uploaded);const exported=await download('#savePdf');assert.deepEqual(await pdfStats(page,exported),await pdfStats(page,r.source),'real drawing content and pixels retained');}
    await open(bytes);await tools('Dölj eller beskär');await page.locator('#cropMode').click();

@@ -35,9 +35,12 @@ async function run(){
    const open=async()=>{await page.locator('#toolFile').setInputFiles({name:'analysis.pdf',mimeType:'application/pdf',buffer:source});await ready();};
    const tools=async()=>{if(await page.locator('#toolPanel').isHidden())await page.locator('#toolsToggle').click();if(await page.locator('#analysisTools').getAttribute('open')===null)await page.locator('#analysisTools > summary').click();};
    const analyze=async()=>{await tools();await page.locator('#pdfAnalyze').click();await page.waitForFunction(()=>!document.getElementById('pdfAnalysisReport').hidden&&!document.getElementById('workspace').hasAttribute('aria-busy'));};
-   const download=async()=>{const pending=page.waitForEvent('download');await page.locator('#savePdf').click();const file=await pending;return fs.readFileSync(await file.path());};
+   // This suite exercises the optional verified cleanup, so choose it
+   // explicitly. Ordinary page saving is covered by save-selection-browser.
+   const saveOptions=async()=>{await page.locator('#savePdf').click();await page.locator('#pdfSaveDialog').waitFor({state:'visible'});await page.locator('input[name="pdfSaveMode"][value="clean"]').check();};
+   const download=async()=>{const pending=page.waitForEvent('download');await saveOptions();await page.locator('#pdfSaveConfirm').click();const file=await pending;return fs.readFileSync(await file.path());};
    await open();
-   const direct=await download();assert.equal((await analysis.analyze(direct)).images.extraCopies,0,'Save PDF itself reuses identical images, even without analysis or a separate cleanup click');assert.deepEqual(await metadata(direct),await metadata(source));
+   const direct=await download();assert.equal((await analysis.analyze(direct)).images.extraCopies,0,'explicit optimized Save reuses identical images without a separate analysis or cleanup click');assert.deepEqual(await metadata(direct),await metadata(source));
    assert.match(await page.locator('#toolMessage').textContent(),/→/,'save shows actual before/after sizes');
    await analyze();
    assert.equal(await page.locator('#analysisTools').count(),1);assert.equal(await page.locator('#analysisTools #cardGroupTools').count(),1);assert.equal(await page.locator('#analysisTools #optimizeTools').count(),1);
@@ -68,11 +71,11 @@ async function run(){
    await open();await download();await analyze();
    await page.evaluate(()=>{window.__realDrawingOptimize=DrawingPdf.optimize;DrawingPdf.optimize=async()=>{throw Error('QA: arbetskopian kunde inte verifieras');};});
    await page.locator('#pdfClean').click();await page.waitForFunction(()=>document.getElementById('pdfAnalysisStatus').textContent.includes('QA:'));
-   const count=downloads;await page.locator('#savePdf').click();await page.waitForFunction(()=>!document.getElementById('workspace').hasAttribute('aria-busy')&&document.getElementById('toolMessage').textContent.includes('QA:'));
+   const count=downloads;await saveOptions();await page.locator('#pdfSaveConfirm').click();await page.waitForFunction(()=>!document.getElementById('workspace').hasAttribute('aria-busy')&&document.getElementById('toolMessage').textContent.includes('QA:'));
    assert.equal(downloads,count,'failed cleanup cannot fall back to a cached or uncleaned download');
    await page.evaluate(()=>{DrawingPdf.optimize=window.__realDrawingOptimize;delete window.__realDrawingOptimize;});
    const retry=await download();assert.equal((await analysis.analyze(retry)).images.extraCopies,0);assert.deepEqual(await stats(page,retry),before);
-   assert.deepEqual(errors,[]);await context.close();console.log('PASS '+d.name+': direct Save reuses images, failed cleanup blocks cached fallback, retry works; whole PDF, distinct card products, reviewed deletion, undo/redo, cancellation, exact pixels/text/stamps and metadata');
+   assert.deepEqual(errors,[]);await context.close();console.log('PASS '+d.name+': explicit optimized Save reuses images, failed cleanup blocks cached fallback, retry works; whole PDF, distinct card products, reviewed deletion, undo/redo, cancellation, exact pixels/text/stamps and metadata');
   }
  }finally{if(browser)await browser.close();await new Promise(r=>s.close(r));}
  console.log('QA files: '+qa);

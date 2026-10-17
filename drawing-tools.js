@@ -373,7 +373,7 @@ async function buildOutput(options={}){
   const changed=pages.length!==keep.length||Object.keys(crops).length||Object.keys(masks).length||$('removeAnnotations').checked;
   const verdict=result.original?'Originalfilen behölls':changed?'Arbetskopia med originalkvalitet':'Förlustfritt ompackad PDF';
   const name=cleanName(fileName)+'-forlustfri.pdf',blob=new Blob([bytes],{type:'application/pdf'});
-  lastOutput={blob,name,bytes,cleanup:result.cleanup,verified:result.verified,original:result.original};
+  lastOutput={blob,name,bytes,cleanup:result.cleanup,verified:result.verified,original:result.original,imageCleanup:options.deduplicateImages!==false};
   $('resultCard').hidden=false;
   $('resultInfo').textContent=pages.length+' sidor · '+formatBytes(bytes.length)+' · '+verdict;
   updateSizeComparison(bytes.length,{label:'Förlustfri'});
@@ -396,10 +396,15 @@ async function buildOutput(options={}){
  }
  out.setTitle('Rensad arbetsritning');out.setCreator('Dörrservice Ritningsverktyg');out.setSubject('Optimerad arbetskopia. Originalfilen är oförändrad.');
  const bytes=await out.save(),name=cleanName(fileName)+'-rensad.pdf',blob=new Blob([bytes],{type:'application/pdf'});
- lastOutput={blob,name,bytes};$('resultCard').hidden=false;$('resultInfo').textContent=pages.length+' sidor · '+formatBytes(bytes.length)+' · '+q.label;updateSizeComparison(bytes.length,q);
+ lastOutput={blob,name,bytes,imageCleanup:false};$('resultCard').hidden=false;$('resultInfo').textContent=pages.length+' sidor · '+formatBytes(bytes.length)+' · '+q.label;updateSizeComparison(bytes.length,q);
  message('Arbetskopian är klar.');return lastOutput;
 }
-async function output(){return lastOutput||await buildOutput()}
+async function output(options={}){
+ // A completed, current clean copy is also a valid work copy. A plain page
+ // export must never masquerade as a newly verified image-cleanup result.
+ const needsCleanup=$('quality').value==='lossless'&&options.deduplicateImages!==false;
+ return lastOutput&&(!needsCleanup||lastOutput.imageCleanup)?lastOutput:await buildOutput(options);
+}
 function invalidate(record=true){if(record)recordChange();lastOutput=null;clearParts();$('resultCard').hidden=true;updateSizeComparison();updateEstimatedSize();window.DrawingAnalysisTool?.changed();}
 function pointerPos(e){
  const cv=$('previewCanvas'),r=cv.getBoundingClientRect();return{x:Math.max(0,Math.min(r.width,e.clientX-r.left)),y:Math.max(0,Math.min(r.height,e.clientY-r.top)),w:r.width,h:r.height}
@@ -485,7 +490,34 @@ function downloadPdf(result){
  const url=URL.createObjectURL(result.blob),a=document.createElement('a');a.href=url;a.download=result.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
 }
 $('analyzeSize').onclick=()=>withBusy(async()=>{try{await buildOutput()}catch(e){console.error(e);message(e.message||'Kunde inte mäta filstorleken.',true)}});
-$('savePdf').onclick=()=>withBusy(async()=>{try{const r=await output();if(!r)return;await downloadPdf(r);message('PDF klar · '+formatBytes(sourceBytes.length)+' → '+formatBytes(r.bytes.length)+(r.original?' · Originalfilen behölls.':'.')+' Välj Spara till Filer eller öppna den hämtade filen.')}catch(e){console.error(e);message(e.message||'Kunde inte skapa PDF.',true)}});
+function openSaveChoices(){
+ if(!pdf||busy)return;
+ const pages=keptPages(),quality=QUALITY[$('quality').value]||QUALITY.balanced;
+ $('pdfSaveSummary').textContent=pages.length+' av '+keep.length+' sidor sparas · kvalitet: '+quality.label+'. Dina valda borttagningar, beskärningar och övriga ändringar följer med.';
+ document.querySelector('input[name="pdfSaveMode"][value="edits"]').checked=true;
+ const clean=document.querySelector('input[name="pdfSaveMode"][value="clean"]');
+ clean.disabled=$('quality').value!=='lossless';
+ $('pdfSaveCleanHint').textContent=clean.disabled?'Extra bildrensning kräver Förlustfri (originalkvalitet) under Storlek och exportval.':'Återanvänder identiska bilder. Om innehållet inte kan jämföras avbryts den extra rensningen.';
+ $('pdfSaveDialog').showModal();
+}
+async function saveChosenCopy(){
+ const clean=document.querySelector('input[name="pdfSaveMode"]:checked')?.value==='clean';
+ if(clean&&$('quality').value!=='lossless')return;
+ $('pdfSaveDialog').close();
+ return withBusy(async()=>{
+  try{
+   const r=await output({deduplicateImages:clean});if(!r)return;
+   await downloadPdf(r);
+   message('PDF klar · '+formatBytes(sourceBytes.length)+' → '+formatBytes(r.bytes.length)+(r.original?' · Originalfilen behölls.':'.')+' Välj Spara till Filer eller öppna den hämtade filen.');
+  }catch(e){
+   console.error(e);
+   message((e.message||'Kunde inte skapa PDF.')+(clean&&e.name!=='AbortError'?' Dina sidval finns kvar. Välj Spara PDF → Spara mina sidval och ändringar för att spara utan extra bildrensning.':''),true);
+  }
+ });
+}
+$('savePdf').onclick=openSaveChoices;
+$('pdfSaveConfirm').onclick=()=>void saveChosenCopy();
+$('pdfSaveCancel').onclick=()=>$('pdfSaveDialog').close();
 $('splitSize').onchange=clearParts;
 $('splitPdf').onclick=()=>withBusy(async()=>{
  try{

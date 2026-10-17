@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.366 – spara valda sidor utan bildoptimering
+
+**Spara PDF** i [Ritningsverktyget](drawing-tools.html) skiljer nu vanlig export av kvarvarande sidor från **Optimera bilder och spara**. Därmed kan borttagna extrasidor sparas utan att den valfria bildjämförelsens gräns för korsreferenser stoppar exporten. Bildoptimeringens verifiering och skyddet för signerade filer behålls. Se [arbetsgång och verifieringsstatus](DRAWING_TOOLS_366.md).
+
 ## Tillsyno v2.4.365 – bildrensning följer med när PDF sparas
 
 **Spara PDF** i [Ritningsverktyget](drawing-tools.html) återanvänder nu identiska bilder och verifierar innehållet även när förlustfri export körs direkt. En misslyckad ny rensning kan inte lämna en äldre export som tyst sparas i stället. Slutmeddelandet visar faktisk storlek före/efter. Se [rättning och verifiering](DRAWING_TOOLS_365.md).

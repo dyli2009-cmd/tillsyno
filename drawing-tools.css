@@ -168,3 +168,15 @@ body[data-app-text-size="3"]{--tool-text-factor:1.36}
 .pdfDuplicateRow label{display:flex;align-items:center;gap:5px;font-size:11px;min-height:36px}
 .pdfDuplicateRow button{border:1px solid #94aeb866;border-radius:6px;padding:6px 8px;background:transparent;color:inherit;font-size:11px;min-height:36px}
 #pdfCleanResult{padding:9px;border:1px solid #4d987975;border-radius:8px;font-size:11px;line-height:1.5}
+/* Ordinary page export is available independently of optional image cleanup. */
+.pdfSaveDialog{max-height:92dvh;overflow:auto}
+.pdfSaveChoices{border:0;padding:0;margin:15px 0}
+.pdfSaveChoices legend{font-size:12px;font-weight:700;margin-bottom:8px}
+.pdfSaveChoices label{display:flex;align-items:flex-start;gap:10px;margin:8px 0;padding:12px;border:1px solid var(--ta-border,#c4d1d7);border-radius:8px;cursor:pointer}
+.pdfSaveChoices input{width:20px;height:20px;flex:none;margin:2px 0 0;accent-color:var(--ta-blue,#356e86)}
+.pdfSaveChoices strong,.pdfSaveChoices small{display:block;line-height:1.45;overflow-wrap:anywhere}
+.pdfSaveChoices strong{font-size:14px}.pdfSaveChoices small{font-size:12px;margin-top:5px;color:var(--ta-muted,#617d8d)}
+.pdfSaveChoices label:has(input:checked){border-color:var(--ta-blue,#356e86);background:var(--ta-soft2,#f0f7fa)}
+.pdfSaveChoices label:has(input:disabled){opacity:.6;cursor:default}
+.pdfSaveActions{display:flex;gap:8px}.pdfSaveActions button{flex:1}
+.pdfSaveActions #pdfSaveConfirm{background:var(--ta-blue,#356e86);color:#fff;border-color:var(--ta-blue,#356e86)}

@@ -126,7 +126,7 @@ Det separata låsdokumentet `CONTROLFLOW_LOCK.md` ska också kontrolleras innan 
 
 Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
 
-Aktuell version: **v2.4.365**
+Aktuell version: **v2.4.366**
 
 Beställd CE-uppdatering 15 oktober 2026: se [CE_DESKTOP_357.md](CE_DESKTOP_357.md). Delad/flyttbar/storleksjusterbar vy gäller endast dator. Samma enkla Ny dörr-ikon och temakopplad underskrift gäller även iPhone/iPad enligt den kompletterade beställningen. CE-data, PDF-beräkningar, övriga moduler och authregler bevaras. Kontrollflödet är fortsatt låst utanför den fristående CE-modulen.
 
@@ -325,3 +325,6 @@ Användarbeslut 15 oktober 2026: alla ändringar av texter, logotyper, ikoner oc
 
 
 2026-10-16, Tillsyno v2.4.359: Beställd förenkling av Administration. Väntande ansökningar först, filtrerbara räknare, tydliga modul- och licensuppgifter, samlad behörighet/licens och separat meny för kontoradering. Admin-specifik CSS följer alla sju teman. Godkännande och radering kan provas igen efter tillfälliga serverfel utan att stänga dialogen. GitHub-kopian av adminservern synkas med redan aktiv Supabase-funktion v9; servern ändras inte. Övriga moduländringar är endast versions-/cachereferenser. Se ADMIN_UI_359.md. Kontrollflödet är fortsatt LÅST.
+
+
+2026-10-17, Tillsyno v2.4.366: Beställd rättning av Ritningsverktygets sparflöde efter borttagna sidor. Spara PDF får ett tydligt val mellan vanlig export av kvarvarande sidor och separat bildoptimering. Vanlig export kräver inte den valfria jämförelsen av identiska bilder, vars gräns för många korsreferenser annars kunde hindra sparandet. Bildoptimeringens strikta verifiering och skyddet för signerade filer bevaras. Se DRAWING_TOOLS_366.md för arbetsgång och verifieringsstatus. SmartMatch TEST 9, Kontrollflöde och auth ändras inte funktionellt. Ingen tillgänglig native-källkopia eller TestFlight-build har verifierats. Kontrollflödet är fortsatt LÅST.
