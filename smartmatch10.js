@@ -3,9 +3,9 @@
 const KEY='tillsyno-smartmatch10-cardfirst-v1';
 const q=id=>document.getElementById(id);
 const ui={};
-const ids=['cardsFiles','drawingFile','scanCards','ocrCards','manualCard','sameAsCards','scanDrawing','ocrDrawing','approveAll','saveProject','exportProject','restoreProject','cardSourceInfo','drawingSourceInfo','status','metricCards','metricHits','metricApproved','metricIssues','cardsMeta','cardList','details','selectedBadge','viewer','viewerTitle','pageSurface','drawingCanvas','markers','pageInfo','prevPage','nextPage','manualDialog','manualForm','manualSource','manualPage','manualCode','cancelManual'];
+const ids=['cardsFiles','drawingFile','scanCards','ocrCards','manualCard','sameAsCards','scanDrawing','ocrDrawing','manualStamp','approveAll','saveProject','exportProject','restoreProject','cardSourceInfo','drawingSourceInfo','status','metricCards','metricHits','metricApproved','metricIssues','cardsMeta','cardList','details','selectedBadge','viewer','viewerTitle','pageSurface','drawingCanvas','markers','pageInfo','prevPage','nextPage','manualDialog','manualForm','manualSource','manualPage','manualCode','cancelManual'];
 for(const id of ids)ui[id]=q(id);
-const store={sources:new Map(),cardSourceIds:[],drawingSourceId:null,cards:[],hits:[],selectedCardId:null,visiblePage:1,ocrWorker:null,ocrCache:new Map(),textCache:new Map(),renderTask:null,renderSerial:0,previewSerial:0,busy:false};
+const store={sources:new Map(),cardSourceIds:[],drawingSourceId:null,cards:[],hits:[],selectedCardId:null,visiblePage:1,ocrWorker:null,ocrCache:new Map(),textCache:new Map(),renderTask:null,renderSerial:0,previewSerial:0,busy:false,manualMode:false,pageViewportScale:1};
 const text=(s)=>String(s==null?'':s);
 const norm=s=>text(s).normalize('NFKC').trim().toLocaleUpperCase('sv-SE').replace(/\s+/g,'');
 const clean=s=>text(s).replace(/\s+/g,' ').trim();
@@ -27,6 +27,7 @@ function setControls(){
  ui.sameAsCards.disabled=b||!isReady();
  ui.scanDrawing.disabled=b||!hasCards||!hasDrawing;
  ui.ocrDrawing.disabled=b||!hasCards||!hasDrawing;
+ ui.manualStamp.disabled=b||!hasCards||!hasDrawing;
  ui.approveAll.disabled=b||!store.hits.some(h=>h.status!=='confirmed'&&h.cardId&&norm(h.code)===getCard(h.cardId)?.normalized);
  ui.saveProject.disabled=b||!hasCards;
  ui.exportProject.disabled=b||!hasCards;
@@ -368,6 +369,13 @@ function renderDetails(){
   for(const h of store.hits.filter(h=>h.cardId===c.id)){if(h.normalized!==c.normalized){h.status='pending';h.cardId=null}}
   persist();renderCards();renderDetails();metrics();renderDrawing();
  }));
+ controls.append(makeButton('Ta bort felaktigt kort',()=>{
+  if(!confirm('Ta bort '+c.code+' från detta testregister? Original-PDF:en ändras inte.'))return;
+  store.cards=store.cards.filter(card=>card.id!==c.id);
+  for(const h of store.hits)if(h.cardId===c.id){h.cardId=null;h.status='pending'}
+  store.selectedCardId=store.cards[0]?.id||null;
+  persist();renderCards();renderDetails();metrics();renderDrawing();
+ }));
  ui.details.append(controls);
  ui.details.append(node('h3','','Originaldörrkort'));
  const preview=node('div','preview');const canvas=document.createElement('canvas');canvas.setAttribute('aria-label','Originalets dörrkort på sida '+c.page);
@@ -428,7 +436,7 @@ async function renderDrawing(){
   const pg=await src.doc.getPage(p),basic=pg.getViewport({scale:1});
   if(seq!==store.renderSerial)return;
   const usable=Math.max(260,Math.min(900,ui.viewer.clientWidth-44));
-  const zoom=Math.min(1.8,usable/basic.width),vp=pg.getViewport({scale:zoom});
+  const zoom=Math.min(1.8,usable/basic.width),vp=pg.getViewport({scale:zoom});store.pageViewportScale=zoom;
   const canvas=ui.drawingCanvas,dpr=Math.min(window.devicePixelRatio||1,2);
   if(store.renderTask)try{store.renderTask.cancel()}catch(e){}
   canvas.width=Math.ceil(vp.width*dpr);canvas.height=Math.ceil(vp.height*dpr);
@@ -554,6 +562,33 @@ function init(){
  ui.sameAsCards.addEventListener('click',()=>{store.drawingSourceId=store.cardSourceIds[0]||null;store.hits=[];store.visiblePage=1;metrics();renderDrawing();status('Samma PDF används som ritning. Kortsidor hoppas över när stämplarna söks.')});
  ui.scanDrawing.addEventListener('click',()=>void scanDrawing('text'));
  ui.ocrDrawing.addEventListener('click',()=>void scanDrawing('ocr'));
+ ui.manualStamp.addEventListener('click',()=>{
+  store.manualMode=!store.manualMode;
+  ui.manualStamp.textContent=store.manualMode?'Avbryt stämpelmarkering':'+ Markera stämpel';
+  status(store.manualMode?'Klicka mitt på den stämpel som ska kopplas. Originalritningen ändras inte.':'Manuell stämpelmarkering avbruten.');
+ });
+ ui.drawingCanvas.addEventListener('click',event=>{
+  if(!store.manualMode||store.busy)return;
+  const box=ui.drawingCanvas.getBoundingClientRect();
+  if(!box.width||!box.height)return;
+  const src=getSource(store.drawingSourceId);if(!src)return;
+  const x=(event.clientX-box.left)/store.pageViewportScale;
+  const y=(event.clientY-box.top)/store.pageViewportScale;
+  const selected=getCard(store.selectedCardId);
+  const code=clean(prompt('Vilken dörrkortsbeteckning står på stämpeln?',selected?.code||''));
+  if(!code)return;
+  const cardOptions=matchingCards(code);
+  if(!cardOptions.length){status('Det finns inget dörrkort med beteckningen '+code+'. Lägg till kortet först.');return}
+  const number=clean(prompt('Fysisk dörrposition/objektnummer, om det finns (valfritt):','')||'');
+  const hit=createHit(src,store.visiblePage,code,{x:x-10,y:y-8,w:20,h:16},'manual',number);
+  const nearby=store.hits.find(h=>h.page===hit.page&&h.sourceId===hit.sourceId&&h.normalized===hit.normalized&&Math.abs(h.x-hit.x)<14&&Math.abs(h.y-hit.y)<14);
+  if(nearby){status('Det finns redan en träff på den platsen. Markera den befintliga kopplingen för granskning.');return}
+  store.hits.push(hit);
+  store.manualMode=false;ui.manualStamp.textContent='+ Markera stämpel';
+  if(hit.cardId)store.selectedCardId=hit.cardId;
+  persist();renderCards();renderDetails();metrics();renderDrawing();
+  status('Manuell stämpel '+code+' tillagd på sida '+hit.page+'. Godkänn kopplingen under rätt dörrkort.');
+ });
  ui.approveAll.addEventListener('click',approveAll);
  ui.saveProject.addEventListener('click',()=>{persist();status('SmartMatch 10-projektdata sparad lokalt. Behåll originalfilerna; de ändras inte och måste väljas igen efter omladdning.')});
  ui.exportProject.addEventListener('click',exportData);
