@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.386 – stämplar i ritningens egen skala
+
+[Avläsning TEST 9.19](smartmatch-read-test.html) visar originalets stämpel, färg och tryckta kod utan ett nytt textlager ovanpå. Den genomskinliga klickytan och procentmärket följer ritningens zoom och täcker därför inte planen när man zoomar ut. Den mörka fristående etiketten är borttagen. iPadens grundritning höjs försiktigt från 1,50 till 1,65 megapixel. Se [beteende, bevarade skydd och slutprov](SMARTMATCH_READ_TEST_9_19.md).
+
 ## Tillsyno v2.4.385 – något tydligare iPad-ritning
 
 [Avläsning TEST 9.18](smartmatch-read-test.html) höjer försiktigt upplösningen på iPadens grundritning från 1,35 till 1,50 megapixel. De skarpa länkade stämpelkoderna från TEST 9.17 ligger kvar, och övriga skydd för zoom, detaljrendering och stora PDF-filer är oförändrade. Se [beteende, minnesgränser och slutprov](SMARTMATCH_READ_TEST_9_18.md).
