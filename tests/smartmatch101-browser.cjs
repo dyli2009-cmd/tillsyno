@@ -1,0 +1,50 @@
+'use strict';
+// Synthetic fixtures only. No customer drawings or credentials are uploaded.
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const {chromium}=require('playwright'),PDF=require('../vendor/pdf-lib.min.js'),ZIP=require('../vendor/jszip-3.10.1.min.js'),C=require('../smartmatch10-1-core.js');
+const output=path.join(__dirname,'smartmatch101-results');fs.mkdirSync(output,{recursive:true});
+(async()=>{
+ assert.equal(C.norm('130 C'),C.norm('130C'));assert.notEqual(C.norm('130'),C.norm('130C'));assert.notEqual(C.norm('1-45-1'),C.norm('130C'));
+ assert.equal(C.codeFrom('Dörrkort 130C','Dörrkort'),'130C');assert.equal(C.codeFrom('GS10','GS'),'');assert.equal(C.codeFrom('WC\n130C',''),'');
+ assert.deepEqual(C.pages('1,3-5',8),[1,3,4,5]);assert.throws(()=>C.pages('9',8));assert.throws(()=>C.validate({format:C.FORMAT}));
+ const codes=['130C','140C','WC','HWC','VC','Kontor','Teknik'],pdf=await PDF.PDFDocument.create(),font=await pdf.embedFont(PDF.StandardFonts.HelveticaBold),page=pdf.addPage([600,800]);
+ for(let i=0;i<35;i++){const code=codes[i%codes.length],x=50+(i%5)*100,top=100+Math.floor(i/5)*60;page.drawRectangle({x,y:800-top-22,width:84,height:22,borderWidth:1,borderColor:PDF.rgb(.5,.6,.7)});page.drawText(code,{x:x+(84-font.widthOfTextAtSize(code,11))/2,y:800-top-15,size:11,font});page.drawText('1-45-'+(i+1),{x:x+29,y:800-top+8,size:7,font});}
+ page.drawText('WC',{x:80,y:150,size:11,font});
+ for(const code of codes){const p=pdf.addPage([600,800]);p.drawRectangle({x:50,y:682,width:500,height:35,color:PDF.rgb(.1,.2,.3)});p.drawText('Dörrkort '+code,{x:60,y:691,size:18,font,color:PDF.rgb(1,1,1)});p.drawText('Produkter och smådetaljer som inte ska läsas',{x:60,y:550,size:10,font});}
+ const bytes=await pdf.save(),fixture=path.join(output,'fixture.pdf');fs.writeFileSync(fixture,bytes);
+ const browser=await chromium.launch({headless:true});const context=await browser.newContext({viewport:{width:1480,height:1000},acceptDownloads:true});
+ await context.route('**/auth/guard.js*',route=>route.fulfill({contentType:'application/javascript',body:"document.addEventListener('DOMContentLoaded',()=>{window.TillsynoCurrentAccess={email:'ci@example.invalid',role:'admin'};document.documentElement.removeAttribute('data-auth-pending');window.dispatchEvent(new Event('tillsyno-authorized'));});"}));
+ await context.route('**/auth/client.js*',route=>route.fulfill({body:''}));await context.route('**/auth-config.js',route=>route.fulfill({body:''}));
+ const p=await context.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));p.setDefaultTimeout(20000);
+ async function idle(allowError=false){await p.waitForFunction(()=>window.SM101Inspect&&!SM101Inspect().busy,null,{timeout:60000});const text=await p.locator('#status').innerText();console.log(text);if(!allowError)assert.notEqual(await p.locator('#status').getAttribute('class'),'error',text);return text;}
+ async function gotoPage(n){await p.locator('#page').fill(String(n));await p.locator('#page').press('Tab');await idle();}
+ async function region(mode,x,y,w,h){await p.locator('#mode').selectOption(mode);const s=await p.evaluate(()=>SM101Inspect().view),b=await p.locator('#viewport').boundingBox();const a={x:b.x+s.tx+x*s.width*s.scale,y:b.y+s.ty+y*s.height*s.scale},z={x:a.x+w*s.width*s.scale,y:a.y+h*s.height*s.scale};assert(a.x>=b.x&&a.y>=b.y&&z.x<=b.x+b.width&&z.y<=b.y+b.height,'Selection must be on screen');await p.mouse.move(a.x,a.y);await p.mouse.down();await p.mouse.move(z.x,z.y,{steps:10});await p.mouse.up();await idle();}
+ try{
+ await p.goto('http://127.0.0.1:8123/smartmatch10-1.html');await p.waitForFunction(()=>!!window.SM101Inspect);
+ assert.match(await p.title(),/10\.1/);await p.locator('#drawingStep').click();assert.match(await idle(true),/godkänn/);
+ await p.locator('#files').setInputFiles(fixture);await idle();await gotoPage(2);
+ await region('code',50/600,82/800,250/600,38/800);await p.locator('#cardPages').fill('2-8');await p.locator('#cardPages').press('Tab');
+ await p.evaluate(()=>{window.__ocrCalls=0;const o=SM101PDF.ocr;SM101PDF.ocr=(...a)=>{window.__ocrCalls++;return o(...a)};const get=SM101PDF.page;SM101PDF.page=async(...a)=>{await new Promise(r=>setTimeout(r,100));return get(...a)};});
+ await p.locator('#scanCards').click();await p.waitForFunction(()=>SM101Inspect().project.cards.length>=1&&SM101Inspect().busy);await p.locator('#pause').click();await idle();let state=await p.evaluate(()=>SM101Inspect());assert(state.project.cards.length<7&&state.project.cards.length>0,'pause boundary');
+ await p.locator('#scanCards').click();await idle();state=await p.evaluate(()=>SM101Inspect());assert.equal(state.project.cards.length,7);assert.deepEqual(state.project.cards.map(c=>c.code),codes);assert.equal(await p.evaluate(()=>window.__ocrCalls),0);
+ await p.locator('#approve').click();await idle();await p.locator('#drawingStep').click();await idle();await gotoPage(1);await p.locator('#exampleCode').selectOption('130C');
+ await region('sample',48/600,98/800,88/600,26/800);await p.locator('#scanDrawing').click();await idle();state=await p.evaluate(()=>SM101Inspect());console.log('AUTO HITS',state.project.hits.map(h=>[h.code,h.score]));assert.equal(state.project.hits.length,35,'35 framed stamps; loose WC must be excluded');assert(state.project.hits.every(h=>!h.confirmed&&h.cardId));
+ await p.screenshot({path:path.join(output,'desktop.png'),fullPage:true});
+ await p.locator('#hits button').first().click();await idle();await p.getByRole('button',{name:'Godkänn kopplingen',exact:true}).click();await idle();assert.equal(await p.evaluate(()=>SM101Inspect().project.hits.filter(h=>h.confirmed).length),1);
+ await p.getByRole('button',{name:'Ta bort felträff',exact:true}).click();await idle();await p.locator('#drawingPages').fill('1,2');await p.locator('#scanDrawing').click();await idle();assert.equal(await p.evaluate(()=>SM101Inspect().project.hits.filter(h=>!h.removed).length),34,'do not resurrect a removed hit');
+ await p.getByRole('button',{name:'Ångra borttagning',exact:true}).click();await idle();await p.locator('#fit').click();
+ const b=await p.locator('#viewport').boundingBox(),pt={x:b.width*.7,y:b.height*.5};let v=await p.evaluate(()=>SM101Inspect().view),anchor={x:(pt.x-v.tx)/v.scale,y:(pt.y-v.ty)/v.scale};await p.mouse.move(b.x+pt.x,b.y+pt.y);await p.mouse.wheel(0,-120);await p.waitForTimeout(100);v=await p.evaluate(()=>SM101Inspect().view);assert(Math.abs(anchor.x-(pt.x-v.tx)/v.scale)<.01&&Math.abs(anchor.y-(pt.y-v.ty)/v.scale)<.01,'mouse anchored zoom');
+ const before={tx:v.tx,ty:v.ty};await p.mouse.move(b.x+pt.x,b.y+pt.y);await p.mouse.down();await p.mouse.move(b.x+pt.x+70,b.y+pt.y+35,{steps:5});await p.mouse.up();v=await p.evaluate(()=>SM101Inspect().view);assert(Math.abs(v.tx-before.tx-70)<1&&Math.abs(v.ty-before.ty-35)<1,'left-button pan');
+ await p.locator('#fit').click();await p.locator('#exampleCode').selectOption('WC');await region('manual',75/600,635/800,40/600,25/800);assert.equal(await p.evaluate(()=>SM101Inspect().project.hits.length),36,'manual linking of otherwise excluded text');
+ await p.evaluate(()=>{window.__save=SM101PDF.save;SM101PDF.save=async()=>{throw Error('TEST lagring full')};});await p.locator('#save').click();assert.match(await idle(true),/TEST lagring full/);await p.evaluate(()=>SM101PDF.save=window.__save);
+ const downloadPromise=p.waitForEvent('download');await p.locator('#export').click();const download=await downloadPromise,archive=path.join(output,'export.sm101');await download.saveAs(archive);await idle();
+ const zip=await ZIP.loadAsync(fs.readFileSync(archive)),saved=JSON.parse(await zip.file('project.json').async('string'));for(const s of saved.sources){const b=await zip.file('pdf/'+s.id+'.pdf').async('nodebuffer');assert.equal(crypto.createHash('sha256').update(b).digest('hex'),s.id,'original unchanged');}
+ await p.reload();await p.waitForFunction(()=>!!window.SM101Inspect);await p.locator('#restore').click();await idle();assert.equal(await p.evaluate(()=>SM101Inspect().project.hits.length),36);
+ await p.locator('#import').setInputFiles(archive);await idle();assert.equal(await p.evaluate(()=>SM101Inspect().project.hits.length),36);
+ const png=await p.evaluate(()=>{const c=document.createElement('canvas');c.width=600;c.height=140;const x=c.getContext('2d');x.fillStyle='white';x.fillRect(0,0,600,140);x.fillStyle='black';x.font='bold 65px Arial';x.fillText('GS10',35,95);return c.toDataURL('image/png').split(',')[1];});
+ const raster=await PDF.PDFDocument.create(),im=await raster.embedPng(Buffer.from(png,'base64')),rp=raster.addPage([600,800]);rp.drawImage(im,{x:50,y:600,width:300,height:70});const rasterFile=path.join(output,'image-card.pdf');fs.writeFileSync(rasterFile,await raster.save());
+ await p.locator('#cardsStep').click();await idle();await p.locator('#files').setInputFiles(rasterFile);await idle();await region('code',45/600,125/800,315/600,80/800);await p.locator('#cardPages').fill('1');await p.locator('#cardPages').press('Tab');await p.locator('#ocrCards').click();await idle();state=await p.evaluate(()=>SM101Inspect());assert(state.project.cards.some(c=>C.norm(c.code)==='GS10'&&c.origin==='ocr'),'cropped image code');
+ await p.setViewportSize({width:390,height:844});await p.locator('#fit').click();await p.screenshot({path:path.join(output,'phone.png'),fullPage:true});assert(await p.locator('#viewport').isVisible());
+ assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({version:'10.1',synthetic:true,automaticCards:7,automaticStamps:35,looseWCExcluded:true,pauseResume:true,manualCorrection:true,mouseZoomPan:true,localRestore:true,portableOriginalHashes:true,croppedOCR:true,errors},null,2));console.log('SMARTMATCH101 PASS');
+ }catch(e){console.error(e);await p.screenshot({path:path.join(output,'failure.png'),fullPage:true}).catch(()=>{});fs.writeFileSync(path.join(output,'error.txt'),String(e)+'\n'+errors.join('\n'));process.exitCode=1;}finally{await browser.close();}
+})();
