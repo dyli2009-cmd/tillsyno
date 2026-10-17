@@ -1,0 +1,47 @@
+name: Verify published SmartMatch 10.1
+on:
+  push:
+    branches: [smartmatch-10-1-isolated-20261017]
+    paths: ['.github/workflows/smartmatch101-live.yml']
+permissions:
+  contents: read
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 8430c95523ffdc339dd988c488954351227c1357
+      - name: Verify public page and assets
+        run: |
+          node <<'NODE'
+          const fs=require('node:fs'),crypto=require('node:crypto');
+          const base='https://dyli2009-cmd.github.io/tillsyno/';
+          const files=['smartmatch10-1.html','smartmatch10-1.css','smartmatch10-1-core.js','smartmatch10-1-pdf.js','smartmatch10-1-app.js'];
+          const digest=b=>crypto.createHash('sha256').update(b).digest('hex');
+          (async()=>{
+            let last;
+            for(let attempt=1;attempt<=18;attempt++){
+              try{
+                const results=[];
+                for(const file of files){
+                  const response=await fetch(base+file+'?verify=8430c95523ffdc339dd988c488954351227c1357',{signal:AbortSignal.timeout(10000)});
+                  const bytes=Buffer.from(await response.arrayBuffer());
+                  const expected=digest(fs.readFileSync(file)),actual=digest(bytes);
+                  if(!response.ok||actual!==expected)throw Error(file+': HTTP '+response.status+'; deployed content does not yet match');
+                  results.push({file,url:base+file,status:response.status,sha256:actual});
+                }
+                const report={checkedAt:new Date().toISOString(),commit:'8430c95523ffdc339dd988c488954351227c1357',status:'PASS',results};
+                fs.writeFileSync('smartmatch101-live.json',JSON.stringify(report,null,2));
+                console.log(JSON.stringify(report,null,2));return;
+              }catch(e){last=e;console.log('Attempt '+attempt+': '+e.message);await new Promise(r=>setTimeout(r,5000));}
+            }
+            throw last;
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: smartmatch101-live
+          path: smartmatch101-live.json
+          retention-days: 3
