@@ -398,7 +398,7 @@ function renderDetails(){
  const ambiguous=store.hits.filter(h=>!h.cardId&&h.normalized===c.normalized);
  if(!hits.length&&!ambiguous.length)ui.details.append(node('p','small','Inga positioner hittade för detta dörrkort.'));
  for(const h of [...hits,...ambiguous]){
-  const row=node('div','positionRow'),name=node('span','',h.positionId||h.code);
+  const row=node('div','positionRow'),name=node('span','',h.code);
   name.append(node('small','', 'Ritningssida '+h.page+' · '+(h.status==='confirmed'?'Matchad':h.status==='ambiguous'?'Flera möjliga kort':'Föreslagen')));
   row.append(name);
   const actions=node('div','positionActions');
@@ -408,7 +408,7 @@ function renderDetails(){
   }else if(h.status!=='confirmed'){
    actions.append(makeButton('Godkänn',()=>{h.status='confirmed';persist();renderCards();renderDetails();metrics();renderDrawing()}));
   }else{
-   const s=node('select');s.setAttribute('aria-label','Kontrollstatus för '+(h.positionId||h.code));
+   const s=node('select');s.setAttribute('aria-label','Kontrollstatus för '+h.code);
    for(const value of ['Ej kontrollerad','Klar','Anmärkning','Ej godkänd']){const o=node('option','',value);o.value=value;s.append(o)}
    s.value=h.check||'Ej kontrollerad';s.addEventListener('change',()=>{h.check=s.value;persist()});actions.append(s);
   }
@@ -449,11 +449,11 @@ async function renderDrawing(){
   ui.markers.replaceChildren();
   const hits=store.hits.filter(h=>h.sourceId===src.id&&h.page===p);
   for(const h of hits){
-   const b=node('button','marker',h.positionId||h.code);
+   const b=node('button','marker',h.code);
    b.type='button';b.setAttribute('data-status',h.status);
    b.style.left=Math.min(98,Math.max(2,100*(h.x+h.w/2)/basic.width))+'%';
    b.style.top=Math.min(98,Math.max(2,100*(h.y+h.h/2)/basic.height))+'%';
-   b.title=(h.positionId||h.code)+' · '+h.code+' · '+(h.status==='confirmed'?'godkänd':'väntar på granskning');
+   b.title=h.code+' · '+(h.status==='confirmed'?'godkänd':'väntar på granskning');
    b.addEventListener('click',()=>openHit(h));ui.markers.append(b);
   }
   setControls();
