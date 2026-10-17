@@ -130,7 +130,7 @@
      await abortable(libraryPromise,signal);
     }
     if(signal?.aborted)throw abortError();
-    const base=new URL('./',location.href),worker=await Tesseract.createWorker('eng',1,{
+    const base=new URL('./',location.href),worker=await Tesseract.createWorker(['swe','eng'],1,{
      workerPath:new URL('vendor/tesseract/worker.min.js',base).href,corePath:new URL('vendor/tesseract/tesseract-core-lstm.wasm.js',base).href,
      langPath:new URL('vendor/tesseract/lang/',base).href,workerBlobURL:false,gzip:true,
      logger:progress=>{if(progress.status==='recognizing text'&&active&&lastProgress?.phase==='ocr'){$('ocrProgressMessage').textContent=progressMessage+' · '+Math.round((progress.progress||0)*100)+' % av bildområdet';}}

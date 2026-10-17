@@ -92,3 +92,12 @@ Undantaget gäller endast GS-valets maskintyp, i båda riktningar: 24 (ED100/ID1
 ## Protokollsexport utan ritning – TEST v36.96
 
 Användaren vill ta bort Ta med ritning och GS-länkar från Spara → Protokoll. Exporten ska bara innehålla valda protokoll. Godkända protokoll är förvalda enligt det befintliga urvalet; urvalsfilter och kontrollstatus ändras inte. Både ett och flera valda protokoll ger bara sina protokollsidor. Detta är skilt från att spara själva projektet med ritningen. Se [TEST v36.96](SMARTMATCH_TEST_V36_96.md).
+
+
+## Separat avläsningstest: GS-listor och manuella kompletteringar – TEST 9.2
+
+Användarbeslut 17 oktober 2026, avgränsat till **SmartMatch Avläsning TEST 9.2**: produktvärden från Övrigt / Produkt visas under dörrkortets avsnitt som GS-checklista. GS i **Monteras av / Mont av** är fortsatt ansvarskällan. GS enbart i Levereras av räcker inte; DT-montage och oklart ansvar blir inga gissade GS-moment.
+
+Användaren får även uttryckligen komplettera ett öppet projekt genom att markera en hel ritningsbeteckning, förvalt avgränsa sökningen till samma textfärg, granska de nya positionerna och själv välja vilken dörrkortssida de ska öppna. Detta är en separat, manuellt bekräftad koppling, även när kortets tryckta rubrik skiljer sig från ritningsbeteckningen. Befintliga kopplingar och kontroller ersätts inte; dubbletter och försök att ge samma beteckning en annan befintlig kortsida spärras. Saknade kortsidor kan läggas till från PDF och produkter läsas senare.
+
+Detta beslut ändrar inte den låsta standardprofilens ID-källa eller automatisk DA-till-GS-koppling. Ordinarie SmartMatch och tidigare testversioner bevaras. Arbetsgång, skydd och verifiering dokumenteras i [TEST 9.2](SMARTMATCH_READ_TEST_9_2.md).

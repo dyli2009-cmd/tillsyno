@@ -1,8 +1,16 @@
 # dorrservice
 
+## Tillsyno v2.4.369 – GS-produktgrupper, kompletteringar och svensk bildtext
+
+[Avläsning TEST 9.2](smartmatch-read-test.html) visar produktvärden från **Övrigt / Produkt** som checklistor under kortets avsnitt. **GS i Monteras av** avgör vilka rader som följer med. Med **Lägg till kopplingar** markerar du en beteckning på ritningen, söker samma hela text och förvalt samma textfärg, granskar träffarna och väljer kortsida. Befintliga kopplingar och avprickningar bevaras. Saknade dörrkort kan läggas till från fler PDF-filer och produkterna läsas senare. Se [steg för steg och verifiering](SMARTMATCH_READ_TEST_9_2.md). [TEST 9.1](smartmatch-read-test-v9-1.html) finns kvar separat.
+
+När alla produktlistor redan är lästa öppnar **Läs produkterna igen** produktsteget för en ny läsning utan att göra om ritningskopplingarna. Finns väntande kort läser **Fortsätt med produkter** dessa och behåller färdiga listor.
+
+**Förbered sökbara dörrkort** i Ritningsverktyget använder nu svenska och engelska tillsammans för bättre stöd för å, ä och ö i bildtext. Samma språkfiler används i TEST 9.2 och finns lokalt för offlinebruk. Granskning av osäkra ord behålls. Prova igen från original-PDF:en enligt [stegguiden för svensk bildtext](DRAWING_TOOLS_369.md).
+
 ## Tillsyno v2.4.368 – se vad SmartMatch-avläsningen gör
 
-[Avläsning TEST 9.1](smartmatch-read-test.html) visar vilken fas, PDF-sida, kort eller bildyta som läses, framsteg inom den aktuella fasen, förfluten tid och en försiktig uppskattning av återstående tid. Lokal bildläsning visar sin egen procent. Samma information följer med när produkterna läses senare. Kodmatchning, söksätt och GS-regler behålls. Se [arbetsgång, hur statusen ska tolkas och verifiering](SMARTMATCH_READ_TEST_9_1.md). [TEST 9](smartmatch-read-test-v9.html) finns kvar separat.
+[Avläsning TEST 9.1](smartmatch-read-test-v9-1.html) visar vilken fas, PDF-sida, kort eller bildyta som läses, framsteg inom den aktuella fasen, förfluten tid och en försiktig uppskattning av återstående tid. Lokal bildläsning visar sin egen procent. Samma information följer med när produkterna läses senare. Kodmatchning, söksätt och GS-regler behålls. Se [arbetsgång, hur statusen ska tolkas och verifiering](SMARTMATCH_READ_TEST_9_1.md). [TEST 9](smartmatch-read-test-v9.html) finns kvar separat.
 
 ## Tillsyno v2.4.367 – sökbara dörrkort med originalbilden kvar
 

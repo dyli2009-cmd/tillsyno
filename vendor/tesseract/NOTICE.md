@@ -10,3 +10,16 @@ Images are recognized in the browser; they are not sent to an OCR service.
 
 Files are copied unchanged from the corresponding pinned npm packages. The
 local paths permit offline use once the Tillsyno offline cache is prepared.
+
+## Swedish model added in v2.4.369
+
+- `lang/swe.traineddata.gz`: losslessly gzip-compressed Swedish LSTM model from
+  `tesseract-ocr/tessdata_fast`, tag `4.1.0`, commit
+  `65727574dfcd264acbb0c3e07860e4e9e9b22185` (Apache-2.0).
+- Source: https://github.com/tesseract-ocr/tessdata_fast/blob/65727574dfcd264acbb0c3e07860e4e9e9b22185/swe.traineddata
+- Uncompressed SHA-256: `f7304988d41f833efebcc2d529df54b1903ecebbc3da1faabd19a0fddd4fe586`.
+- The model container was validated with `combine_tessdata -d`; compression uses
+  gzip with a fixed zero timestamp. Decompression restores the original bytes.
+
+PDF preparation and the new TEST 9.2 readers use Swedish and English together.
+Older reading-test snapshots retain their original language selection.
