@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="sv" data-auth-pending>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#122d40">
+<title>SmartMatch 10 – separat dörrkortstest</title>
+<style>html[data-auth-pending] body{visibility:hidden}</style>
+<link rel="stylesheet" href="smartmatch10.css?v=10.0.1">
+<script src="vendor/supabase-2.49.10.min.js"></script>
+<script src="auth-config.js"></script>
+<script src="auth/client.js?v=2.4.372"></script>
+<script src="auth/guard.js?v=2.4.372" defer></script>
+<script src="vendor/pdf.min.js"></script>
+<script src="vendor/pdf-lib.min.js"></script>
+</head>
+<body data-module="smartmatch">
+<header class="header">
+ <div><a class="home" href="index.html">← Tillsyno</a><h1>SmartMatch <strong>10</strong> <small>SEPARAT TEST</small></h1><p>Dörrkorten först → märkningar på ritning → arbetsresultat per dörrkort.</p></div>
+ <div class="topActions"><button id="saveProject" type="button" disabled>Spara lokalt</button><button id="exportProject" type="button" disabled>Exportera projektdata</button></div>
+</header>
+<div class="safety"><b>Originalen ändras inte.</b> Den här versionen använder egen lagring. SmartMatch 9, ordinarie SmartMatch och Kontrollflödet berörs inte. Läsresultat från bilder måste granskas.</div>
+<section class="setup" aria-label="Förbered projekt">
+ <div class="step"><div class="stepTitle"><b>1</b><div><strong>Hitta dörrkorten</strong><small>Välj en eller flera PDF-filer, även bildbaserade.</small></div></div>
+  <label class="picker">Välj dörrkorts-PDF <input id="cardsFiles" type="file" multiple accept="application/pdf,.pdf" disabled></label>
+  <div class="row"><button id="scanCards" disabled>Hitta alla dörrkort</button><button id="ocrCards" disabled>Bildläs saknade kort</button><button id="manualCard" disabled>+ Lägg till kort manuellt</button></div>
+  <small id="cardSourceInfo">Inga dörrkorts-PDF:er valda.</small>
+ </div>
+ <div class="step"><div class="stepTitle"><b>2</b><div><strong>Koppla mot ritning</strong><small>Hela beteckningen måste stämma. Förslag granskas före godkännande.</small></div></div>
+  <label class="picker">Välj ritnings-PDF <input id="drawingFile" type="file" accept="application/pdf,.pdf" disabled></label>
+  <div class="row"><button id="sameAsCards" disabled>Använd samma PDF</button><button id="scanDrawing" disabled>Hitta märkningar</button><button id="ocrDrawing" disabled>Bildläs ritningsstämplar</button></div>
+  <small id="drawingSourceInfo">Ingen ritning vald.</small>
+ </div>
+ <div class="step"><div class="stepTitle"><b>3</b><div><strong>Samla arbetet på kortet</strong><small>Original, uppgifter och kopplade positioner med egen status.</small></div></div>
+  <div class="row"><button id="approveAll" disabled>Godkänn entydiga träffar</button><button id="restoreProject" disabled>Återställ sparade uppgifter</button></div>
+  <small>Osäkra träffar kopplas inte automatiskt. Inget raderas i original-PDF.</small>
+ </div>
+</section>
+<div class="status" role="status" aria-live="polite" id="status">Välj dina dörrkorts-PDF:er för att börja.</div>
+<div class="metrics" aria-label="Projektöversikt">
+ <div><strong id="metricCards">0</strong><span>dörrkort</span></div><div><strong id="metricHits">0</strong><span>ritningsträffar</span></div><div><strong id="metricApproved">0</strong><span>godkända kopplingar</span></div><div><strong id="metricIssues">0</strong><span>att granska</span></div>
+</div>
+<main class="workspace">
+ <aside class="panel cardPanel"><div class="panelHeading"><h2>Dörrkortsregister</h2><small id="cardsMeta">Väntar på avläsning</small></div><div id="cardList" class="cardList"><p class="muted">Kort som hittas visas här. Välj ett kort för original och arbetsuppgifter.</p></div></aside>
+ <section class="panel drawingPanel">
+  <div class="panelHeading"><h2 id="viewerTitle">PDF-visning</h2><div class="pageNav"><button id="prevPage" disabled aria-label="Föregående sida">‹</button><span id="pageInfo">– / –</span><button id="nextPage" disabled aria-label="Nästa sida">›</button></div></div>
+  <div class="legend"><span class="dot candidate"></span>Föreslagen <span class="dot approved"></span>Godkänd <span class="dot uncertain"></span>Otydlig</div>
+  <div id="viewer" class="viewer"><div class="empty">När en ritning laddats visas varje hittad stämpel på rätt plats.</div><div id="pageSurface" hidden><canvas id="drawingCanvas"></canvas><div id="markers"></div></div></div>
+  <div class="viewerFoot"><small>Träffar från PDF-text, PDF-stämplar och valfri lokal bildläsning visas som förslag. Tryck på en markering för att öppna rätt dörrkort.</small></div>
+ </section>
+ <aside class="panel infoPanel">
+  <div class="panelHeading"><h2>Valt dörrkort</h2><span id="selectedBadge"></span></div>
+  <div id="details"><p class="muted">Välj ett dörrkort till vänster.</p></div>
+ </aside>
+</main>
+<dialog id="manualDialog"><form method="dialog" id="manualForm"><h2>Lägg till ett dörrkort</h2><p>Använd när en stämpel eller korttitel inte kunde avläsas automatiskt.</p>
+<label>Ursprungsfil <select id="manualSource"></select></label><label>PDF-sida <input type="number" id="manualPage" min="1" required value="1"></label><label>Dörrkortsbeteckning <input id="manualCode" required placeholder="Exempel: GS2, WC, 140C"></label>
+<div class="row"><button value="cancel" type="button" id="cancelManual">Avbryt</button><button value="confirm" type="submit">Lägg till för granskning</button></div></form></dialog>
+<script src="smartmatch10.js?v=10.0.1"></script>
+</body></html>
