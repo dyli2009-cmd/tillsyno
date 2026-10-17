@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.379 – lokal säkerhetskopia alltid synlig
+
+[Avläsning TEST 9.12](smartmatch-read-test.html) visar **Spara lokalt nu** före den stora PDF-exportens förlopp. Arbetskopian kan därför sparas direkt i webbläsaren även medan PDF-exporten arbetar eller har stoppats. Knappen visar själv när den sparar och när kopian är klar. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_12.md).
+
 ## Tillsyno v2.4.378 – stora projekt och tydligt PDF-sparande
 
 [Avläsning TEST 9.11](smartmatch-read-test.html) rättar exportfelet där stor inbäddad projektinformation inte kunde läsas tillbaka. Sparvyn visar arbetssteg, procent och förfluten tid. **100 % – PDF klar att spara** betyder att exportkontrollen är klar; tryck sedan **Spara PDF**. Vid direkt sparning visar appen även filskrivning och kontroll från disk. Se [arbetsgång och verifiering](SMARTMATCH_READ_TEST_9_11.md).
