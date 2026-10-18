@@ -307,6 +307,23 @@
   let offset=0;for(const line of lines.slice(0,maxLines)){page.drawText(pdfText(font,line),{x,y:top-size-offset,size,font,color});offset+=lineHeight;}
  }
  function drawCellBorders(page,x,y,width,height,color){page.drawRectangle({x,y,width,height,borderWidth:.45,borderColor:color});}
+ // Behåll avlästa textpositioner vid export av okända tabellmallar.
+ // Linjer/rutor behöver fortfarande separat bildanalys och markeras inte som klara.
+ function renderPositionedText(document,library,card,fonts){
+  const page=document.addPage([PDF_WIDTH,PDF_HEIGHT]),tokens=(card.sourceTokens||[]).filter(t=>t&&t.box&&clean(t.text));
+  const margin=24,width=PDF_WIDTH-2*margin,height=PDF_HEIGHT-2*margin;
+  const ink=library.rgb(.08,.12,.16);
+  for(const token of tokens){
+   const box=token.box,x=finite(box.x,-1),y=finite(box.y,-1),w=finite(box.w,0),h=finite(box.h,0);
+   if(x<0||y<0||x>1.01||y>1.01||w<=0||h<=0)continue;
+   const content=pdfText(fonts.normal,clean(token.text));if(!content)continue;
+   const fontSize=Math.max(5,Math.min(18,h*height*.76));
+   const measured=fonts.normal.widthOfTextAtSize(content,fontSize);
+   const finalSize=measured>w*width&&measured>0?Math.max(3,fontSize*w*width/measured):fontSize;
+   page.drawText(content,{x:margin+x*width,y:PDF_HEIGHT-margin-(y+h)*height+Math.max(0,h*height-finalSize)*.15,size:finalSize,font:fonts.normal,color:ink});
+  }
+  return page;
+ }
  function renderCard(document,library,layout,index,total,fonts){
   const {rgb}=library,{normal,bold}=fonts,page=document.addPage([layout.pageWidth,layout.pageHeight]),ink=rgb(.09,.13,.16),muted=rgb(.34,.4,.44),
    border=rgb(.68,.72,.74),navy=rgb(.08,.23,.34),pale=rgb(.91,.95,.97),soft=rgb(.965,.972,.976),warning=rgb(1,.94,.73),danger=rgb(.72,.14,.1);
@@ -379,7 +396,7 @@
   const normal=await document.embedFont(library.StandardFonts.Helvetica),bold=await document.embedFont(library.StandardFonts.HelveticaBold);
   const reports=[];
   for(let index=0;index<normalized.cards.length;index++){
-   checked(options);const layout=planCardLayout(normalized.cards[index],options);renderCard(document,library,layout,index,normalized.cards.length,{normal,bold});
+   checked(options);const sourceCard=source.cards[index],generic=sourceCard?.genericLayout===true;const layout=planCardLayout(normalized.cards[index],options);if(generic)renderPositionedText(document,library,sourceCard,{normal,bold});else renderCard(document,library,layout,index,normalized.cards.length,{normal,bold});
    reports.push({id:layout.card.id,page:index+1,status:layout.card.status,rowCount:layout.rowCount,unassignedTokenCount:layout.unassignedCount,
     width:layout.pageWidth,height:layout.pageHeight});
    progress(options,{phase:'pages',completed:index+1,total:normalized.cards.length,percent:Math.round(5+(index+1)/normalized.cards.length*82),
