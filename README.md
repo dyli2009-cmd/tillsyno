@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.394 – tydliga DS/DA-stämplar på iPad i Avläsning TEST 9.27
+
+[Avläsning TEST 9.27](smartmatch-read-test.html) visar DS och DA från det redan förberedda PDF-stämpelregistret som kompakta, tydliga märken på ritningen. Märkena använder gul yta, svart text och kant samt en röd innermarkering. De är minst 24 × 18 och högst 36 × 24 CSS-pixlar med 11–13-pixelstext, räknas om vid zoom och ligger i ett passivt lager som inte hindrar tryck på dörrpositionerna. Funktionen läser endast riktiga, synliga `/Stamp`-annoteringar i det sparade indexet och startar varken OCR eller läsning av sidans vanliga text. Dolda PDF-annoteringar hoppas över. DS/DA som är inbakade i en bild eller enbart skrivna som vanlig PDF-text behöver först förberedas eller skannas separat. TEST 9.26 är oförändrad. Se [beteende, avgränsning och verifiering](SMARTMATCH_READ_TEST_9_27.md).
+
 ## Tillsyno v2.4.393 – skapa saknat dörrkort i Avläsning TEST 9.26
 
 [Avläsning TEST 9.26](smartmatch-read-test.html) kan skapa ett dörrkort direkt för en ritningsbeteckning som saknar matchande kort. Under **Koppla dörrkort** väljs **Lägg till dörrkort**; beteckningen följer med från ritningen och användaren fyller i kortnamn samt strukturerade rader med avsnitt, benämning, typ, antal och montör. Appen lägger till en verklig sökbar vektor-PDF-sida i projektfilen och kopplar alla positioner med samma beteckning till sidan. Samtliga rader syns och kan sökas i PDF:en, medan endast rader märkta **GS** blir kontrollpunkter. Ny sida, kortdata, kopplingar och avbockningar sparas tillsammans och öppnas direkt på en annan dator utan OCR eller ny matchning. Skapandet verifierar sidan och den lokala arbetskopian innan ändringen godkänns och återställer projektet om något steg misslyckas. Formuläret är anpassat för iPad och lokala projekt från TEST 9.25 fortsätter visas. Se [arbetsgång, sparskydd och verifiering](SMARTMATCH_READ_TEST_9_26.md).
