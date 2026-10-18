@@ -331,6 +331,33 @@
   }
   return page;
  }
+ // Faithful source-PDF export: copy vector lines, scanned imagery and fonts from
+ // the marked region instead of guessing their appearance from OCR observations.
+ // OCR remains editable in the JSON manifest; invisible text aids search only.
+ async function renderSourceAppearance(document,library,sourceDocument,card,fonts){
+  const pageIndex=Number(card?.source?.page)-1,sourcePage=sourceDocument?.getPages?.()[pageIndex],rect=card?.source?.rect;
+  if(!sourcePage)throw Error('Källsidan för den godkända tabellen hittades inte i PDF-filen.');
+  if(!rect||!['x','y','w','h'].every(key=>Number.isFinite(Number(rect[key])))||rect.w<=0||rect.h<=0||rect.x<0||rect.y<0||rect.x+rect.w>1.000001||rect.y+rect.h>1.000001)
+   throw Error('Källmarkeringen kunde inte verifieras. Läs om tabellen före originaltrogen export.');
+  const rotation=((sourcePage.getRotation?.().angle||0)%360+360)%360;
+  if(rotation!==0)throw Error('Originaltrogen beskärning av roterad PDF-sida stöds inte i detta test. Avmarkera originalutseende för att spara en återskapad PDF.');
+  const crop=sourcePage.getCropBox(),left=crop.x+Number(rect.x)*crop.width,right=crop.x+(Number(rect.x)+Number(rect.w))*crop.width,
+   top=crop.y+(1-Number(rect.y))*crop.height,bottom=crop.y+(1-Number(rect.y)-Number(rect.h))*crop.height;
+  const width=right-left,height=top-bottom;
+  if(width<1||height<1||!Number.isFinite(width*height))throw Error('Det markerade originalområdet har ogiltig storlek.');
+  const embedded=await document.embedPage(sourcePage,{left,right,bottom,top});
+  const page=document.addPage([width,height]);
+  page.drawPage(embedded,{x:0,y:0,width,height});
+  for(const token of card.sourceTokens||[]){
+   if(token?.source==='native'||!token?.box||!clean(token.text))continue;
+   const box=token.box;
+   if(!['x','y','w','h'].every(key=>Number.isFinite(Number(box[key])))||box.x<0||box.y<0||box.w<=0||box.h<=0||box.x+box.w>1.05||box.y+box.h>1.05)continue;
+   const value=pdfText(fonts.normal,clean(token.text));if(!value)continue;
+   const size=Math.max(3,Math.min(28,Number(box.h)*height*.85));
+   page.drawText(value,{x:Number(box.x)*width,y:(1-Number(box.y)-Number(box.h))*height,size,font:fonts.normal,opacity:0});
+  }
+  return page;
+ }
  function renderCard(document,library,layout,index,total,fonts){
   const {rgb}=library,{normal,bold}=fonts,page=document.addPage([layout.pageWidth,layout.pageHeight]),ink=rgb(.09,.13,.16),muted=rgb(.34,.4,.44),
    border=rgb(.68,.72,.74),navy=rgb(.08,.23,.34),pale=rgb(.91,.95,.97),soft=rgb(.965,.972,.976),warning=rgb(1,.94,.73),danger=rgb(.72,.14,.1);
@@ -401,9 +428,12 @@
   document.setTitle?.('Digitala dörrkort');document.setSubject?.('Granskade, strukturerade och sökbara dörrkort');
   document.setCreator?.('Tillsyno Ritningsverktyg');document.setProducer?.('Tillsyno Ritningsverktyg');
   const normal=await document.embedFont(library.StandardFonts.Helvetica),bold=await document.embedFont(library.StandardFonts.HelveticaBold);
+  const useOriginal=options.preserveSourceAppearance===true&&source.cards.some(card=>card?.genericLayout===true);
+  if(useOriginal&&!options.sourcePdfBytes)throw Error('Originalfilen är inte längre laddad. Öppna den och prova originaltrogen PDF-export igen.');
+  const sourceDocument=useOriginal?await library.PDFDocument.load(options.sourcePdfBytes):null;
   const reports=[];
   for(let index=0;index<normalized.cards.length;index++){
-   checked(options);const sourceCard=source.cards[index],generic=sourceCard?.genericLayout===true;const layout=planCardLayout(normalized.cards[index],options);if(generic)renderPositionedText(document,library,sourceCard,{normal,bold});else renderCard(document,library,layout,index,normalized.cards.length,{normal,bold});
+   checked(options);const sourceCard=source.cards[index],generic=sourceCard?.genericLayout===true;const layout=planCardLayout(normalized.cards[index],options);if(generic&&sourceDocument)await renderSourceAppearance(document,library,sourceDocument,sourceCard,{normal,bold});else if(generic)renderPositionedText(document,library,sourceCard,{normal,bold});else renderCard(document,library,layout,index,normalized.cards.length,{normal,bold});
    reports.push({id:layout.card.id,page:index+1,status:layout.card.status,rowCount:layout.rowCount,unassignedTokenCount:layout.unassignedCount,
     width:layout.pageWidth,height:layout.pageHeight});
    progress(options,{phase:'pages',completed:index+1,total:normalized.cards.length,percent:Math.round(5+(index+1)/normalized.cards.length*82),
