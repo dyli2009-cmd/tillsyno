@@ -16,6 +16,7 @@ Det här är ingången när vi återupptar utvecklingen eller användaren fråga
 | Dörrkort, standardprofil | Identifiera tabellen → läs ID i översta vänstra cellen → matcha samma hela ID på ritningen → koppla kortet till positionen | [Tabellavläsning och dörrkort](SMARTMATCH_TABLE_RULE_LOCK.md) | LÅST; generell tolkning av alla tabellupplägg är ännu inte färdig |
 | Dörrkort, separat känt tillägg | Uttrycklig korttitel → verifierad Objekt-rad och Komponent/Produkt-tabell → samma hela ID på ritningen | [Tabellavläsning, avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md) | Tillägg enligt användarbeslut; v36.95 |
 | Avläsning TEST 9.28, GS-produkter | Liten markerad läsyta med Övrigt/Produkt + Monteras av/Mont av + berörda GS-rader → granskad GS-lista; originalkortet visas separat i sin helhet | [TEST 9.28](SMARTMATCH_READ_TEST_9_28.md) | Beslutad; Lev av räcker inte för GS och manuell accept får endast häva tabelltolkningsfelet |
+| Avläsning TEST 9.29, DS/DA-symboler | Exakt fristående `/Subj` för DS/DA eller fullständigt namn → en passiv symbol i PDF-rektangelns mitt; `/Contents` endast när `/Subj` saknas | [TEST 9.29](SMARTMATCH_READ_TEST_9_29.md) | Beslutad; WC/VCDS/sammansatta namn avvisas och identiska poster dedupliceras |
 | Protokollexport | Spara → Protokoll → endast valda protokollsidor; godkända är förvalda; inga ritningssidor eller GS-länkmenyer | [TEST v36.96](SMARTMATCH_TEST_V36_96.md) | Beslutad enligt användarens instruktion |
 
 ## Två kopplingar som bygger på varandra
@@ -55,6 +56,7 @@ Ett nytt beslut dokumenteras med datum, funktion, gammal regel, ny regel, skäl,
 | 2026-10-11 | Lägg till en separat känd läsprofil för det nya tabellupplägget; behåll standardprofilen och DA92 | [TEST v36.94](SMARTMATCH_TEST_V36_94.md) |
 | 2026-10-11 | Ersätt v36.92:s närmaste GS utan kortkontroll: läs GS-dörrkortet, välj närmaste verifierade GS, max en pil per fysisk automatik; bevara objekt- och kontrollflödet | [TEST v36.97](SMARTMATCH_TEST_V36_97.md) |
 | 2026-10-18 | Skilj den lilla GS-avläsningsytan från helkortsvyn och låt användaren uttryckligen godkänna användbara GS-rader utan att kringgå kod-, läs- eller ritningsspärrar | [Avläsning TEST 9.28](SMARTMATCH_READ_TEST_9_28.md) |
+| 2026-10-18 | Visa endast exakta fristående DS/DA-stämplar; skilj dem med orange/röd fast 14-pixelssymbol och dubblera inte WC/VCDS eller identiska registerposter | [Avläsning TEST 9.29](SMARTMATCH_READ_TEST_9_29.md) |
 
 ## Utveckling och fortsatt arbete
 
@@ -111,3 +113,9 @@ Användarbeslut 18 oktober 2026, avgränsat till **SmartMatch Avläsning TEST 9.
 När en kopplad ritningsstämpel öppnas visas originaldörrkortet oberoende av den lilla läsytan. En PDF-sida med ett enda källdörrkort visas i sin helhet. Sidor med flera fysiska kort behåller sitt separata kortutsnitt tills ett eget helkortsutsnitt har angivits.
 
 Om råtexten och de föreslagna GS-raderna finns men tabellstrukturen inte blev helt säker får användaren godkänna raderna efter uttrycklig jämförelse med originalkortet. Råtext, ordpositioner, varningar och granskningspost bevaras. Godkännandet får inte häva saknad beteckning, dubblett, avbruten eller oläst sida, ändrat men ej omläst område eller kravet att granska ritningsträffarna. Den sparade projekt-PDF:en återanvänder resultatet utan ny OCR.
+
+## Exakta fristående DS/DA-symboler – TEST 9.29
+
+Användarbeslut 18 oktober 2026, avgränsat till **SmartMatch Avläsning TEST 9.29**: fristående DS och DA ska vara synliga utan att samma bokstäver plockas ur en redan kopplad VCDS-, WC- eller annan sammansatt stämpel. En synlig `/Stamp` accepteras endast när `/Subj` exakt är `DS`, `DA`, `Dörrstängare` eller `Dörrautomatik`. Endast ett tomt `/Subj` tillåter samma exakta klassning från `/Contents`. Bland annat `WC dörrstängare`, `VCDS`, `DBL-DS`, `DS1` och `Dörrstängare freeswing` avvisas. Identiska poster för samma sida och typ visas en gång.
+
+DS är en orange kvadrat och DA en mörkröd kvadrat. Båda behåller 14 × 14 CSS-pixlar och 8-pixelstext vid all zoom, medan deras mittpunkt följer PDF-rektangeln. Lagret är passivt och får inte starta OCR, helsidestext, produktläsning eller matchningssökning.

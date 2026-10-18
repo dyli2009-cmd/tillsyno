@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.397 – fristående DS och DA utan dubbla stämplar i Avläsning TEST 9.29
+
+[Avläsning TEST 9.29](smartmatch-read-test.html) visar bara exakta fristående PDF-stämplar för `DS`, `DA`, `Dörrstängare` och `Dörrautomatik`. Stämpelns `/Subj` har företräde; `WC dörrstängare`, `VCDS`, `DBL-DS`, `DS1` och `Dörrstängare freeswing` ger därför ingen extra DS ovanpå en kopplad stämpel. Identiska indexposter visas en gång. DS är en orange kvadrat och DA en mörkröd kvadrat. Båda är passiva, 14 × 14 CSS-pixlar med fast storlek vid zoom och följer annoteringens mittpunkt. Visningen använder det redan förberedda stämpelregistret utan OCR, helsidestext eller ny matchning. Se [regler och verifiering](SMARTMATCH_READ_TEST_9_29.md).
+
 ## Tillsyno v2.4.396 – snabb avläsningsyta och hela originalkortet i Avläsning TEST 9.28
 
 [Avläsning TEST 9.28](smartmatch-read-test.html) skiljer nu avläsningsytan från det dörrkort som visas efter ett klick på ritningen. Markera bara den lilla tabelldelen som behövs för arbetet: **Övrigt/Produkt**, **Monteras av/Mont av** och de aktuella GS-raderna. `Lev av` anger leverantör och räcker inte för att skapa en GS-kontrollpunkt. När en ritningsstämpel öppnas visas hela originalsidan för ett ensamt källdörrkort; äldre sidor med flera kort behåller sitt sparade kortutsnitt. Stora Bluebeam-sidor med bildremsor renderas med rätt rasterskala så att första förhandsvisningen inte blir vit. Ett kort vars önskade GS-rader är rätt kan godkännas uttryckligen i granskningen. Godkännandet sparar granskningsspår och rådata, men kan inte passera saknad beteckning, läsfel, en avläsningsyta som har ändrats eller en ritning som ännu inte har godkänts. Sparade projekt öppnar de redan avlästa korten och kopplingarna utan ny OCR. Se [arbetsgång, skydd och verifiering](SMARTMATCH_READ_TEST_9_28.md).
