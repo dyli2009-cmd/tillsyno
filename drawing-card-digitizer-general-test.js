@@ -243,7 +243,15 @@
    checkAbort(signal);
    return output?.pages?.[0]||null;
   };
-  const first=await pass({dpi:210,removeGridLines:true,maxPixels:4500000,maxSide:4000},0,.63,'Textanalys 1 av 2');
+  // OCR-worker återanvänds mellan flera sidor. Andra passet sätter läsläge 11;
+  // återställ alltid tabell-läget 6 före varje nytt första pass.
+  const first=await pass({dpi:210,removeGridLines:true,maxPixels:4500000,maxSide:4000,
+   getWorker:async context=>{
+    const worker=await localWorker(context);
+    await worker.setParameters({tessedit_pageseg_mode:6,preserve_interword_spaces:'1'});
+    return worker;
+   }
+  },0,.63,'Textanalys 1 av 2');
   if(!first)throw Error('Sida '+page+' gav inget avläsningsresultat.');
   if(first.status==='error'||first.status==='excluded')throw Error('Sida '+page+' kunde inte läsas: '+(first.error||'prova att markera tabellen igen'));
   let entry=first;
