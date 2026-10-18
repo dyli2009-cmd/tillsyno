@@ -25,6 +25,18 @@
 </style>
 <link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.359">
 <link rel="stylesheet" href="drawing-card-digitizer.css?v=2.4.395">
+<style id="digitizer-general-layout-v2399">
+.digitizerGeneralLayout{min-width:0;display:grid;gap:12px}
+.digitizerGeneralLayout>p{font-size:13px;line-height:1.5;margin:0}
+.digitizerGeneralWords{border:1px solid #cbd8df;border-radius:8px;padding:10px;min-width:0}
+.digitizerGeneralWords summary{font-weight:700;cursor:pointer;margin:3px 0 8px}
+.digitizerGeneralWord{display:flex;align-items:end;gap:8px;flex-wrap:wrap;border-top:1px solid #e2e9ed;padding:8px 0}
+.digitizerGeneralWord label{display:grid;gap:4px;flex:1 1 135px;font-size:12px}
+.digitizerGeneralWord input{box-sizing:border-box;min-height:36px;width:100%;font-size:16px;padding:7px}
+.digitizerGeneralWord label:has(input[type=number]){flex:0 1 90px}
+.digitizerGeneralWord button{padding:8px 10px}
+.digitizerDigitalPane{min-width:0}
+</style>
 </head>
 <body>
 <div id="tillsynoNavCurtain" aria-hidden="true"></div>
@@ -36,7 +48,7 @@
   <button id="toolsToggle" type="button" aria-controls="toolPanel" aria-expanded="false" disabled>Verktyg</button>
   <button id="savePdf" class="primary" type="button" disabled>Spara PDF</button>
  </div>
- <span class="version">Digitalisering TEST 2.4.398</span>
+ <span class="version">Digitalisering TEST 2.4.399</span>
 </header>
 
 <main class="toolShell">
@@ -125,7 +137,7 @@
     </section>
 
     <section class="digitizerStep" aria-labelledby="digitizerStep3Title">
-     <div class="digitizerStepHead"><span aria-hidden="true">3</span><div><strong id="digitizerStep3Title">Välj sidor och läs kort</strong><small>Korten behandlas ett i taget så att stora filer inte fyller minnet.</small></div></div>
+     <div class="digitizerStepHead"><span aria-hidden="true">3</span><div><strong id="digitizerStep3Title">Välj sidor att läsa</strong><small>Korten behandlas ett i taget så att stora filer inte fyller minnet.</small></div></div>
      <label for="digitizerPages">Sidor i mallgruppen
       <input id="digitizerPages" type="text" inputmode="text" autocomplete="off" placeholder="Till exempel 6–75">
      </label>
@@ -293,7 +305,7 @@
  <header class="digitizerReviewHeader">
   <div>
    <span class="digitizerEyebrow">DIGITALISERA DÖRRKORT</span>
-   <h2 id="digitizerReviewTitle">Granska original och digitalt kort</h2>
+   <h2 id="digitizerReviewTitle">Jämför original och digitaliserad tabell</h2>
   </div>
   <div class="digitizerReviewHeaderMeta">
    <span id="digitizerReviewPosition">Kort 0 av 0</span>
@@ -351,7 +363,7 @@
 <script src="ui-text-scale.js?v=2.4.163"></script><script src="drawing-analysis.js?v=2.4.367"></script><script src="drawing-ocr-pdf.js?v=2.4.367"></script><script src="drawing-pdf.js?v=2.4.367"></script><script src="drawing-tools.js?v=2.4.395"></script><script src="drawing-card-groups.js?v=2.4.367"></script><script src="drawing-card-tool.js?v=2.4.367"></script>
 <script src="drawing-ocr-image-regions.js?v=2.4.367"></script><script src="drawing-ocr-reader.js?v=2.4.395"></script><script src="drawing-ocr-tool.js?v=2.4.369"></script>
 <script src="drawing-analysis-tool.js?v=2.4.367"></script>
-<script src="drawing-card-digitizer-core-general-test.js?v=2.4.398"></script><script src="drawing-card-digitizer-storage-general-test.js?v=2.4.398"></script><script src="drawing-card-digitizer-export-general-test.js?v=2.4.398"></script><script src="drawing-card-digitizer-general-test.js?v=2.4.398"></script>
+<script src="drawing-card-digitizer-core-general-test.js?v=2.4.399"></script><script src="drawing-card-digitizer-storage-general-test.js?v=2.4.399"></script><script src="drawing-card-digitizer-export-general-test.js?v=2.4.399"></script><script src="drawing-card-digitizer-general-test.js?v=2.4.399"></script>
 <script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let leaving=false;function reveal(){function show(){requestAnimationFrame(function(){requestAnimationFrame(function(){if(!leaving)root.classList.add('tillsyno-nav-ready')})})}if(!root.hasAttribute('data-auth-pending')){show();return}const observer=new MutationObserver(function(){if(!root.hasAttribute('data-auth-pending')){observer.disconnect();show()}});observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',function(event){if(event.persisted){leaving=false;root.classList.remove('tillsyno-nav-leaving');reveal()}});document.addEventListener('click',function(event){if(leaving||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;const link=event.target.closest?.('a[href]');if(!link||link.hasAttribute('download')||(link.target&&link.target!=='_self'))return;let dest;try{dest=new URL(link.href,location.href)}catch(_){return}if(dest.origin!==location.origin)return;const file=dest.pathname.split('/').pop().toLowerCase();if(!['','index.html','all-in-one.html','drawing-tools.html'].includes(file))return;if(dest.href===location.href)return;event.preventDefault();leaving=true;root.classList.remove('tillsyno-nav-ready');root.classList.add('tillsyno-nav-leaving');const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;setTimeout(function(){location.assign(dest.href)},reduce?0:90)},true)})();</script>
 <script src="tillsyno-appearance.js?v=2.4.397"></script>
 </body>
