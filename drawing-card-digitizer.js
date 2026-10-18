@@ -273,7 +273,7 @@
     (template.reference?.detectedColumns||[]).length<2||
     !(template.sections||[]).some(item=>Number.isFinite(item.anchorY));
    if(sourceRevision!==revision-1&&sourceRevision!==revision)checkAbort(signal);
-   template.approved=false;template.approvedAt=null;
+   template.approved=false;template.approvedAt=null;template.genericLayout=genericLayout;card.genericLayout=genericLayout;
    template.sourceReadStatus=entry.status;template.sourceWarnings=(entry.warnings||[]).slice();card.source.readStatus=entry.status;card.source.warnings=(entry.warnings||[]).slice();card=core.recomputeReviewCompleteness(card);
    const value=ensureProject();delete value.integrityError;value.template=template;value.cards=[card];value.name=name;value.progress={...(value.progress||{}),rect:{...rect},examplePage,pages:String(examplePage),currentCardIndex:0};
    currentCardIndex=0;$('digitizerPages').value=String(examplePage);await persist();
