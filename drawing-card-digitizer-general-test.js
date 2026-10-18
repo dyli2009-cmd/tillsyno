@@ -540,7 +540,7 @@
     'font-family':'Arial,Helvetica,sans-serif',role:'button',tabindex:0});
    text.textContent=token.text;
    text.style.cursor='pointer';
-   const highlight=()=>{const field=document.getElementById('digitizerWord-'+token.id);field?.scrollIntoView({block:'nearest'});field?.focus();};
+   const highlight=()=>{details.open=true;const field=document.getElementById('digitizerWord-'+token.id);field?.scrollIntoView({block:'nearest'});field?.focus();};
    text.addEventListener('click',highlight);
    text.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();highlight();}});
   }
@@ -580,8 +580,11 @@
   const generic=card.genericLayout===true;
   $('digitizerDigitalTitle').textContent=generic?'Digitaliserad tabell – originalets layout':'Digitalt dörrkort';
   $('digitizerCardForm').querySelector('.digitizerCardIdentity').hidden=generic;
+  $('digitizerCardForm').querySelector('.digitizerCardIdentity').style.display=generic?'none':'';
   $('digitizerUnassignedPanel').hidden=generic;
+  $('digitizerUnassignedPanel').style.display=generic?'none':'';
   $('digitizerAddRow').textContent=generic?'＋ Lägg till text':'＋ Lägg till rad';
+  $('digitizerApproveCard').textContent=generic?'Godkänn tabell':'Godkänn kort';
   if(generic)renderGenericReview();else{renderRows();renderTokens();}
   updateReviewState();
   $('digitizerPreviousCard').disabled=currentCardIndex<=0;$('digitizerNextCard').disabled=currentCardIndex>=project.cards.length-1;
