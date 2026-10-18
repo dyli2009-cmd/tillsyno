@@ -584,6 +584,9 @@
     x:b.x*1000,y:(b.y+b.h*.82)*viewH,'font-size':h,fill:token.conflict?'#ad3a1b':'#142c38',
     'font-family':'Arial,Helvetica,sans-serif',role:'button',tabindex:0});
    text.textContent=token.text;
+   // Match the measured word width so headings and table columns line up
+   // more closely with the scanned image, even when the fallback font differs.
+   if(Number.isFinite(b.w)&&b.w>0){text.setAttribute('textLength',String(Math.max(1,b.w*1000)));text.setAttribute('lengthAdjust','spacingAndGlyphs');}
    text.style.cursor='pointer';
    const highlight=()=>{details.open=true;const field=document.getElementById('digitizerWord-'+token.id);field?.scrollIntoView({block:'nearest'});field?.focus();};
    text.addEventListener('click',highlight);
