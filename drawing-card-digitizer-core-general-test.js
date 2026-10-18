@@ -438,11 +438,11 @@
   if(result.unassignedTokens.length&&!result.genericLayout)issues.push(result.unassignedTokens.length+' textdelar har inte förts över.');
   if(pendingLowConfidence.length)issues.push(pendingLowConfidence.length+' osäkra textdelar behöver granskas.');
   if(pendingConflicts.length)issues.push(pendingConflicts.length+' textdelar har olika PDF- och bildavläsning och behöver granskas.');
-  if(pendingInferredRows.length)issues.push(pendingInferredRows.length+' rader placerades efter mallens position och behöver granskas.');
+  if(pendingInferredRows.length&&!result.genericLayout)issues.push(pendingInferredRows.length+' rader placerades efter mallens position och behöver granskas.');
   if(duplicateAssignments.length)issues.push(duplicateAssignments.length+' textdelar är placerade mer än en gång.');
   if(unknownReferences.length)issues.push(unknownReferences.length+' hänvisningar saknar källtext.');
   if(sourceReadIncomplete)issues.push('Dörrkortets avläsning är inte färdig (status: '+sourceReadStatus+'). Läs om kortet innan det godkänns.');
-  const canApprove=!missingCode&&(result.genericLayout||!result.unassignedTokens.length)&&!pendingLowConfidence.length&&!pendingConflicts.length&&!pendingInferredRows.length&&!duplicateAssignments.length&&!unknownReferences.length&&!sourceReadIncomplete;
+  const canApprove=!missingCode&&(result.genericLayout||!result.unassignedTokens.length)&&!pendingLowConfidence.length&&!pendingConflicts.length&&(result.genericLayout||!pendingInferredRows.length)&&!duplicateAssignments.length&&!unknownReferences.length&&!sourceReadIncomplete;
   const previous=result.review?.status;
   let status=previous;
   if(options.edited)status=previous==='approved'||previous==='changed-after-approval'?'changed-after-approval':'needs-review';
