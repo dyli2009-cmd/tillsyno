@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.393 – skapa saknat dörrkort i Avläsning TEST 9.26
+
+[Avläsning TEST 9.26](smartmatch-read-test.html) kan skapa ett dörrkort direkt för en ritningsbeteckning som saknar matchande kort. Under **Koppla dörrkort** väljs **Lägg till dörrkort**; beteckningen följer med från ritningen och användaren fyller i kortnamn samt strukturerade rader med avsnitt, benämning, typ, antal och montör. Appen lägger till en verklig sökbar vektor-PDF-sida i projektfilen och kopplar alla positioner med samma beteckning till sidan. Samtliga rader syns och kan sökas i PDF:en, medan endast rader märkta **GS** blir kontrollpunkter. Ny sida, kortdata, kopplingar och avbockningar sparas tillsammans och öppnas direkt på en annan dator utan OCR eller ny matchning. Skapandet verifierar sidan och den lokala arbetskopian innan ändringen godkänns och återställer projektet om något steg misslyckas. Formuläret är anpassat för iPad och lokala projekt från TEST 9.25 fortsätter visas. Se [arbetsgång, sparskydd och verifiering](SMARTMATCH_READ_TEST_9_26.md).
+
 ## Tillsyno v2.4.392 – projektöversikt i Avläsning TEST 9.25
 
 [Avläsning TEST 9.25](smartmatch-read-test.html) rättar bulkknappen **Avmarkera**, flyttar borttagning av en position bakom en säker pilmeny och samlar dörrens arbetsknappar. Egna punkter kan läggas i rätt avsnitt på en dörr eller alla positioner som använder samma dörrkort. Tidsöversikten får redigerbart materialnamn, antal, tid per styck och total. Beställningar och anmärkningar sparas per fysisk dörr, visas med egna märken på ritningen och samlas i en projektlista med historik. PDF-stämplar för dörrstängare och dörrautomatik får DS/DA-etiketter direkt från det förberedda stämpelregistret, utan ny helsidesläsning. Lokala projekt från TEST 9.24 fortsätter visas efter uppdateringen, och OCR-granskningen använder lokala filer utan extern CDN. Se [funktioner, avgränsning och kontroll](SMARTMATCH_READ_TEST_9_25.md).
