@@ -12,6 +12,7 @@
  const core=root.DrawingCardDigitizerCore;
  const storage=root.DrawingCardDigitizerStorage;
  const exporter=root.DrawingCardDigitizerExport;
+ const deepScan=root.DrawingCardDeepScan;
  const $=id=>document?.getElementById(id);
  if(!document||!$('digitizerTools'))return;
  if(!app||!reader||!core){
@@ -227,54 +228,63 @@
   if(parts.native.length||parts.ocr.length){input.nativeWords=parts.native;input.ocrWords=parts.ocr;}else input.words=parts.all;
   return input;
  }
- async function readPage(page,signal,position,total,onDetail){
-  const result=await reader.read({...app.getOcrOptions?.(),pdf:app.getPdf(),pages:[page],rect,includeNativeWords:true,includeAllWords:true,confidenceThreshold:CONFIDENCE_LIMIT,getWorker:localWorker,onCancelRecognition:()=>void releaseWorker(),pdfjsLib:root.pdfjsLib,signal,cancelled:()=>signal.aborted,onProgress:value=>{
-   const local=Number.isFinite(Number(value.percent))?Number(value.percent):0,overall=((position-1)+local/100)/Math.max(1,total)*100;
-   const elapsedMs=Date.now()-startedAt,done=Math.max(.02,overall/100),etaMs=overall>1?Math.max(0,elapsedMs/done-elapsedMs):value.etaMs;
-   showProgress({...value,page,pageIndex:position,pageCount:total,percent:overall,etaMs,message:(PHASE_LABELS[value.phase]||'Läser kort')+' · sida '+page+(value.tileCount?' · område '+Math.min(value.tileCount,value.tileIndex||0)+' av '+value.tileCount:'')});
-   onDetail?.(value);
-  }});
-  checkAbort(signal);const entry=result?.pages?.[0];if(!entry)throw Error('Sida '+page+' gav inget avläsningsresultat.');
-  if(entry.status==='error'||entry.status==='excluded')throw Error('Sida '+page+' kunde inte läsas'+(entry.error?': '+entry.error:'. Kontrollera markeringen och försök igen.'));
+ async function readPage(page,signal,position,total){
+  const options={...app.getOcrOptions?.(),pdf:app.getPdf(),pages:[page],rect,
+   includeNativeWords:true,includeAllWords:true,confidenceThreshold:CONFIDENCE_LIMIT,
+   getWorker:localWorker,onCancelRecognition:()=>void releaseWorker(),
+   pdfjsLib:root.pdfjsLib,signal,cancelled:()=>signal.aborted};
+  const pass=async(specific,start,end,label)=>{
+   const output=await reader.read({...options,...specific,onProgress:value=>{
+    const local=Number.isFinite(Number(value.percent))?Math.max(0,Math.min(100,Number(value.percent)))/100:0;
+    const overall=100*((position-1)+start+(end-start)*local)/Math.max(1,total);
+    showProgress({...value,page,pageIndex:position,pageCount:total,percent:overall,
+     message:label+' · '+(PHASE_LABELS[value.phase]||'läser')+' · sida '+page,etaMs:null});
+   }});
+   checkAbort(signal);
+   return output?.pages?.[0]||null;
+  };
+  const first=await pass({dpi:210,removeGridLines:true,maxPixels:4500000,maxSide:4000},0,.63,'Textanalys 1 av 2');
+  if(!first)throw Error('Sida '+page+' gav inget avläsningsresultat.');
+  if(first.status==='error'||first.status==='excluded')throw Error('Sida '+page+' kunde inte läsas: '+(first.error||'prova att markera tabellen igen'));
+  let entry=first;
+  const containsRasterText=(first.ocrWords||[]).length>0;
+  if(containsRasterText&&deepScan?.reconcileWords){
+   // A slower complementary read catches words hidden by borders or missed
+   // by the first table-oriented OCR pass. Neither pass modifies the PDF.
+   try{
+    const second=await pass({
+      dpi:300,removeGridLines:false,maxPixels:5200000,maxSide:4500,
+      getWorker:async context=>{
+       const worker=await localWorker(context);
+       await worker.setParameters({tessedit_pageseg_mode:11,preserve_interword_spaces:'1'});
+       return worker;
+      }
+    },.63,.88,'Textanalys 2 av 2');
+    if(second&&['read','native'].includes(second.status)){
+     const merge=deepScan.reconcileWords(first.ocrWords||[],second.ocrWords||[]);
+     entry={...first,ocrWords:merge.words,words:merge.words,
+      allWords:[...(first.nativeWords||[]),...merge.words].sort((a,b)=>a.y-b.y||a.x-b.x),
+      scanDetails:{...(first.scanDetails||{}),passes:2,recoveredWords:merge.recovered,disagreements:merge.conflicts}};
+     if(merge.recovered)entry.warnings=[...(entry.warnings||[]),merge.recovered+' textdelar hittades vid den fördjupade avläsningen.'];
+     if(merge.conflicts)entry.warnings=[...(entry.warnings||[]),merge.conflicts+' osäkra ord skiljer sig mellan de två avläsningarna. Kontrollera dem mot originalet.'];
+    }else entry.warnings=[...(entry.warnings||[]),'Den andra avläsningen kunde inte slutföras. Resultatet från första läsningen behölls.'];
+   }catch(error){
+    if(error.name==='AbortError'||signal.aborted)throw error;
+    entry.warnings=[...(entry.warnings||[]),'Andra avläsningen misslyckades: '+String(error.message||error)+'. Första läsningen behölls.'];
+   }
+  }
+  showProgress({message:'Texten är läst. Analyserar nu linjer och celler.',page,pageIndex:position,pageCount:total,
+   percent:100*((position-1)+.88)/Math.max(1,total),etaMs:null});
   return entry;
  }
- // Test: omvandla långa horisontella och vertikala pixelstreck till skarpa PDF-linjer.
- // Kräver ingen viss text eller dörrkortsstruktur. Fel här stoppar inte textavläsningen.
- async function scanTableLines(pageNumber,selection,signal){
-  const pdf=app.getPdf?.(),page=await pdf.getPage(pageNumber),base=page.getViewport({scale:1});
-  const aspect=base.width*selection.w/(base.height*selection.h);
-  const scale=Math.min(1.8,1700/Math.max(base.width,base.height),Math.sqrt(2800000/(base.width*base.height)));
-  const viewport=page.getViewport({scale}),canvas=document.createElement('canvas');
-  canvas.width=Math.max(1,Math.round(viewport.width));canvas.height=Math.max(1,Math.round(viewport.height));
-  const context=canvas.getContext('2d',{willReadFrequently:true});
-  if(!context)return{lines:[],aspect};
-  context.fillStyle='#fff';context.fillRect(0,0,canvas.width,canvas.height);
-  const job=page.render({canvasContext:context,viewport});await job.promise;
-  if(signal?.aborted)throw Object.assign(new Error('Avbruten'),{name:'AbortError'});
-  const x0=Math.max(0,Math.floor(selection.x*canvas.width)),xEnd=Math.min(canvas.width,Math.ceil((selection.x+selection.w)*canvas.width));
-  const y0=Math.max(0,Math.floor(selection.y*canvas.height)),yEnd=Math.min(canvas.height,Math.ceil((selection.y+selection.h)*canvas.height));
-  const w=xEnd-x0,h=yEnd-y0;
-  if(w<3||h<3)return{lines:[],aspect};
-  const pixels=context.getImageData(x0,y0,w,h).data;
-  const dark=(x,y)=>{const p=(y*w+x)*4;return pixels[p]<165&&pixels[p+1]<165&&pixels[p+2]<165&&pixels[p+3]>100;};
-  const segments=[],hMin=Math.max(22,Math.floor(w*.08)),vMin=Math.max(22,Math.floor(h*.08));
-  for(let y=0;y<h;y++){let x=0;while(x<w){if(!dark(x,y)){x++;continue;}let a=x;while(x<w&&dark(x,y))x++;if(x-a>=hMin)segments.push({vertical:false,c:y,a,b:x-1});}}
-  for(let x=0;x<w;x++){let y=0;while(y<h){if(!dark(x,y)){y++;continue;}let a=y;while(y<h&&dark(x,y))y++;if(y-a>=vMin)segments.push({vertical:true,c:x,a,b:y-1});}}
-  // Sammanför intilliggande streck som hör till samma tryckta linje.
-  segments.sort((a,b)=>(Number(a.vertical)-Number(b.vertical))||(a.c-b.c)||(a.a-b.a));
-  const merged=[];
-  for(const seg of segments){
-   const previous=merged[merged.length-1];
-   if(previous&&previous.vertical===seg.vertical&&Math.abs(previous.c-seg.c)<=2&&seg.a<=previous.b+4&&seg.b>=previous.a-4){
-    previous.a=Math.min(previous.a,seg.a);previous.b=Math.max(previous.b,seg.b);previous.c=(previous.c+seg.c)/2;
-   }else merged.push({...seg});
-  }
-  merged.sort((a,b)=>(b.b-b.a)-(a.b-a.a));
-  const lines=merged.slice(0,400).map(seg=>seg.vertical?
-   {x1:seg.c/w,y1:seg.a/h,x2:seg.c/w,y2:seg.b/h}:
-   {x1:seg.a/w,y1:seg.c/h,x2:seg.b/w,y2:seg.c/h});
-  canvas.width=0;canvas.height=0;
-  return{lines,aspect};
+ async function scanTableLines(pageNumber,selection,signal,position=1,total=1){
+  if(!deepScan?.scanRegion)throw Error('Den nya scanningsmotorn saknas. Uppdatera testsidan.');
+  const output=await deepScan.scanRegion(app.getPdf(),pageNumber,selection,{signal,onProgress:(message,fraction)=>{
+   showProgress({message,page:pageNumber,pageIndex:position,pageCount:total,
+    percent:100*((position-1)+.88+.11*fraction)/Math.max(1,total),etaMs:null});
+  }});
+  return{lines:output.lines,aspect:output.aspect,diagnostics:output.diagnostics,
+   warning:output.diagnostics?.limited?'Fler än 550 linjer hittades, bara de längsta visas.':''};
  }
  async function runOperation(name,title,callback){
   if(active)return;active=true;const owned=new AbortController();controller=owned;revision++;refresh();
@@ -354,7 +364,7 @@
      if(force&&previous&&!completeRead)throw Error('Den nya avläsningen blev inte färdig. Det tidigare granskade kortet behölls; försök läsa sidan igen.');
      let card=core.createCard({...coreInput(entry,page),template:project.template});
      card.genericLayout=true;
-     try{const detected=await scanTableLines(page,rect,signal);card.layoutLines=detected.lines;card.sourceAspect=detected.aspect;}catch(lineError){if(lineError.name==='AbortError')throw lineError;card.layoutLines=[];card.lineWarning=String(lineError.message||'Linjeanalysen misslyckades.');}
+     try{const detected=await scanTableLines(page,rect,signal,index+1,queue.length);card.layoutLines=detected.lines;card.sourceAspect=detected.aspect;}catch(lineError){if(lineError.name==='AbortError')throw lineError;card.layoutLines=[];card.lineWarning=String(lineError.message||'Linjeanalysen misslyckades.');}
      card.source.readStatus=entry.status;card.source.warnings=(entry.warnings||[]).slice();card=core.recomputeReviewCompleteness(card);replacePageCard(card);
      if(!completeRead)incompleteThisRun++;
     }catch(error){if(error.name==='AbortError')throw error;failedThisRun++;failures.push({page,message:error.message||'Sidan kunde inte läsas.'});}
