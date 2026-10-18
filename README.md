@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.392 – projektöversikt i Avläsning TEST 9.25
+
+[Avläsning TEST 9.25](smartmatch-read-test.html) rättar bulkknappen **Avmarkera**, flyttar borttagning av en position bakom en säker pilmeny och samlar dörrens arbetsknappar. Egna punkter kan läggas i rätt avsnitt på en dörr eller alla positioner som använder samma dörrkort. Tidsöversikten får redigerbart materialnamn, antal, tid per styck och total. Beställningar och anmärkningar sparas per fysisk dörr, visas med egna märken på ritningen och samlas i en projektlista med historik. PDF-stämplar för dörrstängare och dörrautomatik får DS/DA-etiketter direkt från det förberedda stämpelregistret, utan ny helsidesläsning. Lokala projekt från TEST 9.24 fortsätter visas efter uppdateringen, och OCR-granskningen använder lokala filer utan extern CDN. Se [funktioner, avgränsning och kontroll](SMARTMATCH_READ_TEST_9_25.md).
+
 ## Tillsyno v2.4.391 – saknade GS-produkter från avlästa tabeller
 
 [Avläsning TEST 9.24](smartmatch-read-test.html) rättar fallet där exempelvis **31 Dörrstängare DC700** eller en magnet syntes i den kompletta avlästa tabellen men saknades bland kontrollpunkterna. En kort GS-ruta kunde ligga några bildpunkter ovanför produktraden och tappade då kopplingen till produkten. Tabelläsaren kopplar nu ihop visuellt överlappande rutor inom samma rad. När ett sparat projekt har kvar ordpositionerna repareras listan lokalt när projektet öppnas, utan OCR eller ny ritningsmatchning. Om ordpositionerna saknas kan det berörda kortet kompletteras med **Läs om detta kort**. Se [orsak, arbetsgång och testbevis](SMARTMATCH_READ_TEST_9_24.md).
