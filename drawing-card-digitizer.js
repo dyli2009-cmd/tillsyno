@@ -248,7 +248,7 @@
    if(typeof app.withBusy==='function')await app.withBusy(execute,{allow:['digitizerCancelRead']});else await execute();
    checkAbort(owned.signal);finishProgress(name==='export'?'Exporten är klar.':'Klart.');
   }catch(error){
-   if(error.name!=='AbortError')console.error(error);finishProgress(error.name==='AbortError'?'Avbrutet. Inget ofärdigt resultat sparades.':'Arbetet stoppades.',true);
+   if(error.name!=='AbortError')console.error(error);finishProgress(error.name==='AbortError'?'Avbrutet. Inget ofärdigt resultat sparades.':('Arbetet stoppades: '+(error?.message||'Okänt fel.')),true);
    const message=error.name==='AbortError'?'Arbetet avbröts. '+savedWorkText():error.message||'Arbetet kunde inte slutföras.';
    if(name==='export')setHint('digitizerExportStatus',message,true);else if(name==='template')setHint('digitizerTemplateStatus',message,true);else setHint('digitizerReadStatus',message,true);
   }finally{
