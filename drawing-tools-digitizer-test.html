@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="sv" data-auth-pending data-app-version="2.4.397">
+<head><meta charset="utf-8">
+<script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}var page={ice:'#edf6fb',mist:'#ebf1f5',coast:'#edf7f6',sand:'#f7f5f1',night:'#081523',graphite:'#12151c',pine:'#091c1e'}[theme];document.documentElement.style.setProperty('--tillsyno-route-bg',page);document.documentElement.style.setProperty('background',page,'important');document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
+<style id="tillsyno-route-transition">html{background:var(--tillsyno-route-bg,#ebf1f5)!important}#tillsynoNavCurtain{position:fixed;inset:0;z-index:2147483647;background:var(--tillsyno-route-bg,#ebf1f5);opacity:1;pointer-events:auto;transition:opacity .15s ease}html.tillsyno-nav-ready #tillsynoNavCurtain{opacity:0;pointer-events:none}html.tillsyno-nav-leaving #tillsynoNavCurtain{opacity:1;pointer-events:auto}@media(prefers-reduced-motion:reduce){#tillsynoNavCurtain{transition:none}}</style>
+
+<style id="tillsyno-auth-screen">html[data-auth-pending] body{visibility:hidden!important}</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.275"></script><script src="auth/guard.js?v=2.4.275" defer></script>
+
+
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="theme-color" content="#132b38">
+<title>Digitalisera dörrkort TEST · Ritningsverktyg</title>
+<link rel="stylesheet" href="drawing-tools.css?v=2.4.367">
+<script src="vendor/pdf.min.js"></script>
+<script src="vendor/pdf-lib.min.js"></script>
+<style>
+/* Tillsyno v2.4.287 – same calm navy design at the drawing tool entry, workspace unchanged. */
+.toolIntro{background:radial-gradient(ellipse at 60% 25%,#274f6080,transparent 65%),linear-gradient(140deg,#102f42,#092130)!important;border:1px solid #c4e5ed40!important;color:#edf8fb!important;box-shadow:0 12px 28px #00172330!important}
+.toolIntro .eyebrow{color:#94c5d6!important}
+.toolIntro h1{color:#f1f9fc!important}
+.toolIntro p{color:#b8d3df!important}
+.toolIntro .openBtn{background:#d9edf5!important;color:#13394c!important;border-color:#bedde8!important;font-weight:750!important}
+@media(max-width:620px){.toolIntro{padding:13px!important}}
+</style>
+<link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.359">
+<link rel="stylesheet" href="drawing-card-digitizer.css?v=2.4.395">
+</head>
+<body>
+<div id="tillsynoNavCurtain" aria-hidden="true"></div>
+<header class="toolHeader">
+ <a href="./" class="backBtn">‹ Hem</a>
+ <div><strong>Ritningsverktyg</strong><small>Rensa · beskära · optimera</small></div>
+ <div class="headerActions">
+  <button id="openPdf" type="button">Öppna fil</button>
+  <button id="toolsToggle" type="button" aria-controls="toolPanel" aria-expanded="false" disabled>Verktyg</button>
+  <button id="savePdf" class="primary" type="button" disabled>Spara PDF</button>
+ </div>
+ <span class="version">Digitalisering TEST 2.4.398</span>
+</header>
+
+<main class="toolShell">
+ <section class="toolIntro">
+  <div>
+   <span class="eyebrow">PDF / BILDER / RITNING</span>
+   <h1>Digitalisera dörrkort · TEST</h1>
+   <p>Separat test: markera en tabell, läs text och raka linjer, granska och spara som sökbar PDF. Originalet ändras inte.</p>
+  </div>
+  <label class="openBtn" for="toolFile">Öppna PDF eller bilder</label>
+  <input id="toolFile" type="file" accept="application/pdf,image/jpeg,image/png,image/webp,.pdf,.jpg,.jpeg,.png,.webp" multiple hidden>
+ </section>
+
+ <div id="toolMessage" role="status">Öppna en PDF eller välj en eller flera bilder för att börja.</div>
+ <section id="deepCleanInfo" class="deepCleanInfo" hidden>
+   <strong id="deepCleanTitle">Originalritning hittad</strong>
+   <span id="deepCleanText"></span>
+ </section>
+
+ <section id="workspace" class="workspace" hidden>
+  <aside id="toolPanel" class="toolPanel" aria-label="Ritningsverktyg" hidden>
+   <div class="toolPanelHead"><strong>Verktyg</strong><button id="closeTools" type="button" aria-label="Stäng verktyg">×</button></div>
+   <details class="panelSection" open>
+    <summary>Vy</summary>
+    <p class="viewLabel">Zooma ritningen</p>
+    <div class="previewZoomControls" role="group" aria-label="Zooma ritningen">
+     <button id="previewZoomOut" type="button" aria-label="Zooma ut">−</button>
+     <span id="previewZoomLevel" aria-live="polite">100%</span>
+     <button id="previewZoomIn" type="button" aria-label="Zooma in">+</button>
+     <button id="previewFit" type="button">Passa sidan</button>
+    </div>
+    <p class="viewLabel">Textstorlek</p>
+    <span class="globalTextControls" role="group" aria-label="Textstorlek"><button type="button" data-app-text-smaller>A−</button><span data-app-text-level>100%</span><button type="button" data-app-text-larger>A+</button></span>
+    <p class="hint">Zooma med mushjulet. Dra med musen för att flytta ritningen. Vid beskärning eller döljning: dra med mushjulet nedtryckt för att flytta vyn.</p>
+   </details>
+   <details id="ocrTools" class="panelSection">
+    <summary>Förbered sökbara dörrkort · TEST</summary>
+    <p class="hint">Behåll bilden och lägg till osynlig, sökbar text på samma plats. Hela rubriken och tabellens ord läses på svenska och engelska, utan krav på en viss beteckning.</p>
+    <ol class="ocrSteps">
+     <li>Visa ett dörrkort med sidpilarna. Zooma vid behov. Tryck <strong>Markera hela dörrkortet</strong> och dra runt rubrik och tabell.</li>
+     <li>Välj sidor. Börja med en sida. För likadana kort kan du välja <strong>Sidor med samma sidformat</strong>. Kontrollera sidnumren och markeringen.</li>
+     <li>Tryck <strong>Läs markerade områden</strong>. Följ sidan, delområdet, tiden och framstegen i rutan.</li>
+     <li>Granska texten. Osäkra ord utelämnas tills du rättar eller väljer dem. Godkänn och tryck <strong>Spara sökbar PDF</strong>.</li>
+     <li>Öppna den hämtade <strong>-sokbar.pdf</strong> i SmartMatch och välj textsökning. Du behöver fortfarande markera rätt kodfält och arbetslista där.</li>
+    </ol>
+    <button id="ocrMarkArea" class="wideToolBtn" type="button" aria-pressed="false">1. Markera hela dörrkortet</button>
+    <p id="ocrAreaInfo" class="hint" role="status">Inget område markerat.</p>
+    <label for="ocrPages">2. Sidor att läsa <input id="ocrPages" type="text" placeholder="Till exempel 2, 4–8" inputmode="text" autocomplete="off"></label>
+    <button id="ocrUseSimilar" class="wideToolBtn" type="button" disabled>Sidor med samma sidformat</button>
+    <p class="hint">Sidformat är bara ett förslag. Kontrollera att korten har samma layout. En stor översiktsritning väljs inte automatiskt när den har annat sidformat.</p>
+    <button id="ocrRead" class="wideToolBtn" type="button" disabled>3. Läs markerade områden</button>
+    <p id="ocrStatus" class="hint" role="status" aria-live="polite">Öppna en PDF och visa ett dörrkort.</p>
+    <div id="ocrResults"></div>
+    <label class="ocrApproval"><input id="ocrReviewApproval" type="checkbox" disabled>4. Jag har granskat texten och valda sidor.</label>
+    <button id="ocrSave" class="wideToolBtn" type="button" disabled>Spara sökbar PDF</button>
+    <button id="ocrSaveJson" class="wideToolBtn" type="button" disabled>Spara text och positioner som JSON</button>
+    <p class="hint">Första bildläsningen tar tid och sker lokalt, ett markerat område åt gången. Den nya texten gör senare textsökning snabbare. Filen behöver inte bli mindre. För mycket stora filer: börja med ett kort; PDF-tolkning och sparning behöver fortfarande datorns minne.</p>
+   </details>
+   <details id="digitizerTools" class="panelSection digitizerTools">
+    <summary>Digitalisera dörrkort · TEST</summary>
+    <p class="hint digitizerIntro">Gör först en kontrollerad, redigerbar kopia av dörrkorten. Originalet visas bredvid det digitala kortet och ändras aldrig.</p>
+    <p id="digitizerStorageStatus" class="hint digitizerStorageStatus" role="status" aria-live="polite">Kontrollerar lokal autosparning…</p>
+    <ol class="digitizerSteps" aria-label="Arbetsgång">
+     <li>Markera ett helt dörrkort.</li>
+     <li>Skapa och godkänn en mallgrupp.</li>
+     <li>Välj sidor och läs korten.</li>
+     <li>Jämför original och digitalt kort.</li>
+     <li>Exportera kontrollerad PDF eller JSON.</li>
+    </ol>
+
+    <section class="digitizerStep" aria-labelledby="digitizerStep1Title">
+     <div class="digitizerStepHead"><span aria-hidden="true">1</span><div><strong id="digitizerStep1Title">Markera ett helt dörrkort</strong><small>Ta med rubrik, alla tabeller och all text som ska bevaras.</small></div></div>
+     <button id="digitizerMarkArea" class="wideToolBtn" type="button" aria-pressed="false">Markera dörrkort på aktuell sida</button>
+     <p id="digitizerAreaStatus" class="hint" role="status" aria-live="polite">Inget dörrkort markerat.</p>
+    </section>
+
+    <section class="digitizerStep" aria-labelledby="digitizerStep2Title">
+     <div class="digitizerStepHead"><span aria-hidden="true">2</span><div><strong id="digitizerStep2Title">Skapa en mallgrupp</strong><small>Första testet läser kort som följer samma godkända layout.</small></div></div>
+     <label for="digitizerTemplateName">Namn på mallgruppen
+      <input id="digitizerTemplateName" type="text" value="Mallgrupp 1" autocomplete="off">
+     </label>
+     <button id="digitizerCreateTemplate" class="wideToolBtn" type="button" disabled>Skapa mall från markeringen</button>
+     <p id="digitizerTemplateStatus" class="hint" role="status" aria-live="polite">Markera först ett representativt dörrkort.</p>
+     <div id="digitizerTemplatePreview" class="digitizerTemplatePreview" hidden></div>
+     <button id="digitizerApproveTemplate" class="wideToolBtn digitizerConfirmBtn" type="button" disabled>Godkänn mallgruppen</button>
+    </section>
+
+    <section class="digitizerStep" aria-labelledby="digitizerStep3Title">
+     <div class="digitizerStepHead"><span aria-hidden="true">3</span><div><strong id="digitizerStep3Title">Välj sidor och läs kort</strong><small>Korten behandlas ett i taget så att stora filer inte fyller minnet.</small></div></div>
+     <label for="digitizerPages">Sidor i mallgruppen
+      <input id="digitizerPages" type="text" inputmode="text" autocomplete="off" placeholder="Till exempel 6–75">
+     </label>
+     <button id="digitizerUseSimilar" class="wideToolBtn" type="button" disabled>Föreslå sidor med samma sidformat</button>
+     <button id="digitizerReadCards" class="wideToolBtn digitizerPrimaryBtn" type="button" disabled>Läs valda dörrkort</button>
+     <p id="digitizerReadStatus" class="hint" role="status" aria-live="polite">Godkänn en mallgrupp för att börja.</p>
+     <div id="digitizerProgress" class="digitizerProgress" hidden>
+      <div class="digitizerProgressHead"><strong id="digitizerProgressMessage">Förbereder avläsning</strong><span id="digitizerProgressPercent">0 %</span></div>
+      <progress id="digitizerProgressMeter" max="100" value="0" aria-label="Avläsningens framsteg"></progress>
+      <div class="digitizerProgressMeta"><span id="digitizerProgressPage">Sida –</span><span id="digitizerProgressTime">Beräknar tid…</span></div>
+      <button id="digitizerCancelRead" type="button">Avbryt avläsningen</button>
+     </div>
+     <div id="digitizerPageList" class="digitizerPageList" aria-label="Dörrkort som har lästs"></div>
+    </section>
+
+    <section class="digitizerStep" aria-labelledby="digitizerStep4Title">
+     <div class="digitizerStepHead"><span aria-hidden="true">4</span><div><strong id="digitizerStep4Title">Granska sida vid sida</strong><small>Osäker text följer med och markeras. Kontrollera även text som ännu inte förts över.</small></div></div>
+     <p id="digitizerReviewSummary" class="digitizerReviewSummary" role="status">Inga dörrkort att granska ännu.</p>
+     <button id="digitizerOpenReview" class="wideToolBtn digitizerPrimaryBtn" type="button" disabled>Öppna granskningen</button>
+    </section>
+
+    <section class="digitizerStep" aria-labelledby="digitizerStep5Title">
+     <div class="digitizerStepHead"><span aria-hidden="true">5</span><div><strong id="digitizerStep5Title">Exportera arbetet</strong><small>PDF innehåller godkända, sökbara kort. JSON sparar hela projektet, även ogranskade kort och text som inte placerats.</small></div></div>
+     <button id="digitizerExportPdf" class="wideToolBtn digitizerPrimaryBtn" type="button" disabled>Spara digitala dörrkort som PDF</button>
+     <button id="digitizerExportJson" class="wideToolBtn" type="button" disabled>Spara hela projektet som JSON</button>
+     <p id="digitizerExportStatus" class="hint" role="status" aria-live="polite">Godkänn de digitala korten före export.</p>
+    </section>
+   </details>
+   <details id="analysisTools" class="panelSection">
+    <summary>Analysera PDF</summary>
+    <p class="hint">Kontrollera hela arbetsfilen: sidinnehåll, upprepade bilder, oanvänd data och sådant som är dolt. Analysen ändrar inga sidor.</p>
+    <button id="pdfAnalyze" class="wideToolBtn" type="button">1. Analysera hela PDF</button>
+    <p id="pdfAnalysisStatus" class="hint" role="status" aria-live="polite">Öppna en fil och starta analysen.</p>
+    <div id="pdfAnalysisReport" class="pdfAnalysisReport" hidden></div>
+    <button id="pdfRemoveDuplicates" class="wideToolBtn" type="button" disabled>Ta bort valda dubblettsidor</button>
+    <button id="pdfClean" class="wideToolBtn" type="button" disabled>2. Rensa förlustfritt och mät</button>
+    <p id="pdfCleanResult" class="hint" role="status" hidden></p>
+    <p class="hint">Sökbar text, stämplar och lager behålls. Den nya filen kontrolleras mot sidinnehåll och dokumentdata. Spara därefter med Spara PDF.</p>
+   <details id="cardGroupTools" class="panelSection analysisSection">
+    <summary>Jämför markerad text</summary>
+    <p class="hint">Samma rubrik kan finnas på olika kort. Jämför hela kortet innan du tar bort en extrasida.</p>
+    <p class="hint">1. Visa en sida och markera texten som ska jämföras, till exempel Beslagskod: DBLB upp SD. Alla ord, siffror och tecken i markeringen får vara med.</p>
+    <button id="cardMarkHeader" class="wideToolBtn" type="button" aria-pressed="false">1. Markera text att jämföra</button>
+    <p id="cardHeaderInfo" class="hint" role="status">Inget rubrikfält markerat.</p>
+    <label for="cardReadMode">Avläsning
+     <select id="cardReadMode"><option value="auto">Snabb sökning – text först</option><option value="text">Endast PDF-text – utan bildläsning</option></select>
+    </label>
+    <p class="hint">Hela texten i markeringen jämförs på de övriga sidorna. Samma text bildar en grupp, även om den består av flera ord eller rader. Extra blanksteg och skillnader mellan stora och små bokstäver jämnas ut. Bildtext läses inom markeringen vid behov.</p>
+    <button id="cardScan" class="wideToolBtn" type="button" disabled>2. Hitta samma rubriker</button>
+    <p id="cardGroupStatus" class="hint" role="status">Sidor ändras först när du väljer Ta bort valda extrasidor.</p>
+    <div id="cardGroupResults"></div>
+    <button id="cardApply" class="wideToolBtn" type="button" disabled>3. Ta bort valda extrasidor</button>
+    <p class="hint">Kontrollera grupperna och välj en sida att behålla. Avmarkera extrasidor du också vill behålla. Borttagningen gäller hela PDF-sidor. Använd Ångra vid behov och sedan Spara PDF för en ny fil.</p>
+   </details>
+   <details id="optimizeTools" class="panelSection analysisSection">
+    <summary>Storlek och exportval</summary>
+    <label>Kvalitet
+     <select id="quality">
+      <option value="lossless" selected>Förlustfri (originalkvalitet)</option>
+      <option value="light">Mindre fil</option>
+      <option value="balanced">Balans</option>
+      <option value="clear">Högre kvalitet</option>
+     </select>
+    </label>
+    <p id="qualityHint" class="hint">Text, bilder och ritningslinjer behåller sin kvalitet. Sidval och beskärning stöds. Storleksminskning kan inte garanteras.</p>
+    <button id="analyzeSize" class="wideToolBtn" type="button">Mät exakt</button>
+   </details>
+   </details>
+   <details class="panelSection">
+    <summary>Rensa ritningen</summary>
+    <label class="toggleRow"><input id="removeText" type="checkbox"><span><strong>Ta bort text</strong><small>Tar bort synlig PDF-text, till exempel rumsnamn, mått och gamla texter.</small></span></label>
+    <label class="toggleRow"><input id="removeAnnotations" type="checkbox"><span><strong>Ta bort markeringar & kommentarer</strong><small>Tar bort PDF-kommentarer och markeringar. Formulärfält behålls vid förlustfri export.</small></span></label>
+    <label class="toggleRow"><input id="removeColors" type="checkbox"><span><strong>Ta bort färgmarkeringar</strong><small>Tar bort färgade överstrykningar/markeringar och försöker behålla svart/grå ritningslinjer.</small></span></label>
+    <button id="aggressiveClean" class="wideToolBtn" type="button">Rensa allt ovan</button>
+   </details>
+   <details class="panelSection">
+    <summary>Dölj eller beskär</summary>
+    <button id="eraseMode" class="wideToolBtn" type="button" aria-pressed="false">Dölj område</button>
+    <div class="rowBtns eraseActions">
+     <button id="undoErase" type="button" disabled>Ångra</button>
+     <button id="clearErases" type="button" disabled>Visa allt igen</button>
+    </div>
+    <button id="cropMode" class="wideToolBtn cropToolBtn" type="button" aria-pressed="false">Beskär sida</button>
+    <button id="resetCrop" class="wideToolBtn" type="button" disabled>Återställ beskärning</button>
+    <p class="hint">Dölj område täcker över sådant du inte vill se. Beskär sida gör själva PDF-sidan mindre och behåller bara området du markerar.</p>
+   </details>
+
+   <details id="splitTools" class="panelSection">
+    <summary>Dela stor PDF</summary>
+    <label for="splitSize">Målstorlek per del (MB)
+     <input id="splitSize" type="number" min="1" max="500" step="1" value="10" inputmode="numeric">
+    </label>
+    <p class="hint">Delar vid sidgränser med samma kvalitet som din arbetskopia. En enskild stor sida kan överskrida målet.</p>
+    <button id="splitPdf" class="wideToolBtn" type="button">Skapa PDF-delar</button>
+    <div id="splitResults" class="splitResults" aria-live="polite" hidden></div>
+   </details>
+   <details class="panelSection">
+    <summary>Sidor</summary>
+    <div class="rowBtns">
+     <button id="removePage" type="button">Ta bort aktuell sida</button>
+     <button id="undoPage" type="button" disabled>Ångra</button>
+    </div>
+    <button id="selectPages" class="wideToolBtn" type="button" aria-pressed="false">Välj flera sidor</button>
+    <div id="bulkPageActions" class="bulkPageActions" hidden>
+      <button id="selectAllPages" type="button">Markera alla</button>
+      <button id="clearPageSelection" type="button">Avmarkera</button>
+      <button id="removeSelectedPages" type="button" class="dangerBtn">Ta bort valda</button>
+    </div>
+    <div id="pageList" class="pageList"></div>
+   </details>
+  </aside>
+
+  <section class="previewPane">
+   <div class="previewToolbar">
+    <button id="prevPage" aria-label="Föregående sida">‹</button>
+    <strong id="pageInfo">Sida 1</strong>
+    <button id="nextPage" aria-label="Nästa sida">›</button>
+    <button id="undoDrawing" type="button" aria-label="Ångra" title="Ångra senaste ändringen" disabled>↶</button>
+    <button id="redoDrawing" type="button" aria-label="Gör om" title="Gör om senaste ändringen" disabled>↷</button>
+    <button id="previewEditMode" type="button" hidden></button>
+    <span id="pageState"></span>
+   </div>
+
+   <div id="previewWrap"><div id="previewSurface"><div id="canvasStage"><canvas id="previewCanvas"></canvas><div id="cropBox" hidden></div><div id="eraseBox" hidden></div><div id="cardHeaderRect" hidden><span>Text att jämföra</span></div><div id="ocrAreaRect" hidden><span>Sökbart dörrkort</span></div><div id="digitizerAreaRect" hidden><span>Digitalt dörrkort</span></div></div></div></div>
+  </section>
+ </section>
+
+ <section id="sizeCompare" class="sizeCompare" hidden>
+  <div class="sizeCompareHead"><strong>Översikt över filen</strong><span id="sizeVerdict">Inte mätt</span></div>
+  <div class="sizeStats">
+   <div><small>Original</small><strong id="sizeOriginal">–</strong></div>
+   <div><small>Sidor kvar</small><strong id="sizePages">–</strong></div>
+   <div><small>Beräknad ny</small><strong id="sizeEstimate">–</strong></div>
+   <div><small>Uppmätt ny</small><strong id="sizeNew">–</strong></div>
+   <div><small>Minskning</small><strong id="sizePercent">–</strong></div>
+  </div>
+  <p id="sizeDetail">Välj kvalitet för en snabb uppskattning. Tryck “Mät exakt” för verklig filstorlek innan du sparar.</p>
+ </section>
+
+ <section id="resultCard" class="resultCard" hidden>
+  <strong>Arbetskopia klar</strong>
+  <span id="resultInfo"></span>
+ </section>
+</main>
+<dialog id="pdfSaveDialog" class="cardScanDialog pdfSaveDialog" aria-labelledby="pdfSaveTitle" aria-describedby="pdfSaveSummary">
+ <h2 id="pdfSaveTitle">Vad vill du spara?</h2>
+ <p id="pdfSaveSummary"></p>
+ <fieldset class="pdfSaveChoices"><legend>Välj arbetskopia</legend>
+  <label><input type="radio" name="pdfSaveMode" value="edits" checked><span><strong>Spara mina sidval och ändringar</strong><small>Sparar de sidor du har behållit med aktuell kvalitet. Ingen extra bildjämförelse krävs.</small></span></label>
+  <label><input type="radio" name="pdfSaveMode" value="clean"><span><strong>Optimera bilder och spara</strong><small id="pdfSaveCleanHint">Extra förlustfri bildrensning med kontroll av innehållet.</small></span></label>
+ </fieldset>
+ <div class="pdfSaveActions"><button id="pdfSaveConfirm" type="button">Spara PDF</button><button id="pdfSaveCancel" type="button">Avbryt</button></div>
+</dialog>
+<dialog id="pdfAnalysisDialog" class="cardScanDialog" aria-labelledby="pdfAnalysisTitle"><h2 id="pdfAnalysisTitle">Analyserar PDF</h2><p id="pdfAnalysisProgress" role="status" aria-live="polite"></p><progress id="pdfAnalysisMeter" max="1" value="0"></progress><p>Hela filen granskas. PDF-tolkning och sparning kan ta en stund för stora filer.</p><button id="pdfAnalysisCancel" type="button">Avbryt</button></dialog>
+<dialog id="cardScanDialog" class="cardScanDialog" aria-labelledby="cardScanTitle"><h2 id="cardScanTitle">Läser markerade rubrikfält</h2><p id="cardScanProgress" role="status" aria-live="polite"></p><progress id="cardScanMeter" max="1" value="0"></progress><p>En sida i taget. Ingen sida tas bort under avläsningen.</p><button id="cardScanCancel" type="button">Avbryt sökningen</button></dialog>
+<dialog id="ocrProgressDialog" class="cardScanDialog ocrProgressDialog" aria-labelledby="ocrProgressTitle">
+ <h2 id="ocrProgressTitle">Förbereder sökbar text</h2>
+ <p id="ocrProgressMessage" role="status" aria-live="polite"></p>
+ <progress id="ocrProgressMeter" max="100" value="0" aria-label="Framsteg"></progress>
+ <p id="ocrProgressPercent"></p><p id="ocrProgressTime"></p>
+ <p class="hint">Tiden uppskattas efter färdiga delområden och kan ändras. PDF-tolkning, sidrendering och sparning kan ta extra tid.</p>
+ <button id="ocrProgressCancel" type="button">Avbryt</button>
+</dialog>
+<dialog id="digitizerReviewDialog" class="digitizerReviewDialog" aria-labelledby="digitizerReviewTitle" aria-describedby="digitizerCardStatus">
+ <header class="digitizerReviewHeader">
+  <div>
+   <span class="digitizerEyebrow">DIGITALISERA DÖRRKORT</span>
+   <h2 id="digitizerReviewTitle">Granska original och digitalt kort</h2>
+  </div>
+  <div class="digitizerReviewHeaderMeta">
+   <span id="digitizerReviewPosition">Kort 0 av 0</span>
+   <span id="digitizerReviewState" class="digitizerState" data-state="unread">Ej läst</span>
+   <button id="digitizerCloseReview" type="button" aria-label="Stäng granskningen">Stäng</button>
+  </div>
+ </header>
+
+ <div id="digitizerReviewBody" class="digitizerReviewBody">
+  <section class="digitizerReviewPane digitizerOriginalPane" aria-labelledby="digitizerOriginalTitle">
+   <div class="digitizerPaneHead">
+    <div><strong id="digitizerOriginalTitle">Original</strong><small id="digitizerOriginalPage">Sida –</small></div>
+    <div class="digitizerZoom" role="group" aria-label="Zooma originalkortet">
+     <button id="digitizerOriginalZoomOut" type="button" aria-label="Zooma ut">−</button>
+     <span id="digitizerOriginalZoomLevel">100 %</span>
+     <button id="digitizerOriginalZoomIn" type="button" aria-label="Zooma in">+</button>
+     <button id="digitizerOriginalFit" type="button">Passa</button>
+    </div>
+   </div>
+   <div id="digitizerOriginalViewport" class="digitizerOriginalViewport" tabindex="0" aria-label="Originalkort. Dra eller rulla för att flytta i den zoomade bilden."><canvas id="digitizerOriginalCanvas" role="img" aria-label="Originalets markerade dörrkort"></canvas></div>
+  </section>
+
+  <section class="digitizerReviewPane digitizerDigitalPane" aria-labelledby="digitizerDigitalTitle">
+   <div class="digitizerPaneHead">
+    <div><strong id="digitizerDigitalTitle">Digitalt dörrkort</strong><small id="digitizerCardStatus">Kontrollera alla markerade fält.</small></div>
+   </div>
+   <form id="digitizerCardForm" class="digitizerCardForm" autocomplete="off">
+    <div class="digitizerCardIdentity">
+     <label for="digitizerCardCode">Beteckning<input id="digitizerCardCode" type="text"></label>
+     <label for="digitizerCardTitle">Rubrik / beskrivning<input id="digitizerCardTitle" type="text"></label>
+    </div>
+    <div id="digitizerDigitalSections" class="digitizerDigitalSections" aria-label="Redigerbara avsnitt i det digitala dörrkortet"></div>
+    <section id="digitizerUnassignedPanel" class="digitizerUnassignedPanel" aria-labelledby="digitizerUnassignedTitle">
+     <div class="digitizerUnassignedHead"><strong id="digitizerUnassignedTitle">Text som inte förts över</strong><span id="digitizerUnassignedCount" aria-label="Antal textdelar som behöver kontrolleras">0</span></div>
+     <p>Placera texten i rätt fält eller markera den uttryckligen som kontrollerad innan kortet godkänns.</p>
+     <div id="digitizerUnassignedList" class="digitizerUnassignedList"></div>
+    </section>
+   </form>
+  </section>
+ </div>
+
+ <footer class="digitizerReviewFooter">
+  <div class="digitizerNavActions">
+   <button id="digitizerPreviousCard" type="button">‹ Föregående</button>
+   <button id="digitizerNextUncertain" type="button">Nästa osäkra</button>
+   <button id="digitizerNextCard" type="button">Nästa ›</button>
+  </div>
+  <div class="digitizerEditActions">
+   <button id="digitizerReadCurrent" type="button">Läs aktuellt kort igen</button>
+   <button id="digitizerAddRow" type="button">＋ Lägg till rad</button>
+   <button id="digitizerApproveCard" class="digitizerApproveBtn" type="button">Godkänn kort</button>
+  </div>
+ </footer>
+</dialog>
+<script src="ui-text-scale.js?v=2.4.163"></script><script src="drawing-analysis.js?v=2.4.367"></script><script src="drawing-ocr-pdf.js?v=2.4.367"></script><script src="drawing-pdf.js?v=2.4.367"></script><script src="drawing-tools.js?v=2.4.395"></script><script src="drawing-card-groups.js?v=2.4.367"></script><script src="drawing-card-tool.js?v=2.4.367"></script>
+<script src="drawing-ocr-image-regions.js?v=2.4.367"></script><script src="drawing-ocr-reader.js?v=2.4.395"></script><script src="drawing-ocr-tool.js?v=2.4.369"></script>
+<script src="drawing-analysis-tool.js?v=2.4.367"></script>
+<script src="drawing-card-digitizer-core-general-test.js?v=2.4.398"></script><script src="drawing-card-digitizer-storage-general-test.js?v=2.4.398"></script><script src="drawing-card-digitizer-export-general-test.js?v=2.4.398"></script><script src="drawing-card-digitizer-general-test.js?v=2.4.398"></script>
+<script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let leaving=false;function reveal(){function show(){requestAnimationFrame(function(){requestAnimationFrame(function(){if(!leaving)root.classList.add('tillsyno-nav-ready')})})}if(!root.hasAttribute('data-auth-pending')){show();return}const observer=new MutationObserver(function(){if(!root.hasAttribute('data-auth-pending')){observer.disconnect();show()}});observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',function(event){if(event.persisted){leaving=false;root.classList.remove('tillsyno-nav-leaving');reveal()}});document.addEventListener('click',function(event){if(leaving||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;const link=event.target.closest?.('a[href]');if(!link||link.hasAttribute('download')||(link.target&&link.target!=='_self'))return;let dest;try{dest=new URL(link.href,location.href)}catch(_){return}if(dest.origin!==location.origin)return;const file=dest.pathname.split('/').pop().toLowerCase();if(!['','index.html','all-in-one.html','drawing-tools.html'].includes(file))return;if(dest.href===location.href)return;event.preventDefault();leaving=true;root.classList.remove('tillsyno-nav-ready');root.classList.add('tillsyno-nav-leaving');const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;setTimeout(function(){location.assign(dest.href)},reduce?0:90)},true)})();</script>
+<script src="tillsyno-appearance.js?v=2.4.397"></script>
+</body>
+</html>
