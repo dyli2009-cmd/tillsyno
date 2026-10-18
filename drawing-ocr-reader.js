@@ -173,6 +173,22 @@
   }
   return words;
  }
+ function exposeReadableWords(entry,native,options,observedOcr){
+  if(!options.includeNativeWords)return entry;
+  const normalize=(word,fallbackSource)=>{
+   const source=word?.source==='native'?'native':word?.source==='ocr'?'ocr':fallbackSource;
+   const confidence=Number.isFinite(Number(word?.confidence))?Math.max(0,Math.min(100,Number(word.confidence))):null;
+   return{...word,x:Number(word.x),y:Number(word.y),w:Number(word.w),h:Number(word.h),confidence,source,provenance:source==='native'?'pdf-text':'ocr',lowConfidence:source==='native'?false:Boolean(word?.lowConfidence)};
+  };
+  entry.nativeWords=(native||[]).map(word=>normalize(word,'native')).sort((a,b)=>a.y-b.y||a.x-b.x);
+  // Keep every distinct OCR observation for the loss-aware digitizer.  The
+  // legacy `entry.words` contract below still excludes OCR that overlaps PDF
+  // text, while `ocrWords` lets a reviewer see when the visible image and an
+  // existing (possibly old OCR) text layer disagree.
+  entry.ocrWords=(observedOcr||entry.words||[]).map(word=>normalize(word,'ocr')).sort((a,b)=>a.y-b.y||a.x-b.x);
+  entry.allWords=[...entry.nativeWords,...entry.ocrWords].sort((a,b)=>a.y-b.y||a.x-b.x);
+  return entry;
+ }
  async function read(options={}){
   const pdf=options.pdf;
   if(!pdf||!Number.isInteger(pdf.numPages)||pdf.numPages<1||typeof pdf.getPage!=='function')throw TypeError('Öppna en PDF först.');
@@ -196,22 +212,21 @@
   }
   for(let index=0;index<pages.length;index++){
    check(options);const pageNumber=pages[index],pageIndex=index+1,base={page:pageNumber,pageIndex},rect=clippedSelection(selection,options,pageNumber);
-   let page,canvas,renderTask,worker,entry;
+   let page,canvas,renderTask,worker,entry,native=[],observedOcr=[];
    try{
     await progress({...base,phase:'inspect',fraction:0,tileIndex:0,tileCount:0});
-    if(!rect){results.push({page:pageNumber,words:[],nativeCount:0,status:'excluded',warnings:[],wordUnits:'viewport'});summary.skippedPages++;await progress({...base,phase:'page-complete',fraction:1,tileIndex:0,tileCount:0,status:'excluded',wordCount:0});continue;}
+    if(!rect){entry={page:pageNumber,words:[],nativeCount:0,status:'excluded',warnings:[],wordUnits:'viewport'};exposeReadableWords(entry,native,options);results.push(entry);summary.skippedPages++;await progress({...base,phase:'page-complete',fraction:1,tileIndex:0,tileCount:0,status:'excluded',wordCount:0});continue;}
     page=await race(pdf.getPage(pageNumber),options);check(options);
     const viewport=page.getViewport({scale:1});
     if(!(viewport.width>0&&viewport.height>0)||!viewport.transform||viewport.transform.length!==6)throw Error('PDF-sidans storlek eller koordinater saknas.');
     const ignored=exclusions(options,pageNumber);
     entry={page:pageNumber,viewport:{width:viewport.width,height:viewport.height,transform:Array.from(viewport.transform)},wordUnits:'viewport',rect:{...rect},words:[],nativeCount:0,status:'pending',warnings:[]};
-    let native=[];
     try{native=nativeWords(await race(page.getTextContent(),options),viewport,rect,ignored);}catch(error){check(options);entry.warnings.push('Befintlig PDF-text kunde inte läsas. Området bildläses.');}
     entry.nativeCount=native.length;summary.nativeWords+=native.length;
     let images={unknown:true,hasImages:true};
     if(geometry)images=await race(geometry.inspect(page,rect,options.pdfjsLib),options);
     if(!images.hasImages&&native.length){
-     entry.status='native';summary.skippedPages++;results.push(entry);
+     entry.status='native';summary.skippedPages++;exposeReadableWords(entry,native,options);results.push(entry);
      await progress({...base,phase:'page-complete',fraction:1,tileIndex:0,tileCount:0,source:'native',nativeCount:native.length,wordCount:0});continue;
     }
     const plan=renderPlan(viewport,rect,options),tiles=tilesFor(plan.width,plan.height,options);
@@ -251,8 +266,11 @@
       const cancel=()=>quietly(options.onCancelRecognition?()=>options.onCancelRecognition():()=>worker?.terminate?.());
       const recognized=await race(operation,options,cancel,Math.max(1000,Number(options.ocrTimeoutMs)||120000));
       check(options);
-      const words=decodeWords(recognized,tile,plan,viewport,rect,ignored,Number.isFinite(options.confidenceThreshold)?options.confidenceThreshold:75);
-      for(const word of words)if(!redundant(word,native)&&!redundant(word,entry.words))entry.words.push(word);
+     const words=decodeWords(recognized,tile,plan,viewport,rect,ignored,Number.isFinite(options.confidenceThreshold)?options.confidenceThreshold:75);
+     for(const word of words){
+      if(!redundant(word,observedOcr))observedOcr.push(word);
+      if(!redundant(word,native)&&!redundant(word,entry.words))entry.words.push(word);
+     }
      }finally{free(copy);}
      completedChunks++;ocrMs+=Date.now()-chunkStarted;
      await progress({...base,phase:'ocr',fraction:.15+.8*(tileIndex+1)/tiles.length,tileIndex:tileIndex+1,tileCount:tiles.length,wordCount:entry.words.length});
@@ -266,6 +284,7 @@
     entry.status=entry.words.length?'partial':'error';entry.error=String(error?.message||error);
     entry.warnings.push(entry.error);summary.errorPages++;if(entry.words.length)summary.partialPages++;
    }finally{try{renderTask?.cancel?.();}catch(_){}free(canvas);}
+   exposeReadableWords(entry,native,options,observedOcr);
    summary.words+=entry.words.length;summary.lowConfidenceWords+=entry.words.filter(word=>word.lowConfidence).length;
    results.push(entry);
    await progress({...base,phase:'page-complete',fraction:1,tileIndex:0,tileCount:0,status:entry.status,wordCount:entry.words.length,nativeCount:entry.nativeCount});

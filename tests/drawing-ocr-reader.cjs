@@ -29,7 +29,17 @@ const options=(pages,extra={})=>({pdf:pdf(pages),pages:pages.map((_,i)=>i+1),rec
  const native=page({native:[item('GS23')],image:false});let ocrCalls=0;
  const nativeResult=await Reader.read(options([native],{recognize:async()=>{ocrCalls++;return{data:{words:[]}};}}));
  assert.equal(nativeResult.pages[0].status,'native');assert.equal(nativeResult.pages[0].nativeCount,1);
+ assert.equal('nativeWords' in nativeResult.pages[0],false,'legacy callers receive the unchanged page shape');
  assert.equal(nativeResult.summary.skippedPages,1);assert.equal(ocrCalls,0);assert.equal(native.state.renders,0,'proven native-only pages avoid all rendering/OCR');
+
+ const exposedNativeResult=await Reader.read(options([native],{includeNativeWords:true}));
+ assert.equal(exposedNativeResult.pages[0].status,'native');
+ assert.deepEqual(exposedNativeResult.pages[0].words,[],'legacy words stays OCR-only in the opt-in mode');
+ assert.deepEqual(exposedNativeResult.pages[0].nativeWords.map(w=>w.text),['GS23']);
+ assert.deepEqual(exposedNativeResult.pages[0].allWords.map(w=>w.text),['GS23'],'the native-only early return exposes readable words');
+ const exposedNativeWord=exposedNativeResult.pages[0].allWords[0];
+ assert.equal(exposedNativeWord.text,'GS23');assert.equal(exposedNativeWord.x,100);assert(Math.abs(exposedNativeWord.y-90.4)<1e-9);assert.equal(exposedNativeWord.w,60);assert.equal(exposedNativeWord.h,12);
+ assert.equal(exposedNativeWord.confidence,100);assert.equal(exposedNativeWord.source,'native');assert.equal(exposedNativeWord.provenance,'pdf-text');assert.equal(exposedNativeWord.lowConfidence,false);
 
  const mixed=page({native:[item('GS23')]});const progress=[];
  const mixedResult=await Reader.read(options([mixed],{recognize:async()=>{ocrCalls++;return{data:{words:[word('GS23',100,90),word('Beslagskod:',100,200,90),word('DBLB',200,200,45),word('UPPST.',255,200,60),word('Mont',400,300,40),word('av',445,300,20),word('GS',400,350,30,12,42),word('DT',700,350,30)]}};},onProgress:value=>progress.push(value)}));
@@ -44,6 +54,18 @@ const options=(pages,extra={})=>({pdf:pdf(pages),pages:pages.map((_,i)=>i+1),rec
  assert.equal(progress.at(0).etaMs,null,'ETA starts unknown');assert.equal(progress.at(-1).percent,100);
  assert.equal(progress.some(p=>p.pageIndex===1&&p.tileIndex===1&&p.etaMs===0),true,'completed chunks inform the estimate');
  assert.equal(progress.every((p,i)=>i===0||p.percent>=progress[i-1].percent),true,'progress never decreases');
+
+ const exposedMixed=await Reader.read(options([page({native:[item('GS23')]})],{includeNativeWords:true,recognize:async()=>({data:{words:[word('GS23',100,90),word('DC700',250,250,70,12,68)]}})}));
+ const exposed=exposedMixed.pages[0];
+ assert.deepEqual(exposed.words.map(w=>w.text),['DC700'],'entry.words keeps its existing non-native OCR contract');
+ assert.deepEqual(exposed.nativeWords.map(w=>w.text),['GS23']);
+ assert.deepEqual(exposed.ocrWords.map(w=>w.text),['GS23','DC700'],'loss-aware mode retains the OCR observation even where native PDF text overlaps');
+ assert.deepEqual(exposed.allWords.map(w=>w.text),['GS23','GS23','DC700'],'allWords exposes every distinct native/OCR observation in reading order');
+ assert.equal(exposed.allWords[2].source,'ocr');assert.equal(exposed.allWords[2].provenance,'ocr');assert.equal(exposed.allWords[2].confidence,68);assert.equal(exposed.allWords[2].lowConfidence,true);
+
+ const disagreement=await Reader.read(options([page({native:[item('DC700')]})],{includeNativeWords:true,recognize:async()=>({data:{words:[word('BC700',100,90)]}})}));
+ assert.deepEqual(disagreement.pages[0].words,[],'legacy OCR output still prefers overlapping native text');
+ assert.deepEqual(disagreement.pages[0].ocrWords.map(w=>w.text),['BC700'],'digitizer output retains a conflicting visible OCR reading for review');
 
  const logo=page({native:[item('WC')],operations:[[OPS.transform,[100,0,0,100,800,0]],[OPS.paintImageXObject,['logo']]]});
  const logoResult=await Reader.read(options([logo],{rect:{x:.05,y:.05,w:.5,h:.5},recognize:()=>{throw Error('OCR must not run');}}));

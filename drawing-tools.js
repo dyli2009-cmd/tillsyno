@@ -8,11 +8,15 @@ let selectPagesMode=false,selectedPages=new Set(),workSourceKind='';
 let previewZoom=1,previewPage=0,previewWidth=0,previewHeight=0,panDrag=null,zoomTimer=null,previewVersion=0;
 let busy=false,splitUrls=[],sourceGeneration=0;
 const previewWrap=$('previewWrap');
-async function withBusy(task){
+async function withBusy(task,options={}){
  if(busy)return;busy=true;
+ const allowed=new Set(Array.isArray(options.allow)?options.allow:[]);
  const controls=Array.from(document.querySelectorAll('button,input,select,textarea'),el=>[el,el.disabled]);
- controls.forEach(([el])=>el.disabled=true);$('workspace').setAttribute('aria-busy','true');
- $('workspace').inert=true;document.querySelector('.headerActions').inert=true;
+ controls.forEach(([el])=>{if(!allowed.has(el.id))el.disabled=true});$('workspace').setAttribute('aria-busy','true');
+ // A long local operation may expose one explicit cancel button. In that
+ // case all other controls stay disabled and the canvas still checks `busy`,
+ // while the workspace itself must remain focusable so Cancel can be used.
+ $('workspace').inert=allowed.size===0;document.querySelector('.headerActions').inert=true;
  try{return await task();}
  finally{
   busy=false;controls.forEach(([el,disabled])=>el.disabled=disabled);$('workspace').removeAttribute('aria-busy');
@@ -164,10 +168,12 @@ function updateEditButtons(){
  $('previewWrap').classList.toggle('cropMode',editMode==='crop');
  $('previewWrap').classList.toggle('cardHeaderMode',editMode==='card-header');
  $('previewWrap').classList.toggle('ocrAreaMode',editMode==='ocr-area');
+ $('previewWrap').classList.toggle('digitizerAreaMode',editMode==='digitizer-area');
  $('previewEditMode').hidden=!editMode;
- $('previewEditMode').textContent=(editMode==='ocr-area'?'Markera dörrkort':editMode==='card-header'?'Markera rubrik':editMode==='crop'?'Beskär':'Dölj område')+' · Avsluta';
+ $('previewEditMode').textContent=(editMode==='digitizer-area'?'Markera digitalt kort':editMode==='ocr-area'?'Markera dörrkort':editMode==='card-header'?'Markera rubrik':editMode==='crop'?'Beskär':'Dölj område')+' · Avsluta';
  window.DrawingCardTool?.refresh();
  window.DrawingOcrTool?.refresh();
+ window.DrawingCardDigitizer?.refresh();
 }
 function updateBulkControls(){
  $('selectPages').classList.toggle('active',selectPagesMode);
@@ -325,6 +331,7 @@ async function loadFile(file,imageSource=null){
   sourceGeneration++;
   window.DrawingCardTool?.reset();
   window.DrawingOcrTool?.reset();
+  window.DrawingCardDigitizer?.reset();
   window.DrawingAnalysisTool?.reset();
   for(const id of ['removeText','removeAnnotations','removeColors'])$(id).checked=false;
   $('quality').value='lossless';
@@ -418,12 +425,16 @@ function showDragBox(a,b){
  box.classList.toggle('cropSelection',editMode==='crop');box.hidden=false;box.style.left=x+'px';box.style.top=y+'px';box.style.width=w+'px';box.style.height=h+'px';
  box.classList.toggle('cardHeaderSelection',editMode==='card-header');
  box.classList.toggle('ocrAreaSelection',editMode==='ocr-area');
+ box.classList.toggle('digitizerAreaSelection',editMode==='digitizer-area');
 }
 function finishDrag(e){
  if(!dragStart)return;const end=pointerPos(e),start=dragStart;dragStart=null;$('eraseBox').hidden=true;
  const x=Math.min(start.x,end.x),y=Math.min(start.y,end.y),w=Math.abs(start.x-end.x),h=Math.abs(start.y-end.y);
  if(w<8||h<8)return;
  const rect={x:x/end.w,y:y/end.h,w:w/end.w,h:h/end.h};
+ if(editMode==='digitizer-area'){
+  editMode='';window.DrawingCardDigitizer?.setRegion(rect,page);updateEditButtons();return;
+ }
  if(editMode==='ocr-area'){
   editMode='';window.DrawingOcrTool?.setRegion(rect,page);updateEditButtons();return;
  }
@@ -588,6 +599,37 @@ window.DrawingToolsBridge=Object.freeze({
  },
  markCardHeader(){if(!pdf||busy)return;editMode=editMode==='card-header'?'':'card-header';dragStart=null;$('eraseBox').hidden=true;updateEditButtons();showTools(false);message(editMode?'Dra en ruta runt rubriken eller beslagskoden högst upp på ett dörrkort.':'Rubrikmarkering är avstängd.');},
  markOcrArea(){if(!pdf||busy)return;editMode=editMode==='ocr-area'?'':'ocr-area';dragStart=null;$('eraseBox').hidden=true;updateEditButtons();showTools(false);message(editMode?'Dra en ruta runt hela dörrkortet, inklusive rubrik och tabell. Zooma först om det behövs.':'Markering av dörrkort är avstängd.');},
+ markDigitizerArea(){if(!pdf||busy)return;editMode=editMode==='digitizer-area'?'':'digitizer-area';dragStart=null;$('eraseBox').hidden=true;updateEditButtons();showTools(false);message(editMode?'Dra en ruta runt hela originalkortet. Rubrik, alla tabeller och all text ska ligga innanför markeringen.':'Markering av digitalt dörrkort är avstängd.');},
+ async renderRegionPreview({page:pageNo,rect,canvas,maxPixels=1800000,maxSide=1800,zoom=1,signal}={}){
+  if(!pdf||!canvas||!Number.isInteger(pageNo)||pageNo<1||pageNo>pdf.numPages)throw Error('Originalsidan kunde inte visas.');
+  if(!rect||!['x','y','w','h'].every(key=>Number.isFinite(rect[key]))||rect.w<=0||rect.h<=0)throw Error('Kortets markerade område saknas.');
+  if(signal?.aborted){const error=Error('Förhandsvisningen avbröts.');error.name='AbortError';throw error;}
+  const source=await pdf.getPage(pageNo),base=source.getViewport({scale:1});
+  if(signal?.aborted){const error=Error('Förhandsvisningen avbröts.');error.name='AbortError';throw error;}
+  maxPixels=Math.max(250000,Math.min(3000000,Number(maxPixels)||1800000));maxSide=Math.max(500,Math.min(3000,Number(maxSide)||1800));zoom=Math.max(.5,Math.min(2.5,Number(zoom)||1));
+  const area=Math.max(1,base.width*rect.w*base.height*rect.h),maximumScale=Math.min(3,Math.sqrt(maxPixels/area),maxSide/Math.max(base.width*rect.w,base.height*rect.h));
+  // A normal PDF card starts at native scale and becomes sharper while the
+  // user zooms. Very large cards start at their memory ceiling; zoom then
+  // keeps the same bounded raster instead of allocating a multi-megapixel
+  // canvas that can restart Safari on iPad.
+  const baseScale=Math.min(1,maximumScale);let scale=Math.max(.15,Math.min(maximumScale,baseScale*zoom)),viewport,width,height;
+  // Scale uses floating point values while canvas dimensions are integers.
+  // Rounding both dimensions upward can otherwise cross the promised pixel
+  // or side limit by a few pixels. Recalculate at a fractionally smaller
+  // scale so the allocated canvas itself, not only the estimate, is bounded.
+  for(let attempt=0;attempt<4;attempt++){
+   viewport=source.getViewport({scale});width=Math.max(1,Math.ceil(viewport.width*rect.w));height=Math.max(1,Math.ceil(viewport.height*rect.h));
+   if(width*height<=maxPixels&&width<=maxSide&&height<=maxSide)break;
+   const correction=Math.min(1,Math.sqrt(maxPixels/(width*height)),maxSide/width,maxSide/height);
+   scale=Math.max(.01,scale*correction*.999999);
+  }
+  canvas.width=width;canvas.height=height;const context=canvas.getContext('2d',{alpha:false});if(!context)throw Error('Förhandsvisningen kunde inte öppnas.');
+  context.fillStyle='#fff';context.fillRect(0,0,width,height);
+  const task=source.render({canvasContext:context,viewport,transform:[1,0,0,1,-rect.x*viewport.width,-rect.y*viewport.height],annotationMode:pdfjsLib.AnnotationMode?.ENABLE??1,background:'#fff'});
+  const abort=()=>task.cancel?.();signal?.addEventListener('abort',abort,{once:true});
+  try{await task.promise;}finally{signal?.removeEventListener('abort',abort);}
+  return {width,height,scale,zoom,viewport:{width:base.width,height:base.height}};
+ },
  async showPage(no){if(!pdf||busy||!Number.isInteger(no)||no<1||no>keep.length)return;page=no;renderPageList();updateEditButtons();showTools(false);await renderPreview();},
  async removePages(numbers){
   if(!pdf||busy)return 0;

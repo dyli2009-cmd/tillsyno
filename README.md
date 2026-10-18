@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.395 – digitalisera och granska dörrkort
+
+[Ritningsverktyget](drawing-tools.html) har fått testfunktionen **Digitalisera dörrkort**. Markera ett helt representativt originalkort, skapa en mallgrupp och läs valda sidor med samma layout. Original och ett redigerbart digitalt kort visas sida vid sida. All osäker, motstridig eller oplacerad källtext måste hanteras före godkännande, och en delvis avbruten läsning måste göras om. Arbetet autosparas lokalt utan att käll-PDF:ens stora byteinnehåll kopieras; om beständig webbläsarlagring saknas visas en varning att JSON måste sparas. Godkända kort kan sparas som en kompakt sökbar vektor-PDF och hela projektet kan sparas som JSON. Första testet använder en mallgrupp och exporten importeras ännu inte automatiskt i SmartMatch. Se [arbetsgång, dataschema, skydd och tester](DRAWING_TOOLS_395.md).
+
 ## Tillsyno v2.4.394 – tydliga DS/DA-stämplar på iPad i Avläsning TEST 9.27
 
 [Avläsning TEST 9.27](smartmatch-read-test.html) visar DS och DA från det redan förberedda PDF-stämpelregistret som kompakta, tydliga märken på ritningen. Märkena använder gul yta, svart text och kant samt en röd innermarkering. De är minst 24 × 18 och högst 36 × 24 CSS-pixlar med 11–13-pixelstext, räknas om vid zoom och ligger i ett passivt lager som inte hindrar tryck på dörrpositionerna. Funktionen läser endast riktiga, synliga `/Stamp`-annoteringar i det sparade indexet och startar varken OCR eller läsning av sidans vanliga text. Dolda PDF-annoteringar hoppas över. DS/DA som är inbakade i en bild eller enbart skrivna som vanlig PDF-text behöver först förberedas eller skannas separat. TEST 9.26 är oförändrad. Se [beteende, avgränsning och verifiering](SMARTMATCH_READ_TEST_9_27.md).
