@@ -129,6 +129,7 @@
  function renderTemplatePreview(){
   const node=$('digitizerTemplatePreview'),template=project?.template;if(!node)return;node.replaceChildren();node.hidden=!template;if(!template)return;
   const title=el('strong',template.name||'Mallgrupp 1'),summary=el('p',(template.reference?.wordCount||0)+' textdelar och '+(template.reference?.lineCount||0)+' textrader hittades på sida '+template.sourcePage+'.');
+  if(template.genericLayout){node.append(title,summary,el('p','Originalets text och linjer visas på sin egen plats. Ingen dörrkortsmall används.'));const review=el('button','Granska digitaliserad tabell');review.type='button';review.disabled=active;review.onclick=()=>openReview(0);node.append(review);return;}
   const columns=el('p','Kolumner: '+(template.columns||[]).map(item=>item.label||CELL_LABELS[item.key]||item.key).join(' · '));
   const sections=el('p','Avsnitt: '+(template.sections||[]).map(item=>item.label||item.key).join(' · '));
   const review=el('button','Granska exempelkort sida vid sida');review.type='button';review.disabled=active;review.onclick=()=>openReview(0);
@@ -140,7 +141,7 @@
   for(const card of cards){
    const failure=(project?.progress?.failures||[]).find(item=>Number(item.page)===pageForCard(card));
    const button=el('button',null,'digitizerPageItem');button.type='button';button.disabled=active;button.dataset.state=failure?'error':cardStatus(card)==='approved'?'approved':cardStatus(card)==='changed-after-approval'?'changed':'review';
-   const page=el('strong','Sida '+pageForCard(card)),code=el('span',card.header?.code||'Beteckning saknas'),state=el('small',statusLabel(card));
+   const page=el('strong','Sida '+pageForCard(card)),code=el('span',card.genericLayout?'Digitaliserad tabell':(card.header?.code||'Beteckning saknas')),state=el('small',statusLabel(card));
    if(card.review?.unassignedCount)state.textContent+=' · '+card.review.unassignedCount+' oplacerade';
    if(card.source?.readStatus==='partial')state.textContent+=' · delvis avläst';
    if(failure)state.textContent+=' · '+(failure.message||'senaste omläsningen misslyckades');
@@ -153,7 +154,8 @@
  }
  function refreshSummary(){
   const cards=project?.cards||[],approved=approvedCards().length,pending=cards.length-approved,unassigned=cards.reduce((sum,card)=>sum+Number(card.review?.unassignedCount||0),0);
-  setText('digitizerReviewSummary',cards.length?cards.length+' kort lästa · '+approved+' godkända · '+pending+' behöver granskas'+(unassigned?' · '+unassigned+' textdelar inte placerade':''):'Inga dörrkort att granska ännu.');
+  const generic=cards.some(item=>item.genericLayout);
+  setText('digitizerReviewSummary',cards.length?cards.length+(generic?' tabeller':' kort')+' lästa · '+approved+' godkända · '+pending+' behöver granskas'+(!generic&&unassigned?' · '+unassigned+' textdelar inte placerade':''):'Inga tabeller att granska ännu.');
   $('digitizerOpenReview').disabled=active||!cards.length||!!project?.integrityError;
   $('digitizerExportJson').disabled=active||!cards.length||!fingerprint;
   $('digitizerExportPdf').disabled=active||!approved||!!project?.integrityError;
@@ -391,7 +393,7 @@
   const card=currentCard();if(!card)return;const state=cardStatus(card),issues=card.review?.issues||[],conflicts=unresolvedConflicts(card),visualState=conflicts.length?'needs-review':state;
   $('digitizerReviewState').dataset.state=visualState==='changed-after-approval'?'changed':visualState==='needs-review'?'review':visualState;setText('digitizerReviewState',visualState==='needs-review'?'Behöver granskas':statusLabel(card));
   const warnings=(card.source?.warnings||[]).filter(Boolean),conflictMessage=conflicts.length?conflicts.length+' textdelar har olika PDF- och bildtext. Välj rätt alternativ nedan. ':'';
-  setText('digitizerCardStatus',(warnings.length?'Avläsningen varnade: '+warnings.join(' ')+' ':'')+conflictMessage+(issues.length?issues.join(' '):visualState==='approved'?'Kortet är kontrollerat och godkänt.':'Kortet är komplett när alla markerade uppgifter har kontrollerats.'));
+  setText('digitizerCardStatus',(warnings.length?'Avläsningen varnade: '+warnings.join(' ')+' ':'')+conflictMessage+(issues.length?issues.join(' '):visualState==='approved'?'Texten är granskad och godkänd.':card.genericLayout?'Kontrollera att all text och linjer stämmer mot originalet. Tryck på texten för att redigera.':'Kortet är komplett när alla markerade uppgifter har kontrollerats.'));
   $('digitizerApproveCard').disabled=active||!!conflicts.length||!card.review?.canApprove||state==='approved';
  }
  function rowIsLow(row){
@@ -491,15 +493,97 @@
    for(const token of ignored){const row=el('div',null,'digitizerUnassignedItem'),text=el('span',token.text),restore=el('button','Återställ');restore.type='button';restore.onclick=()=>{try{replaceCurrent(core.ignoreToken(currentCard(),token.id,false));}catch(error){setText('digitizerCardStatus',error.message);}};row.append(text,restore);details.append(row);}node.append(details);
   }
  }
+
+ // Testvyn är layoutbaserad och får inte utgå från dörrkortets fasta fält.
+ function editGenericToken(id,changes={}){
+  const card=clone(currentCard());if(!card)return;
+  const token=(card.sourceTokens||[]).find(item=>item.id===id);if(!token)return;
+  if(Object.prototype.hasOwnProperty.call(changes,'text')){
+   const value=String(changes.text||'').trim();
+   if(!value){setText('digitizerCardStatus','Texten kan inte vara tom. Rätta den eller behåll originalet.');return;}
+   token.text=value;
+  }
+  if(changes.x!==undefined)token.box.x=Math.max(0,Math.min(.99,Number(changes.x)/100||0));
+  if(changes.y!==undefined)token.box.y=Math.max(0,Math.min(.99,Number(changes.y)/100||0));
+  token.reviewed=true;token.conflict=false;token.lowConfidence=false;token.alternatives=[];token.confidence=100;
+  replaceCurrent(core.recomputeReviewCompleteness(card,{edited:true}));
+ }
+ function addGenericText(){
+  const value=typeof root.prompt==='function'?root.prompt('Skriv text som saknas i tabellen:'):null;
+  if(!value?.trim())return;
+  const card=clone(currentCard());if(!card)return;
+  const id='manual-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
+  card.sourceTokens.push({id,text:value.trim(),source:'manual',provenance:[{source:'manual'}],
+   box:{x:.06,y:.91,w:Math.min(.84,Math.max(.07,value.trim().length*.015)),h:.035},
+   confidence:100,reviewed:true,lowConfidence:false,conflict:false});
+  replaceCurrent(core.recomputeReviewCompleteness(card,{edited:true}));
+ }
+ function renderGenericReview(){
+  const card=currentCard(),rootNode=$('digitizerDigitalSections');rootNode.replaceChildren();if(!card)return;
+  const tokens=(card.sourceTokens||[]).filter(token=>token?.box&&token.text).slice()
+   .sort((a,b)=>(a.box.y-b.box.y)||(a.box.x-b.box.x));
+  const wrapper=el('section',null,'digitizerGeneralLayout');
+  wrapper.append(el('p',tokens.length+' textdelar och '+(card.layoutLines||[]).length+' raka linjer hittades. Detta är en digital rekonstruktion av markeringen, inte en förvald dörrkortsmall.'));
+  const aspect=Math.max(.2,Math.min(7,Number(card.sourceAspect)||1.414)),viewH=1000/aspect;
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 1000 '+viewH);svg.setAttribute('role','img');
+  svg.setAttribute('aria-label','Återskapad tabell med text och detekterade linjer');
+  Object.assign(svg.style,{display:'block',width:'100%',height:'auto',background:'#fff',border:'1px solid #d1d9df',borderRadius:'5px'});
+  const makeSvg=(tag,attrs)=>{const node=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [key,val] of Object.entries(attrs))node.setAttribute(key,String(val));svg.append(node);return node;};
+  for(const line of card.layoutLines||[]){
+   if(![line.x1,line.y1,line.x2,line.y2].every(Number.isFinite))continue;
+   makeSvg('line',{x1:line.x1*1000,y1:line.y1*viewH,x2:line.x2*1000,y2:line.y2*viewH,stroke:'#52616a','stroke-width':1.2});
+  }
+  for(const token of tokens){
+   const b=token.box,h=Math.max(5,Math.min(44,b.h*viewH*.78)),text=makeSvg('text',{
+    x:b.x*1000,y:(b.y+b.h*.82)*viewH,'font-size':h,fill:token.conflict?'#ad3a1b':'#142c38',
+    'font-family':'Arial,Helvetica,sans-serif',role:'button',tabindex:0});
+   text.textContent=token.text;
+   text.style.cursor='pointer';
+   const highlight=()=>{const field=document.getElementById('digitizerWord-'+token.id);field?.scrollIntoView({block:'nearest'});field?.focus();};
+   text.addEventListener('click',highlight);
+   text.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();highlight();}});
+  }
+  wrapper.append(svg);
+  const details=el('details',null,'digitizerGeneralWords'),summary=el('summary','Granska och redigera avläst text ('+tokens.length+')');
+  details.append(summary);
+  for(const [index,token] of tokens.entries()){
+   const row=el('div',null,'digitizerGeneralWord'),label=el('label'),caption=el('span','Text '+(index+1)),input=el('input');
+   input.id='digitizerWord-'+token.id;input.type='text';input.value=token.text;input.setAttribute('aria-label','Redigera avläst text '+(index+1));
+   input.addEventListener('change',()=>editGenericToken(token.id,{text:input.value}));
+   label.append(caption,input);row.append(label);
+   if(token.lowConfidence||token.conflict){
+    row.classList.add('digitizerLowConfidence');
+    const check=el('button','Texten stämmer');check.type='button';
+    check.onclick=()=>editGenericToken(token.id,{text:input.value});row.append(check);
+   }
+   if(token.source==='manual'){
+    for(const key of ['x','y']){
+     const coord=el('label'),caption=el('span',key==='x'?'Vänster %':'Uppifrån %'),field=el('input');
+     field.type='number';field.min=0;field.max=99;field.step=.5;field.value=Math.round(Number(token.box[key]||0)*1000)/10;
+     field.addEventListener('change',()=>editGenericToken(token.id,{[key]:field.value}));
+     coord.append(caption,field);row.append(coord);
+    }
+   }
+   details.append(row);
+  }
+  wrapper.append(details);rootNode.append(wrapper);
+ }
  function renderReview(){
   const card=currentCard();if(!card)return;
-  setText('digitizerReviewPosition','Kort '+(currentCardIndex+1)+' av '+project.cards.length);setText('digitizerOriginalPage','Sida '+pageForCard(card));
+  setText('digitizerReviewPosition',(card.genericLayout?'Tabell ':'Kort ')+(currentCardIndex+1)+' av '+project.cards.length);setText('digitizerOriginalPage','Sida '+pageForCard(card));
   $('digitizerCardCode').value=card.header?.code||'';$('digitizerCardTitle').value=card.header?.title||'';
   // Automatisk headertext redigeras rad för rad nedan. Det separata
   // rubrikfältet visas bara när kortet faktiskt har en manuell rubrik eller
   // saknar andra headerfält, så samma text inte exporteras två gånger.
   const titleLabel=$('digitizerCardTitle').closest('label');if(titleLabel)titleLabel.hidden=!!card.header?.fields?.length&&!card.header?.title;
-  renderRows();renderTokens();updateReviewState();
+  const generic=card.genericLayout===true;
+  $('digitizerDigitalTitle').textContent=generic?'Digitaliserad tabell – originalets layout':'Digitalt dörrkort';
+  $('digitizerCardForm').querySelector('.digitizerCardIdentity').hidden=generic;
+  $('digitizerUnassignedPanel').hidden=generic;
+  $('digitizerAddRow').textContent=generic?'＋ Lägg till text':'＋ Lägg till rad';
+  if(generic)renderGenericReview();else{renderRows();renderTokens();}
+  updateReviewState();
   $('digitizerPreviousCard').disabled=currentCardIndex<=0;$('digitizerNextCard').disabled=currentCardIndex>=project.cards.length-1;
   void renderOriginal();
  }
@@ -607,7 +691,7 @@
  $('digitizerCardCode').oninput=()=>{try{replaceCurrent(core.updateHeader(currentCard(),{code:$('digitizerCardCode').value}),{rerender:false});}catch(error){setText('digitizerCardStatus',error.message);}};
  $('digitizerCardTitle').oninput=()=>editTitle($('digitizerCardTitle').value);
  $('digitizerPreviousCard').onclick=()=>navigate(-1);$('digitizerNextCard').onclick=()=>navigate(1);$('digitizerNextUncertain').onclick=nextIssue;
- $('digitizerReadCurrent').onclick=()=>void rereadCurrent();$('digitizerAddRow').onclick=addRow;$('digitizerApproveCard').onclick=approveCurrent;
+ $('digitizerReadCurrent').onclick=()=>void rereadCurrent();$('digitizerAddRow').onclick=()=>currentCard()?.genericLayout?addGenericText():addRow();$('digitizerApproveCard').onclick=approveCurrent;
  $('digitizerOriginalZoomOut').onclick=()=>{originalZoom=Math.max(.5,Math.round((originalZoom-.25)*100)/100);void renderOriginal();};
  $('digitizerOriginalZoomIn').onclick=()=>{originalZoom=Math.min(2.5,Math.round((originalZoom+.25)*100)/100);void renderOriginal();};
  $('digitizerOriginalFit').onclick=()=>{originalZoom=1;void renderOriginal();};
