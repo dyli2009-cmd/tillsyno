@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.391 – saknade GS-produkter från avlästa tabeller
+
+[Avläsning TEST 9.24](smartmatch-read-test.html) rättar fallet där exempelvis **31 Dörrstängare DC700** eller en magnet syntes i den kompletta avlästa tabellen men saknades bland kontrollpunkterna. En kort GS-ruta kunde ligga några bildpunkter ovanför produktraden och tappade då kopplingen till produkten. Tabelläsaren kopplar nu ihop visuellt överlappande rutor inom samma rad. När ett sparat projekt har kvar ordpositionerna repareras listan lokalt när projektet öppnas, utan OCR eller ny ritningsmatchning. Om ordpositionerna saknas kan det berörda kortet kompletteras med **Läs om detta kort**. Se [orsak, arbetsgång och testbevis](SMARTMATCH_READ_TEST_9_24.md).
+
 ## Tillsyno v2.4.390 – arbetstid per dörr och material
 
 [Avläsning TEST 9.23](smartmatch-read-test.html) visar beräknad tid på varje fysisk dörr och summerar projektet både **Per produkt** och **Per dörr**. Materialtyp, modell, mängd, standardtid, klart och kvar visas samlat. **＋ Extra tid** lägger krångel eller annat tillkommande arbete på just den öppna dörren. Äldre projekt fortsätter fungera och sparar antal, tidsjusteringar och avprickningar i projekt-PDF:en. Se [arbetsgång och beräkningsregler](SMARTMATCH_READ_TEST_9_23.md).
