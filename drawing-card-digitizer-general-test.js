@@ -228,7 +228,7 @@
   return input;
  }
  async function readPage(page,signal,position,total,onDetail){
-  const result=await reader.read({...app.getOcrOptions?.(),dpi:260,pdf:app.getPdf(),pages:[page],rect,includeNativeWords:true,includeAllWords:true,confidenceThreshold:CONFIDENCE_LIMIT,getWorker:localWorker,onCancelRecognition:()=>void releaseWorker(),pdfjsLib:root.pdfjsLib,signal,cancelled:()=>signal.aborted,onProgress:value=>{
+  const result=await reader.read({...app.getOcrOptions?.(),pdf:app.getPdf(),pages:[page],rect,includeNativeWords:true,includeAllWords:true,confidenceThreshold:CONFIDENCE_LIMIT,getWorker:localWorker,onCancelRecognition:()=>void releaseWorker(),pdfjsLib:root.pdfjsLib,signal,cancelled:()=>signal.aborted,onProgress:value=>{
    const local=Number.isFinite(Number(value.percent))?Number(value.percent):0,overall=((position-1)+local/100)/Math.max(1,total)*100;
    const elapsedMs=Date.now()-startedAt,done=Math.max(.02,overall/100),etaMs=overall>1?Math.max(0,elapsedMs/done-elapsedMs):value.etaMs;
    showProgress({...value,page,pageIndex:position,pageCount:total,percent:overall,etaMs,message:(PHASE_LABELS[value.phase]||'Läser kort')+' · sida '+page+(value.tileCount?' · område '+Math.min(value.tileCount,value.tileIndex||0)+' av '+value.tileCount:'')});
@@ -243,83 +243,38 @@
  async function scanTableLines(pageNumber,selection,signal){
   const pdf=app.getPdf?.(),page=await pdf.getPage(pageNumber),base=page.getViewport({scale:1});
   const aspect=base.width*selection.w/(base.height*selection.h);
-  // Higher resolution helps thin rasterized table borders survive antialiasing.
-  // A pixel budget limits iPhone/iPad memory use on large drawings.
-  const scale=Math.min(2.6,2300/Math.max(base.width,base.height),
-   Math.sqrt(4500000/(base.width*base.height)));
+  const scale=Math.min(1.8,1700/Math.max(base.width,base.height),Math.sqrt(2800000/(base.width*base.height)));
   const viewport=page.getViewport({scale}),canvas=document.createElement('canvas');
   canvas.width=Math.max(1,Math.round(viewport.width));canvas.height=Math.max(1,Math.round(viewport.height));
-  try{
-   const context=canvas.getContext('2d',{willReadFrequently:true});
-   if(!context)return{lines:[],aspect};
-   context.fillStyle='#fff';context.fillRect(0,0,canvas.width,canvas.height);
-   const task=page.render({canvasContext:context,viewport});
-   try{await task.promise;}catch(error){if(signal?.aborted)throw Object.assign(Error('Avbruten'),{name:'AbortError'});throw error;}
-   if(signal?.aborted)throw Object.assign(Error('Avbruten'),{name:'AbortError'});
-   const x0=Math.max(0,Math.floor(selection.x*canvas.width)),x1=Math.min(canvas.width,Math.ceil((selection.x+selection.w)*canvas.width));
-   const y0=Math.max(0,Math.floor(selection.y*canvas.height)),y1=Math.min(canvas.height,Math.ceil((selection.y+selection.h)*canvas.height));
-   const w=x1-x0,h=y1-y0;
-   if(w<5||h<5)return{lines:[],aspect};
-   const rgba=context.getImageData(x0,y0,w,h).data,ink=new Uint8Array(w*h);
-   for(let i=0;i<ink.length;i++){
-    const p=i*4;ink[i]=rgba[p+3]>110&&
-     (rgba[p]*.299+rgba[p+1]*.587+rgba[p+2]*.114)<202?1:0;
-   }
-   const segments=[];
-   function collect(vertical){
-    const count=vertical?w:h,length=vertical?h:w;
-    const minLength=Math.max(24,Math.floor(length*.055));
-    for(let coordinate=0;coordinate<count;coordinate++){
-     if((coordinate&63)===0&&signal?.aborted)throw Object.assign(Error('Avbruten'),{name:'AbortError'});
-     let start=-1,last=-1,hits=0;
-     const submit=()=>{
-      if(start<0)return;
-      const span=last-start+1;
-      if(span>=minLength&&hits/span>=.67)
-       segments.push({vertical,c:coordinate,a:start,b:last,count:1});
-     };
-     for(let pos=0;pos<=length+2;pos++){
-      const dark=pos<length&&(vertical?ink[pos*w+coordinate]:ink[coordinate*w+pos]);
-      if(dark){
-       if(start<0)start=pos;
-       last=pos;hits++;
-      }else if(start>=0&&pos-last>3){
-       submit();start=-1;last=-1;hits=0;
-      }
-     }
-     submit();
-    }
-   }
-   collect(false);collect(true);
-   // Consolidate parallel antialiased pixels into a single straight vector.
-   segments.sort((a,b)=>Number(a.vertical)-Number(b.vertical)||a.c-b.c||a.a-b.a);
-   const merged=[];
-   for(const segment of segments){
-    let best=null;
-    for(let i=merged.length-1;i>=0;i--){
-     const candidate=merged[i];
-     if(candidate.vertical!==segment.vertical)continue;
-     if(segment.c-candidate.c>3)break;
-     const overlap=Math.max(0,Math.min(segment.b,candidate.b)-Math.max(segment.a,candidate.a)+1);
-     if(overlap>=Math.min(segment.b-segment.a+1,candidate.b-candidate.a+1)*.67){best=candidate;break;}
-    }
-    if(best){
-     best.c=(best.c*best.count+segment.c)/(best.count+1);best.count++;
-     best.a=Math.min(best.a,segment.a);best.b=Math.max(best.b,segment.b);
-    }else merged.push({...segment});
-   }
-   // Suppress tiny text strokes and retain the longest table ruling lines.
-   merged.sort((a,b)=>(b.b-b.a)-(a.b-a.a));
-   const total=merged.length;
-   const lines=merged.slice(0,500).map(line=>line.vertical?{
-    x1:line.c/Math.max(1,w-1),y1:line.a/Math.max(1,h-1),
-    x2:line.c/Math.max(1,w-1),y2:line.b/Math.max(1,h-1)
-   }:{
-    x1:line.a/Math.max(1,w-1),y1:line.c/Math.max(1,h-1),
-    x2:line.b/Math.max(1,w-1),y2:line.c/Math.max(1,h-1)
-   });
-   return{lines,aspect,warning:total>500?'Fler än 500 linjesegment hittades. De längsta visas.':''};
-  }finally{canvas.width=0;canvas.height=0;}
+  const context=canvas.getContext('2d',{willReadFrequently:true});
+  if(!context)return{lines:[],aspect};
+  context.fillStyle='#fff';context.fillRect(0,0,canvas.width,canvas.height);
+  const job=page.render({canvasContext:context,viewport});await job.promise;
+  if(signal?.aborted)throw Object.assign(new Error('Avbruten'),{name:'AbortError'});
+  const x0=Math.max(0,Math.floor(selection.x*canvas.width)),xEnd=Math.min(canvas.width,Math.ceil((selection.x+selection.w)*canvas.width));
+  const y0=Math.max(0,Math.floor(selection.y*canvas.height)),yEnd=Math.min(canvas.height,Math.ceil((selection.y+selection.h)*canvas.height));
+  const w=xEnd-x0,h=yEnd-y0;
+  if(w<3||h<3)return{lines:[],aspect};
+  const pixels=context.getImageData(x0,y0,w,h).data;
+  const dark=(x,y)=>{const p=(y*w+x)*4;return pixels[p]<165&&pixels[p+1]<165&&pixels[p+2]<165&&pixels[p+3]>100;};
+  const segments=[],hMin=Math.max(22,Math.floor(w*.08)),vMin=Math.max(22,Math.floor(h*.08));
+  for(let y=0;y<h;y++){let x=0;while(x<w){if(!dark(x,y)){x++;continue;}let a=x;while(x<w&&dark(x,y))x++;if(x-a>=hMin)segments.push({vertical:false,c:y,a,b:x-1});}}
+  for(let x=0;x<w;x++){let y=0;while(y<h){if(!dark(x,y)){y++;continue;}let a=y;while(y<h&&dark(x,y))y++;if(y-a>=vMin)segments.push({vertical:true,c:x,a,b:y-1});}}
+  // Sammanför intilliggande streck som hör till samma tryckta linje.
+  segments.sort((a,b)=>(Number(a.vertical)-Number(b.vertical))||(a.c-b.c)||(a.a-b.a));
+  const merged=[];
+  for(const seg of segments){
+   const previous=merged[merged.length-1];
+   if(previous&&previous.vertical===seg.vertical&&Math.abs(previous.c-seg.c)<=2&&seg.a<=previous.b+4&&seg.b>=previous.a-4){
+    previous.a=Math.min(previous.a,seg.a);previous.b=Math.max(previous.b,seg.b);previous.c=(previous.c+seg.c)/2;
+   }else merged.push({...seg});
+  }
+  merged.sort((a,b)=>(b.b-b.a)-(a.b-a.a));
+  const lines=merged.slice(0,400).map(seg=>seg.vertical?
+   {x1:seg.c/w,y1:seg.a/h,x2:seg.c/w,y2:seg.b/h}:
+   {x1:seg.a/w,y1:seg.c/h,x2:seg.b/w,y2:seg.c/h});
+  canvas.width=0;canvas.height=0;
+  return{lines,aspect};
  }
  async function runOperation(name,title,callback){
   if(active)return;active=true;const owned=new AbortController();controller=owned;revision++;refresh();
@@ -357,7 +312,7 @@
    const genericLayout=true; // Alltid originaltrogen utmatning i det isolerade testet.
    if(sourceRevision!==revision-1&&sourceRevision!==revision)checkAbort(signal);
    template.approved=false;template.approvedAt=null;template.genericLayout=genericLayout;card.genericLayout=genericLayout;
-   try{const detected=await scanTableLines(examplePage,rect,signal);card.layoutLines=detected.lines;card.sourceAspect=detected.aspect;if(detected.warning)card.lineWarning=detected.warning;}catch(lineError){if(lineError.name==='AbortError')throw lineError;card.layoutLines=[];card.sourceAspect=null;card.lineWarning=String(lineError.message||'Linjeanalysen misslyckades.');}
+   try{const detected=await scanTableLines(examplePage,rect,signal);card.layoutLines=detected.lines;card.sourceAspect=detected.aspect;}catch(lineError){if(lineError.name==='AbortError')throw lineError;card.layoutLines=[];card.sourceAspect=null;card.lineWarning=String(lineError.message||'Linjeanalysen misslyckades.');}
    template.sourceReadStatus=entry.status;template.sourceWarnings=(entry.warnings||[]).slice();card.source.readStatus=entry.status;card.source.warnings=(entry.warnings||[]).slice();card=core.recomputeReviewCompleteness(card);
    const value=ensureProject();delete value.integrityError;value.template=template;value.cards=[card];value.name=name;value.progress={...(value.progress||{}),rect:{...rect},examplePage,pages:String(examplePage),currentCardIndex:0};
    currentCardIndex=0;$('digitizerPages').value=String(examplePage);await persist();
@@ -399,7 +354,7 @@
      if(force&&previous&&!completeRead)throw Error('Den nya avläsningen blev inte färdig. Det tidigare granskade kortet behölls; försök läsa sidan igen.');
      let card=core.createCard({...coreInput(entry,page),template:project.template});
      card.genericLayout=true;
-     try{const detected=await scanTableLines(page,rect,signal);card.layoutLines=detected.lines;card.sourceAspect=detected.aspect;if(detected.warning)card.lineWarning=detected.warning;}catch(lineError){if(lineError.name==='AbortError')throw lineError;card.layoutLines=[];card.lineWarning=String(lineError.message||'Linjeanalysen misslyckades.');}
+     try{const detected=await scanTableLines(page,rect,signal);card.layoutLines=detected.lines;card.sourceAspect=detected.aspect;}catch(lineError){if(lineError.name==='AbortError')throw lineError;card.layoutLines=[];card.lineWarning=String(lineError.message||'Linjeanalysen misslyckades.');}
      card.source.readStatus=entry.status;card.source.warnings=(entry.warnings||[]).slice();card=core.recomputeReviewCompleteness(card);replacePageCard(card);
      if(!completeRead)incompleteThisRun++;
     }catch(error){if(error.name==='AbortError')throw error;failedThisRun++;failures.push({page,message:error.message||'Sidan kunde inte läsas.'});}
@@ -584,9 +539,6 @@
     x:b.x*1000,y:(b.y+b.h*.82)*viewH,'font-size':h,fill:token.conflict?'#ad3a1b':'#142c38',
     'font-family':'Arial,Helvetica,sans-serif',role:'button',tabindex:0});
    text.textContent=token.text;
-   // Match the measured word width so headings and table columns line up
-   // more closely with the scanned image, even when the fallback font differs.
-   if(Number.isFinite(b.w)&&b.w>0){text.setAttribute('textLength',String(Math.max(1,b.w*1000)));text.setAttribute('lengthAdjust','spacingAndGlyphs');}
    text.style.cursor='pointer';
    const highlight=()=>{details.open=true;const field=document.getElementById('digitizerWord-'+token.id);field?.scrollIntoView({block:'nearest'});field?.focus();};
    text.addEventListener('click',highlight);
