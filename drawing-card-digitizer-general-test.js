@@ -247,7 +247,7 @@
   if(!first)throw Error('Sida '+page+' gav inget avläsningsresultat.');
   if(first.status==='error'||first.status==='excluded')throw Error('Sida '+page+' kunde inte läsas: '+(first.error||'prova att markera tabellen igen'));
   let entry=first;
-  const containsRasterText=(first.ocrWords||[]).length>0;
+  const containsRasterText=first.ocr===true||(first.ocrWords||[]).length>0;
   if(containsRasterText&&deepScan?.reconcileWords){
    // A slower complementary read catches words hidden by borders or missed
    // by the first table-oriented OCR pass. Neither pass modifies the PDF.
@@ -262,7 +262,7 @@
     },.63,.88,'Textanalys 2 av 2');
     if(second&&['read','native'].includes(second.status)){
      const merge=deepScan.reconcileWords(first.ocrWords||[],second.ocrWords||[]);
-     entry={...first,ocrWords:merge.words,words:merge.words,
+     entry={...first,status:merge.words.length?'read':(first.nativeWords?.length?'native':first.status),ocrWords:merge.words,words:merge.words,
       allWords:[...(first.nativeWords||[]),...merge.words].sort((a,b)=>a.y-b.y||a.x-b.x),
       scanDetails:{...(first.scanDetails||{}),passes:2,recoveredWords:merge.recovered,disagreements:merge.conflicts}};
      if(merge.recovered)entry.warnings=[...(entry.warnings||[]),merge.recovered+' textdelar hittades vid den fördjupade avläsningen.'];
