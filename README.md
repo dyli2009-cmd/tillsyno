@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.396 – snabb avläsningsyta och hela originalkortet i Avläsning TEST 9.28
+
+[Avläsning TEST 9.28](smartmatch-read-test.html) skiljer nu avläsningsytan från det dörrkort som visas efter ett klick på ritningen. Markera bara den lilla tabelldelen som behövs för arbetet: **Övrigt/Produkt**, **Monteras av/Mont av** och de aktuella GS-raderna. `Lev av` anger leverantör och räcker inte för att skapa en GS-kontrollpunkt. När en ritningsstämpel öppnas visas hela originalsidan för ett ensamt källdörrkort; äldre sidor med flera kort behåller sitt sparade kortutsnitt. Stora Bluebeam-sidor med bildremsor renderas med rätt rasterskala så att första förhandsvisningen inte blir vit. Ett kort vars önskade GS-rader är rätt kan godkännas uttryckligen i granskningen. Godkännandet sparar granskningsspår och rådata, men kan inte passera saknad beteckning, läsfel, en avläsningsyta som har ändrats eller en ritning som ännu inte har godkänts. Sparade projekt öppnar de redan avlästa korten och kopplingarna utan ny OCR. Se [arbetsgång, skydd och verifiering](SMARTMATCH_READ_TEST_9_28.md).
+
 ## Tillsyno v2.4.395 – digitalisera och granska dörrkort
 
 [Ritningsverktyget](drawing-tools.html) har fått testfunktionen **Digitalisera dörrkort**. Markera ett helt representativt originalkort, skapa en mallgrupp och läs valda sidor med samma layout. Original och ett redigerbart digitalt kort visas sida vid sida. All osäker, motstridig eller oplacerad källtext måste hanteras före godkännande, och en delvis avbruten läsning måste göras om. Arbetet autosparas lokalt utan att käll-PDF:ens stora byteinnehåll kopieras; om beständig webbläsarlagring saknas visas en varning att JSON måste sparas. Godkända kort kan sparas som en kompakt sökbar vektor-PDF och hela projektet kan sparas som JSON. Första testet använder en mallgrupp och exporten importeras ännu inte automatiskt i SmartMatch. Se [arbetsgång, dataschema, skydd och tester](DRAWING_TOOLS_395.md).

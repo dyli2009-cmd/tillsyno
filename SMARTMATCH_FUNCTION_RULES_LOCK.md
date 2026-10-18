@@ -15,6 +15,7 @@ Det här är ingången när vi återupptar utvecklingen eller användaren fråga
 | Dörrautomatik | Placering → hela objektnumret → egen knapp per fysisk automatik → läs kopplat GS-dörrkort → en pil till närmaste rätta GS på samma sida | [Dörrautomatik och GS-koppling](SMARTMATCH_AUTOMATION_RULE_LOCK.md) | LÅST; v36.101: en verifierad GS/dörrkortskälla per automatik; DA-symbol som positionsstöd, ED100/ED200/ED250 |
 | Dörrkort, standardprofil | Identifiera tabellen → läs ID i översta vänstra cellen → matcha samma hela ID på ritningen → koppla kortet till positionen | [Tabellavläsning och dörrkort](SMARTMATCH_TABLE_RULE_LOCK.md) | LÅST; generell tolkning av alla tabellupplägg är ännu inte färdig |
 | Dörrkort, separat känt tillägg | Uttrycklig korttitel → verifierad Objekt-rad och Komponent/Produkt-tabell → samma hela ID på ritningen | [Tabellavläsning, avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md) | Tillägg enligt användarbeslut; v36.95 |
+| Avläsning TEST 9.28, GS-produkter | Liten markerad läsyta med Övrigt/Produkt + Monteras av/Mont av + berörda GS-rader → granskad GS-lista; originalkortet visas separat i sin helhet | [TEST 9.28](SMARTMATCH_READ_TEST_9_28.md) | Beslutad; Lev av räcker inte för GS och manuell accept får endast häva tabelltolkningsfelet |
 | Protokollexport | Spara → Protokoll → endast valda protokollsidor; godkända är förvalda; inga ritningssidor eller GS-länkmenyer | [TEST v36.96](SMARTMATCH_TEST_V36_96.md) | Beslutad enligt användarens instruktion |
 
 ## Två kopplingar som bygger på varandra
@@ -53,6 +54,7 @@ Ett nytt beslut dokumenteras med datum, funktion, gammal regel, ny regel, skäl,
 | 2026-10-11 | Användaren bekräftar ”nu funkar detta” och låser automatikregeln samt begär denna gemensamma samling | [Automatikregeln](SMARTMATCH_AUTOMATION_RULE_LOCK.md) |
 | 2026-10-11 | Lägg till en separat känd läsprofil för det nya tabellupplägget; behåll standardprofilen och DA92 | [TEST v36.94](SMARTMATCH_TEST_V36_94.md) |
 | 2026-10-11 | Ersätt v36.92:s närmaste GS utan kortkontroll: läs GS-dörrkortet, välj närmaste verifierade GS, max en pil per fysisk automatik; bevara objekt- och kontrollflödet | [TEST v36.97](SMARTMATCH_TEST_V36_97.md) |
+| 2026-10-18 | Skilj den lilla GS-avläsningsytan från helkortsvyn och låt användaren uttryckligen godkänna användbara GS-rader utan att kringgå kod-, läs- eller ritningsspärrar | [Avläsning TEST 9.28](SMARTMATCH_READ_TEST_9_28.md) |
 
 ## Utveckling och fortsatt arbete
 
@@ -101,3 +103,11 @@ Användarbeslut 17 oktober 2026, avgränsat till **SmartMatch Avläsning TEST 9.
 Användaren får även uttryckligen komplettera ett öppet projekt genom att markera en hel ritningsbeteckning, förvalt avgränsa sökningen till samma textfärg, granska de nya positionerna och själv välja vilken dörrkortssida de ska öppna. Detta är en separat, manuellt bekräftad koppling, även när kortets tryckta rubrik skiljer sig från ritningsbeteckningen. Befintliga kopplingar och kontroller ersätts inte; dubbletter och försök att ge samma beteckning en annan befintlig kortsida spärras. Saknade kortsidor kan läggas till från PDF och produkter läsas senare.
 
 Detta beslut ändrar inte den låsta standardprofilens ID-källa eller automatisk DA-till-GS-koppling. Ordinarie SmartMatch och tidigare testversioner bevaras. Arbetsgång, skydd och verifiering dokumenteras i [TEST 9.2](SMARTMATCH_READ_TEST_9_2.md).
+
+## Snabb GS-yta och separat originalkort – TEST 9.28
+
+Användarbeslut 18 oktober 2026, avgränsat till **SmartMatch Avläsning TEST 9.28**: markeringen styr endast vad som läses. För produktsteget räcker den minsta sammanhängande yta som innehåller **Övrigt/Produkt**, **Monteras av/Mont av** och de aktuella GS-raderna. **Lev av** är leverantörsinformation och ger inte ensam GS-ansvar; DT och dörrtillverkare ska inte bli GS-kontrollpunkter.
+
+När en kopplad ritningsstämpel öppnas visas originaldörrkortet oberoende av den lilla läsytan. En PDF-sida med ett enda källdörrkort visas i sin helhet. Sidor med flera fysiska kort behåller sitt separata kortutsnitt tills ett eget helkortsutsnitt har angivits.
+
+Om råtexten och de föreslagna GS-raderna finns men tabellstrukturen inte blev helt säker får användaren godkänna raderna efter uttrycklig jämförelse med originalkortet. Råtext, ordpositioner, varningar och granskningspost bevaras. Godkännandet får inte häva saknad beteckning, dubblett, avbruten eller oläst sida, ändrat men ej omläst område eller kravet att granska ritningsträffarna. Den sparade projekt-PDF:en återanvänder resultatet utan ny OCR.
