@@ -264,16 +264,20 @@
    const entry=await readPage(examplePage,signal,1,1),input=coreInput(entry,examplePage);
    if(!['read','native'].includes(String(entry.status||'').toLowerCase()))throw Error('Exempelkortets avläsning blev inte färdig. Försök läsa markeringen igen innan mallgruppen skapas.');
    checkAbort(signal);const template=core.createTemplateGroup({...input,name,groupId:'layout-1'});let card=core.createCard({...input,template});
-   const wordCount=Number(template.reference?.wordCount||0),columns=template.reference?.detectedColumns||[],sectionHits=(template.sections||[]).filter(item=>Number.isFinite(item.anchorY));
-   if(wordCount<5)throw Error('För lite text hittades. Markera hela dörrkortet, inklusive rubrik och tabeller, och skapa mallen igen.');
-   if(!template.header?.codeAnchor||!card.header?.code)throw Error('Ingen beslagskod kunde hittas. Kontrollera att rubriken ligger i markeringen och läs igen.');
-   if(columns.length<2||!sectionHits.length)throw Error('Tabellrubriker eller avsnitt kunde inte identifieras. Markera hela tabellen och skapa mallen igen.');
+   // En markerad tabell kan vara en namnlista, checklista eller ett dörrkort.
+   // Kräv inte beslagskod, fördefinierade rubriker eller dörrkortssektioner.
+   // Behåll avläst källtext för manuell granskning även när mallen är okänd.
+   const wordCount=Number(template.reference?.wordCount||0);
+   if(wordCount<1)throw Error('Ingen text kunde läsas i markeringen. Kontrollera området och försök igen.');
+   const genericLayout=!template.header?.codeAnchor||!card.header?.code||
+    (template.reference?.detectedColumns||[]).length<2||
+    !(template.sections||[]).some(item=>Number.isFinite(item.anchorY));
    if(sourceRevision!==revision-1&&sourceRevision!==revision)checkAbort(signal);
    template.approved=false;template.approvedAt=null;
    template.sourceReadStatus=entry.status;template.sourceWarnings=(entry.warnings||[]).slice();card.source.readStatus=entry.status;card.source.warnings=(entry.warnings||[]).slice();card=core.recomputeReviewCompleteness(card);
    const value=ensureProject();delete value.integrityError;value.template=template;value.cards=[card];value.name=name;value.progress={...(value.progress||{}),rect:{...rect},examplePage,pages:String(examplePage),currentCardIndex:0};
    currentCardIndex=0;$('digitizerPages').value=String(examplePage);await persist();
-   setHint('digitizerTemplateStatus','Mallförslaget är klart. Kontrollera kolumner och avsnitt och välj Godkänn mallgruppen.');
+   setHint('digitizerTemplateStatus',genericLayout?'Avläsningen är klar. Den här tabellen saknar kända dörrkortsmarkörer. Granska all text och layout noggrant innan du godkänner eller exporterar.':'Mallförslaget är klart. Kontrollera kolumner och avsnitt och välj Godkänn mallgruppen.');
   });
  }
  function approveTemplate(){
