@@ -646,8 +646,9 @@
  async function exportPdf(){
   if(project?.integrityError){setHint('digitizerExportStatus','PDF-export är spärrad eftersom den sparade projektinformationen inte kunde verifieras. Spara JSON som säkerhetskopia eller skapa en ny mallgrupp.',true);return;}
   const cards=approvedCards();if(!cards.length||!exporter?.downloadPdf)return;
-  await runOperation('export','Skapar sökbar PDF med godkända kort',async signal=>{
-   await persist();const result=await exporter.downloadPdf(projectForExport(cards),{fileName:cleanName(app.getFileName?.())+'-digitala-dorrkort.pdf',requireApproved:true,signal,onProgress:value=>showProgress({...value,etaMs:null})});
+  const preserveOriginal=$('digitizerPreserveOriginal')?.checked===true;
+  await runOperation('export',preserveOriginal?'Bevarar originalgrafik och bygger sökbar PDF':'Skapar sökbar PDF med godkända kort',async signal=>{
+   await persist();const result=await exporter.downloadPdf(projectForExport(cards),{fileName:cleanName(app.getFileName?.())+'-digitala-dorrkort.pdf',requireApproved:true,signal,preserveSourceAppearance:preserveOriginal,sourcePdfBytes:preserveOriginal?app.getSourceBytes?.():null,onProgress:value=>showProgress({...value,etaMs:null})});
    setHint('digitizerExportStatus',cards.length+' godkända kort sparades som '+result.fileName+'. Original-PDF:en är oförändrad.');
   });
  }
