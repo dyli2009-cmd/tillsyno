@@ -1,0 +1,65 @@
+/* Compact workspace views. No backdrop, floating modal or modal top layer. */
+body.smCompactWorkspace{font-size:13px}
+.smCompactWorkspace .pwHeader{min-height:44px;padding:5px 10px;gap:8px}.smCompactWorkspace .pwTitle h1{font-size:16px;line-height:1.2}.smCompactWorkspace .pwHeaderActions{gap:5px}
+body.smHasWorkspaceView>.pwMain,body.smHasWorkspaceView>.pwToolbar,body.smHasWorkspaceView>.pwProjectBar,body.smHasWorkspaceView>#rtWorkflowBar{visibility:hidden;pointer-events:none}
+body.smCompactWorkspace dialog.smWorkspaceView[open]{position:fixed!important;inset:48px 0 0!important;margin:0!important;width:100vw!important;max-width:none!important;height:calc(100dvh - 48px)!important;max-height:none!important;box-sizing:border-box!important;border:0!important;border-radius:0!important;box-shadow:none!important;transform:none!important;background:var(--ta-panel,#f6fafb)!important;z-index:11000!important;padding:12px;overflow:auto}
+body.smCompactWorkspace dialog.smWorkspaceView.smInactiveView{visibility:hidden!important;pointer-events:none!important}
+body.smCompactWorkspace dialog::backdrop{display:none!important;background:transparent!important}
+.smCompactWorkspace .smWorkspaceView h2{font-size:17px!important;line-height:1.25!important;margin-top:0}.smCompactWorkspace h3{font-size:13px}.smCompactWorkspace p{line-height:1.35}
+.smCompactWorkspace button,.smCompactWorkspace select,.smCompactWorkspace input:not([type=checkbox]):not([type=radio]):not([type=file]){font-size:12px;min-height:30px;border-radius:6px;padding:5px 8px;box-sizing:border-box}
+.smCompactWorkspace button{gap:5px}.smCompactWorkspace button svg,.smCompactWorkspace .smToolSvg,.smCompactIcon{width:17px!important;height:17px!important;flex:none;vertical-align:middle}.smCompactIcon{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-right:4px}
+.smCompactWorkspace .pwToolbar,.smCompactWorkspace .pwProjectBar{padding:5px 8px;gap:6px}.smCompactWorkspace .pwToolMenu{max-width:100%;gap:4px;padding:6px}.smCompactWorkspace .pwToolMenu button{padding:5px 7px!important;min-height:32px!important}.smCompactWorkspace .smToolHelp[hidden]{display:none!important}
+.smCompactWorkspace .rtHead{padding:0 0 6px;gap:8px}.smCompactWorkspace .rtHead small{display:none}.smCompactWorkspace .rtRailIntro{padding:8px}.smCompactWorkspace .rtRailIntro>h3{margin:0 0 5px}.smCompactWorkspace .rtGuide{gap:4px;margin-bottom:5px}.smCompactWorkspace .rtGuide li{min-height:30px;font-size:11px;padding:4px}.smCompactWorkspace .rtGuide b{width:19px;height:19px}.smCompactWorkspace .rtNextHint{font-size:12px;padding:6px;margin:4px 0 0}
+.smCompactWorkspace .rtRailSection{padding:8px 10px}.smCompactWorkspace .rtRailSection>h3{margin:0 0 5px}.smCompactWorkspace .rtModes button{min-height:30px;font-size:11px}.smCompactWorkspace .rtFooter{padding:7px;gap:5px}.smCompactWorkspace .rtFooter button{min-height:34px;font-size:12px}.smCompactWorkspace .rtReviewFilters{gap:5px}.smCompactWorkspace .rtReviewFilters label{font-size:11px}.smCompactWorkspace .rtContinueRow p{font-size:11px;margin:3px 0}.smCompactWorkspace .rtReviewCounts,.smCompactWorkspace .rtReviewVisible{font-size:11px;margin:4px 0}.smCompactWorkspace .rtCardSummary{padding:7px 8px}.smCompactWorkspace .rtCardBody{padding:8px}.smCompactWorkspace .rtOriginalHeading{padding:4px 6px;font-size:12px}.smCompactWorkspace #rtZoomHelp{font-size:11px;padding:4px}
+.smCompactInfo{margin:3px 0!important;font-size:11px!important;border:0!important;padding:0!important}.smCompactInfo>summary{cursor:pointer;font-size:11px!important;padding:3px 0!important;color:var(--ta-muted,#506b7a)}.smCompactInfo p{font-size:12px!important;margin:4px 0!important}
+.smCompactWorkspace .pwProtocol[open]{padding:8px!important}.smCompactWorkspace .pwProtocolHeader{padding:6px 8px!important}.smCompactWorkspace .pwProtocolTools{padding:5px!important}.smCompactWorkspace .pwProtocolZoomTools{gap:4px!important;flex-wrap:wrap}.smCompactWorkspace .pwProtocolZoomTools button{font-size:11px!important;min-height:30px!important;padding:4px 7px!important}.smCompactWorkspace .pwCheckRow{padding:6px!important;gap:6px!important}.smCompactWorkspace .pwCheckContent strong{font-size:12px!important}.smCompactWorkspace .pwCheckContent small{font-size:11px!important}.smCompactWorkspace .pwChecklistHeadActions{gap:4px;padding:5px}.smCompactWorkspace .pwChecklistHeadActions button{font-size:11px!important}.smCompactWorkspace .pwTimeTable th,.smCompactWorkspace .pwTimeTable td,.smCompactWorkspace .rtProductInventory td{padding:5px!important;font-size:12px!important}
+/* Action menus expand in their own toolbar instead of floating above content. */
+.smCompactWorkspace #pwToolMenu:not([hidden]){position:static!important;inset:auto!important;box-shadow:none!important;max-height:40dvh;overflow:auto;border:1px solid var(--ta-border,#cad8df)}
+.smCompactWorkspace #pwProtocolActionMenu:not([hidden]){position:static!important;inset:auto!important;width:auto!important;max-height:none!important;margin:4px 0!important;box-shadow:none!important;display:flex!important;flex-wrap:wrap;gap:5px;border:0!important;padding:4px!important}
+.smCompactWorkspace .pwToolWrap:has(#pwToolMenu:not([hidden])){flex-basis:100%}.smCompactWorkspace .smInlineConfirmation{padding:18px!important}.smInlineConfirmation>p{max-width:650px}.smInlineConfirmation>div{display:flex;gap:8px}.smCompactWorkspace .rtCardViewDialog h2{margin-bottom:4px}.smCompactWorkspace .rtCardViewDialog p{margin:5px 0}.smCompactWorkspace .rtCardViewNumbers{margin-top:6px;gap:6px}
+@media(pointer:coarse),(max-width:760px){.smCompactWorkspace button,.smCompactWorkspace select,.smCompactWorkspace input:not([type=checkbox]):not([type=radio]):not([type=file]){min-height:40px;font-size:13px}.smCompactWorkspace .pwProtocolZoomTools button,.smCompactWorkspace .rtModes button,.smCompactWorkspace .pwToolMenu button{min-height:40px!important;font-size:12px!important}.smCompactWorkspace .pwHeader{padding:4px 6px}.smCompactWorkspace dialog.smWorkspaceView[open]{padding:8px}.smCompactWorkspace .rtHead h2{font-size:15px!important}.smCompactWorkspace .rtRailSection{padding:6px}.smCompactWorkspace .rtGuide li{min-height:34px}.smCompactWorkspace .pwCheckRow{min-height:40px}.smCompactWorkspace .pwCheckRow input{min-width:20px;min-height:20px}.smCompactWorkspace .rtFooter button{min-height:40px}.smCompactWorkspace .rtCardSummary{min-height:40px;display:flex!important;align-items:center}}
+.smCompactWorkspace .pwChecklistWorkActions button{min-width:0!important;max-width:100%;white-space:normal!important;overflow-wrap:anywhere;font-size:11px!important;padding:4px!important}.smCompactWorkspace .pwChecklistPane{min-width:0;box-sizing:border-box}.smCompactWorkspace .rtProductInventory{max-width:100%;box-sizing:border-box}.smCompactWorkspace .rtWorkSectionTitle{display:flex;flex-wrap:wrap;gap:3px;align-items:center;white-space:normal}.smCompactWorkspace .rtWorkSectionTitle small{margin-left:auto;font-size:10px;white-space:normal}
+.smCompactWorkspace .rtWorkSectionSummary{display:flex;flex-wrap:wrap;gap:3px 6px!important}.smCompactWorkspace .rtWorkSectionSummary .rtWorkSectionTitle{flex:1 1 90px;overflow-wrap:anywhere}.smCompactWorkspace .rtWorkSectionStatus{margin-left:auto;max-width:100%;font-size:10px!important}
+
+/* Map geometry is never constrained by toolbar button sizing. */
+body.smCompactWorkspace #pwMarkers button.pwStampHit{min-width:0!important;min-height:0!important;min-inline-size:0!important;min-block-size:0!important;max-width:none!important;max-height:none!important;padding:0!important;box-sizing:border-box!important;border-width:var(--pw-marker-stroke,1px)!important;line-height:1!important}
+body.smCompactWorkspace #pwMarkers button.pwStampHit[data-native-stamp="true"]{border-width:0!important}
+/* Keep workspace backgrounds full size, but center form and export content. */
+body.smCompactWorkspace :is(#smartExportDialog,#pwSelfcheckExportDialog,#pwDADialog,#pwSLRDialog,#pwAutomationDialog,#slrExportDialog,#pwTimeDialog)>:not(script):not(style):not(input[type=file]){box-sizing:border-box;max-width:760px!important;margin-left:auto!important;margin-right:auto!important}
+body.smCompactWorkspace #smartExportDialog>*{max-width:620px!important}
+body.smCompactWorkspace :is(#pwItemEditor,#pwTimeTypeEditor)>*{max-width:540px!important;margin-left:auto!important;margin-right:auto!important}
+body.smCompactWorkspace #pwSmartActionDialog>form{max-width:420px!important;margin:0 auto!important}
+body.smCompactWorkspace #slrFlowTestDialog>header,body.smCompactWorkspace #slrFlowTestDialog>main{max-width:820px!important;margin-left:auto!important;margin-right:auto!important}
+body.smCompactWorkspace :is(.smSaveModes,.slrSaveModes,.smSaveActions,.pwSelfcheckExportFooterButtons,.pwProtocolFilters,.smProtocolFilters,.pwTimeTabs){display:flex!important;flex-wrap:wrap!important;justify-content:center!important;gap:6px!important;width:fit-content!important;max-width:100%!important;margin-left:auto!important;margin-right:auto!important}
+body.smCompactWorkspace :is(.smSaveModes,.slrSaveModes,.smSaveActions,.pwTimeTabs)>*{flex:0 0 auto!important;width:auto!important;min-width:0!important;padding:6px 12px!important;grid-column:auto!important}
+body.smCompactWorkspace .smSaveSummary .smartExportSizes{display:flex!important;flex-wrap:wrap;gap:12px;justify-content:flex-start}
+body.smCompactWorkspace .smSaveSummary .smartExportSizes>div{flex:0 0 auto!important;width:auto!important;min-width:0!important}
+body.smCompactWorkspace :is(#smartExportDialog,#pwSelfcheckExportDialog,#slrExportDialog) :is(button,select){width:auto;min-width:0}
+body.smCompactWorkspace :is(#smartExportDialog,#pwSelfcheckExportDialog) .smExportFileName input{width:100%!important;max-width:44ch!important}
+body.smCompactWorkspace #pwToolMenu button:has(.smToolLabel) svg{display:none!important}
+body.smCompactWorkspace #pwTimeDialog .pwTimeSummary{width:fit-content!important;max-width:100%;margin-left:auto!important;margin-right:auto!important;justify-content:center}
+body.smCompactWorkspace #pwTimeDialog .pwTimeSummary>div{flex:0 0 auto!important;min-width:75px!important}
+@media(min-width:641px){
+ body.smCompactWorkspace #pwProjectMaterials>.pwMaterialGroups,body.smCompactWorkspace #pwTimeRows.pwMaterialGroups{width:fit-content!important;max-width:100%!important;margin-left:auto!important;margin-right:auto!important}
+ body.smCompactWorkspace .pwMaterialGroup .pwProjectMaterialRow{grid-template-columns:minmax(12ch,calc(var(--pw-material-name-ch,18) * 1ch)) 4ch 7ch max-content max-content!important;justify-content:center!important}
+ body.smCompactWorkspace .pwMaterialGroup .pwMaterialCategory select{width:auto!important;max-width:22ch!important}
+ body.smCompactWorkspace .pwMaterialGroup>header{gap:18px}
+}
+@media(max-width:640px){body.smCompactWorkspace :is(#smartExportDialog,#pwSelfcheckExportDialog,#slrExportDialog)>*{max-width:100%!important}}
+
+/* Desktop uses the available width for independent material groups. */
+@media(min-width:1100px){
+ body.smCompactWorkspace #pwProjectMaterials>*{max-width:1700px!important;margin-left:auto!important;margin-right:auto!important}
+ body.smCompactWorkspace #pwProjectMaterials>.pwMaterialGroups,body.smCompactWorkspace #pwTimeRows.pwMaterialGroups{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%!important;align-items:start}
+ body.smCompactWorkspace .pwMaterialGroups>.pwMaterialAllActions,body.smCompactWorkspace .pwMaterialGroups>.pwMaterialSaveStatus{grid-column:1/-1}
+ body.smCompactWorkspace .pwMaterialGroup{margin:0!important;min-width:0}
+}
+@media(min-width:1680px){body.smCompactWorkspace #pwProjectMaterials>.pwMaterialGroups{grid-template-columns:repeat(3,minmax(0,1fr))}}
+body.smCompactWorkspace .pwMaterialGroup>header{justify-content:center!important;gap:12px}
+body.smCompactWorkspace .pwMaterialGroup>header strong{flex:0 1 auto!important;margin:0!important}
+body.smCompactWorkspace :is(#labDiagnosticDialog,#pwSelfcheckExportDialog)>*{max-width:660px!important;margin-left:auto!important;margin-right:auto!important}
+body.smCompactWorkspace .pwSideHeadActions{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
+body.smCompactWorkspace :is(.pwSideHeadActions,.pwChecklistWorkActions,.pwGroupHeadActions) button,body.smCompactWorkspace :is(.pmEditGroup,.pmDeleteGroup,.pwUnifiedMore){flex:0 0 auto!important;width:auto!important;padding:5px 8px!important;font-size:12px!important}
+body.smCompactWorkspace .smActionIcon{width:15px;height:15px;flex:none;vertical-align:middle;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+body.smCompactWorkspace button.smIconAction{display:inline-flex;align-items:center;justify-content:center;gap:5px}
+body.smCompactWorkspace #rtClearDoorWork{display:flex;margin:14px auto 4px!important;border:1px solid #bb5860!important;color:#99363e!important;background:transparent!important;width:fit-content!important;font-size:12px;padding:5px 9px!important}
