@@ -2,12 +2,37 @@
  'use strict';
  const root=new URL('../',document.currentScript.src),config=window.TILLSYNO_AUTH_CONFIG;
  if(!window.supabase?.createClient||!config)return;
- const client=window.supabase.createClient(config.url,config.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
- const key='tillsyno-offline-access-v1',loginKey='tillsyno-last-login-v1',WEEK=7*86400000;
+ const key='tillsyno-offline-access-v1',loginKey='tillsyno-last-login-v1',modeKey='tillsyno-auth-storage-mode-v1',WEEK=7*86400000;
+ const storageKeys=new Set([key,loginKey]);
+ const storageError=()=>{const error=Error('Webbläsaren kunde inte spara inloggningen. Tillåt webbplatsdata för Tillsyno och försök igen.');error.code='STORAGE_UNAVAILABLE';return error;};
+ const temporaryStorage=()=>{try{return sessionStorage.getItem(modeKey)==='session';}catch(_){return false;}};
+ const checkedWrite=(storage,name,value)=>{storage.setItem(name,value);if(storage.getItem(name)!==value)throw storageError();};
+ // Supabase's default adapter can silently use memory if localStorage is full.
+ // An explicit adapter keeps the session across page navigation without deleting project data.
+ const authStorage={
+  getItem(name){storageKeys.add(name);try{return (temporaryStorage()?sessionStorage:localStorage).getItem(name);}catch(_){return null;}},
+  setItem(name,value){
+   storageKeys.add(name);
+   if(temporaryStorage()){try{checkedWrite(sessionStorage,name,value);return;}catch(_){throw storageError();}}
+   try{checkedWrite(localStorage,name,value);return;}catch(_){}
+   try{
+    for(const existingKey of storageKeys){if(existingKey===name)continue;let existing=null;try{existing=localStorage.getItem(existingKey);}catch(_){}if(existing!==null)checkedWrite(sessionStorage,existingKey,existing);}
+    checkedWrite(sessionStorage,name,value);checkedWrite(sessionStorage,modeKey,'session');
+   }catch(_){throw storageError();}
+  },
+  removeItem(name){
+   storageKeys.add(name);let selectedRemoved=false;
+   const temporary=temporaryStorage();
+   try{localStorage.removeItem(name);if(!temporary)selectedRemoved=true;}catch(_){}
+   try{sessionStorage.removeItem(name);if(temporary)selectedRemoved=true;}catch(_){}
+   if(!selectedRemoved)throw storageError();
+  }
+ };
+ const client=window.supabase.createClient(config.url,config.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:authStorage}});
  const valid=role=>['admin','member'].includes(role),kind=['smartmatch','control','drawing'];
- const read=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(_){return null}};
- const write=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}};
- const clear=()=>{try{localStorage.removeItem(key)}catch(_){}};
+ const read=k=>{try{return JSON.parse(authStorage.getItem(k)||'null')}catch(_){return null}};
+ const write=(k,v)=>{try{authStorage.setItem(k,JSON.stringify(v))}catch(_){}};
+ const clear=()=>{try{authStorage.removeItem(key)}catch(_){}};
  const markLogin=userId=>{
   if(!userId)return;
   const value={userId,at:Date.now()};write(loginKey,value);
@@ -47,7 +72,7 @@
   write(key,access);
   return {...access,offline:false};
  }
- async function logout(){clear();try{localStorage.removeItem(loginKey)}catch(_){};await client.auth.signOut({scope:'local'});location.replace(new URL('auth/login.html',root));}
+ async function logout(){clear();try{authStorage.removeItem(loginKey)}catch(_){};await client.auth.signOut({scope:'local'});location.replace(new URL('auth/login.html',root));}
  async function admin(action,data={}){
   if(!navigator.onLine)throw Error('Användarhantering kräver internet.');
   const access=await verify();
