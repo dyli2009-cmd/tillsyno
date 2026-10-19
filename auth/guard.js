@@ -85,7 +85,8 @@
   const h=document.createElement('h2');h.textContent='Åtkomst saknas';
   const p=document.createElement('p');p.textContent=msg;
   const a=document.createElement('a');a.href=new URL('auth/login.html',window.TillsynoAuth?.root||new URL('./',location.href));a.textContent='Logga in';
-  panel.append(h,p,a);overlay.replaceChildren(panel);
+  const retry=document.createElement('button');retry.type='button';retry.textContent='Försök igen';retry.onclick=()=>void start();
+  panel.append(h,p,retry,a);overlay.replaceChildren(panel);
   document.documentElement.removeAttribute('data-auth-pending');
  };
  const start=async()=>{
@@ -124,8 +125,11 @@
     renderWaitingHome(auth);
     return;
    }
+   // Network, permission and UI errors are not a failed password login.
+   if(!['AUTH_REQUIRED','LOGIN_EXPIRED'].includes(error?.code)){showDenied(error.message||'Appen kunde inte öppnas. Försök igen.');return;}
    const login=new URL('auth/login.html',auth?.root||new URL('./',location.href));
    login.searchParams.set('next',location.pathname+location.search);
+   login.searchParams.set('reason',error.code);
    location.replace(login);
   }finally{running=false;}
  };
