@@ -1,0 +1,9 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const source=fs.readFileSync(require('node:path').join(__dirname,'../smartmatch-read-test-main-v9-47.js'),'utf8');
+const product=(id,quantity,kind='work')=>({id,label:'Slutbleck',value:'STEP40',quantity,minutes:15,kind});
+const context={instances:[{id:'unlinked',code:'A',customItems:[product('a',2)]},{id:'pending',code:'B',customItems:[product('b',1)]},{id:'ready',code:'C',customItems:[product('c',3),product('time',20,'extra-time')]}],protocolDef:async code=>code==='A'?{checks:[{key:'not-gs',value:'NOT-GS'}]}:code==='B'?{readTestSelected:true,pending:true}:{readTestSelected:true,checks:[{key:'base',label:'Slutbleck',value:'STEP40',quantity:4}]},sourceCardIdentity:o=>o.id,resolveProjectProduct:item=>item,projectProductName:item=>item.value||item.label,projectProductKey:name=>name.toLowerCase(),resolveItemMinutes:()=>({minutes:15}),workQuantity:item=>item.quantity||1,window:{SmartMatchReadTest:{payload:()=>({cards:{}})}}};
+vm.createContext(context);
+vm.runInContext(source.slice(source.indexOf('function effectiveChecks('),source.indexOf('function buildInstances(')),context);
+vm.runInContext(source.slice(source.indexOf('async function projectMaterialRows('),source.indexOf('async function openProjectMaterials(')),context);
+(async()=>{let rows=await context.projectMaterialRows();assert.equal(rows.length,1);assert.equal(rows[0].quantity,10);assert.equal(rows[0].cards,3);context.instances[0].customItems=[];rows=await context.projectMaterialRows();assert.equal(rows[0].quantity,8);console.log('PASS explicit materials included for unlinked, pending and ready cards; no double count, no extra-time or non-GS base rows; removal recalculates quantity');})().catch(error=>{console.error(error);process.exitCode=1});
