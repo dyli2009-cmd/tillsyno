@@ -20,7 +20,11 @@
  }
 
  const CONFIDENCE_LIMIT=70;
- const CELL_LABELS={designation:'Benämning',type:'Typ / utförande',quantity:'Antal',installer:'Monteras av'};
+ const READ_PROGRESS_SHARE=.9;
+ const CELL_LABELS={
+  designation:'Benämning',type:'Typ / utförande',quantity:'Antal',installer:'Monteras av',
+  supplier:'Levereras av',connection:'Ansluts av',functionOwner:'Funktionsansvar',note:'Anmärkning',completion:'Montering klar'
+ };
  const STATUS_LABELS={unread:'Ej läst','needs-review':'Behöver granskas',approved:'Godkänt','changed-after-approval':'Ändrat efter godkännande'};
  const PHASE_LABELS={inspect:'Kontrollerar befintlig PDF-text',render:'Förbereder bildområdet',ocr:'Läser text i bilden','page-complete':'Sidan är läst',complete:'Sidan är färdig',prepare:'Förbereder',pages:'Skapar PDF-sidor',manifest:'Bifogar strukturerad data',save:'Sparar PDF'};
  const sectionDefinitions=Array.from(core.SECTION_DEFINITIONS||[
@@ -29,7 +33,7 @@
   {key:'other-equipment',label:'Övrig utrustning'},
   {key:'alarm-access',label:'Larm-Passer'}
  ]);
- const cellKeys=Array.from(core.CELL_KEYS||Object.keys(CELL_LABELS));
+ const standardCellKeys=Array.from(core.CELL_KEYS||['designation','type','quantity','installer']);
 
  let fingerprint='',project=null,rect=null,examplePage=1;
  let active=false,controller=null,workerPromise=null,libraryPromise=null,clock=null,startedAt=0,lastProgress=null;
@@ -125,14 +129,24 @@
  function sortedCards(){return(project?.cards||[]).slice().sort((a,b)=>pageForCard(a)-pageForCard(b));}
  function indexOfCard(card){return(project?.cards||[]).findIndex(item=>item.id===card?.id);}
  function currentCard(){return project?.cards?.[currentCardIndex]||null;}
+ function cellKeysForCard(card=currentCard()){
+  const keys=[],seen=new Set(),add=key=>{key=String(key||'').trim();if(key&&!seen.has(key)){seen.add(key);keys.push(key);}};
+  const template=project?.template;
+  for(const column of template?.columns||[])if(column?.capture!==false)add(column?.key);
+  for(const section of card?.sections||[])for(const row of section?.rows||[])for(const [key,value] of Object.entries(row?.cells||{}))if(String(value||'').trim())add(key);
+  if(!keys.length)for(const key of standardCellKeys)add(key);
+  return keys;
+ }
+ function cellLabel(key){return CELL_LABELS[key]||(project?.template?.columns||[]).find(column=>column?.key===key)?.label||key;}
 
  function renderTemplatePreview(){
   const node=$('digitizerTemplatePreview'),template=project?.template;if(!node)return;node.replaceChildren();node.hidden=!template;if(!template)return;
   const title=el('strong',template.name||'Mallgrupp 1'),summary=el('p',(template.reference?.wordCount||0)+' textdelar och '+(template.reference?.lineCount||0)+' textrader hittades på sida '+template.sourcePage+'.');
+  const profile=el('p','Upplägg: '+(template.reference?.structureDescription||'Dörrkortstabell'));
   const columns=el('p','Kolumner: '+(template.columns||[]).map(item=>item.label||CELL_LABELS[item.key]||item.key).join(' · '));
   const sections=el('p','Avsnitt: '+(template.sections||[]).map(item=>item.label||item.key).join(' · '));
   const review=el('button','Granska exempelkort sida vid sida');review.type='button';review.disabled=active;review.onclick=()=>openReview(0);
-  node.append(title,summary,columns,sections,review);
+  node.append(title,summary,profile,columns,sections,review);
  }
  function renderPageList(){
   const node=$('digitizerPageList');if(!node)return;node.replaceChildren();
@@ -170,9 +184,9 @@
  }
 
  function beginProgress(title){
-  clearTimeout(progressHideTimer);const box=$('digitizerProgress');if(box)box.hidden=false;startedAt=Date.now();lastProgress=null;
+  clearTimeout(progressHideTimer);const box=$('digitizerProgress');if(box){box.hidden=false;box.dataset.state='running';box.setAttribute('aria-busy','true');}startedAt=Date.now();lastProgress={percent:0,message:title,state:'running'};
   setText('digitizerProgressMessage',title);setText('digitizerProgressPercent','0 %');setText('digitizerProgressPage','Sida –');setText('digitizerProgressTime','Beräknar återstående tid…');
-  const meter=$('digitizerProgressMeter');meter.max=100;meter.value=0;$('digitizerCancelRead').disabled=false;
+  const meter=$('digitizerProgressMeter');meter.max=100;meter.value=0;meter.removeAttribute('aria-invalid');$('digitizerCancelRead').disabled=false;
   clearInterval(clock);clock=setInterval(updateClock,1000);
  }
  function updateClock(){
@@ -180,15 +194,19 @@
   setText('digitizerProgressTime','Tid: '+elapsed(Date.now()-startedAt)+(Number.isFinite(eta)?' · ungefär '+elapsed(eta)+' kvar':' · återstående tid beräknas'));
  }
  function showProgress(value={}){
-  lastProgress={...lastProgress,...value};const meter=$('digitizerProgressMeter'),number=Number(value.percent),percent=Number.isFinite(number)?Math.max(0,Math.min(100,number)):null;
+  lastProgress={...lastProgress,...value};const meter=$('digitizerProgressMeter'),number=Number(lastProgress.percent),percent=Number.isFinite(number)?Math.max(0,Math.min(100,number)):null;
   if(percent===null){meter.removeAttribute('value');setText('digitizerProgressPercent','Arbetar…');}else{meter.value=percent;setText('digitizerProgressPercent',Math.floor(percent)+' %');}
-  const phase=value.message||PHASE_LABELS[value.phase]||'Arbetar';setText('digitizerProgressMessage',phase);
+  const phase=value.message||PHASE_LABELS[value.phase]||lastProgress.message||'Arbetar';setText('digitizerProgressMessage',phase);
+  const box=$('digitizerProgress');if(value.state&&box)box.dataset.state=value.state;
   if(value.page)setText('digitizerProgressPage','Sida '+value.page+(value.pageIndex&&value.pageCount?' · '+value.pageIndex+' av '+value.pageCount:''));
   updateClock();
  }
- function finishProgress(message,keep=false){
-  clearInterval(clock);clock=null;$('digitizerCancelRead').disabled=true;if(message)showProgress({message,percent:100,etaMs:0});startedAt=0;
-  if(!keep)progressHideTimer=setTimeout(()=>{if(!active)$('digitizerProgress').hidden=true;},1800);
+ function finishProgress(message,{keep=false,state='success'}={}){
+  const spent=startedAt?Date.now()-startedAt:0,success=state==='success',current=Number(lastProgress?.percent),percent=success?100:Math.min(99,Number.isFinite(current)?Math.max(0,current):0);
+  clearInterval(clock);clock=null;$('digitizerCancelRead').disabled=true;if(message)showProgress({message,percent,etaMs:success?0:null,state});
+  const box=$('digitizerProgress'),meter=$('digitizerProgressMeter');if(box)box.setAttribute('aria-busy','false');if(state==='error')meter.setAttribute('aria-invalid','true');else meter.removeAttribute('aria-invalid');
+  setText('digitizerProgressTime','Tid: '+elapsed(spent)+(success?' · klart':state==='cancelled'?' · avbrutet':' · stoppat'));
+  startedAt=0;if(!keep)progressHideTimer=setTimeout(()=>{if(!active)$('digitizerProgress').hidden=true;},1800);
  }
  function cancelActive(){
   if(!active)return;$('digitizerCancelRead').disabled=true;setText('digitizerProgressMessage','Avbryter efter aktuellt delområde…');controller?.abort();void releaseWorker();
@@ -227,7 +245,7 @@
  }
  async function readPage(page,signal,position,total,onDetail){
   const result=await reader.read({...app.getOcrOptions?.(),pdf:app.getPdf(),pages:[page],rect,includeNativeWords:true,includeAllWords:true,confidenceThreshold:CONFIDENCE_LIMIT,getWorker:localWorker,onCancelRecognition:()=>void releaseWorker(),pdfjsLib:root.pdfjsLib,signal,cancelled:()=>signal.aborted,onProgress:value=>{
-   const local=Number.isFinite(Number(value.percent))?Number(value.percent):0,overall=((position-1)+local/100)/Math.max(1,total)*100;
+   const local=Number.isFinite(Number(value.percent))?Math.max(0,Math.min(100,Number(value.percent))):0,overall=((position-1)+READ_PROGRESS_SHARE*local/100)/Math.max(1,total)*100;
    const elapsedMs=Date.now()-startedAt,done=Math.max(.02,overall/100),etaMs=overall>1?Math.max(0,elapsedMs/done-elapsedMs):value.etaMs;
    showProgress({...value,page,pageIndex:position,pageCount:total,percent:overall,etaMs,message:(PHASE_LABELS[value.phase]||'Läser kort')+' · sida '+page+(value.tileCount?' · område '+Math.min(value.tileCount,value.tileIndex||0)+' av '+value.tileCount:'')});
    onDetail?.(value);
@@ -246,10 +264,11 @@
     if(pdfAtStart!==app.getPdf?.()||bytesAtStart!==app.getSourceBytes?.()||stateAtStart!==app.getStateKey?.())throw Error('PDF-arbetskopian ändrades under avläsningen. '+savedWorkText()+' Läs den ändrade sidan igen.');
    };
    if(typeof app.withBusy==='function')await app.withBusy(execute,{allow:['digitizerCancelRead']});else await execute();
-   checkAbort(owned.signal);finishProgress(name==='export'?'Exporten är klar.':'Klart.');
+   checkAbort(owned.signal);finishProgress(name==='export'?'Exporten är klar.':'Klart.',{state:'success'});
   }catch(error){
-   if(error.name!=='AbortError')console.error(error);finishProgress(error.name==='AbortError'?'Avbrutet. Inget ofärdigt resultat sparades.':'Arbetet stoppades.',true);
-   const message=error.name==='AbortError'?'Arbetet avbröts. '+savedWorkText():error.message||'Arbetet kunde inte slutföras.';
+   const aborted=error?.name==='AbortError',detail=String(error?.message||(aborted?'Avläsningen avbröts.':'Arbetet kunde inte slutföras.'));
+   if(!aborted)console.error(error);finishProgress(detail,{keep:true,state:aborted?'cancelled':'error'});
+   const message=aborted?detail+' '+savedWorkText():detail;
    if(name==='export')setHint('digitizerExportStatus',message,true);else if(name==='template')setHint('digitizerTemplateStatus',message,true);else setHint('digitizerReadStatus',message,true);
   }finally{
    if(controller===owned)controller=null;await releaseWorker();active=false;refresh();
@@ -263,16 +282,19 @@
   await runOperation('template','Läser exempelkortet och skapar mall',async signal=>{
    const entry=await readPage(examplePage,signal,1,1),input=coreInput(entry,examplePage);
    if(!['read','native'].includes(String(entry.status||'').toLowerCase()))throw Error('Exempelkortets avläsning blev inte färdig. Försök läsa markeringen igen innan mallgruppen skapas.');
-   checkAbort(signal);const template=core.createTemplateGroup({...input,name,groupId:'layout-1'});let card=core.createCard({...input,template});
+   checkAbort(signal);showProgress({message:'Tolkar dörrkortets struktur · sida '+examplePage,percent:92,page:examplePage,pageIndex:1,pageCount:1,etaMs:null});
+   const template=core.createTemplateGroup({...input,name,groupId:'layout-1'});let card=core.createCard({...input,template});
    const wordCount=Number(template.reference?.wordCount||0),columns=template.reference?.detectedColumns||[],sectionHits=(template.sections||[]).filter(item=>Number.isFinite(item.anchorY));
    if(wordCount<5)throw Error('För lite text hittades. Markera hela dörrkortet, inklusive rubrik och tabeller, och skapa mallen igen.');
    if(!template.header?.codeAnchor||!card.header?.code)throw Error('Ingen beslagskod kunde hittas. Kontrollera att rubriken ligger i markeringen och läs igen.');
-   if(columns.length<2||!sectionHits.length)throw Error('Tabellrubriker eller avsnitt kunde inte identifieras. Markera hela tabellen och skapa mallen igen.');
+   const validStructure=typeof template.reference?.validStructure==='boolean'?template.reference.validStructure:columns.length>=2&&sectionHits.length>0;
+   if(!validStructure)throw Error('Tabellrubriker eller avsnitt kunde inte identifieras. Markera hela tabellen och skapa mallen igen.');
    if(sourceRevision!==revision-1&&sourceRevision!==revision)checkAbort(signal);
    template.approved=false;template.approvedAt=null;
    template.sourceReadStatus=entry.status;template.sourceWarnings=(entry.warnings||[]).slice();card.source.readStatus=entry.status;card.source.warnings=(entry.warnings||[]).slice();card=core.recomputeReviewCompleteness(card);
    const value=ensureProject();delete value.integrityError;value.template=template;value.cards=[card];value.name=name;value.progress={...(value.progress||{}),rect:{...rect},examplePage,pages:String(examplePage),currentCardIndex:0};
-   currentCardIndex=0;$('digitizerPages').value=String(examplePage);await persist();
+   currentCardIndex=0;$('digitizerPages').value=String(examplePage);showProgress({message:'Sparar mallförslaget · sida '+examplePage,percent:97,page:examplePage,pageIndex:1,pageCount:1,etaMs:null});await persist();
+   showProgress({message:'Mallförslaget är sparat',percent:99,page:examplePage,pageIndex:1,pageCount:1,etaMs:0});
    setHint('digitizerTemplateStatus','Mallförslaget är klart. Kontrollera kolumner och avsnitt och välj Godkänn mallgruppen.');
   });
  }
@@ -305,19 +327,23 @@
   await runOperation('scan','Läser digitala dörrkort',async signal=>{
    const attempted=new Set(queue),failures=(project?.progress?.failures||[]).filter(item=>!attempted.has(Number(item.page)));let failedThisRun=0,incompleteThisRun=0;
    for(const [index,page] of queue.entries()){
+    let saved=false,pageFailure=null;
     try{
      const previous=(project?.cards||[]).find(item=>pageForCard(item)===page),entry=await readPage(page,signal,index+1,queue.length);
      const completeRead=['read','native'].includes(String(entry.status||'').toLowerCase());
      if(force&&previous&&!completeRead)throw Error('Den nya avläsningen blev inte färdig. Det tidigare granskade kortet behölls; försök läsa sidan igen.');
+     showProgress({message:'Tolkar dörrkortet · sida '+page,percent:(index+.94)/queue.length*100,page,pageIndex:index+1,pageCount:queue.length,etaMs:null});
      let card=core.createCard({...coreInput(entry,page),template:project.template});
      card.source.readStatus=entry.status;card.source.warnings=(entry.warnings||[]).slice();card=core.recomputeReviewCompleteness(card);replacePageCard(card);
+     saved=true;
      if(!completeRead)incompleteThisRun++;
-    }catch(error){if(error.name==='AbortError')throw error;failedThisRun++;failures.push({page,message:error.message||'Sidan kunde inte läsas.'});}
+    }catch(error){if(error.name==='AbortError')throw error;failedThisRun++;pageFailure=error.message||'Sidan kunde inte läsas.';failures.push({page,message:pageFailure});}
     ensureProject().progress={...(project.progress||{}),pages:$('digitizerPages').value,lastCompletedPage:page,completed:index+1,total:queue.length,failures};
-    await persist();renderPageList();refreshSummary();
+    await persist();showProgress({message:saved?'Kortet är sparat · sida '+page:'Sidan kunde inte sparas · sida '+page+(pageFailure?' · '+pageFailure:''),percent:saved&&index+1===queue.length&&!failedThisRun?99:Math.min(98,(index+.9)/queue.length*100),page,pageIndex:index+1,pageCount:queue.length,etaMs:saved&&index+1===queue.length&&!failedThisRun?0:null});renderPageList();refreshSummary();
    }
-   const readCount=queue.length-failedThisRun,saveMessage=persistentStorage()?' kort lästa och autosparade.':' kort lästa. Arbetet finns bara tillfälligt; spara hela projektet som JSON.',failureDetail=failedThisRun?' '+failures.filter(item=>attempted.has(Number(item.page))).slice(0,2).map(item=>'Sida '+item.page+': '+item.message).join(' '):'';setHint('digitizerReadStatus',readCount+saveMessage+(skipped?' '+skipped+' redan lästa kort behölls oförändrade.':'')+(incompleteThisRun?' '+incompleteThisRun+' kort blev inte färdiglästa och måste läsas om före godkännande.':'')+(failedThisRun?' '+failedThisRun+' sidor kunde inte läsas och visas i listan.':'')+failureDetail+' Öppna granskningen och jämför dem sida vid sida.');
+   const readCount=queue.length-failedThisRun,saveMessage=persistentStorage()?' kort lästa och autosparade.':' kort lästa. Arbetet finns bara tillfälligt; spara hela projektet som JSON.',failureDetail=failedThisRun?' '+failures.filter(item=>attempted.has(Number(item.page))).slice(0,2).map(item=>'Sida '+item.page+': '+item.message).join(' '):'',resultMessage=readCount+saveMessage+(skipped?' '+skipped+' redan lästa kort behölls oförändrade.':'')+(incompleteThisRun?' '+incompleteThisRun+' kort blev inte färdiglästa och måste läsas om före godkännande.':'')+(failedThisRun?' '+failedThisRun+' sidor kunde inte läsas och visas i listan.':'')+failureDetail+' Öppna granskningen och jämför dem sida vid sida.';setHint('digitizerReadStatus',resultMessage,failedThisRun>0);
    if(openAfter&&(project?.cards||[]).some(card=>queue.includes(pageForCard(card))))openWhenDone=true;
+   if(failedThisRun)throw Error(resultMessage);
   });
   if(openWhenDone&&!active&&project?.cards?.length)openReview(currentCardIndex);
  }
@@ -359,6 +385,7 @@
  }
  function renderRows(){
   const rootNode=$('digitizerDigitalSections'),card=currentCard();rootNode.replaceChildren();if(!card)return;
+  const visibleCellKeys=cellKeysForCard(card);
   if(card.header?.fields?.length){
    const box=el('section',null,'digitizerSection'),head=el('div',null,'digitizerSectionHead');head.append(el('strong','Övriga uppgifter högst upp på originalkortet'),el('span',card.header.fields.length+' fält'));box.append(head);
    for(const field of card.header.fields){
@@ -380,8 +407,8 @@
    for(const row of section.rows||[]){
     const rowNode=el('article',null,'digitizerRow');if(rowIsLow(row)&&!row.reviewed)rowNode.classList.add('digitizerLowConfidence');rowNode.dataset.rowId=row.id;
     const fields=el('div',null,'digitizerRowFields');
-    for(const key of cellKeys){
-     const label=el('label'),caption=el('span',CELL_LABELS[key]||key),input=el('input');input.type='text';input.value=String(row.cells?.[key]||'');input.dataset.field=key;
+    for(const key of visibleCellKeys){
+     const label=el('label'),caption=el('span',cellLabel(key)),input=el('input');input.type='text';input.value=String(row.cells?.[key]||'');input.dataset.field=key;
      input.addEventListener('focus',()=>{selectedSection=section.key;});
      input.addEventListener('input',()=>{try{replaceCurrent(core.updateRow(currentCard(),row.id,{cells:{[key]:input.value}}),{rerender:false});}catch(error){setText('digitizerCardStatus',error.message);}});
      label.append(caption,input);fields.append(label);
@@ -412,7 +439,7 @@
   if((card.header?.valueTokenIds||[]).includes(tokenId)){card.header.code=joinedTokenText(card,card.header.valueTokenIds);card.header.normalizedCode=core.normalizedCode(card.header.code);}
   for(const field of card.header?.fields||[])if((field.tokenIds||[]).includes(tokenId)){field.text=joinedTokenText(card,field.tokenIds);field.reviewed=true;}
   for(const fixed of card.fixedElements||[])if((fixed.tokenIds||[]).includes(tokenId))fixed.text=joinedTokenText(card,fixed.tokenIds);
-  for(const section of card.sections||[])for(const row of section.rows||[])for(const key of cellKeys)if((row.cellMeta?.[key]?.tokenIds||[]).includes(tokenId)){row.cells[key]=joinedTokenText(card,row.cellMeta[key].tokenIds);row.reviewed=true;}
+  for(const section of card.sections||[])for(const row of section.rows||[])for(const key of Object.keys(row.cellMeta||{}))if((row.cellMeta?.[key]?.tokenIds||[]).includes(tokenId)){row.cells[key]=joinedTokenText(card,row.cellMeta[key].tokenIds);row.reviewed=true;}
   card.audit=card.audit||[];card.audit.push({at:new Date().toISOString(),action:'ocr-alternative-selected',tokenId,text:token.text,source:token.source});
   replaceCurrent(core.recomputeReviewCompleteness(card,{edited:true}));
  }
@@ -433,7 +460,7 @@
     const sectionSelect=el('select');sectionSelect.setAttribute('aria-label','Avsnitt för '+token.text);
     for(const section of card.sections||[]){const option=el('option',section.label||section.key);option.value=section.key;option.selected=section.key===selectedSection;sectionSelect.append(option);}
     const columnSelect=el('select');columnSelect.setAttribute('aria-label','Fält för '+token.text);
-    for(const key of cellKeys){const option=el('option',CELL_LABELS[key]||key);option.value=key;columnSelect.append(option);}
+    for(const key of cellKeysForCard(card)){const option=el('option',cellLabel(key));option.value=key;columnSelect.append(option);}
     const assign=el('button','Placera');assign.type='button';assign.onclick=()=>{try{selectedSection=sectionSelect.value;replaceCurrent(core.assignToken(currentCard(),token.id,{sectionKey:sectionSelect.value,column:columnSelect.value}));}catch(error){setText('digitizerCardStatus',error.message);}};
     const ignore=el('button','Inte en uppgift');ignore.type='button';ignore.onclick=()=>{try{replaceCurrent(core.ignoreToken(currentCard(),token.id,true));}catch(error){setText('digitizerCardStatus',error.message);}};
     actions.append(sectionSelect,columnSelect,assign,ignore);

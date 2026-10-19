@@ -1,5 +1,9 @@
 # dorrservice
 
+## Tillsyno v2.4.398 – fler dörrkortslayouter och tydlig avläsningsstatus
+
+[Ritningsverktygets Digitalisera dörrkort TEST](drawing-tools.html) känner nu igen både den vanliga fyrkolumnstabellen, Tånga-kortens ansvarsmatris med **Övrigt / Lev av / Mont av / Ansl av / Funk ansv.** och enklare tvåkolumnskort med en rubrik som **Dörrkort 140C**. Ansvarsfälten bevaras som redigerbar och exporterbar text, `Övrigt` i tabellhuvudet blandas inte ihop med avsnittet Övrig utrustning och produktnamn väljs inte längre som kortets kod. OCR-fasen stannar vid 90 procent tills strukturen har tolkats och mallförslaget har autosparats. Ett stopp eller avbrott visar den verkliga orsaken och når inte 100 procent. Se [arbetsgång och verifiering](DRAWING_TOOLS_398.md).
+
 ## Tillsyno v2.4.397 – fristående DS och DA utan dubbla stämplar i Avläsning TEST 9.29
 
 [Avläsning TEST 9.29](smartmatch-read-test.html) visar bara exakta fristående PDF-stämplar för `DS`, `DA`, `Dörrstängare` och `Dörrautomatik`. Stämpelns `/Subj` har företräde; `WC dörrstängare`, `VCDS`, `DBL-DS`, `DS1` och `Dörrstängare freeswing` ger därför ingen extra DS ovanpå en kopplad stämpel. Identiska indexposter visas en gång. DS är en orange kvadrat och DA en mörkröd kvadrat. Båda är passiva, 14 × 14 CSS-pixlar med fast storlek vid zoom och följer annoteringens mittpunkt. Visningen använder det redan förberedda stämpelregistret utan OCR, helsidestext eller ny matchning. Se [regler och verifiering](SMARTMATCH_READ_TEST_9_29.md).

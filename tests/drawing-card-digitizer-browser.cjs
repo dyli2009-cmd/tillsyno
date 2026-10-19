@@ -41,7 +41,7 @@ const server=http.createServer((request,response)=>{
 const readerFixture=String.raw`
 (function(root){
  'use strict';
- const state=root.__digitizerReaderQA={calls:[],active:false,slow:false,aborted:0,partialPages:[]};
+ const state=root.__digitizerReaderQA={calls:[],active:false,slow:false,aborted:0,partialPages:[],semanticFailurePages:[],emittedProgress:[]};
  function abortError(){const error=Error('Textförberedelsen avbröts.');error.name='AbortError';return error;}
  function wait(ms,signal){return new Promise((resolve,reject)=>{
   const timer=setTimeout(done,ms);function done(){signal?.removeEventListener('abort',cancel);resolve();}
@@ -54,6 +54,7 @@ const readerFixture=String.raw`
   const codes={1:'WC',2:'GS23',3:'G69'};
   add('Beslagskod',.04,.035,.15);add('4.2:',.205,.035,.055);add(codes[page]||('K'+page),.28,.035,.10);
   add('Projekt',.04,.105,.08);add('Skolan',.13,.105,.10);
+  if(state.semanticFailurePages.includes(page))return{page,rect:{...rect},viewport,wordUnits:'viewport',words,ocrWords:words,allWords:words,nativeWords:[],nativeCount:0,status:'read',warnings:[]};
   add('Benämning',.04,.18,.17);add('Typ',.43,.18,.05);add('/',.49,.18,.015);add('Utförande',.515,.18,.15);add('Antal',.71,.18,.07);add('Monteras',.83,.18,.11);add('av',.95,.18,.03);
   add('OSÄKERT',.04,.235,.13,.025,88);
   add('Daglåsning',.04,.29,.18);add('Låshus',.05,.345,.13);add(page===2?'DL9192':'565',.48,.345,.10);add('1',.75,.345,.025);add('GS',.90,.345,.04);
@@ -62,7 +63,7 @@ const readerFixture=String.raw`
   add('Larm',.04,.68,.07);add('/',.115,.68,.015);add('Passer',.14,.68,.10);add('Öppningsknapp',.05,.735,.21);add('OPK-1',.48,.735,.10);add('1',.75,.735,.025);add('GS',.90,.735,.04);
   return{page,rect:{...rect},viewport,wordUnits:'viewport',words,ocrWords:words,allWords:words,nativeWords:[],nativeCount:0,status:'read',warnings:[]};
  }
- async function progress(options,value){if(options.onProgress)await options.onProgress(value);}
+ async function progress(options,value){state.emittedProgress.push(Number(value.percent));if(options.onProgress)await options.onProgress(value);}
  async function read(options){
   const page=options.pages[0],call={page,slow:state.slow,started:Date.now(),finished:false};state.calls.push(call);state.active=true;
   try{
@@ -169,10 +170,38 @@ async function run(){
   await page.locator('#digitizerCreateTemplate').click();await waitIdle(page);
   assert.equal(await page.evaluate(()=>DrawingCardDigitizer.getProject().template),null,'a partial example read cannot create a reusable template');
   assert.match(await page.locator('#digitizerTemplateStatus').innerText(),/inte färdig/i);
-  await page.evaluate(()=>{__digitizerReaderQA.partialPages=[];});
+
+  // The reader can finish OCR successfully even though the resulting words do
+  // not describe a usable card table. Its local 100 % must remain inside the
+  // OCR share, and the exact semantic error must stay visible below 100 %.
+  await page.evaluate(()=>{
+   __digitizerReaderQA.partialPages=[];__digitizerReaderQA.semanticFailurePages=[1];__digitizerReaderQA.emittedProgress=[];
+   window.__digitizerProgressObserver?.disconnect();window.__digitizerVisibleProgress=[];
+   const meter=document.getElementById('digitizerProgressMeter'),record=()=>window.__digitizerVisibleProgress.push(Number(meter.value));record();
+   window.__digitizerProgressObserver=new MutationObserver(record);window.__digitizerProgressObserver.observe(meter,{attributes:true,attributeFilter:['value']});
+  });
   await page.locator('#digitizerCreateTemplate').click();await waitIdle(page);
+  await page.waitForFunction(()=>document.getElementById('digitizerProgress').dataset.state==='error');
+  const semanticProgress=await page.evaluate(()=>({
+   state:document.getElementById('digitizerProgress').dataset.state,
+   value:document.getElementById('digitizerProgressMeter').value,
+   message:document.getElementById('digitizerProgressMessage').textContent,
+   emitted:[...__digitizerReaderQA.emittedProgress],visible:[...window.__digitizerVisibleProgress]
+  }));
+  assert(semanticProgress.emitted.includes(100),'the fixture really completed its OCR phase');
+  assert.equal(semanticProgress.state,'error');assert(semanticProgress.value<100,'a semantic failure after OCR remains below 100 percent');
+  assert(Math.max(...semanticProgress.visible)<100,'the visible meter never flashes 100 before semantic validation');
+  assert.equal(semanticProgress.message,'Tabellrubriker eller avsnitt kunde inte identifieras. Markera hela tabellen och skapa mallen igen.','the progress panel shows the exact semantic error');
+  assert.equal(await page.evaluate(()=>DrawingCardDigitizer.getProject().template),null,'semantic failure does not replace project state');
+
+  await page.evaluate(()=>{__digitizerReaderQA.semanticFailurePages=[];__digitizerReaderQA.emittedProgress=[];window.__digitizerVisibleProgress=[];});
+  await page.locator('#digitizerCreateTemplate').click();await waitIdle(page);
+  await page.waitForFunction(()=>document.getElementById('digitizerProgress').dataset.state==='success');
   debug('template read');
   await page.waitForFunction(()=>DrawingCardDigitizer.getProject().template?.name==='Skolans dörrkort');
+  const successfulProgress=await page.evaluate(()=>({state:document.getElementById('digitizerProgress').dataset.state,value:document.getElementById('digitizerProgressMeter').value,message:document.getElementById('digitizerProgressMessage').textContent,visible:[...window.__digitizerVisibleProgress]}));
+  assert.equal(successfulProgress.state,'success');assert.equal(successfulProgress.value,100);assert.equal(successfulProgress.message,'Klart.');
+  assert(successfulProgress.visible.some(value=>value===90),'completed OCR uses only the first 90 percent');assert.equal(successfulProgress.visible.at(-1),100,'only the successful operation finish reaches 100 percent');
   assert.match(await page.locator('#digitizerTemplatePreview').innerText(),/Kolumner:.*Benämning.*Monteras av/s);
   assert.match(await page.locator('#digitizerTemplatePreview').innerText(),/Daglåsning.*Övrig utrustning/s);
   assert.equal((await page.locator('#digitizerPageList .digitizerPageItem').count()),1,'the example becomes the first reviewable card');
@@ -195,7 +224,7 @@ async function run(){
   debug('three cards read');
   assert.equal(await page.locator('#digitizerPageList .digitizerPageItem').count(),3);
   assert.match(await page.locator('#digitizerReadStatus').textContent(),/2 kort lästa och autosparade/);
-  assert.deepEqual(await page.evaluate(()=>__digitizerReaderQA.calls.map(call=>call.page)),[1,1,2,3],'partial example is rejected, then the complete example and only two unread cards are retained');
+  assert.deepEqual(await page.evaluate(()=>__digitizerReaderQA.calls.map(call=>call.page)),[1,1,1,2,3],'partial and semantic example failures are rejected, then the complete example and only two unread cards are retained');
 
   await page.locator('#digitizerPageList .digitizerPageItem').first().click();await page.locator('#digitizerReviewDialog').waitFor({state:'visible'});
   for(let index=0;index<3;index++)await resolveAndApprove(page,{editFirst:index===0});
@@ -233,6 +262,9 @@ async function run(){
   assert.equal(await page.locator('#workspace').evaluate(node=>node.inert),false,'workspace is not inert while its explicit Cancel control is needed');
   assert.equal(await page.locator('#digitizerCancelRead').isEnabled(),true);await page.locator('#digitizerCancelRead').click();
   await waitIdle(page);await page.waitForFunction(()=>/avbröts/i.test(document.getElementById('digitizerReadStatus').textContent));
+  const cancelledProgress=await page.evaluate(()=>({state:document.getElementById('digitizerProgress').dataset.state,value:document.getElementById('digitizerProgressMeter').value,message:document.getElementById('digitizerProgressMessage').textContent,time:document.getElementById('digitizerProgressTime').textContent}));
+  assert.equal(cancelledProgress.state,'cancelled');assert(cancelledProgress.value<100,'cancel preserves the current progress below 100 percent');
+  assert.equal(cancelledProgress.message,'Textförberedelsen avbröts.');assert.match(cancelledProgress.time,/avbrutet/i);
   const afterCancel=await page.evaluate(()=>DrawingCardDigitizer.getProject());
   assert.equal(afterCancel.cards.length,3);assert.equal(afterCancel.cards[0].review.status,'approved');
   assert(afterCancel.cards[0].sections.some(section=>section.rows.some(row=>row.cells.designation==='Dörrstängare kontrollerad')),'cancel preserves the last autosaved reviewed card');
@@ -248,6 +280,10 @@ async function run(){
   const preserved=await page.evaluate(()=>DrawingCardDigitizer.getProject().cards.find(card=>card.source.page===1));
   assert.equal(preserved.source.readStatus,'read');assert.equal(preserved.review.status,'approved');
   assert(preserved.sections.some(section=>section.rows.some(row=>row.cells.designation==='Dörrstängare kontrollerad')),'partial reread preserves manual edits');
+  const failedRereadProgress=await page.evaluate(()=>({state:document.getElementById('digitizerProgress').dataset.state,value:document.getElementById('digitizerProgressMeter').value,message:document.getElementById('digitizerProgressMessage').textContent}));
+  assert.equal(failedRereadProgress.state,'error','a failed page cannot finish as green success');
+  assert(failedRereadProgress.value<100,'a failed page never reaches 100 percent');
+  assert.match(failedRereadProgress.message,/tidigare granskade kortet behölls/i);
   assert.match(await page.locator('#digitizerReadStatus').innerText(),/tidigare granskade kortet behölls/i);
   await page.locator('#digitizerCloseReview').click();
   const partialPdfDownload=await downloadFrom(page,'#digitizerExportPdf');await waitIdle(page);

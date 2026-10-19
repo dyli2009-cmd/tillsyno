@@ -18,6 +18,15 @@
  const PROJECT_SCHEMA='tillsyno.digital-door-card-project';
  const REVIEW_STATUSES=Object.freeze(['unread','needs-review','approved','changed-after-approval']);
  const CELL_KEYS=Object.freeze(['designation','type','quantity','installer']);
+ const OPTIONAL_CELL_DEFINITIONS=Object.freeze([
+  Object.freeze({key:'supplier',label:'Levereras av',aliases:['lev','lev av','lev. av','levereras av','levererasav']}),
+  Object.freeze({key:'connection',label:'Ansluts av',aliases:['ansl av','ansl. av','ansluts av','anslutsav']}),
+  Object.freeze({key:'functionOwner',label:'Funktionsansvar',aliases:['funk ansv','funk. ansv','funktionsansvar','funktions ansv']}),
+  Object.freeze({key:'note',label:'Anmärkning',aliases:['anm','anm.','anmärkning','anmarkning']}),
+  Object.freeze({key:'completion',label:'Montering klar',aliases:['montering klar','monteringklart','mont klar','mont. klar']})
+ ]);
+ const OPTIONAL_CELL_KEYS=Object.freeze(OPTIONAL_CELL_DEFINITIONS.map(definition=>definition.key));
+ const ALL_CELL_KEYS=Object.freeze([...CELL_KEYS,...OPTIONAL_CELL_KEYS]);
  const SECTION_DEFINITIONS=Object.freeze([
   Object.freeze({key:'day-locking',label:'Daglåsning',aliases:['daglåsning','daglasning','dag låsning']}),
   Object.freeze({key:'night-locking',label:'Nattlåsning',aliases:['nattlåsning','nattlasning','natt låsning']}),
@@ -29,6 +38,12 @@
   Object.freeze({key:'type',label:'Typ / utförande',center:.57,aliases:['typ','utförande','utforande','typ utförande','typ utforande','typ/utförande','typ/utforande','modell']}),
   Object.freeze({key:'quantity',label:'Antal',center:.76,aliases:['antal','mängd','mangd','st','st.']}),
   Object.freeze({key:'installer',label:'Monteras av',center:.91,aliases:['monteras av','monterasav','mont av','mont. av','montör','montor','installatör','installator']})
+ ]);
+ const RESPONSIBILITY_COLUMN_DEFINITIONS=Object.freeze([
+  Object.freeze({key:'type',label:'Övrigt',aliases:['övrigt','ovrigt']}),
+  OPTIONAL_CELL_DEFINITIONS[0],
+  Object.freeze({key:'installer',label:'Monteras av',aliases:['mont av','mont. av','monteras av','monterasav']}),
+  OPTIONAL_CELL_DEFINITIONS[1],OPTIONAL_CELL_DEFINITIONS[2],OPTIONAL_CELL_DEFINITIONS[3],OPTIONAL_CELL_DEFINITIONS[4]
  ]);
  let sequence=0;
 
@@ -169,14 +184,19 @@
   const typicalHeight=median(tokens.map(token=>token.box.h).filter(value=>value>0))||.015;
   const rows=[];
   for(const token of tokens){
+   // A failed OCR component can cover several real table rows. Keep that
+   // observation for review, but never let its oversized box merge otherwise
+   // independent product rows into one.
+   const layoutArtifact=token.lowConfidence&&(token.box.h>Math.max(.075,typicalHeight*3.6)||area(token.box)>.22);
    const centre=token.box.y+token.box.h/2;
    let best=null,bestDistance=Infinity;
    for(const row of rows){
+    if(layoutArtifact||row.layoutArtifact)continue;
     const distance=Math.abs(centre-row.centreY),vertical=overlap({x:0,y:token.box.y,w:1,h:token.box.h},{x:0,y:row.box.y,w:1,h:row.box.h});
     const tolerance=Math.min(.025,Math.max(.003,typicalHeight*.62,Math.min(token.box.h,row.box.h)*.55));
     if((vertical>Math.min(token.box.h,row.box.h)*.18||distance<=tolerance)&&distance<bestDistance){best=row;bestDistance=distance;}
    }
-   if(!best){best={id:'',tokens:[],box:{...token.box},centreY:centre};rows.push(best);}
+   if(!best){best={id:'',tokens:[],box:{...token.box},centreY:centre,layoutArtifact};rows.push(best);}
    best.tokens.push(token);best.box=boxUnion(best.tokens.map(item=>item.box));best.centreY=median(best.tokens.map(item=>item.box.y+item.box.h/2));
   }
   rows.sort((a,b)=>a.centreY-b.centreY);
@@ -225,8 +245,79 @@
   for(const column of COLUMN_DEFINITIONS){const match=phraseMatch(row.tokens,column.aliases);if(match)matches[column.key]=match;}
   return matches;
  }
+ function responsibilityColumnMatches(row){
+  const matches={};
+  for(const column of RESPONSIBILITY_COLUMN_DEFINITIONS){const match=phraseMatch(row.tokens,column.aliases);if(match)matches[column.key]=match;}
+  return matches;
+ }
+ function responsibilityHeader(row){
+  const matches=responsibilityColumnMatches(row),keys=Object.keys(matches),responsibilityKeys=['supplier','installer','connection','functionOwner'];
+  const responsibilityCount=responsibilityKeys.filter(key=>matches[key]).length;
+  // "Övrigt" on its own is a section title. It is a column only when the
+  // same visual row also contains the responsibility headings used by these
+  // Swedish lock schedules.
+  return keys.length>=3&&responsibilityCount>=2&&matches.installer?matches:null;
+ }
  function columnHeaderScore(row){return Object.keys(columnMatches(row)).length;}
- function deriveColumns(rows){
+ function boundsForOrderedColumns(columns){
+  const ordered=columns.slice().sort((a,b)=>a.center-b.center);
+  for(let index=0;index<ordered.length;index++){
+   ordered[index].x0=round(index===0?0:(ordered[index-1].center+ordered[index].center)/2);
+   ordered[index].x1=round(index===ordered.length-1?1:(ordered[index].center+ordered[index+1].center)/2);
+  }
+  return ordered;
+ }
+ function responsibilityColumns(row,matches){
+  const observed=RESPONSIBILITY_COLUMN_DEFINITIONS.filter(definition=>matches[definition.key]).map(definition=>({
+   key:definition.key,label:definition.label,center:round(matches[definition.key].box.x+matches[definition.key].box.w/2),detected:true
+  })).sort((a,b)=>a.center-b.center);
+  if(!observed.length)return null;
+  // OCR occasionally misses the leftmost "Övrigt" heading even though the
+  // responsibility headings to its right are clear. Keep the canonical Typ
+  // field in that case and derive its position from the first responsibility
+  // column. Otherwise validateTemplate rejects an otherwise usable layout
+  // after OCR has already finished.
+  if(!observed.some(column=>column.key==='type')){
+   const firstResponsibilityCenter=observed[0].center;
+   observed.push({key:'type',label:'Övrigt',center:round(Math.max(.08,Math.min(firstResponsibilityCenter-.055,firstResponsibilityCenter*.5))),detected:false,derived:true});
+   observed.sort((a,b)=>a.center-b.center);
+  }
+  const firstCenter=observed[0].center,designationCenter=round(Math.max(.035,Math.min(firstCenter-.04,firstCenter*.48)));
+  const active=boundsForOrderedColumns([{key:'designation',label:'Benämning',center:designationCenter,detected:false,derived:true},...observed]);
+  // Quantity does not exist in this layout. Keep the canonical field in the
+  // data model, but never capture responsibility text into it.
+  const quantity={key:'quantity',label:'Antal',center:.76,x0:0,x1:1,detected:false,capture:false};
+  return{columns:[...active.slice(0,2),quantity,...active.slice(2)],headerRowId:row.id,detected:['designation',...observed.filter(column=>column.detected).map(column=>column.key)],layoutProfile:'responsibility-matrix',validStructure:true,structureDescription:'Ansvarsmatris med Övrigt och Mont av'};
+ }
+ function simpleListStructure(rows,code){
+  // This fallback exists for the older compact cards that explicitly say
+  // "Dörrkort 140C" and then list products in two columns. A generic
+  // Beslagskod plus ordinary project metadata is not enough evidence.
+  if(!code?.rowId||!cleanText(code.value)||code.label!=='Dörrkort')return null;
+  const candidates=[];
+  for(const row of rows||[]){
+   if(row.id===code.rowId||row.centreY<=number(code.y)+.006||row.layoutArtifact||sectionMatch(row)||columnHeaderScore(row)>=2||row.tokens.length<2)continue;
+   const keys=row.tokens.map(token=>searchKey(token.text));
+   if(keys.some(key=>CODE_STOP_WORDS.has(key)||/^(?:projekt|plan|sida|datum|revision|ritning|dorrkort)\d/u.test(key)))continue;
+   const tokens=row.tokens.slice().sort((a,b)=>a.box.x-b.box.x);let best=null;
+   for(let index=0;index<tokens.length-1;index++){
+    const left=tokens[index].box.x+tokens[index].box.w,right=tokens[index+1].box.x,gap=right-left;
+    if(gap>=.045&&(!best||gap>best.gap))best={gap,boundary:(left+right)/2};
+   }
+   if(best&&best.boundary>.12&&best.boundary<.88)candidates.push({row,boundary:best.boundary});
+  }
+  if(candidates.length<3)return null;
+  const split=round(median(candidates.map(candidate=>candidate.boundary))),columns=[
+   {key:'designation',label:'Benämning',center:round(split/2),x0:0,x1:split,detected:true},
+   {key:'type',label:'Typ / utförande',center:round((split+1)/2),x0:split,x1:1,detected:true},
+   {key:'quantity',label:'Antal',center:.76,x0:0,x1:1,detected:false,capture:false},
+   {key:'installer',label:'Monteras av',center:.91,x0:0,x1:1,detected:false,capture:false}
+  ];
+  return{columns,headerRowId:null,detected:['designation','type'],layoutProfile:'simple-list',validStructure:true,structureDescription:'Enkel tvåkolumnslista',simpleListStartY:round(Math.min(...candidates.map(candidate=>candidate.row.centreY)))};
+ }
+ function deriveColumns(rows,options={}){
+  const responsibility=(rows||[]).map(row=>({row,matches:responsibilityHeader(row)})).filter(candidate=>candidate.matches).sort((a,b)=>Object.keys(b.matches).length-Object.keys(a.matches).length||a.row.centreY-b.row.centreY)[0];
+  if(responsibility)return responsibilityColumns(responsibility.row,responsibility.matches);
   const candidates=(rows||[]).map(row=>({row,matches:columnMatches(row)})).sort((a,b)=>Object.keys(b.matches).length-Object.keys(a.matches).length||a.row.centreY-b.row.centreY);
   const best=candidates[0],centres={};
   if(best&&Object.keys(best.matches).length>=2)for(const [key,match] of Object.entries(best.matches))centres[key]=match.box.x+match.box.w/2;
@@ -243,27 +334,44 @@
    ordered[index].x0=round(index===0?0:(ordered[index-1].center+ordered[index].center)/2);
    ordered[index].x1=round(index===ordered.length-1?1:(ordered[index].center+ordered[index+1].center)/2);
   }
-  return{columns:ordered,headerRowId:detected.length>=2?best.row.id:null,detected};
+  if(detected.length>=2)return{columns:ordered,headerRowId:best.row.id,detected,layoutProfile:'standard-table',validStructure:true,structureDescription:'Standardtabell'};
+  const simple=simpleListStructure(rows,options.code);if(simple)return simple;
+  return{columns:ordered,headerRowId:null,detected,layoutProfile:'unknown',validStructure:false,structureDescription:'Ingen säker tabellstruktur'};
  }
  function codeFromRow(row){
-  const tokens=row?.tokens||[];let labelMatch=phraseMatch(tokens,['beslagskod','beslags kod','beslag kod']);
-  if(!labelMatch){const index=tokens.findIndex(token=>searchKey(token.text).startsWith('beslagskod'));if(index>=0)labelMatch={start:index,length:1,tokens:[tokens[index]]};}
-  if(!labelMatch)return null;
+  const tokens=row?.tokens||[],specifications=[
+   {key:'beslagskod',label:'Beslagskod',aliases:['beslagskod','beslags kod','beslag kod'],prefix:/^beslags\s*kod/iu,skipOrdinal:true},
+   {key:'dorrkort',label:'Dörrkort',aliases:['dörrkort','dorrkort','dörr kort','dorr kort'],prefix:/^d[öo]rr\s*kort/iu,skipOrdinal:false}
+  ];
+  let labelMatch=null,specification=null;
+  for(const candidate of specifications){
+   const match=phraseMatch(tokens,candidate.aliases);
+   if(match){labelMatch=match;specification=candidate;break;}
+   const index=tokens.findIndex(token=>searchKey(token.text).startsWith(candidate.key));
+   if(index>=0){labelMatch={start:index,length:1,tokens:[tokens[index]]};specification=candidate;break;}
+  }
+  if(!labelMatch||!specification)return null;
   const labelIndex=labelMatch.start,labelTokens=[...labelMatch.tokens],valueTokens=[];
   for(let index=labelIndex+labelMatch.length;index<tokens.length;index++){
-   const text=cleanText(tokens[index].text);
-   if(!valueTokens.length&&(/^[.:]+$/u.test(text)||/^\d+(?:[.,]\d+)*\s*[:.]?$/u.test(text))){labelTokens.push(tokens[index]);continue;}
-   valueTokens.push(tokens[index]);
+   const token=tokens[index],text=cleanText(token.text);
+   if(!valueTokens.length&&(/^[.:]+$/u.test(text)||(specification.skipOrdinal&&/^\d+(?:[.,]\d+)*\s*[:.]?$/u.test(text)))){labelTokens.push(token);continue;}
+   if(/^[|¦│┃]+$/u.test(text))break;
+   if(valueTokens.length){
+    const previous=valueTokens[valueTokens.length-1],gap=token.box.x-(previous.box.x+previous.box.w);
+    if(gap>Math.max(.055,previous.box.h*3.5))break;
+   }
+   valueTokens.push(token);
   }
   // Some PDFs expose "Beslagskod:WC" as one text item. Strip the fixed
   // label deterministically instead of using an optional-colon regex: on the
   // separate token "Beslagskod:" that regex could backtrack and call ':' the
   // value even though the real value is the following GS23 token.
-  let inline=cleanText(joinWords(labelMatch.tokens).replace(/^beslags\s*kod/iu,''));
-  inline=cleanText(inline.replace(/^\d+(?:[.,]\d+)*\s*[:.]?\s*/u,'').replace(/^[:.]\s*/u,''));
+  let inline=cleanText(joinWords(labelMatch.tokens).replace(specification.prefix,''));
+  if(specification.skipOrdinal)inline=cleanText(inline.replace(/^\d+(?:[.,]\d+)*\s*[:.]?\s*/u,''));
+  inline=cleanText(inline.replace(/^[:.]\s*/u,''));
   const value=cleanText(inline||joinWords(valueTokens));
   const tokenIds=[...new Set([...labelTokens,...valueTokens].map(token=>token.id))];
-  return{label:'Beslagskod',value,normalizedCode:normalizedCode(value),tokenIds,valueTokenIds:valueTokens.length?valueTokens.map(token=>token.id):inline?[tokens[labelIndex].id]:[],valueX:valueTokens.length?Math.min(...valueTokens.map(token=>token.box.x)):null,y:row.centreY};
+  return{label:specification.label,value,normalizedCode:normalizedCode(value),tokenIds,valueTokenIds:valueTokens.length?valueTokens.map(token=>token.id):inline?[tokens[labelIndex].id]:[],valueX:valueTokens.length?Math.min(...valueTokens.map(token=>token.box.x)):null,y:row.centreY,explicit:true};
  }
  const CODE_STOP_WORDS=new Set(['projekt','projektnr','projektnummer','plan','sida','sidnr','datum','revision','rev','ritning','dorrkort','benamning','produkt','beskrivning','typ','utforande','antal','mangd','monteras','av','daglasning','nattlasning','ovrigt','ovrig','utrustning','larm','passer']);
  function inferredCodeFromRows(rows){
@@ -273,7 +381,9 @@
    const keys=row.tokens.map(token=>searchKey(token.text));if(keys.some(key=>CODE_STOP_WORDS.has(key)||/^(?:projekt|plan|sida|datum|revision|ritning|dorrkort)\d/u.test(key)))continue;
    const value=joinWords(row.tokens),compact=normalizedCode(value);if(!compact||compact.length>24)continue;
    const letters=/\p{L}/u.test(compact),digits=/\p{N}/u.test(compact),clear=/^(?:WC|DBL(?:[\p{L}\p{N}]{0,16})?)$/u.test(compact);
-   if(!(letters&&digits)&&!clear)continue;
+   const firstPart=normalizedCode(row.tokens[0]?.text),looksLikeSplitCode=row.tokens.length===2&&firstPart.length<=4&&/\p{N}/u.test(normalizedCode(row.tokens[1]?.text));
+   const looksLikeSingleCode=row.tokens.length===1&&letters&&digits;
+   if(!clear&&!looksLikeSingleCode&&!looksLikeSplitCode)continue;
    const score=(clear?100:70)+(letters&&digits?15:0)-row.tokens.length-row.centreY*10;
    candidates.push({row,value,compact,score});
   }
@@ -282,33 +392,51 @@
   return{label:'Beteckning',value:candidate.value,normalizedCode:candidate.compact,tokenIds,valueTokenIds:[...tokenIds],valueX,y:candidate.row.centreY,rowId:candidate.row.id,inferred:true};
  }
  function findCode(rows,template){
-  for(const row of rows){const code=codeFromRow(row);if(code)return{...code,rowId:row.id};}
+  let emptyExplicit=null;
+  for(const row of rows){
+   const code=codeFromRow(row);if(!code)continue;
+   if(cleanText(code.value))return{...code,rowId:row.id};
+   if(!emptyExplicit)emptyExplicit={...code,rowId:row.id};
+  }
+  const withExplicitLabel=result=>emptyExplicit?{...result,label:emptyExplicit.label,explicit:true}:result;
   const anchor=template?.header?.codeAnchor;
   if(anchor&&Number.isFinite(anchor.y)){
    const row=[...rows].sort((a,b)=>Math.abs(a.centreY-anchor.y)-Math.abs(b.centreY-anchor.y))[0];
    if(row&&Math.abs(row.centreY-anchor.y)<=Math.max(.025,number(anchor.height,.015)*1.5)){
     const valueTokens=row.tokens.filter(token=>token.box.x+token.box.w/2>=number(anchor.valueX,0));
-    const value=joinWords(valueTokens);if(value)return{label:cleanText(anchor.label)||'Beteckning',value,normalizedCode:normalizedCode(value),tokenIds:valueTokens.map(token=>token.id),valueTokenIds:valueTokens.map(token=>token.id),valueX:anchor.valueX,y:row.centreY,rowId:row.id,inferred:true};
+    const value=joinWords(valueTokens);if(value)return withExplicitLabel({label:cleanText(anchor.label)||'Beteckning',value,normalizedCode:normalizedCode(value),tokenIds:valueTokens.map(token=>token.id),valueTokenIds:valueTokens.map(token=>token.id),valueX:anchor.valueX,y:row.centreY,rowId:row.id,inferred:true});
    }
   }
-  const inferred=inferredCodeFromRows(rows);if(inferred)return inferred;
-  return{label:'Beslagskod',value:'',normalizedCode:'',tokenIds:[],valueTokenIds:[],valueX:null,y:null,rowId:null};
+  const inferred=inferredCodeFromRows(rows);if(inferred)return withExplicitLabel(inferred);
+  return{label:emptyExplicit?.label||'Beslagskod',value:'',normalizedCode:'',tokenIds:[],valueTokenIds:[],valueX:null,y:null,rowId:null};
  }
  function wordsForOptions(options){
   return combineWords({nativeWords:options.nativeWords,ocrWords:options.ocrWords,words:options.words,rect:options.rect,viewport:options.viewport,wordUnits:options.wordUnits,confidenceThreshold:options.confidenceThreshold});
  }
  function createTemplateGroup(options={}){
-  const rect=normalizedRect(options.rect||{x:0,y:0,w:1,h:1}),tokens=wordsForOptions({...options,rect}),rows=groupVisualRows(tokens),derived=deriveColumns(rows),code=findCode(rows),sections=[];
-  for(const row of rows){const match=sectionMatch(row);if(match&&!sections.some(section=>section.key===match.section.key))sections.push({key:match.section.key,label:match.section.label,anchorY:round(row.centreY),tokenIds:match.match.tokens.map(token=>token.id)});}
+  const rect=normalizedRect(options.rect||{x:0,y:0,w:1,h:1}),tokens=wordsForOptions({...options,rect}),rows=groupVisualRows(tokens),code=findCode(rows),derived=deriveColumns(rows,{code}),sections=[];
+  for(const row of rows){
+   if(row.layoutArtifact||row.id===derived.headerRowId)continue;
+   const match=sectionMatch(row);if(match&&!sections.some(section=>section.key===match.section.key))sections.push({key:match.section.key,label:match.section.label,anchorY:round(row.centreY),tokenIds:match.match.tokens.map(token=>token.id)});
+  }
+  if(!sections.some(section=>section.anchorY!=null)&&derived.validStructure){
+   let anchorY=derived.simpleListStartY;
+   if(anchorY==null&&['responsibility-matrix','standard-table'].includes(derived.layoutProfile)){
+    const heading=rows.find(row=>row.id===derived.headerRowId),firstData=rows.find(row=>!row.layoutArtifact&&row.id!==code.rowId&&row.id!==derived.headerRowId&&row.centreY>number(heading?.centreY)+.006);
+    anchorY=firstData?.centreY;
+   }
+   if(Number.isFinite(Number(anchorY)))sections.push({key:'other-equipment',label:'Övrig utrustning',anchorY:round(anchorY),tokenIds:[],synthetic:true});
+  }
   for(const definition of SECTION_DEFINITIONS)if(!sections.some(section=>section.key===definition.key))sections.push({key:definition.key,label:definition.label,anchorY:null,tokenIds:[]});
   sections.sort((a,b)=>SECTION_DEFINITIONS.findIndex(item=>item.key===a.key)-SECTION_DEFINITIONS.findIndex(item=>item.key===b.key));
+  const validStructure=derived.validStructure===true&&sections.some(section=>section.anchorY!=null&&Number.isFinite(Number(section.anchorY)));
   const seed=[options.page||1,Object.values(rect).join(','),tokens.map(token=>token.text).join('|')].join(':');
   const createdAt=options.createdAt||now();
   return{
    schema:TEMPLATE_SCHEMA,schemaVersion:SCHEMA_VERSION,id:String(options.id||uid('template',seed)),groupId:String(options.groupId||'layout-1'),name:cleanText(options.name)||'Dörrkortsmall 1',
-   rect,sourcePage:Number.isInteger(options.page)?options.page:1,columns:derived.columns,sections,
+   rect,sourcePage:Number.isInteger(options.page)?options.page:1,layoutProfile:derived.layoutProfile,columns:derived.columns,sections,
    header:{columnHeaderRowId:derived.headerRowId,codeAnchor:code.rowId?{y:round(code.y),valueX:code.valueX==null?null:round(code.valueX),height:rows.find(row=>row.id===code.rowId)?.box.h||null,label:code.label}:null},
-   reference:{wordCount:tokens.length,lineCount:rows.length,detectedColumns:derived.detected,sampleHash:hash(tokens.map(token=>token.text+':'+Object.values(token.box).join(',')).join('|'))},
+   reference:{wordCount:tokens.length,lineCount:rows.length,detectedColumns:derived.detected,validStructure,structureDescription:derived.structureDescription,sampleHash:hash(tokens.map(token=>token.text+':'+Object.values(token.box).join(',')).join('|'))},
    createdAt,updatedAt:createdAt
   };
  }
@@ -320,9 +448,14 @@
  function rowFromTokens(tokens,columns,sectionKey,index){
   const cells=Object.fromEntries(CELL_KEYS.map(key=>[key,''])),cellMeta={};
   for(const column of columns){
+   if(column.capture===false){
+    if(!Object.prototype.hasOwnProperty.call(cells,column.key))cells[column.key]='';
+    cellMeta[column.key]={tokenIds:[],confidence:confidenceFor([])};continue;
+   }
    const selected=tokens.filter(token=>{const centre=token.box.x+token.box.w/2;return centre>=column.x0&&(centre<column.x1||column.x1===1&&centre<=1.001);});
    cells[column.key]=joinWords(selected);cellMeta[column.key]={tokenIds:selected.map(token=>token.id),confidence:confidenceFor(selected)};
   }
+  for(const key of CELL_KEYS){if(!cellMeta[key])cellMeta[key]={tokenIds:[],confidence:confidenceFor([])};}
   const confidence=confidenceFor(tokens),tokenIds=tokens.map(token=>token.id);
   return{id:uid('row',sectionKey+':'+index+':'+tokenIds.join(':')),sectionKey,cells,tokenIds,cellMeta,confidence,provenance:[...new Set(tokens.flatMap(token=>token.provenance.map(item=>item.source)))],reviewed:!confidence.low,manual:false};
  }
@@ -330,18 +463,24 @@
   return SECTION_DEFINITIONS.map(definition=>({key:definition.key,label:template.sections?.find(section=>section.key===definition.key)?.label||definition.label,rows:[]}));
  }
  function templateSectionAt(template,y){
-  const anchors=(template?.sections||[]).filter(section=>Number.isFinite(Number(section.anchorY))).sort((a,b)=>Number(a.anchorY)-Number(b.anchorY));let current=null;
+  const anchors=(template?.sections||[]).filter(section=>section.anchorY!=null&&Number.isFinite(Number(section.anchorY))).sort((a,b)=>Number(a.anchorY)-Number(b.anchorY));let current=null;
   for(const section of anchors){if(y+0.004<Number(section.anchorY))break;current=section;}return current;
  }
  function auditEntry(action,details={}){return{at:now(),action,...details};}
+ function headingMatchesForTemplate(row,template){
+  if(template?.layoutProfile==='responsibility-matrix')return responsibilityHeader(row)||{};
+  if(template?.layoutProfile==='simple-list')return{};
+  return columnMatches(row);
+ }
  function createCard(options={}){
   const template=options.template;if(!template)throw new TypeError('Godkänn en dörrkortsmall först.');
   const templateCheck=validateTemplate(template);if(!templateCheck.valid)throw new TypeError('Dörrkortsmallen är ogiltig: '+templateCheck.errors.join(' '));
   const rect=normalizedRect(options.rect||template.rect),tokens=wordsForOptions({...options,rect}),visualRows=groupVisualRows(tokens),code=findCode(visualRows,template),sections=sectionShell(template),fixedElements=[],fields=[],assigned=new Set(code.tokenIds),headerRowId=template.header?.columnHeaderRowId,recognizedSections=new Set();
   let currentSection=null,tableStarted=false;
   for(const visualRow of visualRows){
+   if(visualRow.layoutArtifact)continue;
    if(visualRow.id===code.rowId)continue;
-   const headings=columnMatches(visualRow),headingCount=Object.keys(headings).length;
+   const headings=headingMatchesForTemplate(visualRow,template),headingCount=Object.keys(headings).length;
    if(headingCount>=2){
     tableStarted=true;const tokenIds=[...new Set(Object.values(headings).flatMap(match=>match.tokens.map(token=>token.id)))];
     // Treat the whole visual heading row as fixed.  Slash punctuation and
@@ -361,10 +500,10 @@
    // The approved template is also evidence when OCR misses both the column
    // header and the first section heading. Before the first anchor this still
    // returns null, so genuine card-header fields stay header fields.
-   const anchored=templateSectionAt(template,visualRow.centreY),targetKey=anchored?.key||currentSection,inferred=!!anchored&&!recognizedSections.has(anchored.key);
+   const anchored=templateSectionAt(template,visualRow.centreY),targetKey=anchored?.key||currentSection,learnedUnsectioned=!!anchored?.synthetic&&['simple-list','responsibility-matrix'].includes(template.layoutProfile),inferred=!!anchored&&!recognizedSections.has(anchored.key)&&!learnedUnsectioned;
    if(targetKey){
     tableStarted=true;currentSection=targetKey;const target=sections.find(section=>section.key===targetKey),row=rowFromTokens(visualRow.tokens,template.columns,targetKey,target.rows.length);
-    row.sectionAssignment={method:inferred?'template-position':'recognized-heading',anchorY:anchored?.anchorY??null};row.requiresReview=inferred;if(inferred)row.reviewed=false;
+    row.sectionAssignment={method:inferred?'template-position':learnedUnsectioned?'template-list':'recognized-heading',anchorY:anchored?.anchorY??null};row.requiresReview=inferred;if(inferred)row.reviewed=false;
     target.rows.push(row);for(const id of row.tokenIds)assigned.add(id);continue;
    }
    if(!tableStarted){
@@ -408,7 +547,7 @@
   for(const fixed of result.fixedElements||[])refreshEntityMetadata(fixed,sourceById);
   for(const section of result.sections||[])for(const row of section.rows||[]){
    refreshEntityMetadata(row,sourceById);
-   for(const key of CELL_KEYS){const meta=row.cellMeta?.[key];if(meta)meta.confidence=confidenceFor((meta.tokenIds||[]).map(id=>sourceById.get(id)).filter(Boolean));}
+   for(const key of Object.keys(row.cellMeta||{})){const meta=row.cellMeta?.[key];if(meta)meta.confidence=confidenceFor((meta.tokenIds||[]).map(id=>sourceById.get(id)).filter(Boolean));}
   }
   const structurallyAssigned=new Set();
   const collect=ids=>(ids||[]).forEach(id=>{if(sourceById.has(id))structurallyAssigned.add(id);});
@@ -475,7 +614,8 @@
    const match=findRow(result,rowId);if(!match)throw new RangeError('Raden finns inte.');
    const values=patch.cells&&typeof patch.cells==='object'?patch.cells:patch;
    const reviewedIds=new Set(),manuallyResolvedIds=new Set();
-   for(const key of CELL_KEYS)if(Object.prototype.hasOwnProperty.call(values,key)){
+   const editableKeys=new Set([...ALL_CELL_KEYS,...Object.keys(match.row.cells||{})]);
+   for(const key of editableKeys)if(Object.prototype.hasOwnProperty.call(values,key)){
     match.row.cells[key]=cleanText(values[key]);for(const id of match.row.cellMeta?.[key]?.tokenIds||[]){reviewedIds.add(id);manuallyResolvedIds.add(id);}
    }
    if(patch.reviewed===true){for(const id of match.row.tokenIds||[])reviewedIds.add(id);match.row.reviewed=true;}
@@ -524,7 +664,7 @@
  function assignToken(card,tokenId,target={}){
   return edit(card,'token-assigned',result=>{
    const token=result.sourceTokens.find(item=>item.id===tokenId);if(!token)throw new RangeError('Textdelen finns inte.');
-   const column=target.column||target.cell||'designation';if(!CELL_KEYS.includes(column))throw new RangeError('Okänd dörrkortskolumn: '+column);
+   const column=target.column||target.cell||'designation';if(!ALL_CELL_KEYS.includes(column))throw new RangeError('Okänd dörrkortskolumn: '+column);
    const refs=tokenReferences(result).get(tokenId)||[];
    if(refs.some(kind=>!['unassigned','ignored'].includes(kind)))throw new Error('Textdelen är redan placerad på dörrkortet.');
    result.ignoredTokenIds=(result.ignoredTokenIds||[]).filter(id=>id!==tokenId);
@@ -553,7 +693,7 @@
   if(template.schema!==TEMPLATE_SCHEMA)errors.push('Fel mallschema.');if(template.schemaVersion!==SCHEMA_VERSION)errors.push('Mallversionen stöds inte.');if(!cleanText(template.id))errors.push('Mall-id saknas.');
   try{normalizedRect(template.rect);}catch(error){errors.push(error.message);}
   if(!Array.isArray(template.columns)||CELL_KEYS.some(key=>!template.columns.some(column=>column.key===key)))errors.push('Alla standardkolumner saknas.');
-  else for(const column of template.columns)if(!CELL_KEYS.includes(column.key)||![column.x0,column.x1,column.center].every(value=>Number.isFinite(Number(value)))||column.x0<0||column.x1>1||column.x1<=column.x0)errors.push('En kolumn har ogiltiga gränser.');
+  else for(const column of template.columns)if(!ALL_CELL_KEYS.includes(column.key)||![column.x0,column.x1,column.center].every(value=>Number.isFinite(Number(value)))||column.x0<0||column.x1>1||column.x1<=column.x0)errors.push('En kolumn har ogiltiga gränser.');
   if(!Array.isArray(template.sections)||SECTION_DEFINITIONS.some(definition=>!template.sections.some(section=>section.key===definition.key)))errors.push('Alla standardsektioner saknas.');
   return{valid:errors.length===0,errors};
  }
@@ -564,7 +704,7 @@
   try{normalizedRect(card.source?.rect);}catch(error){errors.push(error.message);}
   if(!card.header||typeof card.header.code!=='string')errors.push('Beteckningsfältet saknas.');
   if(!Array.isArray(card.sections)||SECTION_DEFINITIONS.some(definition=>!card.sections.some(section=>section.key===definition.key)))errors.push('Alla standardsektioner saknas.');
-  const rowIds=new Set();for(const section of card.sections||[])for(const row of section.rows||[]){if(rowIds.has(row.id))errors.push('Två rader har samma id.');rowIds.add(row.id);if(row.sectionKey!==section.key)errors.push('En rad ligger i fel sektion.');for(const key of CELL_KEYS)if(typeof row.cells?.[key]!=='string')errors.push('En rad saknar fältet '+key+'.');}
+  const rowIds=new Set();for(const section of card.sections||[])for(const row of section.rows||[]){if(rowIds.has(row.id))errors.push('Två rader har samma id.');rowIds.add(row.id);if(row.sectionKey!==section.key)errors.push('En rad ligger i fel sektion.');for(const key of CELL_KEYS)if(typeof row.cells?.[key]!=='string')errors.push('En rad saknar fältet '+key+'.');for(const [key,value] of Object.entries(row.cells||{}))if(typeof value!=='string')errors.push('Fältet '+key+' innehåller inte text.');}
   if(!Array.isArray(card.sourceTokens))errors.push('Källtexten saknas.');
   const tokenIds=new Set();for(const token of card.sourceTokens||[]){if(!cleanText(token.id)||tokenIds.has(token.id))errors.push('Källtext har ett ogiltigt eller dubbelt id.');tokenIds.add(token.id);if(!cleanText(token.text))errors.push('En textdel är tom.');if(!token.box||!['x','y','w','h'].every(key=>Number.isFinite(Number(token.box[key]))))errors.push('En textdel saknar position.');if(!Array.isArray(token.provenance)||!token.provenance.length)errors.push('En textdel saknar ursprung.');}
   const refs=tokenReferences(card);for(const id of refs.keys())if(!tokenIds.has(id))errors.push('En hänvisning pekar på okänd källtext.');
@@ -597,7 +737,7 @@
  }
 
  return Object.freeze({
-  SCHEMA_VERSION,TEMPLATE_SCHEMA,CARD_SCHEMA,PROJECT_SCHEMA,REVIEW_STATUSES,CELL_KEYS,SECTION_DEFINITIONS,COLUMN_DEFINITIONS,
+  SCHEMA_VERSION,TEMPLATE_SCHEMA,CARD_SCHEMA,PROJECT_SCHEMA,REVIEW_STATUSES,CELL_KEYS,OPTIONAL_CELL_KEYS,ALL_CELL_KEYS,OPTIONAL_CELL_DEFINITIONS,SECTION_DEFINITIONS,COLUMN_DEFINITIONS,
   cleanText,searchKey,normalizedCode,normalizeRect:normalizedRect,combineWords,groupVisualRows,detectSection,deriveColumns,
   createTemplateGroup,createTemplate:createTemplateGroup,createCard,digitizeCard:createCard,recomputeReviewCompleteness,
   addRow,updateRow,removeRow,moveRow,updateHeader,updateHeaderField,markTokenReviewed,ignoreToken,assignToken,approveCard,

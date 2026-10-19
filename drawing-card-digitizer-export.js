@@ -17,6 +17,7 @@
   designation:'Benämning',description:'Benämning',name:'Benämning',product:'Produkt',
   type:'Typ / utförande',model:'Typ / utförande',value:'Värde',quantity:'Antal',amount:'Antal',
   installer:'Monteras av',mountedBy:'Monteras av',supplier:'Levereras av',suppliedBy:'Levereras av',
+  connection:'Ansluts av',functionOwner:'Funktionsansvar',completion:'Montering klar',
   note:'Anmärkning',notes:'Anmärkning',remark:'Anmärkning'
  };
  const STATUS_LABELS={
@@ -131,7 +132,9 @@
    row.cells.forEach((value,index)=>{result[templateColumns[index]?.key||'column'+(index+1)]=clean(value);});
   }
   const aliases={designation:['designation','description','name','product','benamning'],type:['type','model','execution','utforande'],
-   quantity:['quantity','amount','antal'],installer:['installer','mountedBy','montor'],supplier:['supplier','suppliedBy','levererasAv'],note:['note','notes','remark','anmarkning']};
+   quantity:['quantity','amount','antal'],installer:['installer','mountedBy','montor'],supplier:['supplier','suppliedBy','levererasAv'],
+   connection:['connection','connectedBy','anslutsAv'],functionOwner:['functionOwner','functionalOwner','funktionsansvar'],completion:['completion','installationComplete','monteringKlar'],
+   note:['note','notes','remark','anmarkning']};
   for(const [key,keys]of Object.entries(aliases))if(!own(result,key)){
    const value=valueFromAliases(row,keys);if(value!==''&&value!==undefined)result[key]=clean(value);
   }
@@ -158,7 +161,7 @@
   return {code,label,fields};
  }
  function templateColumns(template){
-  return (template?.columns||[]).map((column,index)=>({key:clean(column?.key)||'column'+(index+1),label:clean(column?.label)||fieldLabel(column?.key||'column'+(index+1))}));
+  return (template?.columns||[]).filter(column=>column?.capture!==false).map((column,index)=>({key:clean(column?.key)||'column'+(index+1),label:clean(column?.label)||fieldLabel(column?.key||'column'+(index+1))}));
  }
  function normalizeCard(card,index,template){
   if(!card||typeof card!=='object')throw new TypeError('Dörrkort '+(index+1)+' saknar strukturerad data.');
@@ -172,9 +175,9 @@
   const present=[],seen=new Set();
   for(const column of columns)if(!seen.has(column.key)){seen.add(column.key);present.push(column);}
   for(const key of ['designation','type','quantity','installer']){
-   if(sections.some(section=>section.rows.some(row=>own(row.cells,key)))&&!seen.has(key)){seen.add(key);present.push({key,label:fieldLabel(key)});}
+   if(sections.some(section=>section.rows.some(row=>clean(row.cells?.[key])))&&!seen.has(key)){seen.add(key);present.push({key,label:fieldLabel(key)});}
   }
-  for(const section of sections)for(const row of section.rows)for(const key of Object.keys(row.cells))if(!seen.has(key)){
+  for(const section of sections)for(const row of section.rows)for(const key of Object.keys(row.cells))if(clean(row.cells[key])&&!seen.has(key)){
    seen.add(key);present.push({key,label:fieldLabel(key)});
   }
   if(!present.length)for(const key of ['designation','type','quantity','installer'])present.push({key,label:fieldLabel(key)});
@@ -239,7 +242,7 @@
   return result.length?result:[''];
  }
  function columnWeights(columns){
-  const weights={designation:2.35,description:2.35,name:2.35,product:2.35,type:2,model:2,quantity:.62,amount:.62,installer:.9,mountedBy:.9,supplier:1.05,note:1.55,notes:1.55};
+  const weights={designation:2.35,description:2.35,name:2.35,product:2.35,type:2,model:2,quantity:.62,amount:.62,installer:.9,mountedBy:.9,supplier:1.05,connection:1.05,functionOwner:1.2,completion:1.2,note:1.55,notes:1.55};
   const raw=columns.map(column=>weights[column.key]||1.15),sum=raw.reduce((total,value)=>total+value,0);return raw.map(value=>value/sum);
  }
  function planCardLayout(cardInput,options={}){

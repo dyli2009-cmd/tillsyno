@@ -1,4 +1,4 @@
-/* Digitalisera dörrkort · TEST — v2.4.395 */
+/* Digitalisera dörrkort · TEST — v2.4.398 */
 #digitizerTools{
  border-left:3px solid #7a5fa3;
  padding-left:10px;
@@ -85,6 +85,9 @@ html[data-tillsyno-theme] body #digitizerTools .digitizerConfirmBtn{background:#
  background:#775b9812;
 }
 .digitizerProgress[hidden]{display:none}
+.digitizerProgress[data-state="success"]{border-color:#78aa8d;background:#eaf5ee}
+.digitizerProgress[data-state="error"]{border-color:#c67e82;background:#fff0f1}
+.digitizerProgress[data-state="cancelled"]{border-color:#d3a44a;background:#fff8e8}
 .digitizerProgressHead,.digitizerProgressMeta{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .digitizerProgressHead strong{font-size:11px;line-height:1.4}
 .digitizerProgressHead span{font-size:16px;font-weight:850;font-variant-numeric:tabular-nums;white-space:nowrap}

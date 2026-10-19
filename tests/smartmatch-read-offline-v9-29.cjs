@@ -23,11 +23,11 @@ const assets=['drawing-tools.html','drawing-card-digitizer.css','drawing-card-di
   await page.evaluate(()=>navigator.serviceWorker.ready);
   await page.waitForFunction(()=>!!navigator.serviceWorker.controller,null,{timeout:60000});
   const cacheState=await page.evaluate(async names=>{
-   const keys=await caches.keys(),cache=await caches.open('tillsyno-offline-2.4.397'),entries={};
+   const keys=await caches.keys(),cache=await caches.open('tillsyno-offline-2.4.398'),entries={};
    for(const name of names){const response=await cache.match(new URL(name,location.href).href);entries[name]=response?{status:response.status,size:(await response.arrayBuffer()).byteLength}:null;}
    return {keys,entries};
   },assets);
-  assert(cacheState.keys.includes('tillsyno-offline-2.4.397'));
+  assert(cacheState.keys.includes('tillsyno-offline-2.4.398'));
   for(const name of assets){assert(cacheState.entries[name],name+' is cached');assert.equal(cacheState.entries[name].status,200);assert(cacheState.entries[name].size>0,name+' is nonempty');}
   await context.setOffline(true);
   const offline=await page.evaluate(async names=>Promise.all(names.map(async name=>{const response=await fetch(name,{cache:'no-store'});return {name,status:response.status,size:(await response.arrayBuffer()).byteLength};})),assets);
