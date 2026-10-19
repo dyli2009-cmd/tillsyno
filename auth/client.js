@@ -8,7 +8,12 @@
  const read=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(_){return null}};
  const write=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}};
  const clear=()=>{try{localStorage.removeItem(key)}catch(_){}};
- const markLogin=userId=>{if(userId)write(loginKey,{userId,at:Date.now()});};
+ const markLogin=userId=>{
+  if(!userId)return;
+  const value={userId,at:Date.now()};write(loginKey,value);
+  const saved=read(loginKey);
+  if(saved?.userId!==userId||saved.at!==value.at){const error=Error('Webbläsaren kunde inte spara inloggningen. Tillåt webbplatsdata för Tillsyno och försök igen.');error.code='STORAGE_UNAVAILABLE';throw error;}
+ };
  const within=stamp=>Number.isFinite(Number(stamp))&&Number(stamp)>0&&Date.now()>=Number(stamp)&&Date.now()-Number(stamp)<WEEK;
  const loginFresh=id=>{const v=read(loginKey);return v?.userId===id&&within(v.at)};
  function permitted(access,module){return access.role==='admin'||!module||Array.isArray(access.modules)&&access.modules.includes(module)}
