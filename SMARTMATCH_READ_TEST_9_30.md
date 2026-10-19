@@ -19,3 +19,5 @@ Validation:
 - single-card reread browser suite: only selected source read, additions preserve edits/checks/time
 
 Browser checks use generated PDFs and Chromium, not physical Safari or the user's full project PDF. OCR recognition accuracy on new scans still requires comparison with their originals; this release changes parsing, inventory and work handling, not the OCR engine.
+
+DS/DA replica symbols are shown only on iPad/iPhone, including iPad desktop-mode user agents. Desktop gets no overlay symbols or equipment-index read. PDF source content is unchanged. Verified with desktop, iPad portrait/landscape and iPhone browser profiles.
