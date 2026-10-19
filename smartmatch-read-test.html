@@ -10,7 +10,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>SmartMatch – Avläsning TEST 9.36</title>
+<title>SmartMatch – Avläsning TEST 9.37</title>
 
 
 <script src="smartmatch-protocol-templates.js"></script>
@@ -433,7 +433,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
   <div class="pwTitle">
     <strong>SmartMatch</strong>
     <div class="pwReleaseLine" aria-label="Programversion">
-      <span id="pwBuildVersion" class="pwTitleVersion" data-build="36.179" title="SmartMatch avläsning TEST 9.36">Avläsning TEST 9.36</span>
+      <span id="pwBuildVersion" class="pwTitleVersion" data-build="36.180" title="SmartMatch avläsning TEST 9.37">Avläsning TEST 9.37</span>
       <span id="pwUpdateStatus" class="pwUpdateStatus" hidden aria-hidden="true"></span>
     </div>
     <small class="smHeaderSubtitle" aria-hidden="true">Projektflöde</small>
@@ -464,6 +464,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
   <button id="pwFit" type="button">Passa</button>
   <button id="pwBulkSelect" type="button" aria-pressed="false" title="Välj flera positioner">Välj</button>
   <button id="rtOpenSettings" type="button" class="rtSettingsButton" hidden aria-hidden="true" tabindex="-1">Ändra förberedelse</button>
+  <button id="pwProjectMaterialButton" type="button">Material</button>
   <button id="pwTimeReport" type="button" title="Beräknad arbetstid">Tid</button>
   <button id="labDiagnoseOpen" class="pwAnalysisShortcut" type="button" title="Analys & rapporter: dörrkort, GS-rapport, PDF-analys och felsökning" aria-label="Öppna Analys och rapporter">▤ Analys</button>
   <div class="pwDrawTools" aria-label="Ritverktyg">
@@ -586,7 +587,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
         <div class="pwEmptyMark" aria-hidden="true">
           <svg viewBox="0 0 64 64"><path d="M11 51V14h27v38"/><path d="M18 51V30h13v35"/><circle cx="28" cy="36" r="1.7"/><path d="M38 22h15v35H38"/><path d="M8 51h48"/></svg>
         </div>
-        <h1>Avläsning TEST 9.36</h1>
+        <h1>Avläsning TEST 9.37</h1>
         <p class="rtHomeIntro">Förbered filen en gång. Fortsätt sedan arbeta med den sparade projekt-PDF:en.</p>
         <div class="rtWorkflowEntries">
           <section id="rtPrepareEntry" class="rtWorkflowEntry" aria-labelledby="rtPrepareTitle">
@@ -709,7 +710,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
         <div><span>ARBETSPROTOKOLL</span><strong>Kontrollpunkter</strong></div>
         <div class="pwChecklistHeadActions pwChecklistNavigation"><button id="pwProtocolBackToCard" type="button">← Dörrkort</button><button id="pwRereadCard" type="button" hidden title="Läs om endast det öppna dörrkortets arbetslista">↻ Läs om detta kort</button><small id="pwChecklistMeta" role="status" aria-live="polite">0 punkter</small></div>
       </div>
-      <div class="pwChecklistWorkActions" role="toolbar" aria-label="Åtgärder för kontrollpunkterna"><button id="pwChecklistMarkAll" type="button">✓ Alla</button><button id="pwChecklistClearAll" type="button" title="Avmarkerar alla avlästa kontrollpunkter men tar inte bort dem">Rensa alla</button><button id="pwAddChecklistItem" type="button">＋ Punkt</button><button id="pwAddExtraTime" type="button" title="Lägg till krångel eller annat extra arbete för just den här dörren">＋ Extra tid</button><button id="pwAddOrder" type="button" title="Lägg till något som behöver beställas för den här dörren">Beställning</button><button id="pwAddRemark" type="button" title="Lägg till en anmärkning för den här dörren">Anmärkning</button></div>
+      <div class="pwChecklistWorkActions" role="toolbar" aria-label="Åtgärder för kontrollpunkterna"><button id="pwChecklistMarkAll" type="button">✓ Alla</button><button id="pwChecklistClearAll" type="button" title="Avmarkerar alla avlästa kontrollpunkter men tar inte bort dem">Rensa alla</button><button id="pwCardMaterials" type="button">Material</button><button id="pwAddChecklistItem" type="button">＋ Punkt</button><button id="pwAddExtraTime" type="button" title="Lägg till krångel eller annat extra arbete för just den här dörren">＋ Extra tid</button><button id="pwAddOrder" type="button" title="Lägg till något som behöver beställas för den här dörren">Beställning</button><button id="pwAddRemark" type="button" title="Lägg till en anmärkning för den här dörren">Anmärkning</button></div>
       <div id="pwDoorAttention" class="pwDoorAttention" role="region" aria-label="Beställningar och anmärkningar för den här dörren" hidden></div>
       <div id="pwDoorTimeSummary" class="pwDoorTimeSummary" aria-label="Beräknad tid för den här dörren" hidden>
         <div class="pwDoorTimePrimary"><span>Beräknad dörrtid</span><strong id="pwDoorTimeTotal">0 min</strong></div>
@@ -912,7 +913,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
     <label>Typ / utförande<input id="pwEditValue" type="text" placeholder="Exempel: STEP 40"></label>
     <label>Antal<input id="pwEditQuantity" type="number" inputmode="numeric" min="1" max="999" step="1" value="1"><small>Antalet multiplicerar materialet och tiden för den här dörren.</small></label>
     <label>Tid (timmar,minuter)<input id="pwEditMinutes" type="text" inputmode="decimal" placeholder="Exempel: 0,15 eller 3,10"><small>Skriv 8 = 8 timmar, 0,10 = 10 minuter och 3,10 = 3 timmar 10 minuter. Lämna tomt för standardtid.</small></label>
-    <label id="pwItemScopeField">Ändringen gäller<select id="pwItemScope"><option value="position" selected>Bara denna position</option><option value="door-card">Alla positioner med samma dörrkort</option></select><small>Välj uttryckligen alla positioner för att använda ändringen på samma dörrkort. Varje dörr har egna kryss.</small></label>
+    <label id="pwItemScopeField">Ändringen gäller<select id="pwItemScope"><option value="position" selected>Bara denna position</option><option value="code">Alla med samma beteckning (t.ex. GS2)</option><option value="door-card">Alla positioner med samma dörrkort</option></select><small>Namn rättas i hela projektet. Antal, tid och kommentar gäller valt omfång. Varje dörr har egna kryss.</small></label>
     <label>Kommentar<textarea id="pwEditNote" rows="3" placeholder="Exempel: Bytt modell på plats – originaltypen gick inte att använda."></textarea></label>
   </div>
   <div class="pwItemEditorActions"><button id="pwEditCancel" type="button">Avbryt</button><button id="pwEditSave" type="button">Spara</button></div>
@@ -933,7 +934,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
     </div>
     <div class="pwTimeSubhead">
       <p class="pwTimeIntro">Beräknad tid för material och extraarbete på varje fysisk dörr. Ändrade standardtider sparas på den här enheten och följer med projekt-PDF:en.</p>
-      <button id="pwTimeAddType" type="button">＋ Ny tidstyp</button>
+      <button id="pwAllMaterials" type="button">GS-material</button><button id="pwTimeAddType" type="button">＋ Ny tidstyp</button>
     </div>
     <div class="pwTimeTabs pwTimeTabsThree" role="tablist" aria-label="Visa tid per produkt, dörr eller projektärende">
       <button id="pwTimeProductsTab" type="button" role="tab" aria-selected="true" aria-controls="pwTimeProductsPanel" tabindex="0">Per produkt</button>
@@ -1130,33 +1131,33 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
  <p class="smSaveReminder">Spara PDF bäddar in avläsning, kopplingar, produkter och avprickningar i filen. Den öppnas direkt på nästa dator utan ny avläsning. Spara lokalt är en arbetskopia i den här webbläsaren.</p>
 </dialog>
 <script src="vendor/jszip-3.10.1.min.js"></script>
-<script src="smartmatch-slr-test-module-read-v9-29.js?v=9.36"></script>
+<script src="smartmatch-slr-test-module-read-v9-29.js?v=9.37"></script>
 <script src="smartmatch-slr-test-da-v36-132.js?v=36.132"></script>
 <script src="smartmatch-stamp-shapes-v36-78.js?v=36-78"></script>
 <script src="smartmatch-table-layouts-v36-94.js?v=36-106"></script>
 <script src="smartmatch-beslagskod-v36-133.js?v=36.133"></script>
-<link rel="stylesheet" href="smartmatch-read-test-v9-36.css?v=9.36">
+<link rel="stylesheet" href="smartmatch-read-test-v9-37.css?v=9.37">
 <script src="smartmatch-read-stamps-v5.js?v=5"></script>
-<script src="smartmatch-read-text-v9-6.js?v=9.36"></script>
-<script src="smartmatch-read-appearance-v9-29.js?v=9.36"></script>
-<script src="smartmatch-read-match-v9-29.js?v=9.36"></script>
-<script src="smartmatch-read-codes-v9-6.js?v=9.36"></script>
+<script src="smartmatch-read-text-v9-6.js?v=9.37"></script>
+<script src="smartmatch-read-appearance-v9-29.js?v=9.37"></script>
+<script src="smartmatch-read-match-v9-29.js?v=9.37"></script>
+<script src="smartmatch-read-codes-v9-6.js?v=9.37"></script>
 <script src="smartmatch-read-image-regions-v7.js?v=7"></script>
-<script src="smartmatch-read-work-v9-32.js?v=9.36"></script>
+<script src="smartmatch-read-work-v9-32.js?v=9.37"></script>
 <script src="smartmatch-read-progress-v9-1.js?v=9.1"></script>
-<script src="smartmatch-read-project-v9-29.js?v=9.36"></script>
-<script src="smartmatch-read-review-v9-36.js?v=9.36"></script>
-<script src="smartmatch-read-workflow-v9-29.js?v=9.36"></script>
+<script src="smartmatch-read-project-v9-29.js?v=9.37"></script>
+<script src="smartmatch-read-review-v9-37.js?v=9.37"></script>
+<script src="smartmatch-read-workflow-v9-29.js?v=9.37"></script>
 <script src="smartmatch-read-table-ocr-v9-33.js"></script>
-<script src="smartmatch-read-test-v9-36.js?v=9.36"></script>
-<script src="smartmatch-read-export-progress-v9-29.js?v=9.36"></script>
+<script src="smartmatch-read-test-v9-37.js?v=9.37"></script>
+<script src="smartmatch-read-export-progress-v9-29.js?v=9.37"></script>
 <script src="smartmatch-card-view-v9-35.js"></script>
-<script src="smartmatch-read-test-main-v9-36.js?v=9.36"></script>
-<script src="smartmatch-read-equipment-symbols-v9-30.js?v=9.36"></script>
-<script src="smartmatch-read-extra-v9-29.js?v=9.36"></script>
+<script src="smartmatch-read-test-main-v9-37.js?v=9.37"></script>
+<script src="smartmatch-read-equipment-symbols-v9-30.js?v=9.37"></script>
+<script src="smartmatch-read-extra-v9-29.js?v=9.37"></script>
 <script src="smartmatch-protocol-export-v36-96.js?v=36-106"></script>
-<script src="smartmatch-read-test-session-v9-36.js?v=9.36"></script>
-<script id="smartmatch-visual-release-v1-3">(function(){var label=document.getElementById('pwBuildVersion');if(!label)return;label.textContent='Avläsning TEST 9.36';label.title='SmartMatch avläsning TEST 9.36';label.setAttribute('aria-label','SmartMatch avläsning TEST 9.36');/* data-build and data-loaded-build use 36.179 for internal updater. */})();</script>
+<script src="smartmatch-read-test-session-v9-37.js?v=9.37"></script>
+<script id="smartmatch-visual-release-v1-3">(function(){var label=document.getElementById('pwBuildVersion');if(!label)return;label.textContent='Avläsning TEST 9.37';label.title='SmartMatch avläsning TEST 9.37';label.setAttribute('aria-label','SmartMatch avläsning TEST 9.37');/* data-build and data-loaded-build use 36.180 for internal updater. */})();</script>
 <script src="tillsyno-appearance.js?v=2.4.397"></script>
 
 <!-- Session module handles refresh + reopen -->
