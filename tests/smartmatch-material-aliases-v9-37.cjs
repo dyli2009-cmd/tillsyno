@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const source=fs.readFileSync(require('node:path').join(__dirname,'../smartmatch-read-test-main-v9-37.js'),'utf8');
+const context=vm.createContext({smartProjectTimeConfig:{},save(){},materialIdentity:item=>item.label+'|'+item.value});
+vm.runInContext(source.slice(source.indexOf('function projectProductName('),source.indexOf('async function projectMaterialRows(')),context);
+const rename=(a,b)=>context.renameProjectProduct(a,b),resolve=name=>context.canonicalProjectProduct(name);
+assert.equal(resolve('42265 1'),'42265 1');assert.equal(resolve('1107'),'1107');
+rename('1 DC700','DC700');assert.equal(resolve('1 DC700'),'DC700');
+rename('DC700','DC701');assert.equal(resolve('1 DC700'),'DC701');
+rename('DC701','1 DC700');assert.equal(resolve('DC700'),'1 DC700');
+rename('1 DC700','DC700');assert.equal(resolve('DC701'),'DC700');
+rename('typo','DC701');assert.equal(resolve('typo'),'DC700');assert.equal(resolve('DC701'),'DC700','merging into an existing alias must preserve its group');
+const corrected=context.resolveProjectProduct({key:'original',label:'Stängare',value:'1 DC700',quantity:2,minutes:17});
+assert.equal(corrected.key,'original');assert.equal(corrected.value,'DC700');assert.equal(corrected.quantity,2);assert.equal(corrected.minutes,17);
+assert.equal(context.resolveProjectProduct({label:'1 DC700',kind:'extra-time'}).label,'1 DC700');
+context.smartProjectTimeConfig={};assert.equal(resolve('1 DC700'),'1 DC700');
+console.log('PASS material aliases: chains, reverse rename, merge into alias, real digits, quantities/time/keys and project isolation');
