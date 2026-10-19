@@ -10,7 +10,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>SmartMatch – Avläsning TEST 9.61</title>
+<title>SmartMatch – Avläsning TEST 9.62</title>
 
 
 <script src="smartmatch-protocol-templates.js"></script>
@@ -433,7 +433,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
   <div class="pwTitle">
     <strong>SmartMatch</strong>
     <div class="pwReleaseLine" aria-label="Programversion">
-      <span id="pwBuildVersion" class="pwTitleVersion" data-build="36.204" title="SmartMatch avläsning TEST 9.61">Avläsning TEST 9.61</span>
+      <span id="pwBuildVersion" class="pwTitleVersion" data-build="36.205" title="SmartMatch avläsning TEST 9.62">Avläsning TEST 9.62</span>
       <span id="pwUpdateStatus" class="pwUpdateStatus" hidden aria-hidden="true"></span>
     </div>
     <small class="smHeaderSubtitle" aria-hidden="true">Projektflöde</small>
@@ -588,27 +588,14 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
         <div class="pwEmptyMark" aria-hidden="true">
           <svg viewBox="0 0 64 64"><path d="M11 51V14h27v38"/><path d="M18 51V30h13v35"/><circle cx="28" cy="36" r="1.7"/><path d="M38 22h15v35H38"/><path d="M8 51h48"/></svg>
         </div>
-        <h1>Avläsning TEST 9.61</h1>
-        <p class="rtHomeIntro">Förbered filen en gång. Fortsätt sedan arbeta med den sparade projekt-PDF:en.</p>
+
+
         <div class="rtWorkflowEntries">
-          <section id="rtPrepareEntry" class="rtWorkflowEntry" aria-labelledby="rtPrepareTitle">
-            <div class="rtEntryHeading"><span class="rtEntryIcon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h10l6 6v20H7V3h2m10 0v7h6M11 16h10m-10 5h7"/><path d="M23 21v8m-4-4h8"/></svg></span><div><span class="rtEntryWhen">Första gången · ny fil</span><h2 id="rtPrepareTitle">Förbered ny PDF</h2></div></div>
-            <ol class="rtEntrySteps">
-              <li>Välj ritning och dörrkort från en eller flera PDF-filer.</li>
-              <li>Markera ett exempel, läs koderna och kontrollera kopplingarna.</li>
-              <li>Läs produkter när du behöver dem. Välj sedan <strong>Spara → Spara PDF</strong>.</li>
-            </ol>
-            <button id="rtChooseFiles" class="rtEntryButton" type="button" title="Börja förberedelsen med en eller flera PDF-filer">Förbered ny PDF</button>
-          </section>
-          <section id="rtWorkEntry" class="rtWorkflowEntry rtPreparedEntry" aria-labelledby="rtWorkTitle">
-            <div class="rtEntryHeading"><span class="rtEntryIcon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 27V5h15v22m0-15h7v15M3 27h26M10 17l3 3 6-7"/></svg></span><div><span class="rtEntryWhen">Nästa gång · färdigt projekt</span><h2 id="rtWorkTitle">Öppna färdigt projekt</h2></div></div>
-            <p>Välj PDF:en du sparade. Kopplingar, dörrkort, produkter och avprickningar följer med, även till en annan dator.</p>
-            <p class="rtEntrySaved">Den sparade avläsningen används direkt. Ingen ny bildläsning eller sökning startas när du öppnar.</p>
-            <button id="pwOpenProjectEmpty" class="pwOpen pwOpenLarge rtEntryButton" type="button" title="Öppna sparad projekt-PDF och fortsätt arbetet">Öppna färdigt projekt</button>
-          </section>
+          <section id="rtPrepareEntry" class="rtWorkflowEntry" aria-label="Förbered ny PDF"><button id="rtChooseFiles" class="rtEntryButton" type="button" aria-label="Förbered ny PDF"><svg aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h10l6 6v20H7V3h2m10 0v7h6M11 16h10m-10 5h7"/><path d="M23 21v8m-4-4h8"/></svg></button></section>
+          <section id="rtWorkEntry" class="rtWorkflowEntry" aria-label="Öppna färdig PDF"><button id="pwOpenProjectEmpty" class="rtEntryButton" type="button" aria-label="Öppna färdig PDF"><svg aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 27V5h15v22m0-15h7v15M3 27h26M10 17l3 3 6-7"/></svg></button></section>
         </div>
         <input id="rtMultiFiles" type="file" accept="application/pdf,.pdf" multiple hidden>
-        <p id="pwHomeStatus" class="smHomeStatus" role="status" aria-live="polite">På en annan dator: öppna den sparade projekt-PDF:en via Öppna färdigt projekt. Du behöver inte göra om avläsningen.</p>
+        <p id="pwHomeStatus" class="smHomeStatus" role="status" aria-live="polite"></p>
         <div class="smLegacyRecovery">
           <button id="pwRecoverOldProjects" type="button">Hitta tidigare lokalt sparade projekt</button>
           <small>Söker säkert i äldre TEST-versioner på den här datorn. Inget raderas eller skrivs över.</small>
@@ -1130,33 +1117,33 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
  <p class="smSaveReminder">Spara PDF bäddar in avläsning, kopplingar, produkter och avprickningar i filen. Den öppnas direkt på nästa dator utan ny avläsning. Spara lokalt är en arbetskopia i den här webbläsaren.</p>
 </dialog>
 <script src="vendor/jszip-3.10.1.min.js"></script>
-<script src="smartmatch-slr-test-module-read-v9-29.js?v=9.61"></script>
+<script src="smartmatch-slr-test-module-read-v9-29.js?v=9.62"></script>
 <script src="smartmatch-slr-test-da-v36-132.js?v=36.132"></script>
 <script src="smartmatch-stamp-shapes-v36-78.js?v=36-78"></script>
 <script src="smartmatch-table-layouts-v36-94.js?v=36-106"></script>
 <script src="smartmatch-beslagskod-v36-133.js?v=36.133"></script>
-<link rel="stylesheet" href="smartmatch-read-test-v9-61.css?v=9.61">
+<link rel="stylesheet" href="smartmatch-read-test-v9-62.css?v=9.62">
 <script src="smartmatch-read-stamps-v5.js?v=5"></script>
-<script src="smartmatch-read-text-v9-6.js?v=9.61"></script>
-<script src="smartmatch-read-appearance-v9-29.js?v=9.61"></script>
-<script src="smartmatch-read-match-v9-29.js?v=9.61"></script>
-<script src="smartmatch-read-codes-v9-6.js?v=9.61"></script>
+<script src="smartmatch-read-text-v9-6.js?v=9.62"></script>
+<script src="smartmatch-read-appearance-v9-29.js?v=9.62"></script>
+<script src="smartmatch-read-match-v9-29.js?v=9.62"></script>
+<script src="smartmatch-read-codes-v9-6.js?v=9.62"></script>
 <script src="smartmatch-read-image-regions-v7.js?v=7"></script>
-<script src="smartmatch-read-work-v9-32.js?v=9.61"></script>
+<script src="smartmatch-read-work-v9-32.js?v=9.62"></script>
 <script src="smartmatch-read-progress-v9-1.js?v=9.1"></script>
-<script src="smartmatch-read-project-v9-29.js?v=9.61"></script>
-<script src="smartmatch-read-review-v9-61.js?v=9.61"></script>
-<script src="smartmatch-read-workflow-v9-29.js?v=9.61"></script>
+<script src="smartmatch-read-project-v9-29.js?v=9.62"></script>
+<script src="smartmatch-read-review-v9-62.js?v=9.62"></script>
+<script src="smartmatch-read-workflow-v9-29.js?v=9.62"></script>
 <script src="smartmatch-read-table-ocr-v9-33.js"></script>
-<script src="smartmatch-read-test-v9-61.js?v=9.61"></script>
-<script src="smartmatch-read-export-progress-v9-51.js?v=9.61"></script>
+<script src="smartmatch-read-test-v9-62.js?v=9.62"></script>
+<script src="smartmatch-read-export-progress-v9-51.js?v=9.62"></script>
 <script src="smartmatch-card-view-v9-38.js"></script>
-<script src="smartmatch-read-test-main-v9-61.js?v=9.61"></script>
-<script src="smartmatch-read-equipment-symbols-v9-61.js?v=9.61"></script>
-<script src="smartmatch-read-extra-v9-29.js?v=9.61"></script>
+<script src="smartmatch-read-test-main-v9-62.js?v=9.62"></script>
+<script src="smartmatch-read-equipment-symbols-v9-62.js?v=9.62"></script>
+<script src="smartmatch-read-extra-v9-29.js?v=9.62"></script>
 <script src="smartmatch-protocol-export-v36-96.js?v=36-106"></script>
-<script src="smartmatch-read-test-session-v9-61.js?v=9.61"></script>
-<script id="smartmatch-visual-release-v1-3">(function(){var label=document.getElementById('pwBuildVersion');if(!label)return;label.textContent='Avläsning TEST 9.61';label.title='SmartMatch avläsning TEST 9.61';label.setAttribute('aria-label','SmartMatch avläsning TEST 9.61');/* data-build and data-loaded-build use 36.204 for internal updater. */})();</script>
+<script src="smartmatch-read-test-session-v9-62.js?v=9.62"></script>
+<script id="smartmatch-visual-release-v1-3">(function(){var label=document.getElementById('pwBuildVersion');if(!label)return;label.textContent='Avläsning TEST 9.62';label.title='SmartMatch avläsning TEST 9.62';label.setAttribute('aria-label','SmartMatch avläsning TEST 9.62');/* data-build and data-loaded-build use 36.205 for internal updater. */})();</script>
 <script src="tillsyno-appearance.js?v=2.4.397"></script>
 
 <!-- Session module handles refresh + reopen -->
