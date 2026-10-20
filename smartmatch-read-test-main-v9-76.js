@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const SMARTMATCH_RELEASE='36.218-READ-TEST';
+const SMARTMATCH_RELEASE='36.219-READ-TEST';
 const SMARTMATCH_TEST_LABEL='Avläsning TEST 9.76';
 let smartExportRevision=0,smartExportCached=null,smartExportTask=null,smartExportBytesVersion=-1,smartExportProjectEpoch=0;
 let manualPositions=[],positionEdits={},placement=null;
