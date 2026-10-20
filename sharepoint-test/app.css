@@ -1,20 +1,114 @@
-#spFilePicker{box-sizing:border-box;width:min(720px,94vw);max-height:88vh;border:1px solid #b5ccd5;border-radius:16px;background:#f7fafc;color:#173747;padding:22px;font:16px/1.5 system-ui;z-index:2147483646;overflow:auto}#spFilePicker::backdrop{background:#102d3ac9}#spFilePicker button{font:inherit;cursor:pointer;border:1px solid #9bb8c7;border-radius:9px;padding:10px 14px;background:#fff;color:#173747;min-height:44px}#spFilePicker button:disabled{opacity:.5;cursor:default}.spHead,.spActions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.spHead h2{margin:0}.spHead button{font-size:22px}.spActions{justify-content:flex-start}#spFiles{list-style:none;padding:0;max-height:35vh;overflow:auto}#spFiles li{border-bottom:1px solid #d8e4eb;padding:9px 0}#spFiles label{display:flex;align-items:center;gap:12px;overflow-wrap:anywhere;cursor:pointer}#spFiles input{width:20px;height:20px;flex-shrink:0}#spImport{background:#12647c!important;color:white!important;width:100%}.spNote{font-size:13px;color:#4b6775}#spCrumbs{display:flex;gap:6px;flex-wrap:wrap}.spTestBadge{position:fixed;bottom:6px;left:6px;z-index:100000;background:#153e50;color:white;border-radius:9px;padding:5px 9px;font:12px system-ui;box-shadow:0 2px 9px #0003}.spTestBadge a{color:white;text-decoration:underline}
-
-/* The save picker belongs only to the isolated SharePoint test copies. */
-#spSavePicker{box-sizing:border-box;width:min(700px,94vw);max-height:90dvh;border:1px solid #b5ccd5;border-radius:16px;background:#f7fafc;color:#173747;padding:22px;font:16px/1.5 system-ui;z-index:2147483647;overflow:auto}
-#spSavePicker::backdrop{background:#102d3ac9}
-#spSavePicker button{font:inherit;cursor:pointer;border:1px solid #9bb8c7;border-radius:9px;padding:10px 14px;background:#fff;color:#173747;min-height:44px}
-#spSavePicker button:disabled{opacity:.5;cursor:default}
-#spSavePicker .spHead{align-items:flex-start}#spSavePicker .spHead h2{margin:0}#spSavePicker .spHead button{font-size:22px;line-height:1}
-#spSaveSummary,#spSaveAccount,#spSaveStatus{overflow-wrap:anywhere}
-#spSavePicker .spSaveNameLabel{display:block;font-weight:600;margin:12px 0 6px}
-#spSaveName{box-sizing:border-box;width:100%;font:inherit;padding:12px;border:1px solid #9bb8c7;border-radius:9px;color:inherit;background:#fff;margin-bottom:14px;min-height:46px}
-#spSavePicker .spFolderLabel{font-weight:600;margin:14px 0 6px}
-#spSaveCrumbs{display:flex;flex-wrap:wrap;gap:6px}#spSaveCrumbs button:last-child{background:#dfedf3;font-weight:600}
-#spSaveFolders{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:8px;max-height:20vh;overflow:auto}#spSaveFolders:empty{display:none}
-#spSaveProgress{width:100%;height:12px;accent-color:#12647c}
-#spSaveStatus{min-height:1.5em;margin:14px 0}
-#spSavePicker .spSaveButtons{display:flex;gap:10px;flex-wrap:wrap}#spSaveSubmit{background:#12647c!important;color:#fff!important;flex:1}#spSaveLocal{flex:1}
-#spSaveResult{box-sizing:border-box;position:fixed;left:50%;transform:translateX(-50%);bottom:42px;width:max-content;max-width:min(720px,94vw);max-height:30vh;overflow:auto;z-index:2147483647;background:#173747;color:#fff;border-radius:12px;padding:14px 48px 14px 16px;box-shadow:0 4px 20px #0004;font:14px/1.5 system-ui;overflow-wrap:anywhere}
-#spSaveResult[hidden]{display:none}#spSaveResult a{color:#fff;text-decoration:underline;font-weight:600}#spSaveResult button{position:absolute;right:5px;top:5px;width:38px;height:38px;background:transparent;border:0;color:#fff;font:24px system-ui;cursor:pointer}
-@media(max-width:480px){#spSavePicker{padding:16px}#spSavePicker .spSaveButtons{flex-direction:column}#spSavePicker .spActions button{flex:1}#spSaveResult{bottom:38px}}
+/* Shared, scoped styling for the isolated SharePoint views. */
+:is(#spFilePicker,#spSavePicker){--sp-ink:#233b49;--sp-muted:#657985;--sp-line:#dce6ea;--sp-teal:#086b70;--sp-soft:#edf6f5;box-sizing:border-box;width:min(580px,calc(100vw - 32px));max-width:580px;max-height:calc(100dvh - 40px);margin:auto;padding:22px;border:1px solid #d9e4e8;border-radius:20px;background:#fff;color:var(--sp-ink);box-shadow:0 24px 80px #0c29372b,0 3px 12px #0c293714;font:14px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:auto;overscroll-behavior:contain;z-index:2147483647;color-scheme:light}
+:is(#spFilePicker,#spSavePicker)::backdrop{background:#102b3b80;backdrop-filter:blur(3px)}
+:is(#spFilePicker,#spSavePicker) *{box-sizing:border-box}
+:is(#spFilePicker,#spSavePicker) [hidden]{display:none!important}
+:is(#spFilePicker,#spSavePicker) button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:0;min-height:40px;margin:0;padding:9px 13px;border:1px solid var(--sp-line);border-radius:10px;background:#fff;color:var(--sp-ink);font:600 13px/1.25 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer;box-shadow:none;transition:background .15s,border-color .15s,color .15s;overflow-wrap:anywhere;text-align:center}
+:is(#spFilePicker,#spSavePicker) button:hover:not(:disabled){background:#f3f7f8;border-color:#b8ced4}
+:is(#spFilePicker,#spSavePicker) button:disabled{opacity:.45;cursor:default}
+:is(#spFilePicker,#spSavePicker) :is(button,input,summary):focus-visible{outline:3px solid #32a7ab70;outline-offset:3px}
+:is(#spFilePicker,#spSavePicker) .spIcon{display:block;flex:0 0 19px;width:19px;height:19px;pointer-events:none;stroke:currentColor;fill:none}
+:is(#spFilePicker,#spSavePicker) .spButtonLabel{min-width:0;overflow-wrap:anywhere}
+:is(#spFilePicker,#spSavePicker) .spPrimary{background:var(--sp-teal);border-color:var(--sp-teal);color:#fff;box-shadow:0 2px 3px #06575d18}
+:is(#spFilePicker,#spSavePicker) .spPrimary:hover:not(:disabled){background:#075c63;border-color:#075c63}
+/* The reader theme uses important rules on every dialog button. A scoped layer
+ * gives these action roles priority without changing that module's palette. */
+@layer sharepoint-picker-actions{
+ :is(#spFilePicker,#spSavePicker) .spPrimary{background:var(--sp-teal)!important;border-color:var(--sp-teal)!important;color:#fff!important}
+ :is(#spFilePicker,#spSavePicker) .spPrimary:hover:not(:disabled){background:#075c63!important;border-color:#075c63!important}
+ #spSavePicker .spModeSwitch button{background:transparent!important;border-color:transparent!important;color:var(--sp-muted)!important}
+ #spSavePicker .spModeSwitch button[aria-pressed=true]{background:#fff!important;border-color:#dce7e8!important;color:var(--sp-teal)!important}
+}
+:is(#spFilePicker,#spSavePicker) .spSecondary{background:#f9fbfc}
+:is(#spFilePicker,#spSavePicker) .spQuiet{border-color:transparent;background:transparent;padding-left:0;color:var(--sp-muted)}
+:is(#spFilePicker,#spSavePicker) .spHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 17px;padding:0;border:0;background:none}
+:is(#spFilePicker,#spSavePicker) .spHeading{display:flex;align-items:center;gap:11px;min-width:0}
+:is(#spFilePicker,#spSavePicker) .spHeadingIcon{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;background:var(--sp-soft);border:1px solid #d6eae7;border-radius:13px;color:var(--sp-teal)}
+:is(#spFilePicker,#spSavePicker) .spHeadingIcon .spIcon{width:23px;height:23px}
+:is(#spFilePicker,#spSavePicker) .spEyebrow{display:block;color:var(--sp-muted);font-size:10px;font-weight:700;line-height:1.4;letter-spacing:.13em;margin-bottom:2px}
+:is(#spFilePicker,#spSavePicker) .spHead h2{margin:0!important;color:var(--sp-ink);font-size:21px!important;font-weight:650;line-height:1.2!important;letter-spacing:-.025em}
+:is(#spFilePicker,#spSavePicker) .spIconButton{flex:0 0 auto;width:38px;min-height:38px;padding:8px;color:var(--sp-muted);border-color:transparent;background:transparent}
+:is(#spFilePicker,#spSavePicker) .spClose:has(.spButtonLabel){width:auto;min-width:38px}
+:is(#spFilePicker,#spSavePicker) .spActions{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+:is(#spFilePicker,#spSavePicker) .spSourceActions{display:grid;grid-template-columns:1fr 1fr;margin-bottom:13px}
+:is(#spFilePicker,#spSavePicker) .spSourceActions button{width:100%;padding-inline:10px}
+:is(#spFilePicker,#spSavePicker) .spFolderToolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+:is(#spFilePicker,#spSavePicker) .spFolderToolbar:has(nav:empty):not(:has(button:not([hidden]))){display:none}
+:is(#spFilePicker,#spSavePicker) .spCrumbs{display:flex;align-items:center;flex-wrap:wrap;gap:3px;min-width:0;flex:1}
+:is(#spFilePicker,#spSavePicker) .spCrumbs:empty{display:none}
+:is(#spFilePicker,#spSavePicker) .spCrumbs button{position:relative;border:0;background:transparent;border-radius:6px;padding:6px 8px;min-height:32px;font-size:12px;font-weight:500;color:var(--sp-muted)}
+:is(#spFilePicker,#spSavePicker) .spCrumbs button:last-child{background:var(--sp-soft);color:#0c656b;font-weight:650}
+:is(#spFilePicker,#spSavePicker) .spCrumbs button+button::before{content:"›";position:absolute;left:-4px;color:#8c9da6;font-size:16px;font-weight:400}
+:is(#spFilePicker,#spSavePicker) :is(.spFileList,.spFolderList){list-style:none;padding:0;margin:9px 0 0;min-width:0;max-height:240px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#b9ced2 transparent}
+:is(#spFilePicker,#spSavePicker) :is(.spFileList,.spFolderList):empty{display:none}
+#spFilePicker .spFileList{border:1px solid var(--sp-line);border-radius:12px;background:#fff}
+#spFilePicker .spFileList li{margin:0;padding:0;border:0}
+#spFilePicker .spFileList li+li{border-top:1px solid #edf1f3}
+#spFilePicker .spFileList li>button{width:100%;justify-content:flex-start;border:0;border-radius:0;padding:11px 12px;min-height:46px;text-align:left;background:transparent;font-weight:550}
+#spFilePicker .spFileList label{display:flex;align-items:center;gap:11px;min-width:0;min-height:46px;margin:0;padding:11px 12px;font-size:13px;overflow-wrap:anywhere;cursor:pointer}
+#spFilePicker .spFileList label:hover{background:#f5f9fa}
+#spFilePicker .spFileList label:has(input:checked){background:var(--sp-soft);color:#0c5963}
+#spFilePicker .spFileInfo{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px}
+#spFilePicker .spFileName{font-size:13px;font-weight:550;overflow-wrap:anywhere}
+#spFilePicker .spFileMeta{display:block;font-size:11px;font-weight:400;line-height:1.3;color:var(--sp-muted)}
+#spFilePicker .spFileList input{flex:0 0 18px;width:18px;height:18px;min-height:0;margin:0;accent-color:var(--sp-teal)}
+:is(#spFilePicker,#spSavePicker) .spStatus{font-size:12px;line-height:1.5;color:var(--sp-muted);overflow-wrap:anywhere;margin:12px 0;min-height:18px}
+:is(#spFilePicker,#spSavePicker) .spStatus:empty{display:none}
+:is(#spFilePicker,#spSavePicker) .spStatus[data-state=error]{color:#a34836;background:#fff5ef;border:1px solid #f3d8cb;border-radius:9px;padding:10px 12px}
+:is(#spFilePicker,#spSavePicker) .spStatus[data-state=success]{color:#0b7165}
+:is(#spFilePicker,#spSavePicker) .spDetails{margin:0;color:var(--sp-muted);border:0;border-radius:0;background:transparent;font-size:12px}
+:is(#spFilePicker,#spSavePicker) .spDetails summary{display:flex;align-items:center;gap:7px;min-height:32px;padding:5px 0;list-style:none;cursor:pointer;user-select:none}
+:is(#spFilePicker,#spSavePicker) .spDetails summary::-webkit-details-marker{display:none}
+:is(#spFilePicker,#spSavePicker) .spDetails summary .spIcon{width:15px;height:15px;flex-basis:15px}
+:is(#spFilePicker,#spSavePicker) .spDetails summary .spIcon:last-child{margin-left:auto;width:14px;height:14px;transform:rotate(90deg);transition:transform .15s}
+:is(#spFilePicker,#spSavePicker) .spDetails[open] summary .spIcon:last-child{transform:rotate(-90deg)}
+:is(#spFilePicker,#spSavePicker) .spDetailsBody{padding:5px 0 9px}
+:is(#spFilePicker,#spSavePicker) :is(.spNote,.spAccount){font-size:12px;line-height:1.5;color:var(--sp-muted);overflow-wrap:anywhere;margin:4px 0}
+:is(#spFilePicker,#spSavePicker) .spAccount{font-weight:550;color:#3e5a69}
+:is(#spFilePicker,#spSavePicker) .spFooter{margin-top:13px;padding-top:15px;border-top:1px solid #e9eff2}
+#spImport{width:100%}
+#spSavePicker .spSummary{margin:-5px 0 16px;color:var(--sp-muted);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+#spSavePicker .spModeSwitch{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:#f0f4f5;border:1px solid #e6edef;border-radius:12px;margin:0 0 14px}
+#spSavePicker .spModeSwitch button{border-color:transparent;background:transparent;border-radius:8px;min-height:37px;box-shadow:none;color:var(--sp-muted)}
+#spSavePicker .spModeSwitch button[aria-pressed=true]{background:#fff;color:var(--sp-teal);border-color:#dce7e8;box-shadow:0 1px 3px #173c4810}
+#spSavePicker .spModeSwitch .spIcon{width:17px;height:17px;flex-basis:17px}
+#spSavePicker .spExisting{display:flex;align-items:center;gap:12px;padding:15px;border:1px solid #cfe4e2;border-radius:12px;background:#f1f8f7;margin:0 0 13px;min-width:0}
+#spSavePicker .spExistingIcon{display:grid;place-items:center;flex:0 0 37px;width:37px;height:43px;border:1px solid #d7e7e5;border-radius:8px;background:#fff;color:#247379}
+#spSavePicker .spExistingText{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px}
+#spSavePicker .spExistingText strong{font-size:13px;font-weight:650;color:#244651;overflow-wrap:anywhere}
+#spSavePicker .spExistingText span{font-size:11px;color:var(--sp-muted);overflow-wrap:anywhere}
+#spSavePicker .spExistingCheck{color:#32867c;flex:0 0 18px}
+#spSavePicker .spExistingCheck .spIcon{width:18px;height:18px}
+#spSavePicker .spCopyFields{margin:0 0 12px}
+#spSavePicker .spFieldLabel{display:block;color:#425d6b;font-size:12px;font-weight:600;margin:0 0 6px}
+#spSaveName{display:block;box-sizing:border-box;width:100%;min-width:0;min-height:42px;border:1px solid #c7d7df;border-radius:10px;padding:10px 12px;background:#fff;color:var(--sp-ink);font:400 14px/1.4 system-ui;box-shadow:0 1px 2px #123c4805;margin:0 0 14px}
+#spSaveName:focus{border-color:#3e9196}
+#spSaveName:disabled{background:#f5f8f9}
+#spSavePicker .spDestination{flex:1;min-width:0}
+#spSavePicker .spDestination .spFieldLabel{margin-bottom:4px}
+#spSavePicker .spFolderList{display:flex;gap:7px;flex-wrap:wrap;max-height:144px;margin-top:8px}
+#spSavePicker .spFolderList button{justify-content:flex-start;max-width:100%;min-height:35px;padding:7px 10px;font-size:12px;font-weight:500;background:#fbfcfd;text-align:left}
+#spSavePicker .spFolderList .spIcon{color:#4f8189;width:17px;height:17px;flex-basis:17px}
+#spSavePicker .spConnection{margin:10px 0 0}
+#spSavePicker .spConnection button{min-height:36px;font-size:12px;padding:8px 11px}
+#spSaveProgress{appearance:none;display:block;width:100%;height:6px;accent-color:var(--sp-teal);border:0;border-radius:99px;overflow:hidden;margin:16px 0 9px;background:#e4efef}
+#spSaveProgress::-webkit-progress-bar{background:#e4efef;border-radius:99px}
+#spSaveProgress::-webkit-progress-value{background:#14898b;border-radius:99px}
+#spSaveProgress::-moz-progress-bar{background:#14898b;border-radius:99px}
+#spSavePicker .spSaveButtons{display:grid;grid-template-columns:1.15fr 1fr;gap:9px}
+#spSavePicker .spSaveButtons button{min-height:42px}
+#spSaveResult{box-sizing:border-box;position:fixed;left:50%;transform:translateX(-50%);bottom:44px;width:max-content;max-width:min(580px,calc(100vw - 24px));max-height:28dvh;overflow:auto;z-index:2147483647;padding:14px 48px 14px 17px;border:1px solid #315961;border-radius:14px;background:#173e48;color:#f3fbfb;box-shadow:0 8px 30px #112f4036;font:13px/1.55 system-ui;overflow-wrap:anywhere}
+#spSaveResult[hidden]{display:none!important}
+#spSaveResult a{color:#aeece4;text-decoration:underline;text-underline-offset:3px;font-weight:650}
+#spSaveResult button{position:absolute;right:5px;top:5px;display:grid;place-items:center;width:34px;height:34px;padding:7px;background:transparent;border:0;border-radius:8px;color:#d9edee;font:23px/1 system-ui;cursor:pointer}
+#spSaveResult button:hover{background:#ffffff14}
+#spSaveResult .spIcon{width:18px;height:18px}
+.spTestBadge{position:fixed;bottom:8px;left:8px;z-index:100000;max-width:calc(100vw - 16px);padding:6px 10px;border:1px solid #d0dfdf;border-radius:99px;background:#f3f9f8ed;color:#315d62;box-shadow:0 2px 9px #193f4412;backdrop-filter:blur(8px);font:500 10px/1.4 system-ui;letter-spacing:.01em;overflow-wrap:anywhere}
+.spTestBadge a{color:#0b6870;text-decoration:none;font-weight:650}
+.spTestBadge a:hover{text-decoration:underline;text-underline-offset:2px}
+/* Avläsning converts dialogs to workspace panels. Keep only these views compact
+ * while retaining its original stack, focus and inert lifecycle. */
+body.smCompactWorkspace dialog:is(#spFilePicker,#spSavePicker).smWorkspaceView[open]{position:fixed!important;inset:20px 0!important;width:min(580px,calc(100vw - 32px))!important;max-width:580px!important;height:fit-content!important;max-height:calc(100dvh - 40px)!important;margin:auto!important;padding:22px!important;border:1px solid #d9e4e8!important;border-radius:20px!important;background:#fff!important;transform:none!important;box-shadow:0 0 0 100vmax #102b3b66,0 24px 80px #0c29372b!important;z-index:2147483647!important}
+@media(pointer:coarse),(max-width:600px){:is(#spFilePicker,#spSavePicker) button,:is(#spFilePicker,#spSavePicker) .spIconButton,:is(#spFilePicker,#spSavePicker) .spCrumbs button,:is(#spFilePicker,#spSavePicker) .spDetails summary,#spSavePicker .spFolderList button,#spSavePicker .spConnection button,#spSavePicker .spModeSwitch button{min-height:44px}:is(#spFilePicker,#spSavePicker) .spIconButton{width:44px;min-width:44px}#spSaveName{min-height:46px;font-size:16px}}
+@media(max-width:480px){:is(#spFilePicker,#spSavePicker){width:calc(100vw - 24px);max-height:calc(100dvh - 24px);padding:18px;border-radius:17px}:is(#spFilePicker,#spSavePicker) .spHead{margin-bottom:15px}:is(#spFilePicker,#spSavePicker) .spHead h2{font-size:20px!important}:is(#spFilePicker,#spSavePicker) .spSourceActions{gap:7px}:is(#spFilePicker,#spSavePicker) .spSourceActions button{font-size:12px;gap:6px;padding-inline:7px}:is(#spFilePicker,#spSavePicker) .spFooter{margin-top:10px;padding-top:12px}#spSavePicker .spSaveButtons{grid-template-columns:1fr}#spSavePicker .spSaveButtons button{min-height:44px}#spSavePicker .spSummary{margin-bottom:13px}#spSavePicker .spModeSwitch{margin-bottom:12px}#spSavePicker .spExisting{padding:12px;gap:10px}#spSaveResult{bottom:42px;font-size:12px}body.smCompactWorkspace dialog:is(#spFilePicker,#spSavePicker).smWorkspaceView[open]{inset:12px 0!important;width:calc(100vw - 24px)!important;max-height:calc(100dvh - 24px)!important;padding:18px!important;border-radius:17px!important}}
+@media(prefers-reduced-motion:reduce){:is(#spFilePicker,#spSavePicker) *{transition:none!important}}

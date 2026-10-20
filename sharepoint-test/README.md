@@ -1,6 +1,6 @@
 # Tillsyno – SharePoint-pilot för SmartMatch / Avläsning
 
-**Aktuell kod: SharePoint-test 0.5.** Se [APP_TEST.md](APP_TEST.md) för filöppning, sparande av nya kopior, testgränser och verklig verifieringsstatus. Texten nedan är den ursprungliga pilotplanen; dess dåvarande publiceringsstatus är historisk.
+**Aktuell kod: SharePoint-test 0.6.** Se [APP_TEST.md](APP_TEST.md) för sparande i samma öppnade fil, separat kopieval, kompakt gränssnitt, testgränser och verklig verifieringsstatus. Texten nedan är den ursprungliga pilotplanen; dess dåvarande publiceringsstatus är historisk.
 
 ## Vald modul – förtydligat av användaren 2026-10-20
 

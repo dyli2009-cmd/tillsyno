@@ -1,5 +1,6 @@
-/* Whole-app test only: create a new file under the configured GStest folder.
- * Never replace/delete, and never forward a Graph token to an upload URL.
+/* Whole-app test only: save a new copy or update the exact opened file in GStest.
+ * Never fall back from an item-ID update to a name-path upload or retry a
+ * conflict. Never delete or forward a Graph token to an upload URL.
  * API: https://learn.microsoft.com/graph/api/driveitem-createuploadsession
  */
 import {SharePointFiles, mimeFor} from './file-client.mjs';
@@ -8,7 +9,7 @@ import {graphUrl} from './read-only.mjs';
 export const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 export const UPLOAD_CHUNK_BYTES = 5 * 1024 * 1024; // 16 × 320 KiB.
 const enc = value => encodeURIComponent(value);
-const ITEM_FIELDS = 'id,name,size,file,folder,remoteItem,deleted,parentReference,webUrl';
+const ITEM_FIELDS = 'id,name,size,file,folder,remoteItem,deleted,parentReference,webUrl,eTag';
 // These are existing module exports. Saving their original bytes does not add
 // JSON/CSV/text import support to the separate read-only file picker.
 const TEXT_EXPORTS = Object.freeze({json:'application/json', csv:'text/csv', txt:'text/plain'});
@@ -28,6 +29,15 @@ function identifier(value) {
   value !== '.' && value !== '..' && !/[\s/\\?#\u0000-\u001f\u007f]/u.test(value);
 }
 function object(value) { return value !== null && typeof value === 'object' && !Array.isArray(value); }
+function versionTag(value) {
+ // Preserve Microsoft's opaque value exactly, including its quotes. Never use
+ // a wildcard or an unsafe HTTP field value as an optimistic precondition.
+ return typeof value === 'string' && value.length > 0 && value.length <= 2048 &&
+  value !== '*' && !/[^\x21-\x7e]/u.test(value);
+}
+function versionConflict(status) {
+ return failure('Filen har ändrats i SharePoint sedan den öppnades. Öppna den senaste versionen eller välj Spara kopia; försök inte skriva över den.', 'version_conflict', status);
+}
 
 export function validateCopyName(value) {
  if (typeof value !== 'string' || !value || value.length > 255 || value !== value.trim() ||
@@ -81,7 +91,8 @@ function checkFolder(item, driveId, id) {
 function checkFile(item, expected, requireParent = true) {
  const parent = item?.parentReference;
  if (!object(item) || !identifier(item.id) || !object(item.file) || item.folder || item.remoteItem || item.deleted ||
-     item.name !== expected.name || item.size !== expected.size ||
+     item.name !== expected.name || !Number.isSafeInteger(item.size) || item.size < 0 ||
+     (expected.size !== undefined && item.size !== expected.size) ||
      (expected.id && item.id !== expected.id) ||
      (requireParent && !object(parent)) ||
      (parent && (parent.id !== expected.parentId || parent.driveId !== expected.driveId))) {
@@ -136,8 +147,9 @@ export class SharePointWriter extends SharePointFiles {
    clearTimeout(timer); signal?.removeEventListener('abort', abort);
   }
  }
- async responseData(response) {
+ async responseData(response, existing = false) {
   if (!response.ok) {
+   if (existing && (response.status === 409 || response.status === 412)) throw versionConflict(response.status);
    const messages = {
     401:'Microsoft-inloggningen behöver förnyas innan filen kan sparas.',
     403:'Skrivåtkomst nekad. Kontrollera behörigheten till GStest.',
@@ -168,8 +180,37 @@ export class SharePointWriter extends SharePointFiles {
   }
   throw failure('Målmappen ligger inte under den konfigurerade GStest-mappen.', 'invalid_destination');
  }
- async saveCopy({config, destination, blob, name, onProgress, signal} = {}) {
+ async currentSource(source, context) {
+  let item;
+  try {
+   // Full metadata avoids implementations that omit eTag from a projection.
+   item = await this.json('/v1.0/drives/' + enc(source.driveId) + '/items/' + enc(source.id));
+  } catch (error) {
+   if (error.status === 404 || error.status === 410) {
+    throw failure('Den öppnade filen finns inte längre i SharePoint. Öppna rätt fil på nytt eller välj Spara kopia.', 'source_missing', error.status);
+   }
+   throw error;
+  }
+  if (context.signal?.aborted) throw failure('Sparandet avbröts.', 'cancelled');
+  try { checkFile(item, source); }
+  catch {
+   throw failure('Den öppnade filen har flyttats, bytt namn eller kan inte verifieras. Öppna rätt fil på nytt eller välj Spara kopia.', 'source_changed');
+  }
+  if (!versionTag(item.eTag) || item.eTag !== source.eTag) throw versionConflict();
+  return item;
+ }
+ async saveCopy(options = {}) { return this.saveFile(options, false); }
+ async saveExisting(options = {}) { return this.saveFile(options, true); }
+ async saveFile({config, destination, source, blob, name, onProgress, signal} = {}, existing) {
   if (this.saving) throw failure('En fil sparas redan. Vänta tills den är klar.', 'busy');
+  if (existing) {
+   if (!object(source) || !identifier(source.driveId) || !identifier(source.id) ||
+       !identifier(source.parentId) || !versionTag(source.eTag)) {
+    throw failure('Den öppnade filens identitet eller version saknas. Öppna filen från SharePoint på nytt eller välj Spara kopia.', 'invalid_source');
+   }
+   source = {driveId:source.driveId, id:source.id, parentId:source.parentId, name:source.name, eTag:source.eTag};
+   name = source.name;
+  }
   validateCopyName(name);
   if (!(blob instanceof Blob) || !Number.isSafeInteger(blob.size) || blob.size < 1) throw failure('Ingen exporterad fil finns att spara.', 'invalid_file');
   if (blob.size > this.maxBytes) throw failure('SharePoint-testet tillåter högst 25 MiB per fil. Spara en mindre fil.', 'file_too_large');
@@ -189,48 +230,68 @@ export class SharePointWriter extends SharePointFiles {
    // not proof that the target belongs to this test boundary.
    const root = await this.root(config);
    if (!identifier(root.id) || !identifier(root.driveId)) throw failure('GStest kunde inte verifieras.', 'invalid_destination');
-   const target = destination ? {driveId:destination.driveId, id:destination.id} : {driveId:root.driveId, id:root.id};
+   if (existing && source.driveId !== root.driveId) throw failure('Den öppnade filen tillhör inte det konfigurerade SharePoint-biblioteket.', 'invalid_destination');
+   const target = existing ? {driveId:source.driveId, id:source.parentId} :
+    destination ? {driveId:destination.driveId, id:destination.id} : {driveId:root.driveId, id:root.id};
    await this.folderInside(root, target, context);
-   const url = graphUrl('/v1.0/drives/' + enc(root.driveId) + '/items/' + enc(target.id) + ':/' + enc(name) + ':/createUploadSession');
+   if (existing) await this.currentSource(source, context);
+   const url = graphUrl('/v1.0/drives/' + enc(root.driveId) + '/items/' +
+    (existing ? enc(source.id) : enc(target.id) + ':/' + enc(name) + ':') + '/createUploadSession');
    await this.access(context);
    const token = await this.getWriteToken();
    if (typeof token !== 'string' || !token) throw failure('Godkänn Microsoft-skrivåtkomst för att spara filen.', 'write_token_missing');
+   if (existing) {
+    await this.folderInside(root, target, context);
+    await this.currentSource(source, context);
+   }
    await this.access(context);
-   const session = await this.responseData(await this.request(url, {method:'POST', headers:{Authorization:'Bearer ' + token, 'Content-Type':'application/json'},
-    body:JSON.stringify({item:{'@microsoft.graph.conflictBehavior':'fail', name}})}, signal));
+   const headers = {Authorization:'Bearer ' + token, 'Content-Type':'application/json'};
+   if (existing) headers['If-Match'] = source.eTag;
+   // Graph documents If-Match on session creation. It does not explicitly
+   // guarantee that this precondition is rechecked at the final fragment's
+   // commit. Check the source before every fragment too, but do not describe
+   // these client checks as an atomic lock or retry an unconfirmed update.
+   const session = await this.responseData(await this.request(url, {method:'POST', headers,
+    body:JSON.stringify(existing ? {} : {item:{'@microsoft.graph.conflictBehavior':'fail', name}})}, signal), existing);
    const uploadUrl = safeUploadUrl(session.uploadUrl); let expires = sessionExpiry(session);
    if (session.nextExpectedRanges) checkRange(session, 0, blob.size);
    let item;
    for (let start = 0; start < blob.size; start += UPLOAD_CHUNK_BYTES) {
     await this.access(context);
     await this.folderInside(root, target, context);
+    if (existing) await this.currentSource(source, context);
     await this.access(context);
     if (Date.now() >= expires) throw failure('Uppladdningen har gått ut. Försök spara på nytt.', 'session_expired');
     const end = Math.min(start + UPLOAD_CHUNK_BYTES, blob.size);
     finalStarted = end === blob.size;
     const response = await this.request(uploadUrl, {method:'PUT', headers:{'Content-Type':'application/octet-stream', 'Content-Range':'bytes ' + start + '-' + (end - 1) + '/' + blob.size}, body:blob.slice(start, end)}, signal, 60000);
-    const data = await this.responseData(response);
+    const data = await this.responseData(response, existing);
     if (end < blob.size) {
      if (response.status !== 202) throw failure('Microsoft avslutade uppladdningen innan hela filen bekräftats.', 'invalid_response');
      checkRange(data, end, blob.size); expires = sessionExpiry(data);
      progress('uploading', end);
     } else {
      if (response.status !== 200 && response.status !== 201) throw failure('Microsoft har inte bekräftat att hela filen sparats.', 'invalid_response');
-     item = checkFile(data, {name, size:blob.size, driveId:root.driveId, parentId:target.id}, false);
+     item = checkFile(data, {id:existing ? source.id : undefined, name, size:blob.size, driveId:root.driveId, parentId:target.id}, false);
     }
    }
    progress('verifying', blob.size);
    await this.access(context);
    const saved = checkFile(await this.json('/v1.0/drives/' + enc(root.driveId) + '/items/' + enc(item.id) + '?$select=' + ITEM_FIELDS),
     {id:item.id, name, size:blob.size, driveId:root.driveId, parentId:target.id});
+   if (!versionTag(saved.eTag)) throw failure('Microsoft bekräftade inte den sparade filens version. Kontrollera filen i SharePoint innan du sparar igen.', 'invalid_saved_file');
+   if (item.eTag !== undefined && (!versionTag(item.eTag) || item.eTag !== saved.eTag)) {
+    throw failure('Filens version ändrades efter uppladdningen. Öppna den senaste versionen från SharePoint innan du fortsätter.', 'saved_version_changed');
+   }
    await this.folderInside(root, target, context);
    await this.access(context);
    completed = true; progress('complete', blob.size);
-   return {id:saved.id, name:saved.name, size:saved.size, driveId:root.driveId, parentId:target.id, webUrl:safeWebUrl(saved.webUrl, config)};
+   return {id:saved.id, name:saved.name, size:saved.size, driveId:root.driveId, parentId:target.id, eTag:saved.eTag, webUrl:safeWebUrl(saved.webUrl, config)};
   } catch (error) {
    // The last PUT may have committed before a connection or verification error.
    // Do not retry, rename, overwrite or delete automatically.
-   if (finalStarted && !completed && error.code !== 'name_conflict') {
+   if (finalStarted && !completed && error.code !== 'name_conflict' &&
+       !(error.code === 'version_conflict' && (error.status === 409 || error.status === 412))) {
     error.mayHaveSaved = true;
     error.message += ' Filen kan ha sparats. Kontrollera målmappen innan du försöker igen.';
    }

@@ -182,7 +182,7 @@ test('existing original-file save button is labelled and routed to the known Sav
  const env=environment(),copy=new env.Button('smartExportSaveObject'),saveAs=new env.Button('smartExportSaveAs');
  copy.textContent='Spara i öppnad PDF';let original=0,copies=0;copy.onclick=()=>{original++;};saveAs.onclick=()=>{copies++;};env.nodes.set(copy.id,copy);env.nodes.set(saveAs.id,saveAs);
  const api=installExportBridge({window:env.window,offerSave:async({blob})=>receipt(blob)});
- assert.equal(copy.textContent,'Spara kopia');copy.click();assert.equal(original,0);assert.equal(copies,1);
+ assert.equal(copy.textContent,'Spara');copy.click();assert.equal(original,0);assert.equal(copies,1);
  api.uninstall();assert.equal(copy.textContent,'Spara i öppnad PDF');copy.click();assert.equal(original,1);
 });
 
@@ -192,4 +192,32 @@ test('uninstall during destination choice cannot release a saved completion',asy
  const handle=await env.window.showSaveFilePicker({suggestedName:'Projekt.pdf'}),writer=await handle.createWritable();await writer.write('pdf');
  const close=writer.close();close.catch(()=>{});await tick();api.uninstall();ack.resolve({destination:'sharepoint',item:{id:'written'}});
  await assert.rejects(close,{name:'AbortError'});await assert.rejects(handle.getFile(),{name:'InvalidStateError'});
+});
+
+test('queued anchor exports retain provenance captured before waiting for the previous destination',async()=>{
+ const env=environment(),ack=deferred(),requests=[];let project='A';
+ const api=installExportBridge({window:env.window,captureContext:()=>Object.freeze({project}),offerSave:async request=>{requests.push(request);return requests.length===1?ack.promise:receipt(request.blob);}});
+ const blob=new Blob(['pdf'],{type:'application/pdf'});
+ function download(name){const a=env.document.createElement('a');a.href=env.window.URL.createObjectURL(blob);a.download=name;a.click();}
+ download('one.pdf');await tick();download('two.pdf');project='B';
+ ack.resolve(receipt(blob));await api.whenIdle();
+ assert.equal(requests.length,2);assert.equal(requests[0].context.project,'A');assert.equal(requests[1].context.project,'A','a new project must not be attached to an older queued file');api.uninstall();
+});
+
+test('native save and iOS share capture project context before their asynchronous transport work',async()=>{
+ const env=environment({picker:true,share:true}),requests=[];let project='A';
+ const api=installExportBridge({window:env.window,captureContext:()=>({project}),offerSave:async request=>{requests.push(request);return receipt(request.blob);}});
+ const handle=await env.window.showSaveFilePicker({suggestedName:'project.pdf'});project='B';
+ const stream=await handle.createWritable();await stream.write('pdf');await stream.close();assert.equal(requests[0].context.project,'A');
+ const share=env.window.navigator.share({files:[new File(['pdf'],'shared.pdf',{type:'application/pdf'})]});project='C';await share;
+ assert.equal(requests[1].context.project,'B');api.uninstall();
+});
+
+test('only the two SmartMatch test routes use the modules own input-based desktop open path',()=>{
+ for(const page of ['sharepoint-read-test.html','sharepoint-smartmatch-test.html','sharepoint-ce-test.html','sharepoint-drawing-test.html']){
+  const env=environment({page}),nativeOpen=async()=>[];env.window.showOpenFilePicker=nativeOpen;
+  const api=installExportBridge({window:env.window,offerSave:async({blob})=>receipt(blob)});
+  assert.equal(typeof env.window.showOpenFilePicker,page==='sharepoint-read-test.html'||page==='sharepoint-smartmatch-test.html'?'undefined':'function');
+  api.uninstall();assert.equal(env.window.showOpenFilePicker,nativeOpen);
+ }
 });
