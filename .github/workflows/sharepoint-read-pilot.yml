@@ -1,4 +1,4 @@
-name: SharePoint read pilot (build only)
+name: SharePoint read pilot (verify and stage)
 on:
   push:
     branches: [test/sharepoint-projektflode-20261020]
@@ -7,6 +7,9 @@ on:
     paths: [sharepoint-test/**, .github/workflows/sharepoint-read-pilot.yml]
 permissions:
   contents: read
+concurrency:
+  group: sharepoint-pilot-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   verify-build:
     runs-on: ubuntu-latest
@@ -22,10 +25,15 @@ jobs:
       - name: Read-only unit tests (no Microsoft credentials)
         run: npm test
       - name: Install version-pinned build dependencies
-        run: npm install --ignore-scripts --no-audit --no-fund
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci --ignore-scripts --no-audit --no-fund
+          else
+            npm install --ignore-scripts --no-audit --no-fund
+          fi
       - name: Build MSAL and redirect bridge locally (no runtime CDN)
         run: npm run build
-      - name: Package isolated test pages (NOT a deployment)
+      - name: Package isolated test pages
         uses: actions/upload-artifact@v4
         with:
           name: sharepoint-read-pilot
@@ -41,3 +49,51 @@ jobs:
             sharepoint-test/package-lock.json
             sharepoint-test/IMPLEMENTATION_STATUS.md
           if-no-files-found: error
+  stage-pages-files:
+    needs: verify-build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/test/sharepoint-projektflode-20261020'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: sharepoint-read-pilot
+          path: ${{ runner.temp }}/sharepoint-read-pilot
+      - name: Stage only generated files on the pilot branch
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          SOURCE_REF: ${{ github.ref }}
+        run: |
+          set -euo pipefail
+          remote_sha="$(git ls-remote origin "$SOURCE_REF" | cut -f1)"
+          test "$remote_sha" = "$SOURCE_SHA" || { echo 'Pilot branch changed; refusing to overwrite newer work.'; exit 1; }
+          assets="$RUNNER_TEMP/sharepoint-read-pilot"
+          for file in pilot.js callback.js package-lock.json; do
+            test -s "$assets/$file"
+            cp "$assets/$file" "sharepoint-test/$file"
+            git add -f -- "sharepoint-test/$file"
+          done
+          for file in "$assets"/*.LEGAL.txt; do
+            test -f "$file" || continue
+            target="sharepoint-test/$(basename "$file")"
+            cp "$file" "$target"
+            git add -f -- "$target"
+          done
+          git diff --cached --name-only | while IFS= read -r file; do
+            case "$file" in
+              sharepoint-test/pilot.js|sharepoint-test/callback.js|sharepoint-test/package-lock.json|sharepoint-test/*.LEGAL.txt) ;;
+              *) echo "Unexpected staged path: $file"; exit 1 ;;
+            esac
+          done
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'build: include verified SharePoint pilot bundles for static Pages publication'
+          git push origin "HEAD:$SOURCE_REF"
