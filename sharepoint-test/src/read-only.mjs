@@ -14,7 +14,13 @@ export function graphUrl(path) {
   return u.href;
 }
 export function safeDownloadUrl(value) {
-  const u = new URL(value);
+  if (typeof value !== 'string' || !value.trim()) {
+    throw new Error('Microsoft lämnade ingen nedladdningsadress för PDF-filen. Uppdatera fillistan och försök igen.');
+  }
+  let u;
+  try { u = new URL(value); } catch {
+    throw new Error('Microsoft lämnade en ogiltig nedladdningsadress för PDF-filen.');
+  }
   if (u.protocol !== 'https:' || u.username || u.password ||
       !(/^[a-z0-9.-]+\.sharepoint\.com$/i.test(u.hostname) || /^[a-z0-9.-]+\.sharepointonline\.com$/i.test(u.hostname))) {
     throw new Error('Okänd nedladdningsdomän. Hämtningen stoppades.');
@@ -70,7 +76,11 @@ export class ReadOnlySharePoint {
     return { driveId: library.id, files: items.filter(i => i.file && /\.pdf$/i.test(i.name || '')) };
   }
   async pdf(driveId, itemId) {
-    const item = await this.json('/v1.0/drives/' + enc(driveId) + '/items/' + enc(itemId) + '?$select=id,name,size,file,@microsoft.graph.downloadUrl');
+    const itemPath = '/v1.0/drives/' + enc(driveId) + '/items/' + enc(itemId);
+    let item = await this.json(itemPath + '?$select=id,name,size,file,@microsoft.graph.downloadUrl');
+    if (item.size > this.maxBytes) throw new Error('Lästestet tillåter PDF-filer upp till 25 MB.');
+    // Retry full metadata if the projected response omitted the download annotation.
+    if (!item['@microsoft.graph.downloadUrl']) item = await this.json(itemPath);
     if (!item.file || !/\.pdf$/i.test(item.name || '')) throw new Error('Välj en PDF-fil.');
     if (item.size > this.maxBytes) throw new Error('Lästestet tillåter PDF-filer upp till 25 MB.');
     const url = safeDownloadUrl(item['@microsoft.graph.downloadUrl']);
