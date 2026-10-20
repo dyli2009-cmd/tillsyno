@@ -1,0 +1,406 @@
+<!doctype html><html lang="sv" data-auth-pending><head><meta charset="utf-8">
+<script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}var page={ice:'#edf6fb',mist:'#ebf1f5',coast:'#edf7f6',sand:'#f7f5f1',night:'#081523',graphite:'#12151c',pine:'#091c1e'}[theme];document.documentElement.style.setProperty('--tillsyno-route-bg',page);document.documentElement.style.setProperty('background',page,'important');document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
+<style id="tillsyno-route-transition">html{background:var(--tillsyno-route-bg,#ebf1f5)!important}#tillsynoNavCurtain{position:fixed;inset:0;z-index:2147483647;background:var(--tillsyno-route-bg,#ebf1f5);opacity:1;pointer-events:auto}html.tillsyno-nav-ready #tillsynoNavCurtain{opacity:0;pointer-events:none}</style>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#132b38"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Tillsyno"><meta name="format-detection" content="telephone=no"><link rel="manifest" href="manifest.webmanifest?v=2.4.3"><link rel="apple-touch-icon" sizes="180x180" href="icon-180.png?v=2.4.3"><link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2.4.3"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Tillsyno</title><script>(function(){try{
+  var fragment=new URLSearchParams(location.hash.slice(1)),query=new URLSearchParams(location.search);
+  if(fragment.get('type')!=='recovery'&&query.get('type')!=='recovery')return;
+  var target=new URL('auth/reset-password.html',location.href);
+  target.search=location.search;target.hash=location.hash;
+  location.replace(target.href);
+ }catch(_){}})();</script><script src="home-bg-data.js?v=2.4.217"></script><link rel="stylesheet" href="style.css?v=2.4.251"><link rel="stylesheet" href="customer-preview-pager.css?v=2.4.217"><script src="vendor/pdf.min.js"></script><script src="vendor/jspdf.umd.min.js"></script><script src="vendor/pdf-lib.min.js"></script><style>
+/* v2.4.282: account panel drops below the trigger without reflow or page scrolling. */
+#appHome{overflow:hidden!important;align-items:center!important}
+@media(max-height:480px){#appHome{overflow-y:auto!important;align-items:safe center!important}}
+html[data-auth-pending] body{visibility:hidden}
+[data-admin-only][hidden],[hidden]{display:none!important}
+#appHome [data-tillsyno-module-locked]{opacity:.53;cursor:not-allowed;pointer-events:none;filter:grayscale(.35)}
+#appHome .homeToolsLink[data-tillsyno-module-locked]::after{content:'🔒 Låst';font:600 11px system-ui;white-space:nowrap;margin-left:auto}
+#appHome [data-tillsyno-module-locked]:focus{outline:none}
+#tillsynoWaitingNotice{box-sizing:border-box;width:min(350px,100%);background:rgba(9,30,41,.84);border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:9px 11px;margin:0 auto 10px;color:#f2f7fa;font:12px/1.4 system-ui;box-shadow:0 10px 25px #08182033;backdrop-filter:blur(12px)}
+#tillsynoWaitingNotice strong{display:block;font:700 13px/1.3 system-ui;margin-bottom:3px}
+#tillsynoWaitingNotice p{margin:0 0 8px;color:#d3e3e9;font:11px/1.45 system-ui}
+#tillsynoCheckApproval{background:#d5e9f1;color:#153847;border:0;border-radius:7px;padding:6px 10px;font:700 11px system-ui;cursor:pointer}
+.homeProfile{box-sizing:border-box;position:relative;width:min(350px,100%);margin:12px auto 0;z-index:10;color:#e9f3f6;font:12px system-ui}
+.homeProfile>summary{min-height:39px;display:flex;justify-content:center;align-items:center;gap:9px;padding:7px 13px;list-style:none;cursor:pointer;border:1px solid #ffffff40;border-radius:10px;background:rgba(9,31,43,.62);box-shadow:0 9px 20px #07192330;backdrop-filter:blur(12px);font-weight:700;user-select:none}
+.homeProfile>summary::-webkit-details-marker{display:none}
+.homeProfile>summary::marker{content:''}
+.homeProfile>summary:hover,.homeProfile[open]>summary{background:rgba(20,55,70,.85)}
+.homeProfile>summary:focus-visible{outline:2px solid #c8edf7;outline-offset:3px}
+.homeProfileChevron{width:14px;height:14px;flex:none;display:block;transition:transform .15s ease}
+.homeProfile[open] .homeProfileChevron{transform:rotate(180deg)}
+.homeProfileMenu{position:absolute;top:calc(100% + 7px);left:0;right:0;width:100%;z-index:30;padding:8px;border:1px solid #ffffff35;border-radius:12px;background:rgba(11,34,45,.97);box-shadow:0 15px 38px #03111c77;display:grid;gap:5px;backdrop-filter:blur(18px)}
+.homeProfileStatus{display:grid;gap:3px;padding:9px 10px 11px;border-bottom:1px solid #ffffff2b;margin-bottom:4px;text-align:left}
+.homeProfileStatus strong{font-size:12px}
+.homeProfileStatus small{font-size:10.5px;color:#b5cdd7}
+.homeProfileMenu a,.homeProfileMenu button{box-sizing:border-box;display:flex;align-items:center;gap:11px;width:100%;padding:10px 11px;text-align:left;border:0;border-radius:8px;background:transparent;color:#eef7fa;text-decoration:none;font:650 12px system-ui;cursor:pointer}
+.homeProfileMenu a:hover,.homeProfileMenu button:hover,.homeProfileMenu a:focus-visible,.homeProfileMenu button:focus-visible{background:#ffffff17;outline:none}
+@media(max-width:620px){#tillsynoWaitingNotice,.homeProfile{width:min(315px,88vw)}}
+
+/* v2.4.286: match drawing tool typography to other home choices, without enlarging cards. */
+#appHome .homeToolsLink{justify-content:flex-start!important;text-align:left!important;gap:8px!important;padding-left:10px!important}
+#appHome .homeToolsIcon{width:32px!important;height:32px!important}
+#appHome .homeToolsLink strong{font-size:13px!important;font-weight:700!important}
+#appHome .homeChoice small,#appHome .homeToolsLink small{font-size:11px!important;line-height:1.4!important;margin-top:4px!important;color:rgba(242,248,251,.80)!important}
+
+/* v2.4.287 – approved clean navy home design, shared web/iOS.
+   Visual styling only: existing hrefs, auth, licensing and module flows are unchanged. */
+#appHome{
+ isolation:isolate!important;
+ background:#0c2535!important;
+ background-image:radial-gradient(ellipse at 52% 42%,rgba(39,83,102,.29),transparent 65%),linear-gradient(145deg,#112f42 0%,#0b2637 52%,#091e2b 100%)!important;
+ background-size:cover!important;background-repeat:no-repeat!important;
+}
+#appHome::before,#appHome::after{
+ content:"";position:absolute;pointer-events:none;z-index:0;width:20%;height:22%;opacity:.53;
+}
+#appHome::before{right:6%;top:11%;border-right:1px solid #b8dfed36;border-top:1px solid #b8dfed36}
+#appHome::after{left:6%;bottom:10%;border-left:1px solid #b8dfed28;border-bottom:1px solid #b8dfed28}
+#appHome .homeAmbient,#appHome .homeCctvCue,#appHome .homeBackdropIcons{display:none!important}
+#appHome .homeShell{
+ position:relative!important;z-index:2!important;
+ width:min(400px,100%)!important;max-width:100%!important;
+ padding:18px 12px!important;background:transparent!important;border:0!important;
+ border-radius:0!important;box-shadow:none!important;
+}
+#appHome .homeBrand{justify-content:center!important;gap:10px!important;margin-bottom:17px!important}
+#appHome .homeBrand strong{color:#f5fbfe!important;font-size:23px!important;font-weight:770!important;letter-spacing:-.035em!important;text-shadow:none!important}
+#appHome .homeTagline{color:#c0d8e3!important;font-size:10px!important;text-shadow:none!important;letter-spacing:.02em!important}
+#appHome .homeBrand>span{font-size:10px!important;padding:4px 6px!important;border-radius:5px!important;background:#193c4c8a!important;border:1px solid #bcdfeb42!important}
+#appHome .homeChoices,#appHome .homeTools{
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+ width:min(350px,100%)!important;max-width:350px!important;
+ margin-left:auto!important;margin-right:auto!important;gap:9px!important;
+}
+#appHome .homeChoice,#appHome .homeToolsLink{
+ display:grid!important;grid-template-columns:32px minmax(0,1fr) auto!important;align-items:center!important;
+ justify-content:stretch!important;text-align:left!important;
+ gap:10px!important;width:100%!important;max-width:100%!important;
+ min-height:64px!important;padding:9px 11px!important;margin:0!important;
+ border:1px solid #d4ebf143!important;border-radius:10px!important;
+ color:#f1f9fc!important;background:#0b2537b9!important;
+ box-shadow:0 7px 23px #0015203b!important;backdrop-filter:blur(8px)!important;
+ -webkit-backdrop-filter:blur(8px)!important;
+}
+#appHome .homeChoice:hover,#appHome .homeToolsLink:hover,#appHome .homeChoice:focus-visible,#appHome .homeToolsLink:focus-visible{
+ background:#184153dd!important;border-color:#d5f2fa77!important;
+}
+#appHome .homeChoiceIcon,#appHome .homeToolsIcon{
+ display:grid!important;place-items:center!important;box-sizing:border-box!important;
+ width:32px!important;height:32px!important;min-width:32px!important;
+ border:0!important;border-radius:8px!important;background:#c9eaf315!important;color:#e0f4fa!important;
+}
+#appHome .homeChoiceIcon svg,#appHome .homeToolsIcon svg{width:21px!important;height:21px!important}
+#appHome .homeChoice strong,#appHome .homeToolsLink strong{font-size:13px!important;font-weight:730!important;color:#f3fbfd!important;line-height:1.3!important;text-shadow:none!important}
+#appHome .homeChoice small,#appHome .homeToolsLink small{font-size:11px!important;color:#b9d5df!important;line-height:1.3!important;margin-top:3px!important}
+#appHome .homeChoice b,#appHome .homeToolsLink b{display:block!important;justify-self:end!important;font:720 11px/1.3 system-ui!important;white-space:nowrap!important;color:#deeff6!important}
+#appHome .homeTools{margin-top:9px!important;padding:0!important;border:0!important}
+#appHome .homeToolsLink{min-height:53px!important}
+#appHome .homeProfile,#appHome .homeAccount{width:min(350px,100%)!important;max-width:350px!important;margin:12px auto 0!important}
+#appHome .homeProfile>summary{background:#0a293bc2!important;border:1px solid #daedf13d!important;border-radius:10px!important;font-size:11px!important;min-height:41px!important}
+#appHome .homeAccount{background:#0a293bc2!important;border:1px solid #daedf13d!important;border-radius:10px!important;padding:9px!important;gap:7px!important}
+#appHome .homeAccount a,#appHome .homeAccount button{font-size:10px!important}
+@media(max-width:620px){
+ #appHome{padding:max(16px,env(safe-area-inset-top)) 11px max(16px,env(safe-area-inset-bottom))!important}
+ #appHome .homeShell{width:min(355px,100%)!important;padding:12px 4px!important}
+ #appHome .homeBrand{margin-bottom:14px!important}
+ #appHome .homeBrand strong{font-size:21px!important}
+ #appHome .homeChoice,#appHome .homeToolsLink{min-height:60px!important;padding:8px 9px!important;border-radius:10px!important;gap:8px!important}
+ #appHome .homeToolsLink{min-height:50px!important}
+ #appHome::before,#appHome::after{opacity:.28}
+}
+@media(max-height:500px){#appHome{overflow-y:auto!important;align-items:safe center!important}}
+
+/* Tillsyno 2.4.295 — approved compact premium home. All changes are inside #appHome. */
+#appHome{
+ overflow-y:auto!important;overscroll-behavior:contain!important;align-items:safe center!important;
+ background:#0d293b!important;
+ background-image:radial-gradient(ellipse at 48% 40%,rgba(38,79,103,.25),transparent 68%),linear-gradient(150deg,#102c3e 0%,#0d293b 48%,#092031 100%)!important;
+}
+#appHome .homeShell{
+ position:relative!important;z-index:2!important;width:min(430px,100%)!important;max-width:430px!important;
+ padding:24px 14px!important;margin:auto!important;overflow:visible!important;
+ display:flex!important;flex-direction:column!important;gap:0!important;
+}
+#appHome .homeBrand{
+ position:relative!important;z-index:30!important;box-sizing:border-box!important;
+ display:flex!important;justify-content:space-between!important;align-items:center!important;
+ width:min(390px,100%)!important;gap:12px!important;margin:0 auto 20px!important;padding:0 0 15px!important;
+ border-bottom:1px solid #4b70834f!important;
+}
+#appHome .homeBrandIdentity{display:flex!important;align-items:center!important;gap:12px!important;min-width:0!important;flex:1!important}
+#appHome .homeBrandMark{
+ display:grid!important;place-items:center!important;box-sizing:border-box!important;
+ min-width:44px!important;min-height:44px!important;width:44px!important;height:44px!important;
+ border:1px solid #77aabc54!important;border-radius:12px!important;padding:0!important;
+ background:#245067!important;color:#fff!important;
+ font:800 24px/1 system-ui,-apple-system,sans-serif!important;letter-spacing:-.04em!important;
+ box-shadow:0 8px 20px #001d3040!important;
+}
+#appHome .homeBrandCopy{display:flex!important;flex-direction:column!important;gap:4px!important;min-width:0!important}
+#appHome .homeBrandCopy>strong{display:block!important;font-size:23px!important;letter-spacing:-.035em!important;line-height:1.1!important;color:#f2f9fc!important;font-weight:770!important}
+#appHome .homeBrandCopy>.homeTagline{
+ display:block!important;padding:0!important;border:0!important;background:transparent!important;
+ font-size:10px!important;font-weight:450!important;line-height:1.3!important;letter-spacing:0!important;
+ color:#b8d1dc!important;white-space:normal!important;
+}
+#appHome .homeBrand .homeProfile{
+ box-sizing:border-box!important;position:relative!important;z-index:40!important;
+ width:43px!important;min-width:43px!important;max-width:43px!important;
+ padding:0!important;margin:0!important;flex:none!important;
+}
+#appHome .homeBrand .homeProfile>summary{
+ box-sizing:border-box!important;display:grid!important;place-items:center!important;
+ width:43px!important;height:43px!important;min-height:43px!important;
+ margin:0!important;padding:8px!important;border-radius:11px!important;
+ background:#1b4054!important;border:1px solid #719aaf6b!important;
+ color:#d6eaf2!important;box-shadow:none!important;
+}
+#appHome .homeBrand .homeProfile>summary svg{display:block!important;width:21px!important;height:21px!important;stroke:#d9edf5!important}
+#appHome .homeBrand .homeProfile>summary:hover,#appHome .homeBrand .homeProfile[open]>summary{
+ background:#275b72!important;border-color:#a6d8e9!important;
+}
+#appHome .homeBrand .homeProfile>summary:focus-visible,#appHome .homeFooterAccount:focus-visible,
+#appHome .homeChoice:focus-visible,#appHome .homeToolsLink:focus-visible{
+ outline:2px solid #9fdced!important;outline-offset:3px!important;
+}
+#appHome .homeBrand .homeProfileMenu{
+ box-sizing:border-box!important;position:absolute!important;top:calc(100% + 9px)!important;
+ left:auto!important;right:0!important;
+ width:min(296px,calc(100vw - 32px))!important;max-width:min(296px,calc(100vw - 32px))!important;
+ z-index:100!important;border:1px solid #7ea6b78c!important;
+ box-shadow:0 19px 50px #000c1b80!important;
+}
+#appHome .homeIntro{box-sizing:border-box;width:min(390px,100%)!important;margin:0 auto 17px!important}
+#appHome .homeIntro h1{
+ font-size:18px!important;font-weight:710!important;line-height:1.25!important;letter-spacing:-.02em!important;
+ color:#f3f9fc!important;margin:0 0 5px!important;
+}
+#appHome .homeIntro p{font-size:12px!important;color:#a9c5d2!important;line-height:1.45!important;margin:0!important}
+#appHome .homeChoices,#appHome .homeTools{
+ width:min(390px,100%)!important;max-width:390px!important;gap:10px!important;margin-left:auto!important;margin-right:auto!important;
+}
+#appHome .homeChoice,#appHome .homeToolsLink{
+ box-sizing:border-box!important;display:grid!important;grid-template-columns:50px minmax(0,1fr) 20px!important;
+ gap:13px!important;align-items:center!important;justify-content:stretch!important;
+ width:100%!important;max-width:none!important;min-height:83px!important;
+ padding:13px 12px!important;margin:0!important;text-align:left!important;
+ border:1px solid #6c92a17a!important;border-radius:13px!important;
+ background:#173b50!important;color:#eef8fc!important;
+ box-shadow:0 8px 23px #0015224f!important;text-decoration:none!important;
+}
+#appHome .homeChoice:hover,#appHome .homeToolsLink:hover{
+ border-color:#b4dfeebe!important;background:#204e66!important;transform:translateY(-1px);
+}
+#appHome .homeChoiceIcon,#appHome .homeToolsIcon{
+ box-sizing:border-box!important;width:50px!important;min-width:50px!important;height:50px!important;min-height:50px!important;
+ display:grid!important;place-items:center!important;flex:none!important;
+ background:#2a566e!important;border:1px solid #bddfee36!important;border-radius:12px!important;color:#d5f0fa!important;
+}
+#appHome .homeChoiceIcon svg,#appHome .homeToolsIcon svg{
+ display:block!important;width:26px!important;height:26px!important;
+ fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;
+}
+#appHome .homeChoiceCopy,#appHome .homeToolCopy{
+ box-sizing:border-box!important;min-width:0!important;display:flex!important;flex-direction:column!important;gap:4px!important;
+}
+#appHome .homeChoiceCopy strong,#appHome .homeToolCopy strong{
+ display:block!important;color:#f4fbfe!important;font-size:15px!important;font-weight:675!important;line-height:1.25!important;
+}
+#appHome .homeChoiceCopy small,#appHome .homeToolCopy small{
+ display:block!important;margin:0!important;color:#b1cbd8!important;font-size:11px!important;line-height:1.4!important;
+ white-space:normal!important;overflow-wrap:anywhere!important;
+}
+#appHome .homeChoiceArrow{
+ display:grid!important;place-items:center!important;width:20px!important;min-width:20px!important;
+ color:#d9eaf3!important;
+}
+#appHome .homeChoiceArrow svg{display:block!important;width:17px!important;height:17px!important;stroke-width:1.9!important}
+#appHome .homeTools{
+ display:grid!important;margin-top:21px!important;padding:0!important;border:0!important;
+}
+#appHome .homeSectionLabel{
+ text-align:left!important;margin:0 0 0!important;padding:0 3px!important;line-height:1.3!important;
+ color:#9ebccb!important;font-size:10px!important;font-weight:650!important;letter-spacing:.09em!important;
+ text-transform:uppercase!important;
+}
+#appHome .homeToolsLink{
+ min-height:70px!important;grid-template-columns:42px minmax(0,1fr) 20px!important;
+ background:#112f42!important;border-color:#4b70848c!important;
+ padding:10px 12px!important;
+}
+#appHome .homeToolsIcon{
+ width:42px!important;min-width:42px!important;height:42px!important;min-height:42px!important;
+ border-radius:10px!important;background:#244b61!important;
+}
+#appHome .homeToolsIcon svg{width:24px!important;height:24px!important}
+#appHome .homeToolCopy strong{font-size:13px!important}
+#appHome .homeFooter{
+ display:flex!important;justify-content:space-between!important;align-items:center!important;gap:12px!important;
+ box-sizing:border-box!important;width:min(390px,100%)!important;margin:23px auto 0!important;padding:13px 2px 0!important;
+ border-top:1px solid #4b708356!important;
+}
+#appHome .homeFooterAccount{
+ box-sizing:border-box!important;display:inline-flex!important;align-items:center!important;gap:9px!important;
+ width:auto!important;min-height:38px!important;padding:4px 7px!important;margin:0!important;
+ color:#c9dce5!important;background:transparent!important;border:0!important;border-radius:8px!important;
+ cursor:pointer!important;font:550 12px/1.3 system-ui,-apple-system,sans-serif!important;
+}
+#appHome .homeFooterAccount:hover{color:#f2faff!important;background:#badde810!important}
+#appHome .homeFooterAccount svg{width:18px!important;height:18px!important;stroke:#accbd9!important}
+#appHome .homeVersion{
+ color:#88a9b7!important;font-size:10px!important;font-weight:500!important;
+ white-space:nowrap!important;line-height:1.3!important;
+}
+@media(max-width:620px){
+ #appHome{padding:max(12px,env(safe-area-inset-top)) 10px max(12px,env(safe-area-inset-bottom))!important}
+ #appHome .homeShell{width:min(400px,100%)!important;max-width:400px!important;padding:13px 6px!important}
+ #appHome .homeBrand{margin-bottom:17px!important;padding-bottom:13px!important}
+ #appHome .homeChoice,#appHome .homeToolsLink{gap:10px!important}
+ #appHome .homeChoice{min-height:77px!important;padding:10px!important;grid-template-columns:45px minmax(0,1fr) 18px!important}
+ #appHome .homeChoiceIcon{width:45px!important;height:45px!important;min-width:45px!important;min-height:45px!important}
+ #appHome .homeTools{margin-top:17px!important}
+ #appHome .homeFooter{margin-top:17px!important}
+}
+@media(max-height:700px){
+ #appHome{align-items:flex-start!important}
+ #appHome .homeShell{margin:0 auto!important;padding-top:12px!important;padding-bottom:14px!important}
+ #appHome .homeBrand{margin-bottom:13px!important}
+ #appHome .homeIntro{margin-bottom:11px!important}
+ #appHome .homeChoice{min-height:72px!important}
+ #appHome .homeTools{margin-top:11px!important}
+ #appHome .homeToolsLink{min-height:60px!important}
+ #appHome .homeFooter{margin-top:12px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #appHome .homeChoice:hover,#appHome .homeToolsLink:hover{transform:none!important}
+}
+
+</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.442"></script><script src="auth/guard.js?v=2.4.442" defer></script>
+<link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.359">
+<link rel="stylesheet" href="sharepoint-test/app.css?v=0.4">
+<script src="sharepoint-test/app.js?v=0.4" defer></script>
+</head><body data-require-role="admin" data-sharepoint-module="" data-view="drawing" class="homeMode">
+<div id="tillsynoNavCurtain" aria-hidden="true"></div>
+<section id="appHome" class="appHome" aria-label="Välj arbetsläge">
+  <div class="homeAmbient" aria-hidden="true">
+    <span class="homeAmbientItem homeAmbientCctv"><svg viewBox="0 0 64 64"><path d="M10 19h29l10 9-10 9H10z"/><path d="M39 28h12l7 5"/><path d="M23 37v11"/><path d="M15 49h20"/></svg><small>CCTV</small></span>
+    <span class="homeAmbientItem homeAmbientLock"><svg viewBox="0 0 64 64"><rect x="15" y="28" width="34" height="25" rx="5"/><path d="M22 28v-8a10 10 0 0 1 20 0v8"/><circle cx="32" cy="40" r="3"/><path d="M32 43v5"/></svg></span>
+    <span class="homeAmbientItem homeAmbientDoor"><svg viewBox="0 0 64 64"><path d="M16 54V10h31v44"/><path d="M23 54V17h18v37"/><circle cx="37" cy="35" r="1.8"/><path d="M10 54h44"/></svg></span>
+    <span class="homeAmbientItem homeAmbientAccess"><svg viewBox="0 0 64 64"><rect x="13" y="18" width="38" height="29" rx="5"/><path d="M20 27h24M20 34h13"/><path d="M20 42h9"/><path d="M47 12c5 3 8 8 8 14M50 8c8 4 13 11 13 20"/></svg></span>
+    <span class="homeAmbientItem homeAmbientSensor"><svg viewBox="0 0 64 64"><circle cx="20" cy="32" r="5"/><path d="M29 24c7 3 11 8 11 16M34 18c11 5 17 13 17 26M39 12c14 6 22 17 22 32"/></svg></span>
+    <span class="homeAmbientItem homeAmbientFire"><svg viewBox="0 0 64 64"><path d="M34 9c2 11-7 14-3 24 2 5 8 6 10 1 2 6 2 12-2 17-7 8-23 5-27-6-3-9 2-17 9-23 0 8 4 11 8 10-3-11 8-14 5-27z"/></svg></span>
+  </div>
+  <div class="homeShell">
+    <div class="homeBrand">
+      <div class="homeBrandIdentity ta-brandlockup">
+        <span class="homeBrandMark ta-brandmark" aria-hidden="true">T</span>
+        <div class="homeBrandCopy ta-brandcopy">
+          <strong>Tillsyno</strong>
+          <small class="homeTagline">Kontroll · dokumentation · tillsyn</small>
+        </div>
+      </div>
+      <details class="homeProfile" id="homeProfile">
+        <summary aria-label="Öppna Mitt konto" title="Mitt konto">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20v-1.4A6.6 6.6 0 0 1 11.6 12h.8a6.6 6.6 0 0 1 6.6 6.6V20"/></svg>
+        </summary>
+        <div class="homeProfileMenu">
+          <div class="homeProfileStatus"><strong data-account-role>Kontostatus</strong><small data-account-license hidden></small></div>
+          <a href="auth/admin.html?v=2.4.308" data-admin-only hidden><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M2 19v-1a6 6 0 0 1 12 0v1M17 7h5M19.5 4.5v5M16 17h6"/></svg> Användare</a>
+          <button type="button" data-logout><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 4H4v16h6M15 8l4 4-4 4M8 12h11"/></svg> Logga ut</button>
+        </div>
+      </details>
+    </div>
+    <div class="homeIntro">
+      <h1>Välj arbetsområde</h1>
+      <p>Vad vill du arbeta med idag?</p>
+    </div>
+    <div class="homeChoices">
+      <a class="homeChoice" href="sharepoint-control-test.html?spv=0.4">
+        <span class="homeChoiceIcon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v4H9M9 12l1.5 1.5 2.5-3M9 17l1.5 1.5 2.5-3M15 12h1.5M15 17h1.5"/></svg></span>
+        <span class="homeChoiceCopy"><strong>Kontrollflöde</strong><small>Revision · egenkontroll · CE-märkning</small></span>
+        <span class="homeChoiceArrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></span>
+      </a>
+      <a class="homeChoice" href="sharepoint-smartmatch-test.html?spv=0.4">
+        <span class="homeChoiceIcon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V4h4M16 4h4v4M4 16v4h4M16 20h4v-4M8 12h8M12 8v8"/><circle cx="12" cy="12" r="2"/></svg></span>
+        <span class="homeChoiceCopy"><strong>SmartMatch</strong><small>Ritningar · dörrkort · CE-märkning</small></span>
+        <span class="homeChoiceArrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></span>
+      </a>
+      <a class="homeChoice" href="sharepoint-read-test.html?spv=0.4" style="margin-top:8px">
+        <span class="homeChoiceIcon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg></span>
+        <span class="homeChoiceCopy"><strong>Avläsning</strong><small>Dörrkort · material · tid</small></span>
+        <span class="homeChoiceArrow" aria-hidden="true">›</span>
+      </a>
+    </div>
+    <div class="homeTools">
+      <div class="homeSectionLabel">Verktyg</div>
+      <a class="homeToolsLink" href="sharepoint-drawing-test.html?spv=0.4">
+        <span class="homeToolsIcon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></svg></span>
+        <span class="homeToolCopy"><strong>Ritningsverktyg</strong><small>Redigera · rensa · optimera PDF</small></span>
+        <span class="homeChoiceArrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></span>
+      </a>
+    </div>
+    <div class="homeFooter">
+      <button id="homeFooterAccount" class="homeFooterAccount" type="button" aria-controls="homeProfile" aria-label="Öppna Mitt konto">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12M18.36 5.64l-2.12 2.12M7.76 16.24l-2.12 2.12"/><circle cx="12" cy="12" r="4"/></svg>
+        <span>Mitt konto</span>
+      </button>
+      <small class="homeVersion">v2.4.443</small>
+    </div>
+  </div>
+</section>
+<header class="appHeader">
+ <div class="brand"><strong>Dörrautomatik Service</strong></div>
+ <div class="headerActions"><button id="homeBtn" type="button">Hem</button><button id="globalCustomerPreview">Kundmall</button><button id="exportBtn" class="primary">Spara PDF</button></div>
+ <div class="headerDetails"></div>
+ <input id="file" type="file" accept="application/pdf" hidden>
+</header>
+<div class="objectBar"><span class="objectTitle"><span id="objectLabel">Välj en ritning</span><small>Öppna en ritning eller en tidigare arbets-PDF.</small></span><span id="doorCount">0 dörrar</span></div><div id="appMessage" role="status" aria-live="polite"></div>
+<main><section id="drawingView" class="view"><div class="pagebar"><button id="prev" aria-label="Föregående sida">‹</button><span id="pageInfo">Ingen ritning</span><span class="mobileSwipeHint" aria-hidden="true">↔ Svep</span><button id="next" aria-label="Nästa sida">›</button><button id="zoomOut">−</button><span id="zoomInfo">100%</span><button id="zoomIn">+</button><button id="fitBtn" hidden style="display:none!important">Passa</button></div><div id="hint">Tryck där dörren finns. Nyp för att zooma.</div><section id="viewerWrap"><div id="stage"><canvas id="pdfCanvas"></canvas><div id="markers"></div><div id="drawingNotes"></div></div><div id="drawingEmpty"><h1>Din ritning är arbetsytan</h1><p>Öppna PDF, fyll i projektet och markera automatikerna på plats.</p><label class="filebtn primary" for="file">Öppna PDF</label><p class="muted">Arbetet stannar på din enhet.</p></div></section><div class="drawingTools"><button id="mobileAdd" class="primary" title="Lägg dörr och checklista">＋ Lägg dörr</button><button id="precisionMode" type="button" class="precisionButton" aria-pressed="false" title="Precisionsläge för exakt placering på telefon">⌖ Precision</button><button id="mobileText" hidden>＋ Text</button><button id="changeDrawingBtn" type="button" hidden>Byt ritning</button><button id="mobileFit" hidden style="display:none!important">Passa</button><button id="addBtn" hidden>＋ Dörr</button></div></section>
+<aside id="protocolPanel" class="view"><div class="sheetHead protocolSheetHead"><div><span class="eyebrow">DÖRRAUTOMATIK</span><h2>Provningsprotokoll</h2></div><button id="closeProtocol" type="button" aria-label="Stäng protokoll och gå till ritningen" title="Till ritningen">×</button></div><span id="protocolHeading" hidden></span><div id="empty"><p>Välj en dörr på ritningen eller i dörrlistan.</p><button id="pickDoorBtn" class="primary">Visa dörrar</button></div><div id="form" hidden><details class="protocolMetaPanel" open><summary><span>Dörruppgifter</span><span class="protocolMetaHint">Visa / dölj</span></summary><div class="doorDetails simpleDoorDetails"><div class="compactDoorMeta"><label class="doorTypeField">Typ av automatik<select id="modelChoice"><option value="">Välj modell…</option></select></label><label class="doorSerialField">Löpnummer<input id="serialNumber" inputmode="numeric" placeholder="001"></label><label class="doorIdField">ID / märkning<input id="doorId" placeholder="Objektnummer–modell–löpnummer"></label><label class="doorLocationField">Placering<input id="location" placeholder="Exempel: Entré, dörr 12"></label><label class="doorStatusField">Slutbedömning<select id="status"><option value="untested">Pågående</option><option value="ok">Godkänd</option><option value="action">Åtgärd krävs</option><option value="fail">Ej godkänd</option></select></label><label class="doorSignatureField">Teknikerns signatur<input id="signature" readonly placeholder="Projekt"></label><button class="danger compactDeleteButton" id="deleteBtn">Ta bort dörr</button><p id="idMessage" class="fieldError doorIdMessage" role="status"></p></div></div></details><details id="previousPanel" class="previousPanel" hidden><summary>Tidigare anmärkningar</summary><div id="previousIssues"></div><p>Kontrollera på plats och fyll i dagens resultat.</p></details><div class="progressLine"><strong id="checkProgress">0 / 18 kontrollerade</strong></div><div id="checklist"></div><label class="protocolNotes">Allmän anmärkning<textarea id="notes" rows="3"></textarea></label><p id="serviceBy" class="muted" hidden></p></div></aside>
+<dialog id="doorOpenWorkDialog" class="doorOpenWorkDialog">
+  <div class="doorOpenWorkHead"><strong>Sparad servicefil hittad</strong></div>
+  <p id="doorOpenWorkMeta">Den här filen innehåller tidigare serviceuppgifter.</p>
+  <div class="doorOpenWorkActions">
+    <button id="doorOpenNewService" type="button" class="primary">Ny service</button>
+    <button id="doorOpenContinue" type="button">Fortsätt / ändra</button>
+  </div>
+  <p class="muted">Ny service behåller projekt, kund, företag, logga, dörrar och servicetekniker men nollställer dagens kontroll.</p>
+</dialog>
+
+<dialog id="legacyImportDialog" class="doorOpenWorkDialog">
+  <div class="doorOpenWorkHead"><strong>Äldre dörrautomatik hittad</strong></div>
+  <p id="legacyImportMeta">Den gamla servicefilen har analyserats.</p>
+  <div class="doorOpenWorkActions">
+    <button id="legacyImportOk" type="button" class="primary">Öppna ritningen</button>
+  </div>
+  <p class="muted">Ritningar och gamla protokoll läses direkt ur PDF-filen. Automatiker som inte kan positionskopplas läggs i Placera-kön med sin gamla information kvar.</p>
+</dialog>
+
+<dialog id="overviewDialog" class="view" aria-labelledby="overviewTitle"><div class="overviewHead"><div><span class="eyebrow">OBJEKTETS AUTOMATIKER</span><h2 id="overviewTitle">Dörrar och anmärkningar</h2></div><div class="overviewHeadControls"><button id="closeOverview" aria-label="Till ritningen">×</button></div></div><div id="overviewProject" class="overviewProject"></div><p id="overviewSummary" role="status"></p><div class="overviewFilters"><label>Visa<select id="overviewFilter"><option value="all">Alla dörrar</option><option value="problems">Dörrar med fel</option><option value="untested">Ej klara</option><option value="ok">Godkända utan fel</option></select></label><label>Sök<input id="overviewSearch" type="search" placeholder="ID, modell, placering"></label></div><div class="overviewActions"><button id="overviewPdf">PDF anmärkningslista</button><button id="overviewBtn" hidden>Översikt</button></div><div id="overviewList"></div></dialog>
+<section id="projectPanel" class="view" hidden><div class="sheetHead"><div><span class="eyebrow">GEMENSAMT FÖR ALLA DÖRRAR</span><h2>Projekt och service</h2></div><button id="closeProject" aria-label="Till ritningen">×</button></div><p id="drawingInfo" class="muted"></p><p id="workFileInfo" class="fileInfo">En sparad arbets-PDF kan öppnas av nästa tekniker.</p><a class="securityLaunch" href="sharepoint-security-test.html?spv=0.4"><strong>Säkerhetsservice</strong><span>Inbrottslarm · Lås & Dörrmiljö · Passer</span><b>Öppna ›</b></a><div class="previewToolbar"><button id="toggleCustomerPreview" type="button" class="primary">👁 Visa kundmall</button><span>Ingen PDF sparas. Visningen följer alla ändringar i projekt och dörr.</span></div><div class="projectPreviewLayout"><div class="projectEditor"><div class="projectSections">
+<section class="projectCard"><div class="projectCardHead"><span>1</span><div><h3>Anläggning & jobb</h3><p>Grunduppgifter för hela projektet</p></div></div><div class="grid2"><label class="wide">Anläggning / objekt<input id="projectName" placeholder="Exempel: Håsten Skolan"></label><label>Anläggningsnummer<input id="facilityNo" placeholder="1111-1"></label><label>Ordernummer / AO<input id="projectOrder"></label><label>Bokat besök datum<input id="inspectionDate" type="date"></label><label>Nästa provning datum<input id="projectNextDate" type="date"></label></div></section>
+<section class="projectCard"><div class="projectCardHead"><span>2</span><div><h3>Beställare</h3><p>Fyll i kundens uppgifter först</p></div></div><div class="grid2"><label>Beställare / företag<input id="customer" placeholder="Exempel: Varbergs Bostad"></label><label>Avtalsnummer<input id="agreementNo"></label><label>Kontaktperson<input id="contact"></label><label>Telefonnummer<input id="phone" type="text" inputmode="text" placeholder="070-123 45 67"></label><label>Adress<input id="address"></label><label>Postnummer<input id="postalCode" type="text" inputmode="text" placeholder="432 65"></label><label>Postadress<input id="postalCity"></label></div></section>
+<section class="projectCard"><div class="projectCardHead"><span>3</span><div><h3>Serviceföretag</h3><p>Fyll sedan i företaget som utför servicen</p></div></div><div class="grid2"><label>Företag<input id="company"></label><label>Kontaktman på objektet<input id="companyContact"></label><label>Telefonnummer<input id="companyPhone" type="text" inputmode="text" placeholder="0340-12 34 56"></label><label>Adress<input id="companyAddress"></label><label>Postnummer<input id="companyPostalCode" type="text" inputmode="text" placeholder="432 65"></label><label>Postadress<input id="companyPostalCity"></label></div></section>
+<section class="projectCard"><div class="projectCardHead"><span>4</span><div><h3>Tekniker & dokument</h3><p>Signatur och logotyp i kundrapporten</p></div></div><div class="grid2"><label>Servicetekniker<input id="technician"></label><label>Signatur<input id="serviceSignature" placeholder="Namn / initialer"></label><label class="wide">Företagslogotyp<input id="logoFile" type="file" accept="image/*"></label><div id="logoPreview" class="wide"></div></div></section>
+</div><button id="newServiceBtn" class="secondary">Starta nytt servicebesök</button><p class="muted">Dörrarna följer med. Tidigare fel visas som stöd och dagens kontroller börjar obesvarade.</p><div id="legacyWorkPanel" hidden><p>Äldre arbete saknar koppling till en PDF. Öppna rätt ritning för att koppla det.</p><button id="restoreLegacy">Koppla äldre arbete till denna ritning</button></div><div id="installAppPanel" class="installAppPanel" hidden><strong>Använd som app</strong><p id="installAppText">Installera Dörrservice på hemskärmen för en mer stabil helskärmsvy.</p><button id="installAppBtn" type="button" class="primary">Installera app</button></div><p class="muted">Spara arbets-PDF:en till Filer efter besöket. Ingen projektdata skickas till en server.</p></div></div></section></main><aside id="customerPreviewPane" hidden><div class="customerPreviewHead"><div><strong>Kundmall</strong><span id="customerPreviewStatus">Förhandsvisning</span></div><div class="customerPreviewControls"><button id="customerPreviewPrev" type="button" aria-label="Föregående sida">‹</button><span id="customerPreviewPage">1 / 1</span><button id="customerPreviewNext" type="button" aria-label="Nästa sida">›</button><button id="customerPreviewTextSmaller" type="button" aria-label="Mindre kundmall">A−</button><button id="customerPreviewTextLarger" type="button" aria-label="Större kundmall">A+</button><button id="closeCustomerPreview" type="button" aria-label="Stäng förhandsvisning">×</button></div></div><div id="customerPreviewCanvasWrap"><canvas id="customerPreviewCanvas"></canvas></div></aside>
+<nav id="mobileBar" aria-label="Arbetsvyer">
+<button id="navDrawing" class="active" aria-current="page"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5.5 9 3l6 2.5L20 3v15.5L15 21l-6-2.5L4 21V5.5Z"/><path d="M9 3v15.5M15 5.5V21"/></svg></span><span class="navLabel">Ritning</span></button>
+<button id="mobileOverview"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 5h3v3H5zM11 6.5h8M5 11h3v3H5zM11 12.5h8M5 17h3v3H5zM11 18.5h8"/></svg></span><span class="navLabel">Dörrar</span></button>
+<button id="mobileProtocol"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h8M9 3h6v3H9zM7 5H5v16h14V5h-2"/><path d="m8 13 2 2 5-5"/></svg></span><span class="navLabel">Protokoll</span></button>
+<button id="settingsBtn"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V7l8-4 8 4v13H4Z"/><path d="M8 10h2M14 10h2M8 14h2M14 14h2M10 20v-3h4v3"/></svg></span><span class="navLabel">Projekt</span></button>
+</nav><script src="ui-text-scale.js?v=2.4.217"></script><script src="drawing-annotations.js?v=2.4.217"></script><script src="session-history.js?v=2.4.217"></script><script src="app.js?v=2.4.256"></script><script src="reports.js?v=2.4.217"></script><script src="v2.js?v=2.4.217"></script><script src="customer-preview-pager.js?v=2.4.217"></script><script src="drawing-transfer.js?v=2.4.217"></script><script src="offline.js?v=2.4.398"></script>
+<script id="tillsyno-home-footer-account-v295">(function(){
+ 'use strict';
+ const footer=document.getElementById('homeFooterAccount');
+ const profile=document.getElementById('homeProfile');
+ if(!footer||!profile)return;
+ footer.addEventListener('click',()=>{
+  profile.open=!profile.open;
+  if(profile.open)profile.querySelector('summary')?.focus();
+ });
+})();</script>
+<script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let observer=null;function reveal(){if(root.hasAttribute('data-auth-pending')){if(!observer){observer=new MutationObserver(reveal);observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}return}if(observer){observer.disconnect();observer=null}root.classList.add('tillsyno-nav-ready')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',reveal)})();</script>
+<script src="tillsyno-appearance.js?v=2.4.398"></script>
+<aside class="spTestBadge">SharePoint TEST 0.4 · <a href="sharepoint-app-test.html?spv=0.4">Teststartsida</a></aside></body></html>
+
+
