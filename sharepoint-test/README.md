@@ -1,31 +1,50 @@
-# Tillsyno – SharePoint-pilot (Projektflöde)
+# Tillsyno – SharePoint-pilot för SmartMatch / Avläsning
 
 **Status 2026-10-20: Förberedelse på separat GitHub-gren. Ingen skarp SharePoint-koppling, publicerad testlänk eller Microsoft-inloggning är aktiverad.**
 
+## Vald modul – förtydligat av användaren 2026-10-20
+
+Användaren vill koppla SharePoint **först till det kodskyddade Avläsningstestet**, med de två ingångarna **Förbered ritning** och **Öppna PDF**.
+
+Verifierat i aktuell källkod:
+- Startsidan `index.html` länkar från **Avläsning** till `smartmatch-read-test-v9-74.html?v=9.74`.
+- `smartmatch-read-test-v9-74.html` har rubriken **SmartMatch – Avläsning TEST 9.74**, kodrutan `smReadCodeGate` och de två valda ingångarna.
+- **Förbered ritning:** `rtChooseFiles`, med filfältet `rtMultiFiles` för flera PDF-filer.
+- **Öppna PDF:** `pwOpenProjectEmpty`, för färdig projekt-PDF.
+
+Detta ersätter den tidigare preliminära inriktningen mot `project-workspace.html`. Den vanliga Projektflöde-sidan, SmartMatch 1.3/SLR, det äldre v36.106-testet, Kontrollflödet och iOS/TestFlight ska **inte** ändras av denna pilot.
+
+Behåll avläsningslogik, sparade kopplingar, kontroller och befintlig Tillsyno-inloggning/kodkontroll. SharePoint ska vara en ytterligare filkälla och sparplats, inte en ny matchningsmotor. Lokal filöppning ska finnas kvar.
+
 ## Utgångsläge
-- GitHub: `dyli2009-cmd/tillsyno`, `main` är fungerande app och ska lämnas oförändrad.
-- Projektflöde finns i `project-workspace.html` och `project-workspace.js`. Kontrollflöde är låst.
-- SmartMatch TEST är en separat version; den får inte ändras av bara detta pilotarbete.
-- Användaren har skapat en SharePoint-webbplats Tillsyno, en projektmapp och laddat upp en test-PDF som går att öppna i SharePoint. Den exakta webbplats- och mappadressen är inte verifierad via API.
-- SharePoint är dokumentlager. Projektstatus och samtidiga ändringar i flera montörers checklistor får inte synkas genom att flera personer skriver över samma PDF.
+- GitHub: `dyli2009-cmd/tillsyno`. Arbetsgren: `test/sharepoint-projektflode-20261020`.
+- `main` och användarens fungerande app ska lämnas oförändrade under förberedelsen.
+- Användaren har skapat en SharePoint-webbplats Tillsyno, en projektmapp och laddat upp en PDF som går att öppna i SharePoint. Den exakta webbplats- och mappadressen är inte verifierad via API.
+- SharePoint är dokumentlager. Samtidiga kontrollpunktsändringar från flera montörer får inte synkas genom att flera personer skriver över samma PDF.
 
-## Stegvis genomförande
-1. Registrera **Tillsyno SharePoint Test** i Microsoft Entra ID, i första skedet **single-tenant**, som **Single-page application (SPA)**. Registrera en exakt separat test-redirect-URI innan inloggning provas. Använd MSAL Browser authorization code + PKCE. Ingen client secret i frontend eller public GitHub.
-2. Konfigurera endast nödvändiga **delegerade Microsoft Graph-behörigheter** för testkontot. Tillgång ska begränsas av användarens behörighet i SharePoint. Kräv godkännande enligt organisationens policy. Skydda inloggningen även med Tillsynos befintliga Supabase-behörighetskontroll.
-3. Anslut separat test-UI (inte Kontrollflöde, inte skarp `main`). Välj webbplats, dokumentbibliotek, mapp och PDF.
-4. Hämta PDF som bytes från Microsoft Graph och mata in den i Projektflödets existerande `analyze(file)`-flöde. Ändra inte avläsning, dörrkorts- eller GS-matchningsregler.
-5. Exportera Projektflödets färdiga PDF via befintligt exportflöde och **spara som ny testkopia** i SharePoint; behåll originalet och visa tydlig serverkvittens.
-6. Testa återöppning i SharePoint, läsbehörighet, nekad behörighet, nätavbrott, stora PDF:er, andra enheter och fel från Microsoft Graph innan någon skarp koppling eller multi-user-synk byggs.
-7. Stöd för flera företag kräver multi-tenant-appregistrering, separat företagsbehörighetskontroll och företagsisolerad konfigurering. Detta ingår **inte** i första testet.
+## Avsett första test
+1. Anslut Microsoft-testkontot i en isolerad testversion av Avläsning.
+2. Under **Förbered ritning**, välj test-PDF:er från SharePoint och använd Avläsnings befintliga förberedelseflöde. Undersök dess faktiska importgränssnitt innan inkoppling; utgå inte från den äldre Projektflödesfunktionens `analyze(file)`.
+3. Spara den förberedda projekt-PDF:en som **en ny kopia** i testmappen; behåll originalet.
+4. Under **Öppna PDF**, hämta den sparade projekt-PDF:en från SharePoint och använd dess sparade avläsning/kopplingar.
+5. Kontrollera hämtning, export, återöppning, nekad behörighet och nätfel innan testet beskrivs som fungerande.
 
-## Kod skapad på pilotgrenen
-`sharepoint-test/graph-client.js` är en fristående REST-adapter. Den behöver en godkänd `getAccessToken`-funktion från Microsoft-inloggningen för att användas. Den kan läsa webbplatser, lista bibliotek/mappar, hämta PDF och ladda upp en **ny** PDF-kopia. Funktionen för uppladdning begär att inte skriva över befintlig fil.
+## Microsoft-registrering och implementation som återstår
+1. Registrera **Tillsyno SharePoint Test** i Microsoft Entra ID, först för endast den egna testorganisationen. Konfigurera SPA med exakt test-redirect-URI och MSAL Browser authorization code + PKCE. Ingen client secret i frontend eller publikt GitHub.
+2. Konfigurera endast nödvändiga delegerade Microsoft Graph-behörigheter. Behåll användarens SharePoint-behörigheter och Tillsynos befintliga åtkomstkontroller.
+3. Bygg separat test-UI och koppla till Avläsnings faktiska filimport/export. Ingen ändring av avläsnings-, dörrkorts- eller GS-matchningsregler.
+4. Verifiera webbläsarhämtning, CORS, filnamnskonflikter, storleksgränser och skydd mot överskrivning mot Microsofts dokumentation och riktiga testfiler.
+5. Testa återöppning på annan enhet innan någon publicering eller samtidig redigering utlovas.
+6. Senare företagsanslutningar och flera samtidiga användare kräver separat säkerhetsdesign och testning. De ingår inte i första filkopplingstestet.
 
-**Adapterkoden är inte ansluten till Projektflödets UI ännu och är inte testad mot användarens SharePoint.** Den ska inte beskrivas som en fungerande integration förrän ovanstående steg är genomförda.
+## Befintlig grundkod på pilotgrenen
+`sharepoint-test/graph-client.js` är en fristående, preliminär REST-adapter. Den behöver en godkänd `getAccessToken`-funktion från Microsoft-inloggningen. Den innehåller anrop för webbplatser, bibliotek/mappar, PDF-hämtning och uppladdning. Dess beteende och skydd mot filöverskrivning är **inte verifierade mot SharePoint**.
+
+**Adapterkoden är ännu inte ansluten till Avläsnings knappar och är inte testad mot användarens Microsoft-konto.** Uppdateringen av detta dokument ändrar endast vald inriktning, inte appens funktion eller publicering.
 
 ## Säkerhet
 - Inga access tokens, lösenord, klienthemligheter, PDF-filer, ritningar eller kunduppgifter i GitHub.
-- HTTPS, PKCE, tydliga behörigheter och särskilt testkonto.
-- Håll testkonfiguration skild från Tillsynos vanliga inloggning och iOS.
-- Dra inte slutsatsen att filer på SharePoint automatiskt blir åtkomliga i Tillsyno; det krävs faktisk OAuth/Graph-koppling.
-- Starta med läsning; spara som kopia, aldrig ersätt original utan versionskontroll.
+- HTTPS, PKCE, minsta nödvändiga behörigheter och separat testmiljö.
+- Håll testkonfiguration skild från den fungerande appen och iOS.
+- Befintlig SharePoint-åtkomst i webbläsaren innebär inte att Tillsyno automatiskt har åtkomst; faktisk Microsoft-inloggning och Graph-koppling krävs.
+- Starta med läsning och spara som ny testkopia. Ersätt inte original.
