@@ -22,8 +22,10 @@ export function safeDownloadUrl(value) {
   return u.href;
 }
 export class ReadOnlySharePoint {
-  constructor({ getToken, fetchImpl = globalThis.fetch, maxBytes = LIMIT }) {
+  constructor({ getToken, fetchImpl = globalThis.fetch.bind(globalThis), maxBytes = LIMIT }) {
     if (typeof getToken !== 'function') throw new TypeError('Tokenfunktion saknas.');
+    // Window.fetch requires its global receiver, not this client instance.
+    // Bind the default once; injected test transports remain unchanged.
     this.getToken = getToken; this.fetch = fetchImpl; this.maxBytes = maxBytes;
   }
   async json(path) {

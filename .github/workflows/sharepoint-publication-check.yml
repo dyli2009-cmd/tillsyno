@@ -1,0 +1,60 @@
+name: Verify published SharePoint pilot
+on:
+  push:
+    branches: [test/sharepoint-projektflode-20261020]
+    paths: [.github/workflows/sharepoint-publication-check.yml]
+permissions:
+  contents: read
+jobs:
+  verify-live-pages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: e017d97628426044b8d6127eebda3e6893cdcfe1
+          fetch-depth: 1
+      - name: Verify live pages, bundles, callback and unchanged main app
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, pathlib, time, urllib.request
+          base = 'https://dyli2009-cmd.github.io/tillsyno/'
+          paths = ['sharepoint-test/index.html', 'sharepoint-test/auth-callback.html',
+                   'sharepoint-test/pilot.js', 'sharepoint-test/callback.js',
+                   'sharepoint-test/pilot.css', 'sharepoint-test/auth-config.json',
+                   'index.html', 'smartmatch-read-test-v9-74.html', 'auth/client.js', 'auth/guard.js']
+          results = []
+          for path in paths:
+              expected = pathlib.Path(path).read_bytes()
+              last_error = None
+              for attempt in range(8):
+                  try:
+                      request = urllib.request.Request(base + path, headers={'Cache-Control': 'no-cache', 'User-Agent': 'Tillsyno-SharePoint-Publication-Check'})
+                      with urllib.request.urlopen(request, timeout=25) as response:
+                          content = response.read()
+                          assert response.status == 200, response.status
+                          assert content == expected, 'Published content does not yet match committed file'
+                          if path.endswith('auth-callback.html'):
+                              assert not response.headers.get('Cross-Origin-Opener-Policy'), 'Unexpected COOP header on redirect bridge'
+                          entry = {'path': path, 'status': response.status, 'bytes': len(content),
+                                   'sha256': hashlib.sha256(content).hexdigest(), 'matches_commit': True}
+                          print(json.dumps(entry), flush=True)
+                          results.append(entry)
+                          last_error = None
+                          break
+                  except Exception as error:
+                      last_error = error
+                      print('Retry ' + str(attempt + 1) + ': ' + path + ' - ' + str(error), flush=True)
+                      time.sleep(10)
+              if last_error:
+                  raise RuntimeError(path + ': ' + str(last_error))
+          pathlib.Path('sharepoint-publication-results.json').write_text(json.dumps(results, indent=2))
+          print('PASS: all ten live URLs return the exact committed bytes. Real Microsoft account sign-in remains untested.')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sharepoint-publication-results
+          path: sharepoint-publication-results.json
+          if-no-files-found: error
+          retention-days: 7
