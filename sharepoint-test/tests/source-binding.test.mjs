@@ -31,7 +31,7 @@ async function pdfBytes({kind='smartmatch',id='project-A',revision=1,drawing=nul
  return new Uint8Array(await doc.save());
 }
 const file=(bytes,name='Samma namn.pdf')=>new File([bytes],name,{type:'application/pdf'});
-function environment(kind='smartmatch',{native=false}={}){
+function environment(kind='smartmatch',{native=false,restoreStore,setup}={}){
  const [page,module,inputId]=routeInfo[kind],listeners=new Map(),nodes=new Map();
  const document={body:{dataset:{sharepointModule:module},hasAttribute:()=>true},
   getElementById:id=>nodes.get(id)||null,
@@ -41,7 +41,8 @@ function environment(kind='smartmatch',{native=false}={}){
  const window={document,location:{pathname:'/tillsyno/'+page},Blob,File,crypto:webcrypto,PDFLib};
  const input={id:inputId,files:[]};nodes.set(inputId,input);nodes.set('ceWorkspace',{hidden:false});
  let runtime=null;
- const binding=createSourceBinding({window,...(native?{}:{readActive:()=>runtime})});
+ setup?.(window,{get:()=>runtime,set:value=>{runtime=value;}});
+ const binding=createSourceBinding({window,restoreStore,...(native?{}:{readActive:()=>runtime})});
  const emit=(type,target)=>{for(const fn of listeners.get(type)||[])fn({target});};
  const click=id=>emit('click',{closest:()=>({id})});
  const captureProject=()=>{click({smartmatch:'smartExportBuild',dorrservice:'exportBtn','security-service':'secSaveWork','doorservice-all-in-one':'secSaveWork',ce:'ceSavePdf',drawing:'pdfSaveConfirm'}[kind]);return binding.captureExport();};
@@ -57,6 +58,33 @@ async function exportInfo(env,bytes,context,name='Annan exporttitel.pdf'){
  if(!context){env.click({smartmatch:'smartExportBuild',dorrservice:'exportBtn','security-service':'secSaveWork','doorservice-all-in-one':'secSaveWork',ce:'ceSavePdf',drawing:'pdfSaveConfirm'}[env.runtime()?.kind]||'ceSavePdf');context=env.binding.captureExport();}
  return env.binding.inspectExport({blob:file(bytes,name),name,context});
 }
+function tabStore(){
+ const entries=new Map();
+ return {entries,getItem:key=>entries.get(key)??null,setItem:(key,value)=>entries.set(key,String(value)),removeItem:key=>entries.delete(key)};
+}
+function smartEnvironment(store,options={}){
+ const control={readResult:true,cacheResult:true,...options};
+ const env=environment('smartmatch',{restoreStore:store,setup(window,state){
+  window.SmartMatchAppBridge={
+   isOpeningProject:()=>!!control.opening,
+   async openReadFile(file){
+    if(control.readError)throw control.readError;
+    if(control.readResult===true)state.set({kind:'smartmatch',key:'workspace-A',session:null,bytes:new Uint8Array(await file.arrayBuffer())});
+    return control.readResult;
+   },
+   async openCachedPdf(file,view){
+    if(control.restoreError)throw control.restoreError;
+    if(control.restoreResult===false)return false;
+    state.set({kind:'smartmatch',key:control.restoreWorkspace||view.workspaceId||view.fileKey,session:null,
+     bytes:control.restoreBytes||new Uint8Array(await file.arrayBuffer())});
+    // The actual SmartMatch cache opener returns undefined after success.
+   },
+  };
+  window.SmartMatchSession={cachePdf:async()=>control.cacheResult};
+ }});
+ return {...env,control,restore:(bytes,view={})=>env.window.SmartMatchAppBridge.openCachedPdf(file(bytes),{workspaceId:'workspace-A',fileKey:'base-pdf',...view})};
+}
+const references=store=>[...store.entries.values()].flatMap(text=>{try{const value=JSON.parse(text);return value?.version===1?[value]:[];}catch{return[];}});
 
 test('opened working PDF binds exact driveItem; repeated saves refresh eTag and retain name independent of export name',async()=>{
  const env=environment(),original=await pdfBytes(),updated=await pdfBytes({revision:2});env.binding.setIdentity(identity);
@@ -133,6 +161,142 @@ test('raw local SmartMatch project can create a cloud project; expected module p
  const env=environment(),bytes=await pdfBytes({kind:'raw'});env.setRuntime({kind:'smartmatch',key:'raw-key',session:null,bytes});
  const wrong=await exportInfo(env,await pdfBytes({id:'something-else'}));assert.equal(wrong.projectExport,false);
  const valid=await exportInfo(env,await pdfBytes({id:'smartmatch-v35-raw-key'}));assert.equal(valid.projectExport,true);assert.equal(valid.source,null);
+});
+
+test('Prepare drawing preserves only the delivered single cloud File through one bridge handoff',async()=>{
+ const store=tabStore(),env=smartEnvironment(store),bytes=await pdfBytes({kind:'raw'}),input={id:'rtMultiFiles',files:[file(bytes)]};
+ env.binding.setIdentity(identity);
+ assert.equal(await env.binding.observeImport(input,input.files,[source()]),true);env.emit('change',input);
+ assert.equal(await env.window.SmartMatchAppBridge.openReadFile(input.files[0],{readTestIntent:'prepare'}),true);
+ assert.equal(references(store)[0].source.eTag,'"v1"','a successful preparation keeps the imported version before the first export');
+ const output=await pdfBytes({id:'smartmatch-v35-workspace-A'}),info=await exportInfo(env,output);
+ assert.equal(info.projectExport,true);assert.equal(info.source.id,'item-A');
+ await env.window.SmartMatchAppBridge.openReadFile(input.files[0],{readTestIntent:'prepare'});
+ assert.equal((await exportInfo(env,output)).source,null,'reusing the same File later is not a second cloud handoff');
+ const reloaded=smartEnvironment(store);reloaded.binding.setIdentity(identity);await reloaded.restore(bytes);
+ assert.equal((await exportInfo(reloaded,output)).source,null,'a later unverified open also revokes its persisted association');
+});
+
+test('different File, merged selection, undelivered input and rejected preparation cannot inherit a cloud source',async()=>{
+ const bytes=await pdfBytes({kind:'raw'}),output=await pdfBytes({id:'smartmatch-v35-workspace-A'});
+ for(const mode of ['different-file','multiple','not-delivered','cancelled','failed']){
+  const store=tabStore(),env=smartEnvironment(store),selected=file(bytes),input={id:'rtMultiFiles',files:[selected]};env.binding.setIdentity(identity);
+  if(mode==='multiple')input.files.push(file(bytes,'Other.pdf'));
+  await env.binding.observeImport(input,input.files,input.files.map((_,index)=>source({id:'item-'+index})));
+  if(mode!=='not-delivered')env.emit('change',input);
+  if(mode==='cancelled')env.control.readResult=false;
+  if(mode==='failed')env.control.readError=Error('Synthetic opener failure');
+  const opening=env.window.SmartMatchAppBridge.openReadFile(mode==='different-file'?file(bytes):selected,{readTestIntent:'prepare'});
+  if(mode==='failed')await assert.rejects(opening,/Synthetic opener failure/);else await opening;
+  assert.equal((await exportInfo(env,output)).source,null,mode);
+  assert.equal(references(store).length,0,mode);
+ }
+});
+
+test('cache completion persists a cloud import before the first export and a proven reload restores its original eTag',async()=>{
+ const store=tabStore(),env=smartEnvironment(store),bytes=await pdfBytes();env.binding.setIdentity(identity);await openCloud(env,bytes);
+ env.control.opening=true;setTimeout(()=>{env.control.opening=false;},35);
+ assert.equal(await env.window.SmartMatchSession.cachePdf(),true);
+ const record=references(store)[0];assert.equal(record.projectKey,'project-A');assert.match(record.originalHash,/^[a-f0-9]{64}$/);
+ assert.equal(record.source.id,'item-A');assert.equal(record.source.eTag,'"v1"');assert.ok(JSON.stringify(record).length<2048);
+ env.binding.uninstall();
+ const reloaded=smartEnvironment(store);await reloaded.restore(bytes,{localPayload:{projectId:'project-A'}});
+ const context=reloaded.captureProject();
+ assert.equal((await exportInfo(reloaded,bytes,context)).source,null,'no account has been connected yet');
+ reloaded.binding.setIdentity(identity);
+ const info=await exportInfo(reloaded,bytes,context);
+ assert.equal(info.source.id,'item-A');assert.equal(info.source.eTag,'"v1"');assert.equal(info.isCurrent(),true);
+});
+
+test('confirmed copy receipt persists the selected ID, folder and eTag without source bytes or unrelated fields',async()=>{
+ const store=tabStore(),env=smartEnvironment(store),bytes=await pdfBytes();env.binding.setIdentity(identity);await openCloud(env,bytes);
+ const info=await exportInfo(env,bytes);
+ assert.equal(env.binding.confirmSave(info,source({id:'copy-ID',parentId:'copy-folder',name:'Gemensam kopia.pdf',eTag:'"copy-v3"',accessToken:'DO_NOT_STORE',pdfBytes:'DO_NOT_STORE'})),true);
+ const record=references(store)[0];assert.equal(record.source.id,'copy-ID');assert.equal(record.source.eTag,'"copy-v3"');
+ assert.equal(record.source.accessToken,undefined);assert.equal(record.source.pdfBytes,undefined);assert.equal(record.runtime,undefined);
+ const reloaded=smartEnvironment(store);reloaded.binding.setIdentity(identity);await reloaded.restore(bytes);
+ const next=await exportInfo(reloaded,bytes);assert.equal(next.source.id,'copy-ID');assert.equal(next.source.name,'Gemensam kopia.pdf');
+ assert.equal(next.source.parentId,'copy-folder');assert.equal(next.source.eTag,'"copy-v3"');
+});
+
+test('separate tab stores preserve independent known eTags when another tab saves the same project',async()=>{
+ const bytes=await pdfBytes(),tabs=[tabStore(),tabStore()],envs=[];
+ for(const store of tabs){const env=smartEnvironment(store);env.binding.setIdentity(identity);await openCloud(env,bytes);await env.window.SmartMatchSession.cachePdf();envs.push(env);}
+ assert.equal(envs[0].binding.confirmSave(await exportInfo(envs[0],bytes),source({eTag:'"v2-from-tab-A"'})),true);
+ for(let i=0;i<tabs.length;i++){
+  const reload=smartEnvironment(tabs[i]);reload.binding.setIdentity(identity);await reload.restore(bytes);
+  assert.equal((await exportInfo(reload,bytes)).source.eTag,i===0?'"v2-from-tab-A"':'"v1"');
+ }
+});
+
+test('a local primary import revokes persisted associations even for identical name, bytes and workspace after reload',async()=>{
+ const store=tabStore(),bytes=await pdfBytes(),env=smartEnvironment(store);env.binding.setIdentity(identity);await openCloud(env,bytes);await env.window.SmartMatchSession.cachePdf();
+ env.input.files=[file(bytes)];env.emit('change',env.input);env.setRuntime({kind:'smartmatch',key:'workspace-A',session:null,bytes:bytes.slice()});
+ assert.equal((await exportInfo(env,bytes)).source,null);await env.window.SmartMatchSession.cachePdf();
+ const reload=smartEnvironment(store);reload.binding.setIdentity(identity);await reload.restore(bytes);
+ assert.equal((await exportInfo(reload,bytes)).source,null);
+});
+
+test('quota failure while revoking a local import removes the old epoch so reload cannot revive a cloud source',async()=>{
+ const store=tabStore(),write=store.setItem;let quotaOnce=false;
+ store.setItem=(key,value)=>{
+  if(quotaOnce && key.includes(':epoch:')){quotaOnce=false;throw new DOMException('Synthetic full storage','QuotaExceededError');}
+  write(key,value);
+ };
+ const bytes=await pdfBytes(),env=smartEnvironment(store);env.binding.setIdentity(identity);await openCloud(env,bytes);await env.window.SmartMatchSession.cachePdf();
+ const old=references(store)[0];assert.ok(old.epoch);
+ quotaOnce=true;env.input.files=[file(bytes)];env.emit('change',env.input);
+ assert.equal([...store.entries.keys()].some(key=>key.includes(':epoch:')),false,'removeItem must revoke the disk epoch despite failed setItem');
+ assert.equal(references(store)[0].source.id,'item-A','the regression must leave the old reference present');
+ const reload=smartEnvironment(store);reload.binding.setIdentity(identity);await reload.restore(bytes);
+ assert.equal((await exportInfo(reload,bytes)).source,null);
+});
+
+test('restore requires its observed cache opener, exact original bytes, workspace, project and account',async()=>{
+ const bytes=await pdfBytes(),changed=await pdfBytes({revision:99});
+ for(const mode of ['no-hook','other-workspace','wrong-runtime','other-bytes','wrong-cache-file','other-project','other-account','failed-open']){
+  const store=tabStore(),seed=smartEnvironment(store);seed.binding.setIdentity(identity);await openCloud(seed,bytes);await seed.window.SmartMatchSession.cachePdf();
+  const env=smartEnvironment(store);env.binding.setIdentity(mode==='other-account'?{...identity,accountKey:'tenant/account-B'}:identity);
+  if(mode==='no-hook')env.setRuntime({kind:'smartmatch',key:'workspace-A',session:null,bytes});
+  else{
+   if(mode==='wrong-runtime')env.control.restoreWorkspace='wrong-workspace';
+   if(mode==='wrong-cache-file')env.control.restoreBytes=changed;
+   if(mode==='failed-open')env.control.restoreError=Error('Synthetic restore failure');
+   const restoring=env.restore(mode==='other-bytes'?changed:bytes,mode==='other-workspace'?{workspaceId:'workspace-B'}:mode==='other-project'?{localPayload:{projectId:'project-B'}}:{});
+   if(mode==='failed-open')await assert.rejects(restoring,/Synthetic restore failure/);else await restoring;
+  }
+  assert.equal((await exportInfo(env,bytes)).source,null,mode);
+ }
+});
+
+test('account change after a cached restore cannot reuse its proof without another successful restore',async()=>{
+ const store=tabStore(),bytes=await pdfBytes(),env=smartEnvironment(store);env.binding.setIdentity(identity);await openCloud(env,bytes);await env.window.SmartMatchSession.cachePdf();
+ await env.restore(bytes);assert.equal((await exportInfo(env,bytes)).source.id,'item-A');
+ env.binding.setIdentity({...identity,userId:'other-user'});env.binding.setIdentity(identity);
+ assert.equal((await exportInfo(env,bytes)).source,null);
+ await env.restore(bytes);assert.equal((await exportInfo(env,bytes)).source.id,'item-A');
+});
+
+test('blocked or disabled storage falls back to memory while corrupt records cannot create a restore source',async()=>{
+ const bytes=await pdfBytes();
+ for(const store of [null,{getItem(){throw Error('Blocked');},setItem(){throw Error('Blocked');}},{getItem(){return null;},setItem(){throw Error('Quota');}}]){
+  const env=smartEnvironment(store);env.binding.setIdentity(identity);await openCloud(env,bytes);await env.window.SmartMatchSession.cachePdf();
+  await env.restore(bytes);assert.equal((await exportInfo(env,bytes)).source.id,'item-A');
+  const next=smartEnvironment(store);next.binding.setIdentity(identity);await next.restore(bytes);assert.equal((await exportInfo(next,bytes)).source,null);
+ }
+ const store=tabStore(),seed=smartEnvironment(store);seed.binding.setIdentity(identity);await openCloud(seed,bytes);await seed.window.SmartMatchSession.cachePdf();
+ for(const key of store.entries.keys())store.entries.set(key,'{broken json');
+ const broken=smartEnvironment(store);broken.binding.setIdentity(identity);await broken.restore(bytes);assert.equal((await exportInfo(broken,bytes)).source,null);
+});
+
+test('default persistence uses sessionStorage and never touches localStorage, CE or service restore stores',async()=>{
+ const store=tabStore(),bytes=await pdfBytes();let localReads=0;
+ const env=environment('smartmatch',{setup(window){window.sessionStorage=store;Object.defineProperty(window,'localStorage',{get(){localReads++;throw Error('Shared storage must not be used');}});}});
+ env.binding.setIdentity(identity);await openCloud(env,bytes);assert.equal(env.binding.confirmSave(await exportInfo(env,bytes),source()),true);
+ assert.equal(references(store).length,1);assert.equal(localReads,0);
+ for(const kind of ['ce','dorrservice','security-service','doorservice-all-in-one']){
+  let touched=0;environment(kind,{restoreStore:{getItem(){touched++;},setItem(){touched++;}}});assert.equal(touched,0,kind);
+ }
 });
 
 test('unknown newer source or output schema cannot be mistaken for a raw drawing or an updateable project',async()=>{

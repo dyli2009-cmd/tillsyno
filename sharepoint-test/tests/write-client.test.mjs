@@ -25,7 +25,7 @@ function fixture(options = {}) {
   ['library-root', folder('library-root', null)]
  ]);
  const current = {id:openedSource.id, name:openedSource.name, size:18, eTag:openedSource.eTag, file:{}, parentReference:{driveId:openedSource.driveId, id:openedSource.parentId}};
- const state = {calls, progress, folders, current, sourceReads:0, user:'tillsyno-user:microsoft-user', allowed:true, received:0, item:null, sessionName:null, sessionParent:null, sessionId:null, sessions:0, commits:0, puts:0, tokens:[]};
+ const state = {calls, progress, folders, current, sourceReads:0, namedReads:0, user:'tillsyno-user:microsoft-user', allowed:true, received:0, item:null, sessionName:null, sessionParent:null, sessionId:null, sessions:0, commits:0, puts:0, tokens:[]};
  const fetchImpl = async (url, request) => {
   calls.push({url, request});
   const parsed = new URL(url);
@@ -35,11 +35,15 @@ function fixture(options = {}) {
    assert.equal(request.headers.Authorization, request.method === 'POST' ? 'Bearer write-secret' : 'Bearer read-secret');
    if (request.method === 'POST') {
     const body = JSON.parse(request.body);
-    if (parsed.pathname === '/v1.0/drives/drive/items/opened-file/createUploadSession') {
+    const update = /^\/v1\.0\/drives\/drive\/items\/([^/]+)\/createUploadSession$/u.exec(parsed.pathname);
+    if (update) {
+     const id = decodeURIComponent(update[1]);
+     const file = id === state.current.id ? state.current : state.item?.id === id ? state.item : null;
+     assert.ok(file, 'an ID update must target an existing file');
      assert.deepEqual(body, {});
-     assert.equal(request.headers['If-Match'], state.current.eTag);
-     state.sessionId = 'opened-file'; state.sessionName = state.current.name;
-     state.sessionParent = state.current.parentReference.id;
+     assert.equal(request.headers['If-Match'], file.eTag);
+     state.sessionId = file.id; state.sessionName = file.name;
+     state.sessionParent = file.parentReference.id;
     } else {
      assert.match(parsed.pathname, /^\/v1\.0\/drives\/drive\/items\/[^/]+:\/[^/]+:\/createUploadSession$/u);
      assert.deepEqual(Object.keys(body), ['item']);
@@ -56,6 +60,14 @@ function fixture(options = {}) {
    if (parsed.pathname === '/v1.0/sites/tillsyno.sharepoint.com:/sites/Tillsyno') return Response.json({id:'site', webUrl:config.siteUrl});
    if (parsed.pathname === '/v1.0/sites/site/drives') return Response.json({value:[{id:'drive', webUrl:config.siteUrl + '/Delade%20dokument'}]});
    if (parsed.pathname === '/v1.0/drives/drive/root:/Great') return Response.json(folders.get('test-root'));
+   const named = /^\/v1\.0\/drives\/drive\/items\/([^/]+):\/([^/]+)$/u.exec(parsed.pathname);
+   if (named) {
+    state.namedReads++;
+    const parentId = decodeURIComponent(named[1]), name = decodeURIComponent(named[2]);
+    const found = [state.current, state.item].find(item => item?.name === name && item.parentReference.id === parentId) || null;
+    const item = options.namedRead ? options.namedRead(found, state, {parentId,name}) : found;
+    return item instanceof Response ? item : item ? Response.json(item) : new Response('', {status:404});
+   }
    const match = /^\/v1\.0\/drives\/([^/]+)\/items\/([^/]+)$/u.exec(parsed.pathname);
    assert.ok(match, 'unexpected Graph route: ' + parsed.pathname);
    assert.equal(decodeURIComponent(match[1]), 'drive');
@@ -98,7 +110,8 @@ function fixture(options = {}) {
  });
  const save = (overrides = {}) => client.saveCopy({config, blob:pdf(18), name:'Projekt – ny kopia.pdf', onProgress:value => progress.push(value), ...overrides});
  const saveExisting = (overrides = {}) => client.saveExisting({config, source:{...openedSource}, blob:pdf(18), onProgress:value => progress.push(value), ...overrides});
- return {client, state, save, saveExisting};
+ const saveNamed = (overrides = {}) => client.saveNamed({config, destination:{driveId:'drive', id:'test-root'}, name:openedSource.name, blob:pdf(18), onProgress:value => progress.push(value), ...overrides});
+ return {client, state, save, saveExisting, saveNamed};
 }
 
 test('A new exported file is verified under the configured root before reporting success', async () => {
@@ -327,7 +340,7 @@ test('An aborted save has no network effects; overlapping saves cannot create tw
 
 test('Read-only pilot remains read-only and no writer methods are added to it', () => {
  const client = new ReadOnlySharePoint({getToken:async () => 'read'});
- assert.equal(client.saveCopy, undefined); assert.equal(client.saveExisting, undefined); assert.equal(client.getWriteToken, undefined);
+ assert.equal(client.saveCopy, undefined); assert.equal(client.saveExisting, undefined); assert.equal(client.saveNamed, undefined); assert.equal(client.getWriteToken, undefined);
  assert.equal(UPLOAD_CHUNK_BYTES % (320 * 1024), 0);
  assert.throws(() => new SharePointWriter({getToken:async () => 'r', getWriteToken:async () => 'w', guard:async () => 'u', maxBytes:MAX_UPLOAD_BYTES + 1}));
 });
@@ -430,7 +443,7 @@ test('Server 412 at session creation or final fragment is an actionable version 
  for (const at of ['session', 'put']) {
   const {saveExisting, state} = fixture({[at]:() => Response.json({error:{code:'resourceModified'}}, {status:412})});
   await assert.rejects(() => saveExisting(), error => error.code === 'version_conflict' && error.status === 412 &&
-   !error.mayHaveSaved && /Spara kopia/u.test(error.message));
+   !error.mayHaveSaved && /senaste versionen/u.test(error.message));
   assert.equal(state.sessions, 1); assert.equal(state.commits, 0);
   assert.equal(state.progress.some(value => value.phase === 'complete'), false);
   assert.equal(state.calls.some(call => call.url.includes(':/createUploadSession')), false);
@@ -526,4 +539,149 @@ test('Copy and existing-file saves share the same abort and overlapping-operatio
  await assert.rejects(() => concurrent.save(), error => error.code === 'busy');
  await assert.rejects(() => concurrent.saveExisting(), error => error.code === 'busy');
  await pending; assert.equal(concurrent.state.sessions, 1);
+});
+
+test('Ordinary saving resolves an exact name inside the chosen folder, then retains its ID and fresh eTag', async () => {
+ const {saveNamed, saveExisting, state} = fixture();
+ state.current.name = 'Årlig kontroll #100%.pdf'; state.current.parentReference.id = 'grandchild';
+ const first = await saveNamed({destination:{driveId:'drive',id:'grandchild'},name:state.current.name});
+ const second = await saveExisting({source:first,blob:pdf(31)});
+ assert.equal(first.id, openedSource.id); assert.equal(second.id, first.id);
+ assert.equal(first.name, state.current.name); assert.equal(second.name, first.name);
+ assert.equal(first.parentId, 'grandchild'); assert.equal(second.parentId, 'grandchild');
+ assert.equal(first.eTag, '"saved-1"'); assert.equal(second.eTag, '"saved-2"');
+ assert.equal(second.size, 31); assert.equal(state.namedReads, 1);
+ assert.ok(state.calls.some(call => call.url === 'https://graph.microsoft.com/v1.0/drives/drive/items/grandchild:/' + encodeURIComponent(first.name)));
+ const sessions = state.calls.filter(call => call.request.method === 'POST');
+ assert.ok(sessions.every(call => call.url.endsWith('/items/opened-file/createUploadSession')));
+ assert.deepEqual(sessions.map(call => call.request.headers['If-Match']), [openedSource.eTag,first.eTag]);
+ assert.equal(state.calls.some(call => ['DELETE','PATCH'].includes(call.request.method)), false);
+ assert.equal(state.progress.filter(value => value.phase === 'complete').length, 2);
+});
+
+test('A missing exact name creates one file with fail policy, and its receipt updates that same file next time', async () => {
+ const {saveNamed, saveExisting, state} = fixture();
+ const first = await saveNamed({name:'Gemensamt projekt.pdf'});
+ assert.equal(first.id, 'new-file'); assert.equal(first.name, 'Gemensamt projekt.pdf');
+ const second = await saveExisting({source:first,blob:pdf(29)});
+ assert.equal(second.id, first.id); assert.equal(second.name, first.name); assert.equal(second.eTag, '"saved-2"');
+ const sessions = state.calls.filter(call => call.request.method === 'POST');
+ assert.equal(sessions.length, 2);
+ assert.match(sessions[0].url, /\/items\/test-root:\/Gemensamt%20projekt\.pdf:\/createUploadSession$/u);
+ assert.deepEqual(JSON.parse(sessions[0].request.body), {item:{'@microsoft.graph.conflictBehavior':'fail',name:first.name}});
+ assert.ok(sessions[1].url.endsWith('/items/new-file/createUploadSession'));
+ assert.equal(sessions[1].request.headers['If-Match'], first.eTag);
+ assert.equal(state.namedReads, 1);
+});
+
+test('Named saving refuses wrong destination, mismatched metadata, unsafe identity and unverifiable versions before mutation', async () => {
+ const changes = [
+  {name:'Different.pdf'}, {id:''}, {id:'../outside'}, {file:undefined,folder:{}}, {remoteItem:{}}, {deleted:{}},
+  {parentReference:{driveId:'other',id:'test-root'}}, {parentReference:{driveId:'drive',id:'outside'}},
+  {eTag:undefined}, {eTag:'*'}, {eTag:'"tag"\r\nInjected: yes'}, {size:-1}
+ ];
+ for (const change of changes) {
+  const {saveNamed, state} = fixture({namedRead:item => ({...item,...change})});
+  await assert.rejects(() => saveNamed(), error => error.code === 'invalid_named_file');
+  assert.equal(state.sessions, 0); assert.equal(state.puts, 0);
+ }
+ for (const destination of [{driveId:'other',id:'test-root'}, {driveId:'drive',id:'outside'}]) {
+  const {saveNamed, state} = fixture();
+  await assert.rejects(() => saveNamed({destination}), error => error.code === 'invalid_destination');
+  assert.equal(state.namedReads, 0); assert.equal(state.sessions, 0);
+ }
+ const replaced = fixture({sourceRead:item => ({...item,id:'replaced-item'})});
+ await assert.rejects(() => replaced.saveNamed(), error => error.code === 'source_changed');
+ assert.equal(replaced.state.namedReads, 1); assert.equal(replaced.state.sessions, 0);
+});
+
+test('Only an exact-name HTTP 404 can create; access, gone and transport failures never become new files', async () => {
+ for (const status of [401,403,410,429,500]) {
+  const {saveNamed, state} = fixture({namedRead:() => new Response('',{status})});
+  await assert.rejects(() => saveNamed(), error => error.status === status);
+  assert.equal(state.namedReads, 1); assert.equal(state.sessions, 0); assert.equal(state.puts, 0);
+ }
+ const network = fixture({namedRead:() => { throw Error('Metadata connection failed'); }});
+ await assert.rejects(() => network.saveNamed(), /Metadata connection failed/u);
+ assert.equal(network.state.sessions, 0);
+});
+
+test('A resolved name keeps its original eTag across lookup, consent, session and later chunks', async () => {
+ for (const at of ['lookup','token','session','chunk']) {
+  const {saveNamed, state} = fixture({
+   namedRead:(item,state) => { const snapshot=structuredClone(item); if(at==='lookup')state.current.eTag='"newer"'; return snapshot; },
+   writeToken:state => { if(at==='token')state.current.eTag='"newer"'; return 'write-secret'; },
+   session:state => { if(at==='session')state.current.eTag='"newer"'; return Response.json({uploadUrl,expirationDateTime:expiry()}); },
+   put:state => { if(at==='chunk')state.current.eTag='"newer"'; }
+  });
+  await assert.rejects(() => saveNamed({blob:pdf(UPLOAD_CHUNK_BYTES+1)}), error => error.code === 'version_conflict' &&
+   !error.mayHaveSaved && /senaste versionen/u.test(error.message) && !/Spara kopia/u.test(error.message), at);
+  assert.equal(state.namedReads, 1); assert.equal(state.puts, at==='chunk'?1:0);
+  assert.equal(state.sessions, at==='session'||at==='chunk'?1:0);
+  assert.equal(state.commits, 0);
+ }
+});
+
+test('A name created after lookup produces an actionable race error, without another name, update or retry', async () => {
+ for (const at of ['session','put']) for (const status of [409,412]) {
+  const {saveNamed, state} = fixture({[at]:() => Response.json({error:{code:'nameAlreadyExists'}},{status})});
+  await assert.rejects(() => saveNamed({name:'Nytt gemensamt projekt.pdf'}), error => error.code === 'name_race' &&
+   error.status === status && !error.mayHaveSaved && /skapades|senaste filen/u.test(error.message) &&
+   !/nytt namn|Spara kopia/u.test(error.message));
+  assert.equal(state.namedReads, 1); assert.equal(state.sessions, 1); assert.equal(state.commits, 0);
+  assert.equal(state.puts, at==='put'?1:0);
+  assert.equal(state.calls.some(call => call.url.endsWith('/items/opened-file/createUploadSession')), false);
+  assert.equal(state.progress.some(value => value.phase === 'complete'), false);
+ }
+});
+
+test('Server conflicts on a resolved existing name stay version conflicts and never create a replacement', async () => {
+ for (const at of ['session','put']) for (const status of [409,412]) {
+  const {saveNamed, state} = fixture({[at]:() => new Response('',{status})});
+  await assert.rejects(() => saveNamed(), error => error.code === 'version_conflict' && error.status === status && !error.mayHaveSaved);
+  assert.equal(state.namedReads, 1); assert.equal(state.sessions, 1); assert.equal(state.commits, 0);
+  assert.equal(state.calls.some(call => call.url.includes(':/createUploadSession')), false);
+ }
+});
+
+test('A known stale source cannot use a fresh name lookup to bypass its original version', async () => {
+ const {saveExisting, saveNamed, state} = fixture();state.current.eTag='"newer"';
+ await assert.rejects(() => saveExisting(), error => error.code === 'version_conflict');
+ await assert.rejects(() => saveNamed({source:{...openedSource}}), error => error.code === 'invalid_source');
+ assert.equal(state.namedReads, 0); assert.equal(state.sessions, 0); assert.equal(state.puts, 0);
+});
+
+test('Explicit copy still fails for an existing name and never performs an updating name lookup', async () => {
+ const {save, state} = fixture({session:() => new Response('',{status:409})});
+ await assert.rejects(() => save({name:openedSource.name}), error => error.code === 'name_conflict' && /nytt namn/u.test(error.message));
+ assert.equal(state.namedReads, 0); assert.equal(state.sessions, 1); assert.equal(state.puts, 0);
+ assert.equal(state.calls.some(call => call.url.endsWith('/items/opened-file/createUploadSession')), false);
+});
+
+test('Named saving uses the same permission, cancellation and operation-lock guards', async () => {
+ for (const kind of ['account','permission','cancel']) {
+  const controller=new AbortController();
+  const {saveNamed, state} = fixture({namedRead:(item,state) => {
+   if(kind==='account')state.user='another-account';
+   if(kind==='permission')state.allowed=false;
+   if(kind==='cancel')controller.abort();
+   return item;
+  }});
+  await assert.rejects(() => saveNamed({signal:controller.signal}), /ändrades|åtkomsten|avbröts/u);
+  assert.equal(state.sessions, 0); assert.equal(state.puts, 0);
+ }
+ const concurrent=fixture(),pending=concurrent.saveNamed();
+ await assert.rejects(() => concurrent.saveNamed(), error => error.code==='busy');
+ await assert.rejects(() => concurrent.saveExisting(), error => error.code==='busy');
+ await assert.rejects(() => concurrent.save(), error => error.code==='busy');
+ await pending;assert.equal(concurrent.state.sessions,1);
+});
+
+test('A named update rejects a wrong receipt and preserves uncertainty after a final network failure', async () => {
+ for (const kind of ['receipt','network']) {
+  const {saveNamed, state} = fixture(kind==='receipt'?{finalItem:item=>({...item,id:'other-file'})}:{put:()=>{throw Error('Disconnected '+uploadUrl);}});
+  await assert.rejects(() => saveNamed(), error => error.mayHaveSaved===true && error.code===(kind==='receipt'?'invalid_saved_file':'network') && !error.message.includes('upload-secret'));
+  assert.equal(state.namedReads,1);assert.equal(state.sessions,1);assert.equal(state.puts,1);
+  assert.equal(state.progress.some(value=>value.phase==='complete'),false);
+ }
 });

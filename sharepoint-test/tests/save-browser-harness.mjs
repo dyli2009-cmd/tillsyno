@@ -213,7 +213,7 @@ export class GraphFixture {
           this.chunks=[];
           if(update){
             const existing=this.files.get(update[1]);assert.ok(existing,'An update targets an existing item ID.');
-            assert.equal(record.headers['if-match'],existing.eTag,'An update uses the current imported/confirmed eTag.');
+            assert.ok(record.headers['if-match'],'An update must carry its original or last confirmed eTag.');
             assert.deepEqual(body,{});
             this.name=existing.name;this.parent=existing.parentReference.id;
             this.active={id:existing.id,mode:'update',ifMatch:record.headers['if-match'],chunks:this.chunks,receivedBytes:0};
@@ -225,8 +225,9 @@ export class GraphFixture {
           }
           if(this.options.diskRoot){this.active.path=resolve(this.options.diskRoot,'upload-'+this.sessionCount+'.pdf');this.active.hash=createHash('sha256');await writeFile(this.active.path,new Uint8Array(0));}
           this.sessions.push(this.active);
-          if(update&&this.options.updateConflict)return json({error:{code:'preconditionFailed',message:'Fixture version conflict'}},412);
-          if(!update&&this.options.conflict)return json({error:{code:'nameAlreadyExists',message:'Fixture name conflict'}},409);
+          if(update&&(this.options.updateConflict||record.headers['if-match']!==this.files.get(update[1]).eTag))return json({error:{code:'preconditionFailed',message:'Fixture version conflict'}},412);
+          const collision=[...this.files.values()].some(item=>item.parentReference.id===this.parent&&item.name.toLowerCase()===this.name.toLowerCase());
+          if(!update&&(this.options.conflict||collision))return json({error:{code:'nameAlreadyExists',message:'Fixture name conflict'}},409);
           return json({uploadUrl:'https://tillsyno.sharepoint.com/_api/test-upload/session-'+this.sessionCount,expirationDateTime:'2099-01-01T00:00:00Z',nextExpectedRanges:['0-']});
         }
         assert.equal(record.method,'GET','Only the chosen upload-session operation may mutate Graph.');
@@ -237,6 +238,12 @@ export class GraphFixture {
         if(rootPath){this.rootLookups++;return rootPath[1]===this.folder('root-folder').name?json(this.folder('root-folder')):json({error:{code:'itemNotFound'}},404);}
         const children=record.path.match(/^\/v1\.0\/drives\/drive-test\/items\/([^/]+)\/children$/);
         if(children)return json({value:this.children(children[1])});
+        const named=record.path.match(/^\/v1\.0\/drives\/drive-test\/items\/([^/:]+):\/(.+)$/);
+        if(named){
+          assert.equal(url.search,'','Ordinary Save resolves the exact name in the selected parent folder.');
+          const item=[...this.files.values(),...this.folders.values()].find(item=>item.parentReference?.id===named[1]&&item.name.toLowerCase()===named[2].toLowerCase());
+          return item?json(item):json({error:{code:'itemNotFound'}},404);
+        }
         const match=record.path.match(/^\/v1\.0\/drives\/drive-test\/items\/([^/]+)$/);
         if(match){
           if(this.files.has(match[1])){

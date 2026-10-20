@@ -88,22 +88,39 @@ describe('SharePoint save browser integration (synthetic local Microsoft stubs)'
   const receipt=page=>page.locator('#spSaveResult').textContent();
   async function unlockReal(page){
     await waitFor(page,()=>!!window.SmartMatchAppBridge&&!document.documentElement.hasAttribute('data-auth-pending'));
-    await page.locator('#smReadCodeGate input').fill('1234');
-    await page.locator('#smReadCodeGate button').click();
+    if(await page.evaluate(()=>document.documentElement.hasAttribute('data-read-locked'))){
+      await page.locator('#smReadCodeGate input').fill('1234');
+      await page.locator('#smReadCodeGate button').click();
+    }
     await waitFor(page,()=>!document.documentElement.hasAttribute('data-read-locked'));
   }
   async function realReady(page,timeout=12000){
     await waitFor(page,()=>window.SmartMatchAppBridge.getPositions().length===1&&document.querySelector('#pwScanOverlay')?.hidden!==false,undefined,timeout);
   }
-  async function importCloudProject(page,{folders=[],timeout=12000,screenshot=true}={}){
-    await page.locator('#pwOpenProjectEmpty').click();
+  async function importCloudProject(page,{folders=[],itemId='source-item',entry='#pwOpenProjectEmpty',timeout=12000,screenshot=true}={}){
+    await page.locator(entry).click();
     await page.locator('#spFilePicker').waitFor({state:'visible'});
     await page.locator('#spConnect').click();
     for(const name of folders)await page.locator('#spFiles button').filter({hasText:name}).click();
-    await page.locator('#spFiles input[value="source-item"]').check();
+    await page.locator('#spFiles input[value="'+itemId+'"]').check();
     if(screenshot)await page.screenshot({path:artifactDir+'/open-cloud-project.png',fullPage:true});
     await page.locator('#spImport').click();
     await realReady(page,timeout);
+  }
+  async function checkRealWork(page){
+    await page.evaluate(()=>window.SmartMatchAppBridge.openPosition(window.SmartMatchAppBridge.getPositions()[0]));
+    await page.locator('#pwChecklist .pwCheckRow input[type="checkbox"]').first().check();
+    await page.locator('#pwProtocolClose').click();
+  }
+  async function reloadCachedProject(page){
+    const before=await page.evaluate(async()=>{
+      await window.SmartMatchSession.flushDraft();
+      const cached=await window.SmartMatchSession.cachePdf();
+      if(cached===false)throw Error('The real project cache rejected the fixture.');
+      return window.SmartMatchAppBridge.getLocalView().workspaceId;
+    });
+    await page.reload();await unlockReal(page);await realReady(page);
+    assert.equal(await page.evaluate(()=>window.SmartMatchAppBridge.getLocalView().workspaceId),before,'A reload must restore the same real local workspace.');
   }
   async function openRealExport(page,{timeout=12000}={}){
     await page.locator('#smartPdfInspect').click();
@@ -501,6 +518,173 @@ describe('SharePoint save browser integration (synthetic local Microsoft stubs)'
         assert.deepEqual(graph.sessions.map(session=>session.mode),['update','copy']);
         assert.equal((await projectData(graph.bytes)).readTestData.matching.hits[0].positionId,input.positionId);
         assert.deepEqual(graph.contents.get('source-item'),input.bytes);
+        assert.equal(downloads.length,0);
+      });
+    }finally{await realServer.close();}
+  });
+
+  for(const restored of [false,true])test((restored?'a locally restored':'a local')+' project reuses the existing selected filename and folder, then keeps that item binding',{timeout:60000},async()=>{
+    const input=await projectFixture(),realServer=await createHarnessServer(input.bytes,{realPage:true});
+    const name='Gemensam arbetsfil.pdf',folders=['Projekt','Etapp 1 – Västra huset'];
+    try{
+      await scenario(restored?'restored-existing-name':'local-existing-name',{server:realServer},async({page,graph,downloads})=>{
+        const otherBytes=Buffer.from(fixture);
+        graph.addFile({id:'chosen-existing',name,source:input.bytes,parentId:'nested-folder',eTag:'"chosen-original"'});
+        graph.addFile({id:'same-name-other-folder',name,source:otherBytes,parentId:'service-folder',eTag:'"other-original"'});
+        await unlockReal(page);
+        await page.locator('#pwFile').setInputFiles({name:'Local working project.pdf',mimeType:'application/pdf',buffer:input.bytes});
+        await realReady(page);await checkRealWork(page);
+        if(restored)await reloadCachedProject(page);
+        assert.equal(await page.evaluate(key=>window.SmartMatchAppBridge.getPositions()[0].checks[key],input.itemKey),true);
+        await openRealExport(page);await connect(page);
+        assert.equal(await page.locator('#spSaveUpdate').getAttribute('aria-pressed'),'true');
+        assert.match(await page.locator('#spSaveUpdate').textContent(),/Samma namn/);
+        assert.equal(await page.locator('#spSaveCopyFields').isVisible(),true,'A project without a verified source must offer a name and destination.');
+        for(const folder of folders)await page.locator('#spSaveFolders button').filter({hasText:folder}).click();
+        await page.locator('#spSaveName').fill(name);
+        await page.locator('#spSaveCopy').click();
+        await waitFor(page,()=>!document.querySelector('#spSaveSubmit').disabled);
+        assert.deepEqual(await page.locator('#spSaveCrumbs button').allTextContents(),['Great',...folders],'Choosing a separate copy must retain the explicitly chosen nested folder.');
+        await page.locator('#spSaveUpdate').click();
+        await waitFor(page,()=>!document.querySelector('#spSaveSubmit').disabled);
+        assert.deepEqual(await page.locator('#spSaveCrumbs button').allTextContents(),['Great',...folders],'Returning to ordinary Save must retain the nested folder instead of targeting the root.');
+        assert.equal(await page.locator('#spSaveName').inputValue(),name);
+        assert.match(await page.locator('#spSaveStatus').textContent(),/filnamnet.*uppdateras/i);
+        if(!restored){
+          await assertCompact(page,1280);await page.screenshot({path:artifactDir+'/same-name-existing-desktop.png',fullPage:true});
+          await page.setViewportSize({width:390,height:844});await assertCompact(page,390);
+          await page.screenshot({path:artifactDir+'/same-name-existing-phone.png',fullPage:true});
+          await page.setViewportSize({width:1280,height:900});
+        }
+        await page.locator('#spSaveSubmit').click();await waitRealSaved(page);
+        const first=graph.sessions[0];
+        assert.equal(first.mode,'update');assert.equal(first.id,'chosen-existing');
+        assert.equal(first.ifMatch,'"chosen-original"');assert.equal(first.receipt.name,name);
+        assert.equal(first.receipt.parentReference.id,'nested-folder');
+        assert.equal(graph.copyCount,0,'Ordinary Save must not attempt a name-path create for a file already in that folder.');
+        assert.equal((await projectData(graph.bytes)).instances[input.positionId].checks[input.itemKey],true);
+        const lookup='/v1.0/drives/drive-test/items/nested-folder:/'+name;
+        assert.equal(graph.requests.filter(request=>request.path===lookup&&request.method==='GET').length,1);
+        await page.locator('#smartExportClose').click();await openRealExport(page);
+        assert.match(await page.locator('#spSaveUpdate').textContent(),/Samma fil/);
+        assert.equal(await page.locator('#spSaveCopyFields').isVisible(),false);
+        assert.equal(await page.locator('#spSaveExistingName').textContent(),name);
+        await page.locator('#spSaveSubmit').click();await waitRealSaved(page);
+        assert.equal(graph.sessions[1].id,'chosen-existing');assert.equal(graph.sessions[1].mode,'update');
+        assert.equal(graph.sessions[1].ifMatch,first.receipt.eTag);
+        assert.equal(graph.sessions[1].receipt.name,name);
+        assert.equal(graph.requests.filter(request=>request.path===lookup).length,1,'A confirmed binding must retain its ID and eTag instead of resolving the name again.');
+        assert.equal(graph.files.size,3,'Neither ordinary save creates an extra file.');
+        assert.equal(graph.files.get('same-name-other-folder').eTag,'"other-original"');
+        assert.deepEqual(graph.contents.get('same-name-other-folder'),otherBytes,'The same filename in another folder must remain unchanged.');
+        assert.equal(downloads.length,0);
+        const reopenedContext=await browser.newContext({viewport:{width:1280,height:900},serviceWorkers:'block'});
+        try{
+          await graph.install(reopenedContext,realServer.base);
+          const reopenedPage=await reopenedContext.newPage();await reopenedPage.goto(realServer.base+'/sharepoint-read-test.html');
+          await unlockReal(reopenedPage);await importCloudProject(reopenedPage,{folders,itemId:'chosen-existing',screenshot:false});
+          const position=await reopenedPage.evaluate(()=>window.SmartMatchAppBridge.getPositions()[0]);
+          assert.equal(position.id,input.positionId);assert.equal(position.checks[input.itemKey],true,'The exact overwritten file must reopen with the checked work in an independent browser context.');
+        }finally{await reopenedContext.close();}
+      });
+    }finally{await realServer.close();}
+  });
+
+  test('an explicit new copy with an existing name fails without overwriting or losing the pending project',{timeout:45000},async()=>{
+    const input=await projectFixture(),realServer=await createHarnessServer(input.bytes,{realPage:true});
+    try{
+      await scenario('explicit-copy-collision',{server:realServer,sourceBytes:input.bytes},async({page,graph,downloads})=>{
+        await unlockReal(page);await importCloudProject(page,{screenshot:false});await checkRealWork(page);await openRealExport(page);
+        await page.locator('#spSaveCopy').click();await page.locator('#spSaveName').fill('Existing project.pdf');
+        await page.locator('#spSaveSubmit').click();
+        await waitFor(page,()=>!document.querySelector('#spSaveSubmit').disabled&&document.querySelector('#spSaveStatus')?.dataset.state==='error');
+        assert.match(await page.locator('#spSaveStatus').textContent(),/finns|konflikt|409|annat namn/i);
+        assert.equal(graph.sessions.length,1);assert.equal(graph.sessions[0].mode,'copy');assert.equal(graph.chunks.length,0);
+        assert.equal(graph.files.get('source-item').eTag,'"source-v1"');assert.deepEqual(graph.contents.get('source-item'),input.bytes);
+        assert.equal(graph.requests.filter(request=>request.method==='GET'&&/\/items\/[^/:]+:\//.test(request.path)).length,0,'Explicit copy must never resolve a colliding name into an overwrite.');
+        assert.equal(await page.locator('#spSavePicker').isVisible(),true);assert.equal(downloads.length,0);
+        assert.doesNotMatch(await page.locator('#smartExportStatus').textContent(),/PDF sparad och kontrollerad/i);
+        await page.locator('#spSaveLocal').click();
+        await waitFor(page,()=>/PDF sparad och kontrollerad/.test(document.querySelector('#smartExportStatus')?.textContent||''));
+        const localBytes=await page.evaluate(async()=>{
+          const name=window.__saveBrowser.nativePickerCalls.at(-1).suggestedName;
+          const directory=await navigator.storage.getDirectory(),handle=await directory.getFileHandle(name);
+          return Array.from(new Uint8Array(await (await handle.getFile()).arrayBuffer()));
+        });
+        assert.equal((await projectData(Buffer.from(localBytes))).instances[input.positionId].checks[input.itemKey],true);
+        assert.equal(graph.writes.length,1,'Explicit local recovery must not retry or overwrite the cloud file.');
+      });
+    }finally{await realServer.close();}
+  });
+
+  test('a raw PDF export with an existing name remains a separate-copy conflict',{timeout:30000},async()=>{
+    await scenario('raw-export-collision',{},async({page,graph})=>{
+      graph.addFile({id:'raw-existing',name:'Existing raw drawing.pdf',source:fixture,eTag:'"raw-original"'});
+      await startExport(page,'picker','Existing raw drawing.pdf');await connect(page);
+      assert.equal(await page.locator('#spSaveModes').isVisible(),false);
+      await page.locator('#spSaveSubmit').click();
+      await waitFor(page,()=>!document.querySelector('#spSaveSubmit').disabled&&document.querySelector('#spSaveStatus')?.dataset.state==='error');
+      assert.match(await page.locator('#spSaveStatus').textContent(),/finns|konflikt|409|annat namn/i);
+      assert.equal(graph.sessions[0].mode,'copy');assert.equal(graph.chunks.length,0);
+      assert.equal(graph.requests.filter(request=>request.method==='GET'&&/\/items\/[^/:]+:\//.test(request.path)).length,0);
+      assert.equal(graph.files.get('raw-existing').eTag,'"raw-original"');assert.deepEqual(graph.contents.get('raw-existing'),fixture);
+      await page.locator('#spSaveCancel').click();
+    });
+  });
+
+  for(const retryInitialize of [false,true])test('a SharePoint project restored after reload keeps its original eTag'+(retryInitialize?' after transient initialization failure':'')+' and detects an external change',{timeout:45000},async()=>{
+    const input=await projectFixture(),realServer=await createHarnessServer(input.bytes,{realPage:true});
+    try{
+      await scenario('restored-cloud-stale-etag'+(retryInitialize?'-init-retry':''),{server:realServer,sourceBytes:input.bytes},async({page,graph,downloads})=>{
+        await unlockReal(page);await importCloudProject(page,{screenshot:false});await checkRealWork(page);
+        await page.evaluate(()=>{
+          const msal=window.__saveBrowser.msal,current=msal.active;
+          const other={...current,username:'other-cached@example.invalid',homeAccountId:'different-cached-user',localAccountId:'other-cached'};
+          msal.cacheAccountsForReload([other,current],current);
+        });
+        let configRequests=0;
+        if(retryInitialize)await page.route(realServer.base+'/sharepoint-test/auth-config.json',async route=>{
+          if(++configRequests===1)return route.fulfill({status:503,contentType:'application/json',body:'{"error":"Temporary synthetic configuration failure"}'});
+          return route.continue();
+        });
+        await reloadCachedProject(page);
+        assert.equal(await page.evaluate(key=>window.SmartMatchAppBridge.getPositions()[0].checks[key],input.itemKey),true);
+        const dirtyBefore=await page.evaluate(()=>window.SmartMatchAppBridge.hasUnsavedChanges());
+        graph.files.get('source-item').eTag='"externally-changed"';
+        await openRealExport(page);
+        await waitFor(page,()=>!document.querySelector('#spSaveSubmit').disabled);
+        assert.equal(await page.locator('#spSaveAccount').textContent(),'browser-test@example.invalid','The active cached account must win even when it is second in the cache.');
+        assert.equal(await page.evaluate(()=>window.__saveBrowser.msal.calls.filter(call=>call.method==='loginPopup').length),0,'Reload restoration uses the existing active account without a new login.');
+        assert.match(await page.locator('#spSaveUpdate').textContent(),/Samma fil/);
+        assert.equal(await page.locator('#spSaveCopyFields').isVisible(),false);
+        assert.equal(await page.locator('#spSaveExistingName').textContent(),'Existing project.pdf');
+        if(retryInitialize)assert.equal(configRequests,2,'The normal save lifecycle must recover from one failed initialization without losing the restored source.');
+        await page.locator('#spSaveSubmit').click();
+        await waitFor(page,()=>!document.querySelector('#spSaveSubmit').disabled&&document.querySelector('#spSaveStatus')?.dataset.state==='error');
+        assert.match(await page.locator('#spSaveStatus').textContent(),/ändra|version|konflikt|uppdater/i);
+        assert.equal(graph.writes.length,0,'The persisted old eTag must stop a changed source before an upload session is created.');
+        assert.equal(graph.requests.filter(request=>request.method==='GET'&&/\/items\/[^/:]+:\//.test(request.path)).length,0,'Reload must not convert a known stale source into a name lookup with a newer eTag.');
+        assert.deepEqual(graph.contents.get('source-item'),input.bytes);assert.equal(downloads.length,0);
+        assert.equal(await page.locator('#spSavePicker').isVisible(),true);
+        assert.equal(await page.evaluate(()=>window.SmartMatchAppBridge.hasUnsavedChanges()),dirtyBefore,'A failed cloud save must not change the restored workspace saved state.');
+        await page.locator('#spSaveCancel').click();
+      });
+    }finally{await realServer.close();}
+  });
+
+  test('Prepare drawing preserves the verified source when its single cloud File reaches the real reader',{timeout:45000},async()=>{
+    const input=await projectFixture(),realServer=await createHarnessServer(input.bytes,{realPage:true});
+    try{
+      await scenario('prepare-single-cloud-file',{server:realServer,sourceBytes:input.bytes},async({page,graph,downloads})=>{
+        await unlockReal(page);await importCloudProject(page,{entry:'#rtChooseFiles',screenshot:false});
+        await checkRealWork(page);await openRealExport(page);
+        assert.match(await page.locator('#spSaveUpdate').textContent(),/Samma fil/);
+        assert.equal(await page.locator('#spSaveCopyFields').isVisible(),false);
+        await page.locator('#spSaveSubmit').click();await waitRealSaved(page);
+        assert.equal(graph.sessions[0].mode,'update');assert.equal(graph.sessions[0].id,'source-item');assert.equal(graph.sessions[0].ifMatch,'"source-v1"');
+        assert.equal(graph.sessions[0].receipt.name,'Existing project.pdf');assert.equal(graph.copyCount,0);
+        assert.equal((await projectData(graph.bytes)).instances[input.positionId].checks[input.itemKey],true);
+        assert.equal(graph.requests.filter(request=>request.method==='GET'&&/\/items\/[^/:]+:\//.test(request.path)).length,0);
         assert.equal(downloads.length,0);
       });
     }finally{await realServer.close();}

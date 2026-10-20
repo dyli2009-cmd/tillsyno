@@ -26,7 +26,7 @@
     "liveUploadVerified": false
   },
   "pilot": {
-    "targetModule": "smartmatch-read-test-v9-79.html",
+    "targetModule": "smartmatch-read-test-v9-80.html",
     "enabled": false,
     "readOnly": true,
     "siteUrl": "https://tillsyno.sharepoint.com/sites/Tillsyno",
