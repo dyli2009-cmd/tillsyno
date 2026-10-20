@@ -44,6 +44,7 @@ jobs:
             sharepoint-test/pilot.css
             sharepoint-test/pilot.js
             sharepoint-test/callback.js
+            sharepoint-test/app.js
             sharepoint-test/*.LEGAL.txt
             sharepoint-test/auth-config.json
             sharepoint-test/package-lock.json
@@ -75,7 +76,7 @@ jobs:
           remote_sha="$(git ls-remote origin "$SOURCE_REF" | cut -f1)"
           test "$remote_sha" = "$SOURCE_SHA" || { echo 'Pilot branch changed; refusing to overwrite newer work.'; exit 1; }
           assets="$RUNNER_TEMP/sharepoint-read-pilot"
-          for file in pilot.js callback.js package-lock.json; do
+          for file in pilot.js callback.js app.js package-lock.json; do
             test -s "$assets/$file"
             cp "$assets/$file" "sharepoint-test/$file"
             git add -f -- "sharepoint-test/$file"
@@ -88,7 +89,7 @@ jobs:
           done
           git diff --cached --name-only | while IFS= read -r file; do
             case "$file" in
-              sharepoint-test/pilot.js|sharepoint-test/callback.js|sharepoint-test/package-lock.json|sharepoint-test/*.LEGAL.txt) ;;
+              sharepoint-test/pilot.js|sharepoint-test/callback.js|sharepoint-test/app.js|sharepoint-test/package-lock.json|sharepoint-test/*.LEGAL.txt) ;;
               *) echo "Unexpected staged path: $file"; exit 1 ;;
             esac
           done

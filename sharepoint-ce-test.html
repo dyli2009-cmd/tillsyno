@@ -1,0 +1,1147 @@
+<!doctype html>
+<html lang="sv" data-auth-pending data-ce-starting>
+<head><meta charset="utf-8">
+<script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}var page={ice:'#edf6fb',mist:'#ebf1f5',coast:'#edf7f6',sand:'#f7f5f1',night:'#081523',graphite:'#12151c',pine:'#091c1e'}[theme];document.documentElement.style.setProperty('--tillsyno-route-bg',page);document.documentElement.style.setProperty('background',page,'important');document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
+
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#132b38">
+<meta http-equiv="Cache-Control" content="no-cache">
+<title>CE-märkning | Tillsyno v2.4.359</title>
+<link rel="stylesheet" href="ce-file-export-v312.css?v=2.4.359">
+<style>html[data-auth-pending] body,html[data-ce-starting] body{visibility:hidden!important}</style>
+<script src="vendor/supabase-2.49.10.min.js"></script>
+<script src="auth-config.js"></script>
+<script src="auth/client.js?v=2.4.287"></script>
+<script src="auth/guard.js?v=2.4.287" defer></script>
+<script src="vendor/pdf-lib.min.js"></script>
+<script src="vendor/pdf.min.js"></script>
+<script src="vendor/jszip-3.10.1.min.js"></script>
+<link rel="stylesheet" href="project-ce-markning-test-v6.css?v=6">
+<link rel="stylesheet" href="project-ce-markning-test-v7.css?v=7.1">
+<style id="ceTest25Responsive">
+/* Independent door actions work on phone, iPad and desktop. */
+.ceDoorRow{grid-template-columns:minmax(0,1fr) 40px 68px;gap:6px}
+.ceDoorRow>.ceDoorEdit,.ceDoorRow>.ceDoorRemove{min-height:44px;padding:4px;border-radius:7px}
+.ceDoorRow>.ceDoorEdit{font-size:17px}
+.ceDoorRow>.ceDoorRemove{color:#8a2f33;background:#fff6f5;border-color:#dcacab;font-weight:650;font-size:12px}
+.ceDoorConfirm{grid-column:1/-1;display:flex;gap:7px;flex-wrap:wrap;align-items:center;background:#fff8f5;border:1px solid #e1b8af;border-radius:8px;padding:9px}
+.ceDoorConfirm strong{flex:1 1 180px;font-size:12px;color:#663530;overflow-wrap:anywhere}
+.ceDoorConfirm button{min-height:40px;font-weight:650}
+.ceDoorConfirm .ceDoorDeleteYes{background:#9a3038;color:#fff;border-color:#9a3038}
+#slrFlowTestDialog .slrSensorAtField{z-index:7;min-height:0!important;min-width:0!important;margin:0!important;padding:0!important;display:grid;place-items:center;background:#edf6fc!important;color:#124b6b!important;border:1px solid #a9c6d5!important}
+#slrFlowTestDialog .ceSensorInlinePanel button.ceSensorDropOption{display:block!important;min-height:44px!important;font-size:14px!important;text-align:left!important;white-space:normal}
+#slrFlowTestDialog .ceSensorInlinePanel{touch-action:pan-y;overscroll-behavior:contain}
+@media(max-width:460px){.ceDoorRow{grid-template-columns:minmax(0,1fr) 40px 62px;gap:4px}.ceDoorOpen{padding:6px}.ceDoorConfirm button{min-height:44px}}
+.ceReuseActions{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 10px}
+.ceReuseActions button{min-height:40px;padding:8px 11px;font-weight:600;font-size:12px}
+.ceReuseActions button:first-child{background:#e7f2f7;border-color:#99bdcf;color:#154c68}
+@media(max-width:460px){.ceReuseActions button{flex:1 1 130px;min-height:44px}}
+
+/* CE v1.2: compact signature date controls + one clear product table. */
+.ceSignOptions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:9px 0}
+.ceSignOptions label{font-size:11px;font-weight:600;min-width:0}
+.ceSignOptions input,.ceSignOptions select{min-height:39px;width:100%;font-size:16px;margin-top:4px}
+#slrFlowTestDialog .slrOverlayDate{text-align:left!important;direction:ltr!important;padding-left:0!important}
+#slrFlowTestDialog .slrOverlayDate::-webkit-date-and-time-value{text-align:left!important;margin:0!important}
+#slrFlowTestDialog .slrOverlayDate::-webkit-datetime-edit{text-align:left!important;padding:0!important}
+#slrFlowTestDialog .ceProductRows{display:grid;gap:0!important;overflow-x:hidden;border:1px solid #c6d7df;border-radius:9px;background:#fff}
+#slrFlowTestDialog .ceProductHead,#slrFlowTestDialog .ceProductTableRow{display:grid!important;grid-template-columns:minmax(105px,1fr) minmax(105px,1fr) minmax(170px,1.6fr) 60px 37px!important;gap:7px!important;align-items:center}
+#slrFlowTestDialog .ceProductHead{background:#e9f2f7;padding:11px!important;font-size:11px;color:#30576c}
+#slrFlowTestDialog .ceProductTableRow{padding:8px 10px!important;margin:0!important;border:0!important;border-bottom:1px solid #dce6ec!important;border-radius:0!important;background:#fff!important}
+#slrFlowTestDialog .ceProductTableRow:last-child{border-bottom:0!important}
+#slrFlowTestDialog .ceProductTableRow input,#slrFlowTestDialog .ceProductTableRow select{font-size:16px!important;min-height:40px!important;margin:0!important;width:100%!important;grid-column:auto!important}
+#slrFlowTestDialog .ceProductTableRow button{min-height:40px!important;margin:0!important;padding:3px!important}
+#slrFlowTestDialog .ceProductTableRow .ceProductExtra{grid-column:2/5!important;font-size:12px!important;min-height:32px!important}
+@media(max-width:650px){
+ .ceSignOptions{grid-template-columns:1fr 1fr}.ceSignOptions label:first-child{grid-column:1/-1}
+ #slrFlowTestDialog .ceProductHead{display:none!important}
+ #slrFlowTestDialog .ceProductTableRow{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 40px!important;gap:6px!important}
+ #slrFlowTestDialog .ceProductTableRow>select{grid-column:1/3!important;grid-row:1}
+ #slrFlowTestDialog .ceProductTableRow>input:nth-child(2){grid-column:1/3!important;grid-row:2}
+ #slrFlowTestDialog .ceProductTableRow>input:nth-child(3){grid-column:1/3!important;grid-row:3}
+ #slrFlowTestDialog .ceProductTableRow>input:nth-child(4){grid-column:1/3!important;grid-row:4}
+ #slrFlowTestDialog .ceProductTableRow>button{grid-column:3;grid-row:1/5}
+ #slrFlowTestDialog .ceProductTableRow .ceProductExtra{grid-column:1/3!important;grid-row:5}
+}
+
+/* CE v1.2: shared standard and clear per-door exceptions. */
+.ceDoorInfo .ceDoorScope{display:block;font-size:11px;font-weight:600;color:#506777;margin-top:2px;line-height:1.3}
+.ceDoorInfo .ceDoorScope.has-custom{color:#8b5119}
+#slrFlowTestDialog .ceDoorFolderScope{font-size:11px;font-weight:700;color:#815118;background:#fff1d9;border:1px solid #e6c999;border-radius:20px;padding:4px 8px;white-space:nowrap;margin-left:auto}
+#slrFlowTestDialog .ceDoorFolderScope[hidden]{display:none!important}
+#slrFlowTestDialog .slrFolder>summary{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#slrFlowTestDialog .slrFolder>summary .slrFolderProgress{margin-left:0}
+@media(max-width:460px){
+ #slrFlowTestDialog .ceDoorFolderScope{font-size:10px;padding:3px 6px}
+}
+
+/* CE v1.2: export selective ZIP packages on phone/iPad/desktop. */
+#ceExportSelected{font-weight:700;color:#13405e;background:#edf6fc;border-color:#92b7cc}
+#slrExportDialog .ceExportSelectActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+#slrExportDialog .ceExportSelectActions button{min-height:40px;padding:7px 10px}
+#slrExportDialog #slrExportChosen{font-size:12px;color:#385a6b;margin-left:auto}
+#slrExportDialog .ceExportDoorChoices{display:grid;gap:6px;max-height:min(43vh,360px);overflow:auto}
+#slrExportDialog .ceExportDoor{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid #ccdbe2;background:white;padding:10px;border-radius:8px;cursor:pointer}
+#slrExportDialog .ceExportDoor input{width:20px;height:20px;margin:0}
+#slrExportDialog .ceExportDoor span{font-weight:650;overflow-wrap:anywhere}
+#slrExportDialog .ceExportDoor small{color:#4e6b78;font-size:11px;text-align:right}
+#slrExportDialog .ceExportPending{background:#f1f4f6;color:#778894;cursor:not-allowed}
+#slrExportDialog .ceExportHint{font-size:11px;line-height:1.5;color:#466477;margin:10px 0 0}
+#slrExportDialog footer{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+#slrExportDialog footer button{min-height:44px;flex:1 1 110px}
+#slrExportDialog footer button:disabled{opacity:.45}
+@media(max-width:460px){#slrExportDialog .ceExportDoor{grid-template-columns:23px minmax(0,1fr)}#slrExportDialog .ceExportDoor small{grid-column:2;text-align:left}#slrExportDialog #slrExportChosen{width:100%;margin:0}}
+
+/* CE v1.2 – compact action icons without horizontal wrapping. */
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact{
+ display:grid!important;
+ grid-template-columns:repeat(4,minmax(0,1fr)) 30px!important;
+ gap:3px!important;
+ width:100%!important;
+ max-width:460px;
+ margin:0!important;
+ padding:3px 0 5px!important;
+ align-items:stretch!important;
+ overflow:visible;
+}
+#slrFlowTestDialog .ceDocActions.ceDocActionsFive{
+ grid-template-columns:36px 39px minmax(0,1fr) minmax(0,1.22fr) 42px 30px!important;
+}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button{
+ min-width:0!important;
+ width:100%!important;
+ min-height:39px!important;
+ max-height:43px!important;
+ padding:3px 1px!important;
+ margin:0!important;
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:2px!important;
+ font-size:10px!important;
+ line-height:1.05!important;
+ font-weight:600!important;
+ text-align:center!important;
+ white-space:nowrap!important;
+}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button span{
+ font-size:10px!important;line-height:1.05!important;
+ white-space:nowrap!important;overflow:hidden;text-overflow:clip;max-width:100%;
+}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button svg{
+ width:11px!important;height:11px!important;flex:none!important;
+}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>.ceDocMore{
+ align-self:stretch!important;min-width:0!important;
+}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>.ceDocMore>summary{
+ min-height:39px!important;height:100%!important;
+ font-size:17px!important;padding:0!important;
+}
+@media(max-width:380px){
+ #slrFlowTestDialog .ceDocActions.ceDocActionsFive{
+  grid-template-columns:33px 35px minmax(0,.95fr) minmax(0,1.18fr) 37px 26px!important;
+  gap:2px!important;
+ }
+ #slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button,
+ #slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button span{font-size:9px!important}
+}
+#slrFlowTestDialog #slrFields.ceProductEditor{
+ display:block!important;max-width:590px!important;width:100%!important;
+ margin:6px auto 12px!important;min-width:0;
+}
+#slrFlowTestDialog .ceProductEditor>p.ceMuted{
+ font-size:11px!important;line-height:1.35!important;text-align:center;
+ margin:0 auto 7px!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductTools{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ gap:6px!important;max-width:590px;margin:0 auto 8px!important;
+ padding:3px!important;position:static!important;background:transparent!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductTools>button{
+ font-size:11px!important;font-weight:650!important;
+ padding:4px 9px!important;min-height:34px!important;margin:0!important;
+ border-radius:6px!important;max-width:180px;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductRows{
+ display:grid!important;width:100%!important;max-width:590px!important;
+ margin-inline:auto!important;gap:0!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductHead,
+#slrFlowTestDialog .ceProductEditor .ceProductTableRow{
+ grid-template-columns:minmax(92px,1.08fr) minmax(80px,.95fr) minmax(132px,1.45fr) 46px 29px!important;
+ column-gap:5px!important;row-gap:5px!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductHead{
+ padding:7px!important;font-size:10px!important;text-align:left!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductTableRow{
+ padding:6px!important;min-height:46px!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductTableRow input,
+#slrFlowTestDialog .ceProductEditor .ceProductTableRow select{
+ min-height:34px!important;font-size:14px!important;
+ padding:3px 4px!important;border-radius:5px!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductTableRow>button{
+ width:29px!important;min-height:34px!important;height:34px!important;
+ padding:0!important;font-size:17px!important;
+}
+@media(max-width:650px){
+ #slrFlowTestDialog #slrFields.ceProductEditor{max-width:410px!important;padding:0 1px}
+ #slrFlowTestDialog .ceProductEditor .ceProductHead{display:none!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow{
+  display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) 30px!important;
+  grid-auto-rows:minmax(35px,auto);gap:5px!important;padding:6px!important;
+ }
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow>select{grid-column:1!important;grid-row:1!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow>input:nth-child(4){grid-column:2!important;grid-row:1!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow>input:nth-child(2){grid-column:1!important;grid-row:2!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow>input:nth-child(3){grid-column:2!important;grid-row:2!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow>button{
+  grid-column:3!important;grid-row:1/3!important;align-self:center!important
+ }
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow .ceProductExtra{
+  grid-column:1/3!important;grid-row:3!important
+ }
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow input,
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow select{
+  font-size:16px!important;min-height:36px!important;
+ }
+ #slrFlowTestDialog .ceProductEditor .ceProductTools>button{
+  font-size:11px!important;min-height:36px!important
+ }
+}
+
+/* CE v1.2 – visible PDF checkboxes and reliable multi-page inspection. */
+#slrFlowTestDialog .slrPdfWorkspace{
+ height:auto!important;min-height:0!important;max-height:none!important;
+ overflow-x:auto!important;overflow-y:visible!important;contain:none!important;touch-action:pan-x pan-y!important;
+ width:100%!important;max-width:100%!important;gap:14px!important;
+}
+#slrFlowTestDialog .slrOriginalPage{flex-shrink:0!important;position:relative!important;margin:0 auto}
+#slrFlowTestDialog .slrOriginalPage .slrOverlayTick{background:transparent!important;border:0!important;overflow:visible!important}
+#slrFlowTestDialog .slrPageNav{
+ display:flex;justify-content:center;align-items:center;gap:9px;
+ position:sticky;top:0;z-index:11;width:100%;padding:5px 3px;
+ background:#edf5fa;border:1px solid #bfd2df;border-radius:7px;
+}
+#slrFlowTestDialog .slrPageNav button{font-size:11px!important;min-height:35px!important;padding:4px 8px!important;margin:0!important}
+#slrFlowTestDialog .slrPageNav strong{white-space:nowrap;font-size:11px;color:#244a64}
+#slrFlowTestDialog .slrPageWarning{
+ display:block;width:100%;box-sizing:border-box;
+ border:1px solid #e7bba3;border-radius:7px;padding:9px;
+ font-size:12px;line-height:1.45;color:#803d1f;background:#fff6ee;
+}
+@media(max-width:600px){
+ #slrFlowTestDialog .slrPdfWorkspace{gap:9px!important}
+ #slrFlowTestDialog .slrPageNav button{min-height:33px!important;font-size:10px!important}
+}
+
+/* CE v1.2: scroll ALL pages inside a dedicated PDF viewport, outside the folder. */
+#slrFlowTestDialog #slrEditor{
+ display:block;position:relative;overflow:visible!important;max-height:none!important;
+ width:100%;box-sizing:border-box;min-width:0;
+}
+#slrFlowTestDialog #slrEditor[hidden]{display:none!important}
+#slrFlowTestDialog #slrFields.slrOriginalPages{
+ display:flex!important;flex-direction:column!important;align-items:stretch!important;
+ width:100%!important;max-width:100%!important;min-width:0!important;
+ overflow:visible!important;
+}
+#slrFlowTestDialog #slrEditor #slrPdfWorkspace{
+ display:flex!important;flex-direction:column!important;
+ width:100%!important;max-width:100%!important;
+ height:min(68dvh,760px)!important;max-height:min(68dvh,760px)!important;
+ min-height:260px!important;box-sizing:border-box!important;
+ overflow-x:auto!important;overflow-y:auto!important;
+ -webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;
+ touch-action:pan-x pan-y!important;position:relative!important;
+ contain:none!important;isolation:auto!important;
+ align-items:center;justify-content:flex-start!important;
+ padding:7px!important;gap:12px!important;
+}
+#slrFlowTestDialog #slrEditor #slrPdfWorkspace.slrZoomWide{align-items:flex-start!important}
+#slrFlowTestDialog #slrEditor #slrPdfWorkspace .slrOriginalPage{
+ position:relative!important;flex:0 0 auto!important;
+ max-height:none!important;overflow:hidden!important;
+ margin-left:auto;margin-right:auto;
+}
+#slrFlowTestDialog #slrEditor #slrPdfWorkspace.slrZoomWide .slrOriginalPage{margin-left:0;margin-right:0}
+#slrFlowTestDialog #slrEditor .slrPageNav{
+ position:sticky!important;top:0!important;z-index:12!important;
+ width:100%;box-sizing:border-box;
+}
+#slrFlowTestDialog #slrEditor .slrPageSource{
+ margin:4px 0!important;padding:5px 8px!important;
+ font-size:11px!important;line-height:1.4!important;color:#335f75;
+ background:#f1f7fc;border-radius:6px;text-align:center;overflow-wrap:anywhere;
+}
+#slrFlowTestDialog #slrEditor .slrPageWarning p{margin:0 0 8px;font-size:12px;line-height:1.4}
+#slrFlowTestDialog #slrEditor .slrPageWarning button{
+ min-height:38px!important;margin:0!important;font-size:12px!important;
+}
+@media(max-width:650px){
+ #slrFlowTestDialog #slrEditor #slrPdfWorkspace{
+  height:64dvh!important;max-height:64dvh!important;min-height:220px!important;gap:10px!important;
+ }
+}
+
+/* CE v1.2: compact responsive signature preview and perfectly aligned date fields. */
+.ceSignatureGroup{min-width:0;max-width:100%}
+.ceSignatureGroup .ceSignIntro{font-size:11px!important;line-height:1.45!important;color:#516d7c;margin:5px 0 9px!important}
+.ceSignatureGroup .ceSignaturePreview{width:100%;max-width:100%;min-width:0;box-sizing:border-box;margin:0 auto 9px}
+.ceSignatureGroup .ceSignaturePreviewTop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 5px}
+.ceSignatureGroup .ceSignaturePreviewTop strong{font-size:11px;font-weight:700;color:#24475a}
+.ceSignatureGroup #ceProjectSignStatus{font-size:10px;font-weight:650;line-height:1.3;border:1px solid #cad9e1;background:#f3f6f8;color:#586b77;padding:3px 7px;border-radius:12px}
+.ceSignatureGroup #ceProjectSignStatus.is-saved{background:#e5f3e9;color:#22583a;border-color:#b7d8c2}
+.ceSignatureGroup .ceSignaturePreviewPaper{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-height:88px;max-height:135px;min-width:0;width:100%;box-sizing:border-box;padding:8px 12px;background:#fff;border:1px solid #c5d5de;border-radius:7px;overflow:hidden}
+.ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignPreviewImage{display:block;width:100%;height:73px;object-fit:contain;object-position:left center;max-width:100%}
+.ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignPreviewImage[hidden]{display:none!important}
+.ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignEmpty{font-size:11px;color:#728995;line-height:1.5;align-self:center}
+.ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignEmpty[hidden]{display:none!important}
+.ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignPreviewDate{display:block;font-size:11px;max-width:100%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.35;color:#244559;margin:2px 0 0 4px}
+.ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignPreviewDate[hidden]{display:none!important}
+.ceSignatureGroup .ceSignButtons{display:flex;gap:6px!important;align-items:center;flex-wrap:wrap;margin:7px 0 10px!important}
+.ceSignatureGroup .ceSignButtons button{flex:1 1 auto;min-width:0;min-height:36px!important;font-size:11px!important;font-weight:650;padding:6px 9px!important;white-space:nowrap;margin:0!important;border-radius:6px!important}
+.ceSignatureGroup .ceSignButtons button#ceProjectSign{color:#144762;background:#eaf4fa;border:1px solid #9ab9cd}
+.ceSignatureGroup .ceSignButtons button#ceProjectSignClear{color:#775263;background:#f6f1f3;border:1px solid #d7c9d1}
+.ceSignatureGroup .ceSignOptions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:start;gap:7px!important;width:100%;min-width:0;max-width:100%;margin:0!important;padding:0}
+.ceSignatureGroup .ceSignOptions label{display:flex!important;flex-direction:column!important;align-items:stretch;gap:4px!important;width:100%;min-width:0;box-sizing:border-box;font-size:10px!important;line-height:1.3!important;font-weight:600!important;color:#3c5b6c;margin:0!important;padding:0!important;grid-column:auto}
+.ceSignatureGroup .ceSignOptions label span{display:block!important;min-height:26px;line-height:13px;overflow-wrap:break-word}
+.ceSignatureGroup .ceSignOptions input,.ceSignatureGroup .ceSignOptions select{
+ box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;
+ min-height:37px!important;height:37px!important;padding:5px 6px!important;margin:0!important;
+ border-radius:6px!important;border:1px solid #b5c9d4!important;background:#fff!important;color:#193748!important;
+ font:500 16px/1.2 Arial,Helvetica,sans-serif!important;text-align:left!important;
+}
+@media(max-width:750px){
+ .ceSignatureGroup .ceSignOptions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .ceSignatureGroup .ceSignOptions label:first-child{grid-column:1/-1}
+ .ceSignatureGroup .ceSignOptions label span{min-height:13px}
+ .ceSignatureGroup .ceSignaturePreviewPaper{min-height:78px;padding:7px 10px}
+ .ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignPreviewImage{height:63px}
+}
+@media(min-width:751px) and (max-width:1050px){
+ .ceSignatureGroup .ceSignOptions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .ceSignatureGroup .ceSignOptions label:first-child{grid-column:1/-1}
+ .ceSignatureGroup .ceSignOptions label span{min-height:13px}
+}
+@media(max-width:390px){
+ .ceSignatureGroup .ceSignButtons button{font-size:10px!important;padding:6px 5px!important}
+ .ceSignatureGroup .ceSignOptions label{font-size:10px!important}
+ .ceSignatureGroup .ceSignOptions input,.ceSignatureGroup .ceSignOptions select{padding:5px 4px!important}
+}
+
+/* CE v1.2 signature finish: centered light-blue handwriting, no bold. */
+.ceSignatureGroup .ceSignaturePreviewTop strong,
+.ceSignatureGroup .ceSignaturePreviewTop #ceProjectSignStatus,
+.ceSignatureGroup .ceSignButtons button,
+.ceSignatureGroup .ceSignOptions label,
+.ceSignatureGroup .ceSignOptions label span,
+.ceSignatureGroup .ceSignaturePreviewPaper *,
+.ceSignatureGroup .ceSignIntro{
+ font-weight:400!important;
+}
+.ceSignatureGroup .ceSignaturePreviewPaper{
+ align-items:center!important;justify-content:center!important;text-align:center!important;
+}
+.ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignPreviewImage{
+ object-position:center center!important;
+ filter:brightness(0) saturate(100%) invert(58%) sepia(36%) saturate(805%) hue-rotate(158deg) brightness(95%) contrast(88%);
+}
+.ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignPreviewDate{
+ margin:2px auto 0!important;text-align:center!important;
+ align-self:center!important;color:#529ac6!important;
+ font-weight:400!important;
+}
+.ceSignatureGroup>summary{font-weight:400!important}
+.ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignEmpty{font-weight:400!important}
+.ceSignatureGroup .ceSignaturePreviewTop strong{font-size:11px!important}
+.ceSignatureGroup .ceSignButtons button{font-weight:400!important}
+.ceSignatureGroup .ceSignOptions label{font-weight:400!important}
+.ceSignatureGroup .ceSignOptions label span{font-weight:400!important}
+.ceSignatureGroup .ceSignaturePreviewTop #ceProjectSignStatus{
+ border-color:#bdd5e5!important;color:#487e9f!important;
+}
+.ceSignatureGroup .ceSignaturePreviewTop #ceProjectSignStatus.is-saved{
+ background:#ecf7ff!important;border-color:#b5d9ee!important;color:#397da9!important;
+}
+
+/* CE v1.2 – copy a door with a small accessible action and compact edit form. */
+.ceDoorRow{grid-template-columns:minmax(0,1fr) 38px 38px 63px!important;gap:4px!important;align-items:stretch}
+.ceDoorRow>.ceDoorCopy{display:flex;align-items:center;justify-content:center;min-width:0!important;min-height:42px!important;padding:3px!important;border:1px solid #b5ccdb;border-radius:7px;color:#2b6985;background:#edf6fb;font-size:18px;font-weight:400!important;line-height:1}
+.ceDoorRow>.ceDoorCopy:focus-visible{outline:2px solid #277faa;outline-offset:2px}
+.ceDoorRow>.ceDoorEdit{font-weight:400!important;min-width:0!important;padding:3px!important}
+.ceDoorRow>.ceDoorRemove{min-width:0!important;padding:4px 2px!important}
+.ceDoorForm .ceDoorCopyHint{display:block!important;padding:7px 9px;margin:0 0 9px!important;border-radius:6px;background:#eaf5fb;border:1px solid #bfdae9;color:#315c72;font-size:11px!important;line-height:1.45!important;font-weight:400!important}
+.ceDoorForm .ceDoorCopyHint[hidden]{display:none!important}
+@media(max-width:420px){
+ .ceDoorRow{grid-template-columns:minmax(0,1fr) 34px 34px 52px!important;gap:3px!important}
+ .ceDoorRow>.ceDoorCopy,.ceDoorRow>.ceDoorEdit{font-size:16px!important;min-height:42px!important}
+ .ceDoorRow>.ceDoorRemove{font-size:10px!important;min-height:42px!important}
+}
+
+/* CE v1.2: unified thin line icons with 44px touch targets. */
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact{
+display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr)) 44px!important;
+gap:3px!important;max-width:none!important;width:100%!important;
+justify-content:stretch!important;align-items:stretch!important;padding:4px 0 7px!important}
+#slrFlowTestDialog .ceDocActions.ceDocActionsFive{grid-template-columns:repeat(5,minmax(0,1fr)) 44px!important}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button{
+display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+width:100%!important;min-width:0!important;min-height:48px!important;max-height:none!important;
+box-sizing:border-box!important;gap:3px!important;margin:0!important;padding:5px 1px!important;
+font-size:10px!important;font-weight:400!important;line-height:1.1!important;
+background:#f1f7fb!important;border:1px solid #b9d2df!important;border-radius:6px!important;
+white-space:normal!important;color:#245774!important;overflow:visible!important}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button span{
+display:block!important;max-width:100%!important;white-space:normal!important;
+overflow-wrap:normal!important;word-break:normal!important;
+line-height:1.12!important;font-size:10px!important;font-weight:400!important;text-align:center!important}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button svg{
+width:16px!important;height:16px!important;min-width:16px!important;flex:none!important;stroke-width:1.45!important}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button.ceReviewed{
+background:#ebf6ee!important;border-color:#9ccaab!important;color:#206044!important}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button:disabled{opacity:.44!important}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>.ceDocMore{
+width:100%!important;min-width:0!important;align-self:stretch!important;margin:0!important}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>.ceDocMore>summary{
+display:flex!important;align-items:center!important;justify-content:center!important;
+height:100%!important;min-height:48px!important;width:100%!important;
+border:1px solid #b9d2df!important;background:#f1f7fb!important;
+border-radius:6px!important;margin:0!important;padding:0!important}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>.ceDocMore>summary svg{
+width:19px!important;height:19px!important;stroke-width:1.5!important;color:#245774!important}
+#slrFlowTestDialog .ceDocMenu{min-width:175px!important}
+#slrFlowTestDialog .ceDocMenu button{font-weight:400!important}
+.ceDoorRow{grid-template-columns:minmax(0,1fr) 44px 44px 44px!important;gap:4px!important}
+.ceDoorRow>.ceDoorCopy,.ceDoorRow>.ceDoorEdit,.ceDoorRow>.ceDoorRemove{
+display:flex!important;align-items:center!important;justify-content:center!important;
+min-width:0!important;min-height:44px!important;width:100%!important;
+font-size:0!important;padding:0!important;font-weight:400!important;margin:0!important}
+.ceDoorRow>.ceDoorCopy svg,.ceDoorRow>.ceDoorEdit svg,.ceDoorRow>.ceDoorRemove svg{
+display:block!important;width:16px!important;height:16px!important;stroke-width:1.45!important}
+.ceDoorRow>.ceDoorRemove{background:#fff8f7!important;color:#8a4647!important}
+.ceDoorRow>.ceDoorOpen{min-height:44px!important}
+#slrPdfPreviewDialog .cePreviewStatus{
+display:block;max-width:450px;margin:18px auto!important;padding:12px!important;
+font-size:13px!important;font-weight:400!important;line-height:1.5!important;
+border-radius:7px;background:#f7fbfd;color:#2c5a73;text-align:center}
+#slrPdfPreviewDialog .cePreviewStatus.is-error{
+background:#fff4f2!important;color:#953f3d!important;border:1px solid #e6b4af!important}
+@media(max-width:650px){
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact{
+grid-template-columns:repeat(4,minmax(0,1fr)) 41px!important;gap:2px!important}
+#slrFlowTestDialog .ceDocActions.ceDocActionsFive{
+grid-template-columns:repeat(5,minmax(0,1fr)) 41px!important}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button span{font-size:9px!important}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button{min-height:48px!important;padding:4px 1px!important}
+.ceDoorRow{grid-template-columns:minmax(0,1fr) 42px 42px 42px!important;gap:3px!important}}
+@media(max-width:365px){
+#slrFlowTestDialog .ceDocActions.ceDocActionsFive{
+grid-template-columns:repeat(5,minmax(0,1fr)) 38px!important}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button span{font-size:8.5px!important}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact>button svg{
+width:14px!important;height:14px!important;min-width:14px!important}}
+
+/* CE v1.2: document status lives inside the folder; percentages stay only on the door overview. */
+#slrFlowTestDialog .slrFolderProgress{
+ font-size:11px!important;font-weight:400!important;
+ padding:4px 8px!important;line-height:1.25!important;
+ background:#edf1f4!important;color:#687b87!important;
+ border:1px solid #d2dce2!important;white-space:nowrap!important;
+}
+#slrFlowTestDialog .slrFolderProgress.is-partial{
+ background:#fff2dd!important;color:#95621c!important;border-color:#ead19d!important;
+}
+#slrFlowTestDialog .slrFolderProgress.is-done{
+ background:#e7f3e9!important;color:#296d40!important;border-color:#bddfc3!important;
+}
+#slrFlowTestDialog .ceDocActions.ceDocActionsCompact{
+ display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr)) 44px!important;
+ gap:3px!important;width:100%!important;margin:0!important;
+ padding:5px 0 2px!important;max-width:none!important;
+}
+#slrFlowTestDialog .ceDocActions.ceDocActionsShort{
+ grid-template-columns:repeat(3,minmax(0,1fr)) 44px!important;
+}
+#slrFlowTestDialog .ceFolderStatusControls{
+ display:flex!important;justify-content:flex-end!important;align-items:center!important;
+ flex-wrap:nowrap!important;gap:6px!important;
+ width:100%!important;padding:5px 1px 8px!important;
+ box-sizing:border-box!important;border-top:1px solid #dfebf0!important;margin-top:5px!important;
+}
+#slrFlowTestDialog .ceFolderStatusControls>small{
+ color:#587483;font-size:10px!important;font-weight:400!important;
+ margin-right:auto;white-space:nowrap;
+}
+#slrFlowTestDialog .ceFolderStatusControls>button{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ gap:5px!important;min-height:42px!important;height:42px!important;
+ min-width:92px!important;padding:5px 9px!important;
+ font-weight:400!important;font-size:11px!important;line-height:1.15!important;
+ background:#f6f9fb!important;border:1px solid #c2d2de!important;color:#315b76!important;
+ border-radius:7px!important;margin:0!important;
+ white-space:nowrap!important;
+}
+#slrFlowTestDialog .ceFolderStatusControls>button span{font-size:11px!important;font-weight:400!important}
+#slrFlowTestDialog .ceFolderStatusControls>button svg{
+ width:16px!important;height:16px!important;min-width:16px!important;
+ stroke-width:1.45!important;flex:none!important;
+}
+#slrFlowTestDialog .ceFolderStatusControls>.ceStatusDoing.is-active{
+ background:#fff2dd!important;border-color:#e0ba78!important;color:#895b17!important;
+}
+#slrFlowTestDialog .ceFolderStatusControls>.ceStatusDone.is-active{
+ background:#e7f3e9!important;border-color:#9acda5!important;color:#236841!important;
+}
+#slrFlowTestDialog .ceFolderStatusControls>button:disabled{opacity:.44!important}
+#slrFlowTestDialog .ceFolderStatusControls>button:focus-visible{
+ outline:2px solid #408cc1;outline-offset:2px;
+}
+@media(max-width:650px){
+ #slrFlowTestDialog .ceDocActions.ceDocActionsCompact{
+  grid-template-columns:repeat(4,minmax(0,1fr)) 41px!important;
+  gap:2px!important;
+ }
+ #slrFlowTestDialog .ceDocActions.ceDocActionsShort{
+  grid-template-columns:repeat(3,minmax(0,1fr)) 41px!important;
+ }
+ #slrFlowTestDialog .ceFolderStatusControls>button{
+  min-width:78px!important;padding:5px 7px!important;
+  min-height:42px!important;
+ }
+}
+@media(max-width:365px){
+ #slrFlowTestDialog .ceDocActions.ceDocActionsCompact{
+  grid-template-columns:repeat(4,minmax(0,1fr)) 36px!important;
+ }
+ #slrFlowTestDialog .ceDocActions.ceDocActionsShort{
+  grid-template-columns:repeat(3,minmax(0,1fr)) 36px!important;
+ }
+ #slrFlowTestDialog .ceFolderStatusControls>button{
+  min-width:74px!important;gap:3px!important;padding:5px!important;
+ }
+}
+</style>
+<script src="project-ce-markning-test-v6-storage.js?v=6"></script>
+<script src="project-ce-markning-test-v6-models.js?v=6"></script>
+<script src="ce-markning-v1-2-module.js?v=2.4.359"></script><script src="ce-file-export-v312.js?v=2.4.359"></script><script src="ce-markning-v1-2-optimize.js?v=1.2"></script>
+<script src="project-ce-markning-test-v7-personal.js?v=7"></script>
+<script src="ce-markning-v1-2.js?v=2.4.359" defer></script>
+<style id="ceTest50MenuStyles">
+.ceTools.ceToolsMenu{position:relative;z-index:40;overflow:visible!important;display:flex!important;align-items:center;gap:9px;flex-wrap:wrap;padding:8px 0 12px}
+.ceToolsMenu>#ceAddToggle{min-height:44px;flex:0 0 auto}
+.ceToolbarMenu{position:relative;flex:0 0 auto}
+.ceToolbarMenu>summary{list-style:none;display:flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;box-sizing:border-box;padding:10px 13px;min-height:44px;border-radius:9px;background:#ebf5fa;border:1px solid #93b7c8;color:#16465e;font-size:13px;font-weight:700;user-select:none}
+.ceToolbarMenu>summary::-webkit-details-marker{display:none}
+.ceToolbarMenu[open]>summary{background:#d9edf7}
+.ceToolbarMenu>summary span{font-size:16px}
+.ceToolbarMenu .ceMenuPanel{position:absolute;top:calc(100% + 4px);left:0;z-index:100;display:flex;flex-direction:column;gap:3px;width:min(312px,86vw);box-sizing:border-box;border:1px solid #a4c1cf;border-radius:11px;padding:9px;background:white;box-shadow:0 12px 28px #17394b59}
+.ceToolbarMenu .ceMenuPanel button,.ceToolbarMenu .ceMenuPanel label.ceButton{display:flex!important;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;width:100%;box-sizing:border-box;min-height:46px;padding:8px 10px!important;margin:0!important;border:0!important;border-radius:7px!important;background:#f3f8fc!important;color:#183d52!important;font-size:13px;font-weight:700;cursor:pointer}
+.ceToolbarMenu .ceMenuPanel small{font-size:11px!important;display:block;color:#486779;opacity:.9;font-weight:400;margin-top:3px;white-space:normal}
+.ceToolbarMenu .ceMenuHeading{font-size:11px;color:#5e7b8c;font-weight:700;padding:3px 6px}
+.ceToolbarMenu .ceMenuDivider{border-top:1px solid #d7e6ed;margin:5px 0}
+.ceToolbarMenu .ceMenuPanel .ceMenuDanger{color:#923d42!important;background:#fff1f0!important}
+.ceToolsMenu .ceToolbarHint{font-size:11px;color:#47748a;flex:1 0 120px;text-align:right}
+.ceNewProjectDialog{width:min(480px,94vw);max-width:94vw;border:1px solid #a7c1ce;border-radius:12px;padding:0;background:#f9fcfe;color:#183a50}
+.ceNewProjectDialog::backdrop{background:#092133a8}
+.ceNewProjectDialog header{background:#143c54;color:white;padding:14px 16px}
+.ceNewProjectDialog main{padding:14px}
+.ceNewProjectDialog p{font-size:13px;line-height:1.6;margin:0 0 13px}
+.ceNewProjectDialog .ceNewProjectActions{display:flex;flex-direction:column;gap:7px}
+.ceNewProjectDialog button{min-height:43px;text-align:left;padding:8px 11px;border:1px solid #acc4d0;border-radius:8px;background:#e7f3fa;color:#173b52;font-size:13px;font-weight:700}
+.ceNewProjectDialog button:disabled{opacity:.5}
+.ceNewProjectDialog #ceNewProjectDiscard{margin-top:14px;background:#fff1f0;color:#944044;border-color:#dcb8b9}
+@media(max-width:600px){.ceTools.ceToolsMenu{gap:7px}.ceToolbarMenu>summary{padding:10px;font-size:12px}.ceToolbarMenu .ceMenuPanel{width:min(280px,92vw)}#ceDocumentActions .ceMenuPanel{left:auto;right:0}.ceToolsMenu .ceToolbarHint{flex-basis:100%;text-align:left;font-size:10px}}
+</style>
+<style id="ceHistory51">
+#ceWorkspace[hidden],#ceProjectHome[hidden]{display:none!important}
+.ceProjectHome{max-width:980px;margin:0 auto;padding:12px 0 30px;color:#163c52}
+.ceHomeHero{border-radius:13px;padding:25px 22px;background:linear-gradient(135deg,#173749,#34728d);color:#fff}
+.ceHomeEyebrow{font-size:10px;font-weight:800;letter-spacing:1px;color:#d8eaf2}
+.ceHomeHero h2{margin:9px 0;font-size:clamp(20px,3vw,28px);color:#fff}
+.ceHomeHero p{font-size:13px;line-height:1.6;margin:0;color:#e8f4f9}
+.ceHomeActions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0 25px}
+.ceHomeActions button{min-height:84px;background:#fff;border:1px solid #9dbcca;border-radius:11px;text-align:left;color:#164057;padding:12px;font-size:14px;font-weight:700;white-space:normal}
+.ceHomeActions .ceHomePrimary{background:#e3f2fa}.ceHomeActions button:disabled{opacity:.5}
+.ceHomeActions small{display:block;font-size:11px;font-weight:400;line-height:1.45;color:#54788c;margin-top:7px;white-space:normal}
+.ceHomeHistoryHeading{border-bottom:1px solid #c7d9e2;margin-bottom:12px;padding-bottom:9px;display:flex;align-items:center;justify-content:space-between;gap:9px}
+.ceHomeHistoryHeading h3{font-size:16px;margin:0}.ceHomeHistoryHeading span{font-size:11px;color:#537287}
+.ceHomeHistory{display:flex;flex-direction:column;gap:8px}
+.ceHistoryRow{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff;border:1px solid #cadbe4;border-radius:10px;padding:11px 12px}
+.ceHistoryInfo{min-width:0}.ceHistoryInfo strong{font-size:13px;display:block;overflow-wrap:anywhere}.ceHistoryInfo small{font-size:11px;display:block;margin-top:6px;color:#58798c}
+.ceHistoryButtons{display:flex;flex-wrap:wrap;gap:6px}.ceHistoryButtons button{min-height:41px;border:1px solid #9fbccd;border-radius:7px;padding:7px 12px;font-size:12px;font-weight:700;color:#164057;background:#edf6fa}
+.ceHistoryButtons button:last-child{background:#fff2f0;border-color:#dfb9b7;color:#99413e}
+.ceHomeFootnote{font-size:11px;color:#597789;line-height:1.6;margin:18px 0}
+@media(max-width:600px){.ceHomeActions{grid-template-columns:1fr;gap:7px}.ceHomeActions button{min-height:64px}.ceHistoryRow{flex-direction:column;align-items:flex-start}.ceHistoryButtons{width:100%}.ceHistoryButtons button{flex:1}}
+</style>
+<style id="ceTest52TillsynoDesign">
+/* v1.2 matches approved Tillsyno homepage v2.4.287, without touching app-wide CSS.
+   Original PDF forms, document dialogs and local project storage retain their behavior. */
+html{background:#0c2535}
+body{
+ min-height:100svh;background-color:#0c2535!important;
+ background-image:radial-gradient(ellipse at 52% 42%,rgba(39,83,102,.29),transparent 65%),
+ linear-gradient(145deg,#112f42 0%,#0b2637 52%,#091e2b 100%)!important;
+ background-repeat:no-repeat!important;background-size:cover!important;
+}
+body::before,body::after{content:"";position:fixed;pointer-events:none;z-index:0;width:20%;height:22%;opacity:.53}
+body::before{right:6%;top:11%;border-right:1px solid #b8dfed36;border-top:1px solid #b8dfed36}
+body::after{left:6%;bottom:10%;border-left:1px solid #b8dfed28;border-bottom:1px solid #b8dfed28}
+.ceTop{position:relative;z-index:2;background:#0a2230ed!important;border-bottom:1px solid #d4ebf119;min-height:47px}
+.ceTop .ceIcon{border:1px solid #d4ebf129;border-radius:8px;background:#c9eaf30d}
+.ceShell{position:relative;z-index:1}
+#ceWorkspace{background:#eff4f7;border:1px solid #d1e1e854;border-radius:13px;padding:12px;margin:8px 0 0;box-shadow:0 12px 32px #00101c24;color:#173547}
+body.ceProjectPickerOpen .ceShell{max-width:none;min-height:calc(100svh - 47px);display:grid;place-items:center;padding:16px max(12px,env(safe-area-inset-left)) calc(20px + env(safe-area-inset-bottom))}
+body.ceProjectPickerOpen .ceProjectHome{box-sizing:border-box;width:min(420px,100%);max-width:420px;margin:0 auto;padding:8px 3px 20px;color:#f1f9fc}
+.ceProjectHome .ceHomeHero{background:none!important;border:0!important;box-shadow:none!important;text-align:center;padding:6px 10px 13px!important}
+.ceHomeBrand{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px}
+.ceHomeBrandMark{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:#badde819;border:1px solid #cbeaf447;color:#e8f8fc;font-weight:800;font-size:19px;letter-spacing:-.09em;flex:none}
+.ceHomeBrandText{text-align:left;display:flex;flex-direction:column;gap:2px}
+.ceHomeBrandText strong{font-size:20px;line-height:1.1;color:#f4fafc;font-weight:750;letter-spacing:-.035em}
+.ceHomeBrandText small{font-size:10px;color:#c0d8e3;font-weight:500;line-height:1.25}
+.ceProjectHome .ceHomeHero h2{font-size:16px!important;font-weight:720!important;line-height:1.3!important;color:#f2fbfe!important;margin:3px 0 5px!important}
+.ceProjectHome .ceHomeHero p{font-size:11px!important;line-height:1.4!important;color:#b9d5df!important;margin:0!important}
+.ceProjectHome .ceHomeActions{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important;width:min(350px,100%)!important;max-width:350px!important;margin:0 auto 18px!important}
+.ceProjectHome .ceHomeActions button{
+ display:grid!important;grid-template-columns:32px minmax(0,1fr) 14px!important;
+ align-items:center!important;justify-content:stretch!important;gap:10px!important;
+ text-align:left!important;width:100%!important;max-width:100%!important;
+ min-height:64px!important;height:auto!important;padding:9px 11px!important;margin:0!important;
+ border:1px solid #d4ebf143!important;border-radius:10px!important;
+ color:#f1f9fc!important;background:#0b2537b9!important;
+ box-shadow:0 7px 23px #0015203b!important;
+ backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important;
+ white-space:normal!important;
+}
+.ceProjectHome .ceHomeActions button:hover,.ceProjectHome .ceHomeActions button:focus-visible{background:#184153dd!important;border-color:#d5f2fa77!important}
+.ceProjectHome .ceHomeActions button:focus-visible{outline:2px solid #bce9f8;outline-offset:2px}
+.ceProjectHome .ceHomeActions button:disabled{opacity:.55!important;cursor:not-allowed}
+.ceHomeActionIcon{display:grid;place-items:center;width:32px;height:32px;min-width:32px;border-radius:8px;background:#c9eaf315;color:#e0f4fa}
+.ceHomeActionIcon svg{width:21px;height:21px;display:block}
+.ceHomeActionCopy{display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center;min-width:0!important;gap:3px!important}
+.ceProjectHome .ceHomeActionCopy strong{display:block!important;line-height:1.28!important;font-size:13px!important;color:#f3fbfd!important;font-weight:730!important;white-space:normal!important}
+.ceProjectHome .ceHomeActionCopy small{display:block!important;font-size:11px!important;color:#b9d5df!important;line-height:1.3!important;margin:0!important;white-space:normal!important;overflow-wrap:anywhere}
+.ceHomeActionArrow{justify-self:end;font-size:20px;color:#aacbdb}
+.ceProjectHome .ceHomeHistoryHeading{width:min(350px,100%);margin:0 auto 8px;padding:0 2px 8px;border-color:#c5dce33d}
+.ceProjectHome .ceHomeHistoryHeading h3{font-size:12px!important;color:#e5f4f9;font-weight:730;margin:0}
+.ceProjectHome .ceHomeHistoryHeading span{color:#b2cdd8;font-size:10px}
+.ceProjectHome .ceHomeHistory{width:min(350px,100%);margin:0 auto;gap:6px}
+.ceProjectHome .ceHistoryRow{display:flex;flex-direction:row;align-items:center;gap:7px;padding:9px 10px;border:1px solid #d4ebf133;border-radius:9px;background:#0b2537b9;color:#eaf7fc}
+.ceProjectHome .ceHistoryInfo strong{font-size:12px;color:#f2f9fc;font-weight:700;line-height:1.25}
+.ceProjectHome .ceHistoryInfo small{font-size:10px;color:#b9d5df;line-height:1.4;margin-top:3px}
+.ceProjectHome .ceHistoryButtons{width:auto;flex:none;gap:4px}
+.ceProjectHome .ceHistoryButtons button{font-size:11px;padding:6px 8px;min-height:35px;background:#163e50;color:#e7f6fb;border:1px solid #cee6f344;border-radius:7px;font-weight:680}
+.ceProjectHome .ceHistoryButtons button:last-child{background:#5b2b2b61;color:#f6d9d6;border-color:#d7a5a548}
+.ceProjectHome .ceHomeHistory>p,.ceProjectHome .ceHomeFootnote{width:min(350px,100%);font-size:10.5px;line-height:1.5;color:#b3ccd8;margin:12px auto 0}
+@media(max-width:600px){
+ .ceShell{padding-left:10px;padding-right:10px}
+ #ceWorkspace{padding:9px;margin-top:4px;border-radius:10px}
+ body.ceProjectPickerOpen .ceShell{padding:12px 12px calc(22px + env(safe-area-inset-bottom))}
+ .ceProjectHome .ceHomeBrand{margin-bottom:14px}
+ .ceProjectHome .ceHomeActions{gap:8px!important}
+ .ceProjectHome .ceHomeActions button{min-height:60px!important;padding:8px 10px!important;gap:9px!important}
+ .ceProjectHome .ceHistoryRow{flex-wrap:wrap}
+ .ceProjectHome .ceHistoryInfo{flex:1 1 150px}
+ .ceProjectHome .ceHistoryButtons{margin-left:auto}
+ body::before,body::after{opacity:.28}
+}
+@media(max-height:550px){body.ceProjectPickerOpen .ceShell{display:block;min-height:auto;padding-top:12px}}
+</style>
+<style id="ceTest53Finishing">
+/* Mirrors Tillsyno homepage identity and card design. No change to document form styles. */
+.ceTop{padding:7px max(12px,calc((100vw - 780px)/2))!important}
+.ceTopIdentity{display:flex;align-items:center;gap:8px}
+.ceTopIdentity strong{font-size:13px!important;letter-spacing:-.01em}
+.ceTopIdentity small{font-size:10px!important;margin:0!important;padding:3px 6px!important;color:#d9edf7!important;background:#193c4c8a;border:1px solid #bcdfeb42;border-radius:5px;font-weight:650}
+.ceTop .ceBackHome{display:flex;gap:6px;width:auto;min-width:85px;justify-content:center;padding:5px 10px;height:34px;color:#e7f6fb;font-weight:650;font-size:11px;text-decoration:none}
+.ceTop .ceBackHome svg{width:16px;height:16px}
+.ceTop .ceBackHome:hover,.ceTop .ceBackHome:focus-visible{background:#184153;border-color:#d5f2fa77}
+.ceProjectHome .ceHomeHero{padding-top:14px!important;padding-bottom:14px!important}
+.ceProjectHome .ceHomeBrand{margin-bottom:17px!important;gap:10px!important}
+.ceProjectHome .ceHomeBrandText{gap:4px}
+.ceProjectHome .ceHomeBrandText strong{font-size:23px!important;font-weight:770!important;letter-spacing:-.035em!important}
+.ceProjectHome .ceHomeBrandText small{font-size:10px!important;color:#c0d8e3!important;letter-spacing:.02em}
+.ceHomeVersion{flex:none;font-size:10px;line-height:1.2;color:#dbeef5;padding:4px 6px;border:1px solid #bcdfeb42;border-radius:5px;background:#193c4c8a;font-weight:650}
+.ceProjectHome .ceHomeHero h2{font-size:15px!important;margin-bottom:5px!important}
+.ceProjectHome .ceHomeActions{gap:9px!important}
+.ceProjectHome .ceHomeActions button{grid-template-columns:32px minmax(0,1fr) 53px!important;min-height:62px!important;gap:9px!important}
+.ceProjectHome .ceHomeActionArrow{font:720 10px/1.3 system-ui!important;white-space:nowrap!important;color:#deeff6!important;justify-self:end}
+.ceProjectHome .ceHomeActionIcon svg{stroke-width:1.9!important}
+.ceProjectHome .ceHomeHistoryHeading h3{display:flex;align-items:center;gap:7px!important;color:#e5f4f9!important;font-size:12px!important}
+.ceProjectHome .ceHomeHistoryHeading h3 svg{width:15px;height:15px;flex:none;color:#d5eaf2}
+.ceProjectHome .ceHistoryRow{gap:10px}
+.ceProjectHome .ceHistoryFileIcon{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#c9eaf315;color:#e0f4fa}
+.ceProjectHome .ceHistoryFileIcon svg{width:18px;height:18px}
+.ceProjectHome .ceHistoryInfo{flex:1 1 auto;min-width:0}
+@media(max-width:620px){
+ .ceProjectHome .ceHomeBrandText strong{font-size:21px!important}
+ .ceProjectHome .ceHomeBrand{margin-bottom:14px!important}
+ .ceProjectHome .ceHomeActions button{min-height:60px!important;grid-template-columns:32px minmax(0,1fr) 52px!important;gap:8px!important}
+ .ceProjectHome .ceHistoryFileIcon{width:26px;height:26px}
+ .ceTop .ceBackHome{min-width:75px;padding:5px 7px}
+}
+@media(max-width:340px){
+ .ceProjectHome .ceHomeBrand{flex-wrap:wrap}
+ .ceProjectHome .ceHomeActions button{grid-template-columns:28px minmax(0,1fr) 45px!important;padding:8px!important}
+ .ceProjectHome .ceHomeActionIcon{width:28px;height:28px;min-width:28px}
+ .ceProjectHome .ceHomeActionArrow{font-size:9px!important}
+}
+</style>
+<style id="ceTest55CompactDialogAndDate">
+/* Dialog is part of CE only; Tillsyno homepage dark glass design, compact actions. */
+dialog.ceNewProjectDialog{
+ box-sizing:border-box!important;width:min(385px,calc(100vw - 24px))!important;max-width:385px!important;
+ padding:0!important;overflow:hidden!important;border:1px solid #cbe8f54a!important;border-radius:13px!important;
+ color:#f1f9fc!important;background:#0e2c3b!important;
+ box-shadow:0 20px 66px #00101bb8!important;
+}
+dialog.ceNewProjectDialog::backdrop{background:#061823ab!important;backdrop-filter:blur(4px)}
+dialog.ceNewProjectDialog .ceNewDialogHeader{
+ display:flex!important;align-items:center!important;gap:9px!important;
+ padding:14px 15px 12px!important;border-bottom:1px solid #daedf12c!important;
+ background:linear-gradient(145deg,#163e51,#102b3c)!important;color:#f5fbfe!important;
+}
+.ceNewDialogHeader strong{font-size:14px!important;font-weight:740!important;line-height:1.3!important}
+.ceNewDialogIcon{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:8px;background:#c9eaf315;color:#e5f6fb}
+.ceNewDialogIcon svg{width:19px;height:19px}
+dialog.ceNewProjectDialog .ceNewDialogBody{padding:13px 15px 14px!important;background:transparent!important}
+dialog.ceNewProjectDialog #ceNewProjectMessage{
+ font-size:11px!important;line-height:1.5!important;font-weight:400!important;color:#c2d9e3!important;
+ padding:0!important;margin:0 0 12px!important;overflow-wrap:anywhere;
+}
+dialog.ceNewProjectDialog .ceNewProjectActions{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:7px!important}
+dialog.ceNewProjectDialog .ceNewProjectActions button{
+ box-sizing:border-box!important;display:grid!important;grid-template-columns:28px minmax(0,1fr) 12px!important;
+ justify-content:stretch!important;align-items:center!important;gap:9px!important;
+ min-height:44px!important;height:auto!important;width:100%!important;max-width:100%!important;
+ padding:7px 10px!important;margin:0!important;border:1px solid #d4ebf143!important;border-radius:9px!important;
+ text-align:left!important;color:#ecf8fc!important;background:#14364abb!important;
+ font-size:12px!important;font-weight:670!important;line-height:1.25!important;white-space:normal!important;
+}
+dialog.ceNewProjectDialog .ceNewProjectActions button:hover:not(:disabled),dialog.ceNewProjectDialog .ceNewProjectActions button:focus-visible{
+ border-color:#d5f2fa77!important;background:#205166!important;
+}
+dialog.ceNewProjectDialog .ceNewProjectActions button:focus-visible{outline:2px solid #9fdbec;outline-offset:2px}
+dialog.ceNewProjectDialog .ceNewProjectActions #ceNewProjectStart{background:#d6eaf4!important;color:#153c50!important;border-color:#d6eaf4!important}
+dialog.ceNewProjectDialog .ceNewProjectActions #ceNewProjectStart:hover:not(:disabled){background:#ecfaff!important}
+dialog.ceNewProjectDialog .ceNewProjectActions #ceNewProjectCancel{background:transparent!important;color:#c5d8e1!important;border-color:#d4ebf12b!important;font-weight:500!important}
+.ceNewDialogButtonIcon{display:grid;place-items:center;width:28px;height:28px;border-radius:7px;background:#c9eaf315}
+.ceNewDialogButtonIcon svg{height:17px;width:17px}
+#ceNewProjectStart .ceNewDialogButtonIcon{background:#174b6020}
+.ceNewDialogArrow{justify-self:end;font-size:18px!important;font-weight:400!important;line-height:1}
+dialog.ceNewProjectDialog #ceNewProjectDiscard{display:none!important}
+
+/* Signature controls – compact date, date format and date style; no form-value changes. */
+.ceSignatureGroup .ceSignOptions{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:6px 7px!important;align-items:start!important;
+ margin:3px 0 0!important;padding:8px!important;width:100%!important;
+ border:1px solid #e0e9ee!important;border-radius:8px!important;background:#f8fafb!important;
+}
+.ceSignatureGroup .ceSignOptions label{
+ margin:0!important;padding:0!important;min-width:0!important;
+ gap:3px!important;font-size:10px!important;line-height:1.25!important;
+ color:#6b8391!important;font-weight:400!important;
+}
+.ceSignatureGroup .ceSignOptions label:first-child{grid-column:1/-1!important}
+.ceSignatureGroup .ceSignOptions label span{
+ min-height:0!important;font-size:10px!important;line-height:1.2!important;
+ font-weight:400!important;color:#67808d!important;
+}
+.ceSignatureGroup .ceSignOptions input,.ceSignatureGroup .ceSignOptions select{
+ box-sizing:border-box!important;width:100%!important;max-width:100%!important;
+ height:33px!important;min-height:33px!important;
+ margin:0!important;padding:4px 8px!important;
+ border:1px solid #ccdce4!important;border-radius:6px!important;
+ box-shadow:none!important;background:#fff!important;color:#2c5165!important;
+ font:400 13px/1.25 system-ui,-apple-system,"Segoe UI",sans-serif!important;
+}
+.ceSignatureGroup .ceSignOptions input:focus,.ceSignatureGroup .ceSignOptions select:focus{outline:2px solid #99cbdc!important;outline-offset:1px!important}
+.ceSignatureGroup #ceProjectSignPreviewDate{font-size:10px!important;line-height:1.2!important;margin:1px auto 0!important;opacity:.85}
+@media(min-width:1100px){
+ .ceSignatureGroup .ceSignOptions{grid-template-columns:minmax(0,1.25fr) minmax(0,.9fr) minmax(0,.9fr)!important}
+ .ceSignatureGroup .ceSignOptions label:first-child{grid-column:auto!important}
+}
+@media(hover:none),(pointer:coarse){
+ /* 16px stops iOS Safari from zooming the page when focusing controls. */
+ .ceSignatureGroup .ceSignOptions input,.ceSignatureGroup .ceSignOptions select{
+  font-size:16px!important;height:35px!important;min-height:35px!important;
+ }
+}
+@media(max-width:390px){
+ dialog.ceNewProjectDialog{width:calc(100vw - 20px)!important}
+ dialog.ceNewProjectDialog .ceNewDialogBody{padding:11px!important}
+ .ceSignatureGroup .ceSignOptions{padding:6px!important;gap:5px!important}
+}
+</style>
+<style id="ceTest56SignatureContrast">
+/* Signed ink is the focus. Smaller date is secondary in signature preview. */
+.ceSignatureGroup .ceSignaturePreviewPaper{
+ min-height:112px!important;max-height:154px!important;
+ padding:7px 10px 6px!important;justify-content:center!important;gap:0!important;
+}
+.ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignPreviewImage{
+ display:block!important;width:100%!important;max-width:100%!important;
+ height:94px!important;max-height:94px!important;min-height:0!important;
+ object-fit:contain!important;object-position:center center!important;
+ filter:brightness(0) saturate(100%) invert(42%) sepia(55%) saturate(880%) hue-rotate(156deg) brightness(91%) contrast(95%)!important;
+}
+.ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignPreviewImage[hidden]{display:none!important}
+.ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignPreviewDate{
+ font-size:9px!important;line-height:1.1!important;
+ color:#6b9cb5!important;opacity:.82!important;
+ margin:0 auto 0!important;text-align:center!important;font-weight:400!important;
+ letter-spacing:0!important;
+}
+.ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignPreviewDate[hidden]{display:none!important}
+@media(max-width:750px){
+ .ceSignatureGroup .ceSignaturePreviewPaper{min-height:105px!important;padding:6px 8px 5px!important}
+ .ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignPreviewImage{height:88px!important;max-height:88px!important}
+}
+@media(max-width:390px){
+ .ceSignatureGroup .ceSignaturePreviewPaper #ceProjectSignPreviewImage{height:80px!important;max-height:80px!important}
+}
+</style>
+<style id="ceTest57ProductListInFolder">
+/* Product rows stay in Produktlista only; full PDF editors remain outside folder. */
+#slrFlowTestDialog .slrFolder[data-slr-category="Produktlista"]>#slrEditor{
+ display:block!important;width:100%!important;min-width:0!important;max-width:none!important;
+ margin:5px 0 10px!important;padding:8px!important;background:#f9fcfd!important;
+ border:1px solid #d5e4eb!important;border-radius:9px!important;
+ box-sizing:border-box!important;
+}
+#slrFlowTestDialog .slrFolder[data-slr-category="Produktlista"]>#slrEditor[hidden]{display:none!important}
+#slrFlowTestDialog .slrFolder[data-slr-category="Produktlista"] .slrEditToolbar{
+ display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:4px;
+}
+#slrFlowTestDialog .slrFolder[data-slr-category="Produktlista"] #slrEditHeading{
+ font-size:12px!important;font-weight:690!important;color:#244e63;margin:0!important;flex:1;min-width:140px;
+}
+#slrFlowTestDialog .slrFolder[data-slr-category="Produktlista"] #slrCloseEditor{
+ min-height:32px!important;padding:4px 9px!important;font-size:11px!important;
+}
+#slrFlowTestDialog .slrFolder[data-slr-category="Produktlista"] #slrFields.ceProductEditor{
+ display:block!important;max-width:none!important;width:100%!important;margin:0!important;min-width:0!important;
+}
+#slrFlowTestDialog .slrFolder[data-slr-category="Produktlista"] .ceProductEditor>p.ceMuted{
+ font-size:10px!important;text-align:left!important;color:#557484!important;margin:0 0 8px!important;
+}
+#slrFlowTestDialog .slrFolder[data-slr-category="Produktlista"] .ceProductEditor .ceProductRows{
+ width:100%!important;max-width:none!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductHead,
+#slrFlowTestDialog .ceProductEditor .ceProductTableRow{
+ grid-template-columns:minmax(90px,1.12fr) minmax(90px,1fr) minmax(128px,1.5fr) 46px 30px!important;
+ gap:5px!important;min-width:0!important;align-items:center!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductCombo{
+ display:grid!important;grid-template-columns:minmax(0,1fr) 29px!important;gap:0!important;
+ min-width:0!important;width:100%!important;
+ border:1px solid #afc9d7!important;border-radius:6px!important;
+ overflow:hidden!important;background:#fff!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductCombo>input{
+ box-sizing:border-box!important;margin:0!important;min-width:0!important;width:100%!important;
+ padding:3px 5px!important;border:0!important;border-radius:5px 0 0 5px!important;
+ background:transparent!important;outline-offset:-2px!important;
+ font-size:13px!important;min-height:35px!important;height:35px!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductCombo>select.ceProductQuickPick{
+ box-sizing:border-box!important;display:block!important;margin:0!important;
+ padding:0 0 0 3px!important;min-width:29px!important;width:29px!important;
+ min-height:35px!important;height:35px!important;
+ border:0!important;border-left:1px solid #c5dce6!important;border-radius:0!important;
+ background:#eff6fa!important;color:#2d6580!important;
+ font-size:13px!important;font-weight:700!important;text-align:center!important;
+ -webkit-appearance:none!important;appearance:none!important;cursor:pointer!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductTableRow>input.ceProductQty{
+ min-width:0!important;width:100%!important;font-size:13px!important;min-height:36px!important;padding:4px!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductTableRow>button.ceProductRemove{
+ width:29px!important;height:36px!important;min-height:36px!important;margin:0!important;
+ padding:0!important;font-size:18px!important;color:#904747!important;
+}
+#slrFlowTestDialog .ceProductEditor .ceProductTableRow>.ceProductExtra{grid-column:1 / -2!important}
+#slrFlowTestDialog .slrFolder[data-slr-category="Produktlista"] .ceProductTools{max-width:none!important;margin:2px 0 7px!important}
+@media(max-width:650px){
+ #slrFlowTestDialog .ceProductEditor .ceProductHead{display:none!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow{
+  display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 30px!important;
+  grid-auto-rows:minmax(36px,auto)!important;gap:5px!important;
+ }
+ #slrFlowTestDialog .ceProductEditor .ceProductCombo-kind{grid-column:1!important;grid-row:1!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductCombo-brand{grid-column:1!important;grid-row:2!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductCombo-name{grid-column:2!important;grid-row:2!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow>input.ceProductQty{
+  grid-column:2!important;grid-row:1!important;min-height:36px!important;
+ }
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow>button.ceProductRemove{
+  grid-column:3!important;grid-row:1 / 3!important;align-self:center!important;
+ }
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow>input.ceProductExtra{
+  grid-column:1 / 3!important;grid-row:3!important;
+ }
+ #slrFlowTestDialog .ceProductEditor .ceProductCombo>input{
+  font-size:16px!important;height:36px!important;min-height:36px!important;
+ }
+ #slrFlowTestDialog .ceProductEditor .ceProductCombo>select.ceProductQuickPick{
+  font-size:16px!important;height:36px!important;min-height:36px!important;
+ }
+ #slrFlowTestDialog .ceProductEditor .ceProductTableRow>input.ceProductQty{font-size:16px!important}
+}
+@media(max-width:380px){
+ #slrFlowTestDialog .slrFolder[data-slr-category="Produktlista"]>#slrEditor{padding:5px!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductCombo{grid-template-columns:minmax(0,1fr) 26px!important}
+ #slrFlowTestDialog .ceProductEditor .ceProductCombo>select.ceProductQuickPick{min-width:26px!important;width:26px!important}
+}
+</style>
+<style id="ceTest58AutoHistoryAndClose">
+#ceWorkspace .ceWorkspaceHeader{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;min-height:40px!important;padding:3px 2px 10px!important;margin:0 0 5px!important;border-bottom:1px solid #a7bfca44!important}
+#ceWorkspace .ceWorkspaceCaption{display:flex;flex-direction:column;gap:2px;min-width:0}
+#ceWorkspace .ceWorkspaceCaption span{font-size:10px;color:#5f7f90;line-height:1.2;font-weight:400}
+#ceWorkspace .ceWorkspaceCaption strong{font-size:13px;color:#173e56;font-weight:650;line-height:1.3;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#ceWorkspace .ceWorkspaceClose{flex:none!important;display:grid!important;place-items:center!important;width:36px!important;min-width:36px!important;height:36px!important;min-height:36px!important;margin:0!important;padding:6px!important;border:1px solid #c8dce6!important;border-radius:9px!important;color:#365b70!important;background:#f4f8fa!important}
+#ceWorkspace .ceWorkspaceClose:hover{background:#e5f2f8!important;color:#1c506b!important}
+#ceWorkspace .ceWorkspaceClose:focus-visible{outline:2px solid #7db9d6!important;outline-offset:2px}
+#ceWorkspace .ceWorkspaceClose svg{width:17px;height:17px}
+.ceProjectHome .ceHistoryRow.is-confirming{flex-wrap:wrap!important}
+.ceProjectHome .ceHistoryConfirm{box-sizing:border-box;display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:7px!important;flex:0 0 100%!important;width:100%!important;margin:6px 0 0!important;padding:9px!important;border:1px solid #deb9aa66!important;border-radius:8px!important;background:#1d3442!important}
+.ceProjectHome .ceHistoryConfirm span{font-size:11px!important;color:#f0e4df!important;line-height:1.4;flex:1 1 140px!important}
+.ceProjectHome .ceHistoryConfirm button{flex:none!important;width:auto!important;padding:6px 9px!important;margin:0!important;min-height:33px!important;font-size:11px!important;border-radius:6px!important}
+.ceProjectHome .ceHistoryConfirm button.ceHistoryDeleteYes{background:#8b3938!important;color:#fff4f1!important;border:1px solid #d37a75!important}
+.ceProjectHome .ceHistoryConfirm button.ceHistoryDeleteCancel{background:#234c60!important;color:#e0f1f7!important;border:1px solid #a6c9d766!important}
+@media(max-width:420px){#ceWorkspace .ceWorkspaceCaption strong{font-size:12px!important}}
+</style>
+<style id="ceTest59BulkImportStyle">
+dialog.ceImportCEDialog{box-sizing:border-box;width:min(510px,calc(100vw - 20px));max-width:95vw;max-height:92dvh;overflow:auto;padding:0;border-radius:12px;border:1px solid #b2cbd9;background:#f8fbfd;color:#183b50;box-shadow:0 22px 65px #001b2f88}
+dialog.ceImportCEDialog::backdrop{background:#071d2cba}
+.ceImportCEHeader{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;gap:10px;background:#12384b;color:#f3fafc}
+.ceImportCEHeader strong{font-size:14px;font-weight:700}
+.ceImportCEHeader button{width:34px;height:34px;padding:0;min-height:34px;background:#31566a;color:#fff;border:1px solid #90b5c7;border-radius:8px;font-size:21px}
+.ceImportCEBody{padding:13px 14px}
+.ceImportCEBody>p{font-size:11px;line-height:1.5;color:#557282;margin:0 0 10px}
+#ceImportCEChoose{width:100%;min-height:42px;font-size:12px;font-weight:680;background:#e5f2f8;color:#194a65;border:1px solid #9bbdce;border-radius:8px}
+#ceImportCEStatus{font-size:11px;line-height:1.4;margin:9px 0;color:#547488}
+.ceImportCEPreview{display:grid;gap:5px}
+.ceImportCERow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 9px;border:1px solid #d9e6ed;border-radius:7px;background:#fff}
+.ceImportCERow>div{flex:1;min-width:0}
+.ceImportCERow strong{display:block;font-size:11px;color:#234f65}
+.ceImportCERow small{display:block;font-size:10px;line-height:1.4;color:#6e8591;overflow-wrap:anywhere;margin-top:2px}
+.ceImportCERow span{font-size:10px;white-space:nowrap;color:#276743}
+.ceImportCERow.is-missing span{color:#a16a23}
+.ceImportCERow.is-error{background:#fff6f5;border-color:#dfb4b3}
+.ceImportCERow.is-error span{color:#983d3b}
+.ceImportCEBody>p.ceImportCEHint{margin:10px 0!important;padding:9px;background:#e8f1f6;border-radius:7px;font-size:10px}
+.ceImportCEActions{display:flex;flex-wrap:wrap;gap:7px}
+.ceImportCEActions button{flex:1 1 170px;min-height:38px;font-size:11px;border-radius:8px;border:1px solid #aac7d5;background:#eaf4f8;color:#1e4c63;font-weight:650}
+#ceImportCEApply{background:#15516d;color:#fff;border-color:#15516d}
+#ceImportCEApply:disabled{opacity:.5}
+@media(max-width:420px){.ceImportCEBody{padding:11px}.ceImportCERow{padding:7px}}
+</style>
+<style id="ceTest60ImportUnderGlassChoice">
+/* One import action directly below Med glas/Utan glas; not shown in main toolbar. */
+#slrFlowTestDialog .ceImportNextToProfile{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;flex-wrap:wrap!important;
+ gap:9px!important;margin:10px 0 7px!important;padding:9px 10px!important;
+ border:1px solid #bfd8e6!important;border-radius:9px!important;
+ background:linear-gradient(135deg,#f9fcfd,#e9f3f8)!important;
+ box-sizing:border-box!important;
+}
+#slrFlowTestDialog .ceImportNextToProfile button.ceBatchImportButton{
+ box-sizing:border-box!important;flex:0 1 auto!important;
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ gap:8px!important;min-height:38px!important;min-width:0!important;margin:0!important;
+ padding:7px 12px!important;border:1px solid #206180!important;border-radius:8px!important;
+ color:#fff!important;background:#1b526e!important;font-size:12px!important;
+ font-weight:660!important;white-space:normal!important;text-align:center!important;
+}
+#slrFlowTestDialog .ceImportNextToProfile button.ceBatchImportButton:hover{background:#266985!important}
+#slrFlowTestDialog .ceImportNextToProfile button.ceBatchImportButton:focus-visible{outline:2px solid #72bddb;outline-offset:2px}
+#slrFlowTestDialog .ceImportNextToProfile button.ceBatchImportButton svg{width:17px;height:17px;flex:none}
+#slrFlowTestDialog .ceImportNextToProfile small{font-size:10px!important;color:#577688!important;line-height:1.4!important;flex:1 1 130px!important;min-width:0}
+#ceDocumentActions .ceExportAdvanced{border-top:1px solid #d3e3eb;margin-top:6px;padding:5px}
+#ceDocumentActions .ceExportAdvanced>summary{
+ cursor:pointer;list-style:none;color:#51778b;font-size:11px;font-weight:600;padding:8px;
+}
+#ceDocumentActions .ceExportAdvanced>summary::-webkit-details-marker{display:none}
+#ceDocumentActions .ceExportAdvanced>summary:after{content:"  ▾";font-size:10px}
+#ceDocumentActions .ceExportAdvanced>button{
+ display:block;box-sizing:border-box;width:100%;margin:0;padding:10px;border:0;
+ text-align:left;color:#204d65;background:#f2f8fb;font-size:12px;border-radius:6px;
+}
+@media(max-width:460px){
+ #slrFlowTestDialog .ceImportNextToProfile{padding:8px!important;gap:6px!important}
+ #slrFlowTestDialog .ceImportNextToProfile button.ceBatchImportButton{width:100%!important;flex:1 1 100%!important}
+}
+</style>
+<style id="ceProduction12Style">
+/* CE-märkning is a standalone workflow from Kontrollflöde. */
+.ceTop .ceBackHome{display:inline-flex!important;align-items:center!important;gap:6px!important;min-height:36px!important;
+ padding:7px 10px!important;background:#1b4357!important;color:#ecf8fd!important;
+ text-decoration:none!important;border:1px solid #b8d9e64d!important;border-radius:9px!important}
+.ceTop .ceBackHome svg{height:18px!important;width:18px!important;fill:none!important;stroke:currentColor!important}
+.ceTop .ceBackHome span{font-size:12px!important;color:#eaf7fc!important}
+.ceTop .ceBackHome:focus-visible{outline:2px solid #8fd8ef!important;outline-offset:3px!important}
+.ceTop .ceTopIdentity small{font-weight:600!important;letter-spacing:.025em!important}
+</style>
+
+<link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.359">
+<link rel="stylesheet" href="ce-desktop-home-v355.css?v=2.4.359">
+<link rel="stylesheet" href="ce-desktop-workspace-v357.css?v=2.4.359">
+<link rel="stylesheet" href="ce-signature-theme-v357.css?v=2.4.359">
+<script src="ce-desktop-workspace-v357.js?v=2.4.359" defer></script>
+<style>
+/* Saved projects stay folded until explicitly opened. */
+.ceSavedProjects>summary{list-style:none;cursor:pointer;min-height:44px;gap:10px}
+.ceSavedProjects>summary::-webkit-details-marker{display:none}
+.ceSavedProjects>summary h3{margin:0;flex:1}
+.ceSavedProjects .ceSavedChevron{font-size:20px;transition:transform .15s}
+.ceSavedProjects[open] .ceSavedChevron{transform:rotate(180deg)}
+.ceSavedProjects>summary:focus-visible{outline:2px solid #8ec4da;outline-offset:3px;border-radius:6px}
+/* Keep workspace headings beside their leading icon, not between two edges. */
+#ceWorkspace #ceProject>summary{justify-content:flex-start;text-align:left;gap:8px}
+#ceWorkspace #ceProject>summary .ceProjectLabel{max-width:none;font-size:12px;font-weight:650;white-space:normal;overflow:visible;text-align:left}
+#ceWorkspace #ceProjectCaption{margin-left:auto;text-align:right}
+#ceWorkspace .ceListHead{justify-content:flex-start;text-align:left;gap:8px}
+#ceWorkspace .ceListHead>strong{margin:0;text-align:left}
+#ceWorkspace #ceDoorTotal{margin-left:auto}
+#ceWorkspace #ceDoorList .ceDoorOpen{justify-content:flex-start;text-align:left;gap:8px}
+#ceWorkspace #ceDoorList .ceDoorInfo{flex:1 1 auto;min-width:0;text-align:left}
+#ceWorkspace #ceDoorList .cePercent{flex:none;margin-left:auto}
+#ceWorkspace #ceDoorList .ceDoorFolderIcon{display:inline-flex;align-items:center;flex:0 0 16px;width:16px}
+#ceWorkspace #ceDoorList .ceDoorFolderIcon svg{display:block;width:16px;height:16px}
+</style>
+<link rel="stylesheet" href="sharepoint-test/app.css?v=0.4">
+<script src="sharepoint-test/app.js?v=0.4" defer></script>
+</head>
+<body data-require-role="admin" data-sharepoint-module="smartmatch">
+<header class="ceTop"><div class="ceTopIdentity"><strong>CE-märkning</strong><small>v2.4.359</small></div><a href="sharepoint-app-test.html?spv=0.4" aria-label="Hem till Tillsyno" title="Hem till Tillsyno" class="ceIcon ceBackHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></svg><span>Hem</span></a></header>
+<main class="ceShell">
+<section id="ceProjectHome" class="ceProjectHome" hidden>
+ <div class="ceHomeHero">
+   <div class="ceHomeBrand"><span class="ceHomeBrandText"><strong>Tillsyno</strong><small>CE-märkning</small></span><span class="ceHomeVersion">v2.4.359</span></div>
+ </div>
+ <div class="ceHomeActions">
+  <button id="ceHomeOpenPdf" type="button">
+   <span class="ceHomeActionIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V11z"/><path d="M13 3v8h8"/><path d="M9 16h6m-3-3v6"/></svg></span>
+   <span class="ceHomeActionCopy"><strong>Öppna projekt-PDF</strong><small>Välj fil från din enhet</small></span>
+   <span class="ceHomeActionArrow" aria-hidden="true">Öppna ›</span>
+  </button>
+  <button id="ceHomeNew" type="button">
+   <span class="ceHomeActionIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/><rect x="2.5" y="2.5" width="19" height="19" rx="4"/></svg></span>
+   <span class="ceHomeActionCopy"><strong>Nytt projekt</strong><small>Starta ett nytt CE-arbete</small></span>
+   <span class="ceHomeActionArrow" aria-hidden="true">Öppna ›</span>
+  </button>
+  <input id="ceHomePdfPicker" type="file" hidden accept=".pdf,application/pdf">
+ </div>
+ <details id="ceSavedProjects" class="ceSavedProjects"><summary class="ceHomeHistoryHeading"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10H3z"/><path d="M3 11h18"/></svg>Sparade projekt</h3><span id="ceHomeCount"></span><span class="ceSavedChevron" aria-hidden="true">⌄</span></summary>
+ <div id="ceHomeHistory" class="ceHomeHistory"></div></details>
+ <p class="ceHomeFootnote">Projekt sparas automatiskt på den här enheten. Spara projekt-PDF när du vill flytta eller dela ett projekt.</p>
+</section>
+<div id="ceWorkspace">
+ <div class="ceWorkspaceHeader">
+  <div class="ceWorkspaceCaption"><span>Aktuellt CE-projekt</span><strong id="ceWorkspaceProjectName">Namnlöst CE-projekt</strong></div>
+  <button id="ceCloseProject" class="ceWorkspaceClose" type="button" title="Stäng projektet och gå till projektmenyn" aria-label="Stäng projektet och gå till projektmenyn">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+  </button>
+ </div>
+
+ <details class="ceProject" id="ceProject"><summary><span class="ceProjectLabel">Projektuppgifter</span><span id="ceProjectCaption"></span></summary>
+  <div class="ceMetaIntro">Fyll i uppgifter om utförare och beställare. Objektnumret följer med till nya dörrar.</div>
+  <div class="ceProjectColumns">
+   <section class="ceProjectColumn"><h3>Utförare och CE-ansvarig</h3><p>Företaget och personen som utför installation och CE-kontroll.</p>
+     <div class="ceReuseActions"><button id="ceRememberPerformer" type="button">Spara uppgifter</button><button id="ceRecallPerformer" type="button">Hämta sparade</button></div>
+    <div class="ceGrid">
+     <label>Ansvarig tekniker<input data-meta="technician" placeholder="För- och efternamn"></label>
+     <label>Utförande företag<input data-meta="technicianCompany" placeholder="Företagsnamn"></label>
+     <label>Företagets telefonnummer<input data-meta="technicianPhone" type="tel"></label>
+     <label>Datum<input data-meta="date" type="date"></label>
+     <label>Organisationsnummer<input data-meta="companyOrgNo"></label>
+     <label>Företagsadress<input data-meta="companyAddress"></label>
+     <label>Postnummer och ort<input data-meta="companyPostalPlace"></label>
+     <label>SLR-auktorisation<input data-meta="slrAuthorisation"></label>
+    </div>
+    <details class="ceMetaGroup ceSignatureGroup"><summary>Ansvarigs underskrift</summary><p class="ceSignIntro">Underskriften sparas en gång och används på dokumenten för dina dörrar.</p><div class="ceSignaturePreview" role="group" aria-label="Förhandsvisning av projektunderskrift"><div class="ceSignaturePreviewTop"><strong>Underskrift</strong><span id="ceProjectSignStatus" role="status" aria-live="polite">Inte sparad</span></div><div class="ceSignaturePreviewPaper" id="ceProjectSignPreview"><img id="ceProjectSignPreviewImage" alt="Sparad projektunderskrift" hidden><span id="ceProjectSignEmpty">Ingen underskrift sparad</span><small id="ceProjectSignPreviewDate" hidden></small></div></div><div class="cePersonalTools ceSignButtons"><button type="button" id="ceProjectSign">Skriv underskrift</button><button type="button" id="ceProjectSignClear">Rensa underskrift</button></div><div class="ceSignOptions"><label for="ceSignDate"><span>Datum under underskrift</span><input id="ceSignDate" type="date"></label><label for="ceSignDateFormat"><span>Datumformat</span><select id="ceSignDateFormat"><option value="day">14 okt 2026</option><option value="month">okt 2026</option></select></label><label for="ceSignDateStyle"><span>Stil på datum</span><select id="ceSignDateStyle"><option value="handwriting">Handstil</option><option value="italic">Kursiv</option><option value="regular">Vanlig</option><option value="typewriter">Skrivmaskin</option></select></label></div></details>
+    <details class="ceMetaGroup"><summary>Teknisk dokumentation och EG-försäkran</summary><div class="ceGrid">
+     <label>Dokumentationsansvarig<input data-meta="documentationName"></label>
+     <label>Dokumentationsadress<input data-meta="documentationAddress"></label>
+     <label>Postnummer och ort<input data-meta="documentationPostalPlace"></label>
+     <label>Namnförtydligande<input data-meta="egSignerName"></label>
+     <label>Titel<input data-meta="egSignerTitle"></label>
+     <label>Ort<input data-meta="egPlace"></label>
+     <label>Datum<input data-meta="egDate" type="date"></label>
+    </div></details>
+   </section>
+   <section class="ceProjectColumn"><h3>Beställare och arbetsplats</h3><p>Beställarens kontaktuppgifter och platsen där dörrarna installeras.</p>
+     <div class="ceReuseActions"><button id="ceRememberCustomer" type="button">Spara uppgifter</button><button id="ceRecallCustomer" type="button">Hämta sparade</button></div>
+    <div class="ceGrid">
+     <label>Beställarens företag<input data-meta="customer"></label>
+     <label>Beställarens adress<input data-meta="address"></label>
+     <label>Postnummer och ort<input data-meta="customerPostalPlace"></label>
+     <label>Kontaktperson<input data-meta="contact"></label>
+     <label>Telefonnummer<input data-meta="phone" type="tel"></label>
+     <label>Objektnummer<input data-meta="objectNo" placeholder="20-01-54-28"></label>
+     <label>Ordernummer<input data-meta="order"></label>
+     <label>Installationsdatum<input data-meta="installationDate" type="date"></label>
+    </div>
+   </section>
+  </div>
+ </details>
+ <div class="ceTools ceToolsMenu">
+<button id="ceAddToggle" class="cePrimary" type="button"><svg class="ceAddIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Ny dörr</span></button>
+<details class="ceToolbarMenu" id="ceProjectActions"><summary>Projekt <span>⌄</span></summary><div class="ceMenuPanel">
+<div class="ceMenuHeading">Spara, dela och öppna</div>
+<button id="ceSavePdf" type="button">Spara projekt-PDF<small>Projektfil att dela och återöppna</small></button>
+<button id="ceShareProject" type="button">Skicka projekt<small>Mejl eller delningsmeny</small></button>
+<label for="ceOpenPdf" class="ceButton">Öppna projekt-PDF<small>Fortsätt arbete från en fil</small></label>
+<input id="ceOpenPdf" type="file" hidden accept="application/pdf,.pdf">
+<div class="ceMenuDivider"></div>
+<button id="ceOpenSaved" type="button">Sparade projekt<small>Sparas automatiskt på denna enhet</small></button>
+</div></details>
+<details class="ceToolbarMenu" id="ceDocumentActions"><summary>Dokument &amp; export <span>⌄</span></summary><div class="ceMenuPanel">
+<div class="ceMenuHeading">Dokument och export</div>
+<button id="ceExportFiles" type="button">Spara valda filer (ZIP)<small>Välj dörrar och dokument · utan undermappar</small></button>
+<button id="ceExportSelected" type="button">Exportera komplett CE-underlag (ZIP)<small>Färdiga dörrar med dokumentmappar</small></button>
+<details class="ceExportAdvanced"><summary>Avancerat</summary><button id="ceOptimizeTemplates" type="button">Optimera PDF-mallar<small>Testa alla eller välj separat</small></button></details>
+</div></details>
+<span class="ceToolbarHint">Autosparas på denna enhet</span>
+</div>
+
+ <form id="ceDoorForm" hidden class="ceDoorForm"><p id="ceDoorCopyHint" class="ceDoorCopyHint" role="status" hidden></p><div class="ceGrid">
+  <label>Objektnummer<input id="ceDoorObject" required placeholder="Från projektuppgifterna"></label>
+  <label>Maskintyp<select id="ceDoorCode"></select><input id="ceDoorCustomCode" hidden inputmode="numeric" placeholder="Egen maskintyp"></label>
+  <label>Löpnummer<input id="ceDoorCount" type="number" min="1" step="1" required value="1"></label>
+  <label>Automatik-ID<input id="ceDoorNumber" readonly placeholder="Skapas automatiskt"></label>
+  <label>Placering<input id="ceDoorLocation" required placeholder="Entré, plan 1"></label>
+  <label>Modell<input id="ceDoorModel" list="ceAutomationModels" placeholder="Modell eller egen text"></label>
+  <label>Fabrikat<input id="ceDoorBrand" placeholder="Fylls automatiskt"></label>
+ </div><div class="ceFormEnd"><select id="ceDoorType" aria-label="Utförande"><option value="glass">Med glas</option><option value="noGlass">Utan glas</option></select><button id="ceDoorSubmit" class="cePrimary" type="submit">Lägg till</button><button id="ceDoorCancel" type="button">Avbryt</button></div></form>
+ <datalist id="ceAutomationModels"></datalist>
+ <div class="ceListHead"><strong>Dörrar och dörrautomatik</strong><span id="ceDoorTotal">0 st</span></div>
+ <div id="ceDoorList"></div>
+ <p id="ceEmpty" class="ceEmpty">Lägg till Automatik-ID och placering. Öppna dörren för att fylla i CE-dokumenten.</p>
+ <p id="ceStorageStatus" class="ceMuted" role="status" aria-live="polite"></p>
+</div>
+</main>
+<div id="ceImportCEButtonStorage" hidden><button id="ceImportCEBatch" type="button">Importera CE-mallar</button></div>
+<dialog id="ceImportCEDialog" class="ceImportCEDialog" aria-labelledby="ceImportCETitle">
+<header class="ceImportCEHeader"><strong id="ceImportCETitle">Importera CE-mallar</strong><button id="ceImportCEClose" type="button" aria-label="Stäng">×</button></header>
+<main class="ceImportCEBody">
+ <p>Välj redigerbara CE-mallar som PDF eller en ZIP med mappar. Riskanalys, Beskrivning av maskin, Loggbok, Tillverkarens försäkran och Egenkontroll sorteras automatiskt. På iPhone/iPad använder du Filer – även Dropbox om den visas som filplats.</p>
+ <button id="ceImportCEChoose" type="button">Välj PDF-filer eller ZIP</button>
+ <input id="ceImportCEFiles" type="file" multiple hidden accept=".pdf,.zip,application/pdf,application/zip,application/x-zip-compressed">
+ <p id="ceImportCEStatus" role="status" aria-live="polite">Inga filer valda.</p>
+ <div id="ceImportCEPreview" class="ceImportCEPreview"></div>
+ <p class="ceImportCEHint">ZIP-filerna sorteras till de befintliga CE-mapparna, utan att skapa nya mappar. Du ser vad som finns i projektet och vilka filer som känns igen innan importen. Produktlista och CE-skylt importeras inte här. Bara redigerbara originalmallar kan användas; exporterade, tillplattade PDF-filer går inte att redigera som mallar. Om en mall ersätts behöver berörda dokument godkännas på nytt.</p>
+ <div class="ceImportCEActions"><button id="ceImportCEApply" type="button" disabled>Importera till rätt mappar</button><button id="ceImportCECancel" type="button">Avbryt</button></div>
+</main></dialog>
+<div id="ceNotice" role="status" aria-live="polite" hidden></div>
+<script src="tillsyno-appearance.js?v=2.4.359"></script>
+<aside class="spTestBadge">SharePoint TEST 0.4 · <a href="sharepoint-app-test.html?spv=0.4">Teststartsida</a></aside></body>
+</html>

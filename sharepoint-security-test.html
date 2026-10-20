@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="sv" data-auth-pending>
+<head><meta charset="utf-8">
+<script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}var page={ice:'#edf6fb',mist:'#ebf1f5',coast:'#edf7f6',sand:'#f7f5f1',night:'#081523',graphite:'#12151c',pine:'#091c1e'}[theme];document.documentElement.style.setProperty('--tillsyno-route-bg',page);document.documentElement.style.setProperty('background',page,'important');document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
+<style id="tillsyno-auth-screen">html[data-auth-pending] body{visibility:hidden!important}</style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.275"></script><script src="auth/guard.js?v=2.4.275" defer></script>
+
+
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#132b38">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Säkerhetsservice</title>
+<link rel="stylesheet" href="style.css?v=2.4.251">
+<link rel="stylesheet" href="security.css?v=2.4.256"><link rel="stylesheet" href="security-compact.css?v=2.4.215">
+<script src="vendor/pdf.min.js"></script>
+<script src="vendor/jspdf.umd.min.js"></script>
+<script src="vendor/pdf-lib.min.js"></script>
+<link rel="manifest" href="manifest.webmanifest?v=2.4.256"><meta name="apple-mobile-web-app-title" content="Tillsyno">
+
+<link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.359">
+<link rel="stylesheet" href="security-checklist-v354.css?v=2.4.359">
+<link rel="stylesheet" href="sharepoint-test/app.css?v=0.4">
+<script src="sharepoint-test/app.js?v=0.4" defer></script>
+</head>
+<body data-require-role="admin" data-sharepoint-module="control" class="securityApp" data-view="drawing">
+<header class="appHeader secAppHeader">
+ <div class="brand"><strong>Säkerhetsservice</strong></div>
+ <div class="headerActions"><a class="filebtn" href="sharepoint-app-test.html?spv=0.4">Hem</a><button id="securityPreview">Kundmall</button><button id="securityExport" class="primary">Spara PDF</button></div>
+ <div class="headerDetails"><small class="headerSubtitle">Inbrott · Lås &amp; dörrmiljö · Passer</small></div>
+ <input id="securityFile" type="file" accept="application/pdf" hidden>
+</header>
+<div class="objectBar"><span class="objectTitle"><span id="securityObject">Välj en ritning</span><small>Öppna en ritning eller en tidigare arbets-PDF.</small></span><span id="securityCount">0 objekt</span></div>
+<div id="securityMessage" role="status"></div>
+
+<main>
+<section id="securityDrawing" class="view">
+  <div class="pagebar">
+    <button id="secPrev" aria-label="Föregående sida">‹</button><span id="secPage">Ingen ritning</span><span class="mobileSwipeHint" aria-hidden="true">↔ Svep</span><button id="secNext" aria-label="Nästa sida">›</button>
+    <button id="secZoomOut">−</button><span id="secZoom">100%</span><button id="secZoomIn">+</button>
+    <button id="secFit" hidden style="display:none!important">Passa</button>
+  </div>
+  <div id="secHint" hidden>Tryck på ritningen där objektet finns.</div>
+  <section id="secViewer">
+    <div id="secStage"><canvas id="secCanvas"></canvas><div id="secMarkers"></div></div>
+    <div id="secEmpty"><h1>Säkerhetsservice</h1><p>En ritning för Inbrottslarm, Lås & Dörrmiljö och Passer.</p><label class="filebtn primary" for="securityFile">Öppna PDF</label></div>
+  </section>
+  <div class="securityTools">
+    <button data-add="alarm">＋ Inbrott</button>
+    <button data-add="lock">＋ Lås & Dörrmiljö</button>
+    <button data-add="access">＋ Passer</button>
+    <button id="secPrecision" type="button" class="precisionButton" aria-pressed="false" title="Precisionsläge för exakt placering på telefon">⌖ Precision</button>
+    <button id="secAddText" hidden>＋ Text</button>
+    <button id="secChangeDrawing" type="button" hidden>Byt ritning</button>
+    <button id="secFitMobile" hidden style="display:none!important">Passa</button>
+  </div>
+</section>
+
+<aside id="securityProtocol" class="view">
+  <span id="secProtocolTitle" hidden></span>
+  <div id="secNoSelection"><p>Välj en markering på ritningen eller i översikten.</p></div>
+  <div id="secForm" hidden>
+    <details class="protocolMetaPanel" open><summary><span>Objektuppgifter</span><span class="protocolMetaHint">Visa / dölj</span></summary>
+      <div class="doorDetails securityDetails simpleDoorDetails"><div class="compactSecurityMeta compactDoorMeta">
+        <label class="secTypeField">Typ<input id="secType" readonly></label>
+        <label class="secNumberField doorSerialField">Nummer<input id="secNumber" readonly></label>
+        <label class="secIdField doorIdField">ID / märkning<input id="secId"></label>
+        <label class="secLocationField doorLocationField">Placering / Dörrlittra<input id="secLocation"></label>
+        <label class="doorStatusField">Slutbedömning<select id="secStatus"><option value="untested">Pågående</option><option value="ok">Godkänd</option><option value="action">Åtgärd krävs</option><option value="fail">Ej godkänd</option></select></label>
+        <label class="doorSignatureField">Teknikerns signatur<input id="secProtocolSignature" readonly placeholder="Projekt"></label>
+        <button id="secDelete" class="danger compactDeleteButton">Ta bort objekt</button>
+      </div></div>
+    </details>
+    <details id="secPreviousPanel" class="previousPanel" hidden><summary>Tidigare service / anmärkningar</summary><div id="secPreviousIssues"></div><p>Kontrollera objektet på nytt och fyll i dagens resultat.</p></details>
+    <div class="progressLine"><strong id="secProgress"></strong></div>
+    <div class="doorCheckActions secProgressActions"><button id="secApproveAll" class="approveAll">✓ Godkänn alla</button><button id="secEditChecks" class="doorEditChecks">Redigera kontrollpunkter</button><button id="secAddCheck" class="doorAddCheck">＋ Egen kontrollpunkt</button><button id="secCloseProtocol" type="button" class="protocolInlineAction" aria-label="Till ritningen">×</button></div>
+    <div id="secChecklist"></div>
+    <label class="protocolNotes">Allmän anmärkning<textarea id="secNotes" rows="3"></textarea></label>
+  </div>
+</aside>
+
+<dialog id="securityOverview" tabindex="-1">
+  <div class="overviewHead"><div><span class="eyebrow">SAMMANFATTNING</span><h2>Fel och anmärkningar</h2></div><div class="overviewHeadControls"><button id="secOverviewCustomerPreview" type="button">Kundmall</button><button id="secCloseOverview">×</button></div></div>
+  <div class="securityLegend"><span class="s-ok">Godkänd/åtgärdad</span><span class="s-action">Åtgärd krävs</span><span class="s-fail">Ej godkänd</span><span class="s-untested">Ej klar</span></div>
+  <div id="secOverviewSummary"></div>
+  <div class="overviewFilters secOverviewFilters"><label>Visa<select id="secOverviewFilter"><option value="all">Alla objekt</option><option value="problems">Objekt med fel</option><option value="untested">Ej klara</option><option value="ok">Godkända/åtgärdade</option></select></label><label>Sök<input id="secOverviewSearch" type="search" placeholder="ID, typ, placering"></label></div>
+  <div id="secOverviewList"></div>
+</dialog>
+
+<dialog id="secOpenWorkDialog" class="secOpenWorkDialog">
+  <div class="secOpenWorkHead"><strong>Sparad servicefil hittad</strong></div>
+  <p id="secOpenWorkMeta">Den här filen innehåller tidigare serviceuppgifter.</p>
+  <div class="secOpenWorkActions">
+    <button id="secOpenNewService" type="button" class="primary">Ny service</button>
+    <button id="secOpenContinue" type="button">Fortsätt / ändra</button>
+  </div>
+  <p class="muted">Ny service behåller projekt, kund, företag, logga, objekt och tekniker men nollställer dagens kontroll.</p>
+</dialog>
+
+<dialog id="secPreviewDialog" class="secPreviewDialog">
+  <div class="secPreviewHead"><div><strong>Kundmall</strong><span id="secPreviewTitle">Förhandsvisning</span></div><div class="secPreviewControls"><button id="secPreviewPrev">‹</button><span id="secPreviewPage">1 / 1</span><button id="secPreviewNext">›</button><button id="secPreviewTextSmaller" type="button" aria-label="Mindre kundmall">A−</button><button id="secPreviewTextLarger" type="button" aria-label="Större kundmall">A+</button><button id="secPreviewClose">×</button></div></div>
+  <div id="secPreviewWrap"><canvas id="secPreviewCanvas"></canvas></div>
+</dialog>
+
+<section id="securityProject" class="view">
+  <div class="sheetHead"><div><span class="eyebrow">GEMENSAMT FÖR ALLA OBJEKT</span><h2>Projekt och service</h2></div><button id="secCloseProject">×</button></div>
+  <div class="projectSections">
+    <section class="projectCard"><div class="projectCardHead"><span>1</span><div><h3>Anläggning & jobb</h3><p>Grunduppgifter för hela projektet</p></div></div><div class="grid2">
+      <label class="wide">Anläggning / objekt<input id="secProjectName" placeholder="Exempel: Håsten Skolan"></label>
+      <label>Anläggningsnummer<input id="secFacilityNo"></label>
+      <label>Ordernummer / AO<input id="secOrder"></label>
+      <label>Bokat besök datum<input id="secDate" type="date"></label>
+      <label>Nästa provning datum<input id="secNextDate" type="date"></label>
+    </div></section>
+    <section class="projectCard"><div class="projectCardHead"><span>2</span><div><h3>Beställare</h3><p>Kundens uppgifter</p></div></div><div class="grid2">
+      <label>Beställare / företag<input id="secCustomer"></label>
+      <label>Avtalsnummer<input id="secAgreement"></label>
+      <label>Kontaktperson<input id="secContact"></label>
+      <label>Telefonnummer<input id="secPhone" type="tel"></label>
+      <label>Adress<input id="secAddress"></label>
+      <label>Postnummer<input id="secPostalCode" inputmode="numeric"></label>
+      <label>Postadress<input id="secPostalCity"></label>
+    </div></section>
+    <section class="projectCard"><div class="projectCardHead"><span>3</span><div><h3>Serviceföretag</h3><p>Företaget som utför servicen</p></div></div><div class="grid2">
+      <label>Företag<input id="secCompany"></label>
+      <label>Kontaktman på objektet<input id="secCompanyContact"></label>
+      <label>Telefonnummer<input id="secCompanyPhone" type="tel"></label>
+      <label>Adress<input id="secCompanyAddress"></label>
+      <label>Postnummer<input id="secCompanyPostalCode" inputmode="numeric"></label>
+      <label>Postadress<input id="secCompanyPostalCity"></label>
+    </div></section>
+    <section class="projectCard"><div class="projectCardHead"><span>4</span><div><h3>Tekniker & dokument</h3><p>Signatur och logotyp i kundrapporten</p></div></div><div class="grid2">
+      <label>Servicetekniker<input id="secTechnician"></label>
+      <label>Signatur<input id="secSignature" placeholder="Namn / initialer"></label>
+      <div class="wide secLogoField">
+        <span class="secLogoLabel">Företagslogotyp</span>
+        <div class="secLogoActions">
+          <label class="filebtn primary" for="secLogoFile">Välj logga</label>
+          <input id="secLogoFile" type="file" accept="image/*,.png,.jpg,.jpeg,.webp" hidden>
+          <button id="secLogoRemove" type="button" class="secondary" hidden>Ta bort logga</button>
+        </div>
+        <p id="secLogoStatus" class="muted">Ingen logotyp vald.</p>
+      </div>
+      <div id="secLogoPreview" class="wide"></div>
+    </div></section>
+    <section class="projectCard secNewServiceCard"><div class="projectCardHead"><span>5</span><div><h3>Ny service</h3><p>Behåll projekt, kontaktuppgifter, logga och objekt – nollställ dagens kontroller.</p></div></div><button id="secNewServiceBtn" type="button" class="primary">Starta ny service</button></section>
+  </div>
+</section>
+</main>
+
+<nav id="mobileBar">
+  <button id="secNavDrawing" class="active"><span class="navLabel">Ritning</span></button>
+  <button id="secNavOverview"><span class="navLabel">Översikt</span></button>
+  <button id="secNavProtocol"><span class="navLabel">Protokoll</span></button>
+  <button id="secNavProject"><span class="navLabel">Projekt</span></button>
+</nav>
+<script src="ui-text-scale.js?v=2.4.215"></script><script src="drawing-annotations.js?v=2.4.215"></script>
+<script src="session-history.js?v=2.4.215"></script>
+<script src="offline-work.js?v=2.4.256"></script><script src="security.js?v=2.4.359"></script>
+<script src="drawing-transfer.js?v=2.4.215"></script>
+<script src="offline.js?v=2.4.296"></script>
+<script src="tillsyno-appearance.js?v=2.4.359"></script>
+<script src="controlflow-revision/customer-stamp-editor-v335.js?v=2.4.359"></script><aside class="spTestBadge">SharePoint TEST 0.4 · <a href="sharepoint-app-test.html?spv=0.4">Teststartsida</a></aside></body></html>
