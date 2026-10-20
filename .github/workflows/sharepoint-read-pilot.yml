@@ -1,0 +1,43 @@
+name: SharePoint read pilot (build only)
+on:
+  push:
+    branches: [test/sharepoint-projektflode-20261020]
+    paths: [sharepoint-test/**, .github/workflows/sharepoint-read-pilot.yml]
+  pull_request:
+    paths: [sharepoint-test/**, .github/workflows/sharepoint-read-pilot.yml]
+permissions:
+  contents: read
+jobs:
+  verify-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: sharepoint-test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read-only unit tests (no Microsoft credentials)
+        run: npm test
+      - name: Install version-pinned build dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Build MSAL and redirect bridge locally (no runtime CDN)
+        run: npm run build
+      - name: Package isolated test pages (NOT a deployment)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sharepoint-read-pilot
+          retention-days: 7
+          path: |
+            sharepoint-test/index.html
+            sharepoint-test/auth-callback.html
+            sharepoint-test/pilot.css
+            sharepoint-test/pilot.js
+            sharepoint-test/callback.js
+            sharepoint-test/*.LEGAL.txt
+            sharepoint-test/auth-config.json
+            sharepoint-test/package-lock.json
+            sharepoint-test/IMPLEMENTATION_STATUS.md
+          if-no-files-found: error
