@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "applicationName": "Tillsyno SharePoint Test",
+  "status": "configuration-only-not-active",
+  "tenantId": "23d1ec30-32c7-404c-92f4-22415c2bf2dd",
+  "msal": {
+    "auth": {
+      "clientId": "9f3d396e-41a4-4d04-bc0c-d090e2a9ef4a",
+      "authority": "https://login.microsoftonline.com/23d1ec30-32c7-404c-92f4-22415c2bf2dd",
+      "redirectUri": "https://dyli2009-cmd.github.io/tillsyno/sharepoint-test/auth-callback.html"
+    },
+    "cache": {
+      "cacheLocation": "sessionStorage"
+    }
+  },
+  "graphScopes": [
+    "https://graph.microsoft.com/Sites.Read.All"
+  ],
+  "pilot": {
+    "targetModule": "smartmatch-read-test-v9-74.html",
+    "enabled": false,
+    "readOnly": true,
+    "siteUrl": "https://tillsyno.sharepoint.com/sites/Tillsyno",
+    "libraryServerRelativePath": "/sites/Tillsyno/Delade dokument",
+    "folderPath": "GStest",
+    "folderServerRelativePath": "/sites/Tillsyno/Delade dokument/GStest"
+  },
+  "setupEvidence": {
+    "source": "user-provided; not verified against Microsoft APIs",
+    "applicationIdConfirmed": true,
+    "tenantIdLabelConfirmed": false,
+    "tenantIdNote": "Third ID supplied after asking for Katalog-ID; second ID was explicitly identified as Objekt-ID and is not used.",
+    "adminConsent": "user-reported-granted",
+    "liveSignInTest": "not-performed",
+    "folderLocationSource": "Decoded from the SharePoint folder browser URL supplied by the user on 2026-10-20. The id and newTargetListUrl query parameters identify the folder and document-library paths.",
+    "folderAccessVerified": false
+  }
+}
