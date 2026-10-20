@@ -129,14 +129,19 @@ function latch() {
 
 export class GraphFixture {
   constructor(options={}) {
-    this.options=options; this.requests=[]; this.chunks=[]; this.sessionCount=0;
+    this.options=options; this.requests=[]; this.chunks=[]; this.sessionCount=0;this.copyCount=0;this.sessions=[];
+    this.files=new Map();this.contents=new Map();
+    if(options.sourceBytes){
+      this.files.set('source-item',{id:'source-item',name:'Existing project.pdf',size:options.sourceBytes.length,eTag:'"source-v1"',file:{mimeType:'application/pdf'},parentReference:{driveId:'drive-test',id:'root-folder'},webUrl:SITE+'/Delade%20dokument/GStest/Existing%20project.pdf'});
+      this.contents.set('source-item',Buffer.from(options.sourceBytes));
+    }
     this.uploadReceived=latch();this.uploadRelease=latch();
     this.readbackReceived=latch();this.readbackRelease=latch();
     this.name='';this.parent='root-folder';this.size=0;
   }
   get writes(){return this.requests.filter(request=>request.method!=='GET');}
   get bytes(){return Buffer.concat(this.chunks.map(chunk=>chunk.bytes));}
-  item() { return {id:'saved-item',name:this.name,size:this.size,file:{mimeType:'application/pdf'},parentReference:{driveId:'drive-test',id:this.parent},webUrl:SITE+'/Delade%20dokument/GStest/'+encodeURIComponent(this.name)}; }
+  item() { return this.active?.receipt||{id:this.active?.id||'saved-item',name:this.name,size:this.size,eTag:'"saved-'+this.sessionCount+'"',file:{mimeType:'application/pdf'},parentReference:{driveId:'drive-test',id:this.parent},webUrl:SITE+'/Delade%20dokument/GStest/'+encodeURIComponent(this.name)}; }
   folder(id) {
     if(id==='root-folder')return {id,name:'GStest',folder:{},parentReference:{driveId:'drive-test',id:'library-root'}};
     if(id==='child-folder')return {id,name:'Protokoll',folder:{},parentReference:{driveId:'drive-test',id:'root-folder'}};
@@ -147,7 +152,7 @@ export class GraphFixture {
     await context.route('**/*',async route=>{
       const request=route.request(),url=new URL(request.url());
       if(url.origin===base)return route.continue();
-      if(request.method()==='OPTIONS')return route.fulfill({status:204,headers:{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, POST, PUT','Access-Control-Allow-Headers':'authorization,content-type,content-range'}});
+      if(request.method()==='OPTIONS')return route.fulfill({status:204,headers:{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, POST, PUT','Access-Control-Allow-Headers':'authorization,content-type,content-range,if-match'}});
       const record={url:url.href,path:decodeURIComponent(url.pathname),method:request.method(),headers:await request.allHeaders(),body:request.postDataBuffer()};
       this.requests.push(record);
       const json=(body,status=200)=>route.fulfill({status,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'*'},body:JSON.stringify(body)});
@@ -156,27 +161,48 @@ export class GraphFixture {
           this.sessionCount++;
           assert.equal(record.headers.authorization,'Bearer stub-write-token');
           const body=JSON.parse(record.body.toString());
-          assert.equal(body.item['@microsoft.graph.conflictBehavior'],'fail');
-          this.name=body.item.name;
-          this.parent=record.path.match(/\/items\/([^:]+):\//)?.[1]||'root-folder';
-          if(this.options.conflict)return json({error:{code:'nameAlreadyExists',message:'Fixture conflict'}},409);
-          return json({uploadUrl:'https://tillsyno.sharepoint.com/_api/test-upload/session',expirationDateTime:'2099-01-01T00:00:00Z',nextExpectedRanges:['0-']});
+          const update=record.path.match(/\/items\/([^/:]+)\/createUploadSession$/);
+          this.chunks=[];
+          if(update){
+            const existing=this.files.get(update[1]);assert.ok(existing,'An update targets an existing item ID.');
+            assert.equal(record.headers['if-match'],existing.eTag,'An update uses the current imported/confirmed eTag.');
+            assert.deepEqual(body,{});
+            this.name=existing.name;this.parent=existing.parentReference.id;
+            this.active={id:existing.id,mode:'update',ifMatch:record.headers['if-match'],chunks:this.chunks};
+          }else{
+            assert.equal(body.item['@microsoft.graph.conflictBehavior'],'fail');
+            assert.equal(record.headers['if-match'],undefined);
+            this.name=body.item.name;this.parent=record.path.match(/\/items\/([^:]+):\//)?.[1]||'root-folder';
+            this.copyCount++;this.active={id:this.copyCount===1?'saved-item':'saved-item-'+this.copyCount,mode:'copy',chunks:this.chunks};
+          }
+          this.sessions.push(this.active);
+          if(update&&this.options.updateConflict)return json({error:{code:'preconditionFailed',message:'Fixture version conflict'}},412);
+          if(!update&&this.options.conflict)return json({error:{code:'nameAlreadyExists',message:'Fixture name conflict'}},409);
+          return json({uploadUrl:'https://tillsyno.sharepoint.com/_api/test-upload/session-'+this.sessionCount,expirationDateTime:'2099-01-01T00:00:00Z',nextExpectedRanges:['0-']});
         }
-        assert.equal(record.method,'GET','Only new-copy upload-session creation may mutate Graph.');
+        assert.equal(record.method,'GET','Only the chosen upload-session operation may mutate Graph.');
         assert.equal(record.headers.authorization,'Bearer stub-read-token');
         if(record.path==='/v1.0/sites/tillsyno.sharepoint.com:/sites/Tillsyno')return json({id:'site-test',webUrl:SITE});
         if(record.path==='/v1.0/sites/site-test/drives')return json({value:[{id:'drive-test',webUrl:SITE+'/Delade%20dokument'}]});
         if(record.path==='/v1.0/drives/drive-test/root:/GStest')return json(this.folder('root-folder'));
-        if(record.path.endsWith('/children'))return json({value:record.path.includes('/child-folder/')?[]:[this.folder('child-folder'),{id:'existing-file',name:'Existing.pdf',size:10,file:{mimeType:'application/pdf'}}]});
-        if(record.path==='/v1.0/drives/drive-test/items/saved-item'){
-          this.readbackReceived.release();
-          if(this.options.holdReadback)await this.readbackRelease.promise;
-          if(this.options.badReadback)return json({...this.item(),size:this.size+1});
-          return json(this.item());
-        }
+        if(record.path.endsWith('/children'))return json({value:record.path.includes('/child-folder/')?[]:[this.folder('child-folder'),...(this.files.has('source-item')?[this.files.get('source-item')]:[{id:'existing-file',name:'Existing.pdf',size:10,file:{mimeType:'application/pdf'}}])]});
         const match=record.path.match(/^\/v1\.0\/drives\/drive-test\/items\/([^/]+)$/);
-        if(match)return json(this.folder(match[1]));
-      }else if(url.origin==='https://tillsyno.sharepoint.com'&&url.pathname==='/_api/test-upload/session'){
+        if(match){
+          if(this.files.has(match[1])){
+            const item=this.files.get(match[1]);
+            if(this.active?.completed&&this.active.id===match[1]){
+              this.readbackReceived.release();if(this.options.holdReadback)await this.readbackRelease.promise;
+              if(this.options.badReadback)return json({...item,size:item.size+1});
+            }
+            return json({...item,'@microsoft.graph.downloadUrl':'https://tillsyno.sharepoint.com/_api/test-download/'+encodeURIComponent(item.id)});
+          }
+          return json(this.folder(match[1]));
+        }
+      }else if(url.origin==='https://tillsyno.sharepoint.com'&&url.pathname.startsWith('/_api/test-download/')){
+        assert.equal(record.method,'GET');assert.equal(record.headers.authorization,undefined);
+        const bytes=this.contents.get(decodeURIComponent(url.pathname.split('/').at(-1)));assert.ok(bytes);
+        return route.fulfill({status:200,contentType:'application/pdf',headers:{'Access-Control-Allow-Origin':'*'},body:bytes});
+      }else if(url.origin==='https://tillsyno.sharepoint.com'&&url.pathname.startsWith('/_api/test-upload/session-')){
         assert.equal(record.method,'PUT');
         assert.equal(record.headers.authorization,undefined,'Preauthenticated upload URLs must never receive a Bearer token.');
         const range=record.headers['content-range'].match(/^bytes (\d+)-(\d+)\/(\d+)$/);
@@ -189,7 +215,9 @@ export class GraphFixture {
         if(this.options.failUpload)return route.abort('failed');
         if(this.options.holdUpload)await this.uploadRelease.promise;
         if(end+1<total)return json({nextExpectedRanges:[String(end+1)+'-'],expirationDateTime:'2099-01-01T00:00:00Z'},202);
-        return json(this.item(),201);
+        const item=this.item();this.active.receipt=item;this.active.completed=true;
+        this.files.set(item.id,item);this.contents.set(item.id,this.bytes);
+        return json(item,201);
       }
       await route.abort('blockedbyclient');
       throw new Error('Unexpected non-local request blocked: '+record.method+' '+url.href);

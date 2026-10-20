@@ -33,7 +33,7 @@ export function isSharePointTestPage(window) {
   && body.dataset.sharepointModule === TEST_PAGES.get(page);
 }
 
-export function installExportBridge({window, offerSave, onError = () => {}} = {}) {
+export function installExportBridge({window, offerSave, captureContext = () => undefined, onError = () => {}} = {}) {
  if (!isSharePointTestPage(window)) return Object.freeze({installed:false, uninstall() {}, whenIdle:async () => {}});
  if (typeof offerSave !== 'function') throw new TypeError('offerSave is required.');
  if (installations.has(window)) return installations.get(window);
@@ -41,6 +41,7 @@ export function installExportBridge({window, offerSave, onError = () => {}} = {}
  const originalClick = window.HTMLAnchorElement.prototype.click;
  const originalShare = typeof navigator?.share === 'function' ? navigator.share : null;
  const originalPicker = typeof window.showSaveFilePicker === 'function' ? window.showSaveFilePicker : null;
+ const smartPage = ['sharepoint-read-test.html','sharepoint-smartmatch-test.html'].includes(window.location.pathname.split('/').at(-1));
  const restores = [], pending = new Set(), localAnchors = new WeakSet();
  let active = true, queue = Promise.resolve();
  const abortError = (message = 'Sparandet avbröts.') => new window.DOMException(message, 'AbortError');
@@ -74,7 +75,7 @@ export function installExportBridge({window, offerSave, onError = () => {}} = {}
    if (!(blob instanceof window.Blob) || !blob.size) throw new Error('Exportfilen är tom eller kunde inte läsas. Projektet finns kvar.');
    if (!supportedName(file.name)) throw new Error('Exportfilens namn eller filtyp stöds inte av testet.');
    checkActive();
-   const result = await offerSave({blob, name:file.name, source:file.source});
+   const result = await offerSave({blob, name:file.name, source:file.source, context:file.context});
    checkActive();
    if (!result) throw abortError();
    if (result.destination === 'local') {
@@ -107,6 +108,7 @@ export function installExportBridge({window, offerSave, onError = () => {}} = {}
  }
  function captureDownload(anchor) {
   const spec = downloadSpec(anchor); if (!spec) return false;
+  const context = captureContext();
   let captured;
   try {
    // Invoke fetch synchronously, preserving Window's receiver and establishing
@@ -116,7 +118,7 @@ export function installExportBridge({window, offerSave, onError = () => {}} = {}
     return response.blob();
    });
   } catch (error) { captured = Promise.reject(error); }
-  void submit({blob:captured, name:spec.name, source:'download'}, downloadLocal).catch(() => {});
+  void submit({blob:captured, name:spec.name, source:'download', context}, downloadLocal).catch(() => {});
   return true;
  }
  const anchorClick = function (...args) {
@@ -127,7 +129,7 @@ export function installExportBridge({window, offerSave, onError = () => {}} = {}
  const click = event => {
   if (!active || !isSharePointTestPage(window)) return;
   const copy = event.target?.closest?.('#smartExportSaveObject');
-  if (copy && ['sharepoint-read-test.html','sharepoint-smartmatch-test.html'].includes(window.location.pathname.split('/').at(-1))) {
+  if (copy && smartPage) {
    event.preventDefault(); event.stopImmediatePropagation();
    if (!copy.disabled) {
     const saveAs = document.getElementById('smartExportSaveAs');
@@ -141,22 +143,28 @@ export function installExportBridge({window, offerSave, onError = () => {}} = {}
  document.addEventListener('click', click, true);
  restores.push(() => document.removeEventListener('click', click, true));
  const copy = document.getElementById('smartExportSaveObject');
- if (copy && ['sharepoint-read-test.html','sharepoint-smartmatch-test.html'].includes(window.location.pathname.split('/').at(-1))) {
-  const label = copy.textContent; copy.textContent = 'Spara kopia';
-  restores.push(() => { if (copy.textContent === 'Spara kopia') copy.textContent = label; });
+ if (copy && smartPage) {
+  const label = copy.textContent; copy.textContent = 'Spara';
+  restores.push(() => { if (copy.textContent === 'Spara') copy.textContent = label; });
  }
+ // Both frozen SmartMatch modules have an existing input-based open path. On
+ // the two test pages, choosing that path gives desktop users the same source
+ // chooser as iPad while keeping the module's own open/unsaved/PIN checks.
+ // There are no other showOpenFilePicker callers in these page snapshots.
+ if (smartPage && typeof window.showOpenFilePicker === 'function') replace(window,'showOpenFilePicker',undefined);
  if (originalShare) replace(navigator, 'share', function (data) {
   const files = data?.files;
   if (!active || !isSharePointTestPage(window) || !Array.isArray(files) || !files.length
    || !files.every(file => file instanceof window.Blob && supportedName(file.name))) return originalShare.call(navigator, data);
+  const context = captureContext();
   return (async () => {
    // Existing multi-protocol exports remain independent files. Each receives a
    // destination choice; cancellation stops the rest without retry/fallback.
-   for (const file of files) await submit({blob:file, name:file.name, source:'share'},
+   for (const file of files) await submit({blob:file, name:file.name, source:'share', context},
     blob => originalShare.call(navigator, {...data, files:[asFile(blob, file.name)]}));
   })();
  });
- function virtualHandle(options) {
+ function virtualHandle(options,context) {
   const suggestedName = options.suggestedName;
   let savedFile = null, localHandle = null, writableOpen = false;
   const handle = {
@@ -217,7 +225,7 @@ export function installExportBridge({window, offerSave, onError = () => {}} = {}
       requireOpen(); state = 'closing';
       const snapshot = asFile(content, suggestedName);
       let nextLocalHandle = null;
-      closing = submit({blob:snapshot, name:suggestedName, source:'save-picker'}, async blob => {
+      closing = submit({blob:snapshot, name:suggestedName, source:'save-picker', context}, async blob => {
        const chosen = await originalPicker.call(window, {...options, suggestedName});
        const writer = await chosen.createWritable();
        try { await writer.write(blob); await writer.close(); }
@@ -241,7 +249,7 @@ export function installExportBridge({window, offerSave, onError = () => {}} = {}
  }
  if (originalPicker) replace(window, 'showSaveFilePicker', function (options = {}) {
   if (!active || !isSharePointTestPage(window) || !supportedName(options.suggestedName)) return originalPicker.call(window, options);
-  return Promise.resolve(virtualHandle({...options}));
+  return Promise.resolve(virtualHandle({...options},captureContext()));
  });
  const api = Object.freeze({
   installed:true,

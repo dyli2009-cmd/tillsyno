@@ -8,6 +8,7 @@ const uploadUrl = 'https://tillsyno.sharepoint.com/upload/session?temporary=uplo
 const expiry = () => new Date(Date.now() + 3600000).toISOString();
 const folder = (id, parent, extra = {}) => ({id, name:id === 'test-root' ? 'GStest' : id, folder:{}, parentReference:{driveId:'drive', id:parent}, ...extra});
 const pdf = size => new Blob(['%PDF-', new Uint8Array(Math.max(0, size - 5))], {type:'application/pdf'});
+const openedSource = {driveId:'drive', id:'opened-file', parentId:'test-root', name:'Öppnat projekt.pdf', eTag:'"opened-1"'};
 
 function fixture(options = {}) {
  const calls = [], progress = [];
@@ -16,7 +17,8 @@ function fixture(options = {}) {
   ['grandchild', folder('grandchild', 'child')], ['outside', folder('outside', 'library-root')],
   ['library-root', folder('library-root', null)]
  ]);
- const state = {calls, progress, folders, user:'tillsyno-user:microsoft-user', allowed:true, received:0, item:null, sessionName:null, sessionParent:null, puts:0, tokens:[]};
+ const current = {id:openedSource.id, name:openedSource.name, size:18, eTag:openedSource.eTag, file:{}, parentReference:{driveId:openedSource.driveId, id:openedSource.parentId}};
+ const state = {calls, progress, folders, current, sourceReads:0, user:'tillsyno-user:microsoft-user', allowed:true, received:0, item:null, sessionName:null, sessionParent:null, sessionId:null, sessions:0, commits:0, puts:0, tokens:[]};
  const fetchImpl = async (url, request) => {
   calls.push({url, request});
   const parsed = new URL(url);
@@ -25,12 +27,21 @@ function fixture(options = {}) {
    assert.equal(request.cache, 'no-store');
    assert.equal(request.headers.Authorization, request.method === 'POST' ? 'Bearer write-secret' : 'Bearer read-secret');
    if (request.method === 'POST') {
-    assert.match(parsed.pathname, /^\/v1\.0\/drives\/drive\/items\/[^/]+:\/[^/]+:\/createUploadSession$/u);
     const body = JSON.parse(request.body);
-    assert.deepEqual(Object.keys(body), ['item']);
-    assert.deepEqual(body.item, {'@microsoft.graph.conflictBehavior':'fail', name:body.item.name});
-    state.sessionName = body.item.name;
-    state.sessionParent = decodeURIComponent(/\/items\/([^/]+):\//u.exec(parsed.pathname)[1]);
+    if (parsed.pathname === '/v1.0/drives/drive/items/opened-file/createUploadSession') {
+     assert.deepEqual(body, {});
+     assert.equal(request.headers['If-Match'], state.current.eTag);
+     state.sessionId = 'opened-file'; state.sessionName = state.current.name;
+     state.sessionParent = state.current.parentReference.id;
+    } else {
+     assert.match(parsed.pathname, /^\/v1\.0\/drives\/drive\/items\/[^/]+:\/[^/]+:\/createUploadSession$/u);
+     assert.deepEqual(Object.keys(body), ['item']);
+     assert.deepEqual(body.item, {'@microsoft.graph.conflictBehavior':'fail', name:body.item.name});
+     assert.equal(request.headers['If-Match'], undefined);
+     state.sessionId = 'new-file'; state.sessionName = body.item.name;
+     state.sessionParent = decodeURIComponent(/\/items\/([^/]+):\//u.exec(parsed.pathname)[1]);
+    }
+    state.received = 0; state.sessions++;
     if (options.session) return options.session(state, request);
     return Response.json({uploadUrl, expirationDateTime:expiry()});
    }
@@ -43,6 +54,13 @@ function fixture(options = {}) {
    assert.equal(decodeURIComponent(match[1]), 'drive');
    const id = decodeURIComponent(match[2]);
    if (id === 'new-file' && state.item) return Response.json(options.readback ? options.readback(state.item, state) : state.item);
+   if (id === 'opened-file') {
+    if (parsed.searchParams.has('$select') && state.item) return Response.json(options.readback ? options.readback(state.item, state) : state.item);
+    state.sourceReads++;
+    const source = options.sourceRead ? options.sourceRead(state.current, state) : state.current;
+    if (source instanceof Response) return source;
+    return source ? Response.json(source) : new Response('', {status:404});
+   }
    assert.ok(folders.has(id), 'unknown test folder: ' + id);
    return Response.json(folders.get(id));
   }
@@ -60,7 +78,9 @@ function fixture(options = {}) {
   state.received = end + 1; state.puts++;
   if (options.put) { const response = await options.put(state, {start, end, total, request}); if (response) return response; }
   if (end + 1 < total) return Response.json({nextExpectedRanges:[String(end + 1) + '-'], expirationDateTime:expiry()}, {status:202});
-  state.item = {id:'new-file', name:state.sessionName, size:total, file:{}, parentReference:{driveId:'drive', id:state.sessionParent}, webUrl:config.siteUrl + '/Delade%20dokument/GStest/' + encodeURIComponent(state.sessionName)};
+  state.commits++;
+  state.item = {id:state.sessionId, name:state.sessionName, size:total, eTag:'"saved-' + state.commits + '"', file:{}, parentReference:{driveId:'drive', id:state.sessionParent}, webUrl:config.siteUrl + '/Delade%20dokument/GStest/' + encodeURIComponent(state.sessionName)};
+  if (state.sessionId === 'opened-file') state.current = structuredClone(state.item);
   return Response.json(options.finalItem ? options.finalItem(state.item, state) : state.item, {status:201});
  };
  const client = new SharePointWriter({
@@ -70,13 +90,14 @@ function fixture(options = {}) {
   guard:async () => { if (!state.allowed) throw Error('Administratörsåtkomsten har upphört.'); return state.user; }
  });
  const save = (overrides = {}) => client.saveCopy({config, blob:pdf(18), name:'Projekt – ny kopia.pdf', onProgress:value => progress.push(value), ...overrides});
- return {client, state, save};
+ const saveExisting = (overrides = {}) => client.saveExisting({config, source:{...openedSource}, blob:pdf(18), onProgress:value => progress.push(value), ...overrides});
+ return {client, state, save, saveExisting};
 }
 
 test('A new exported file is verified under the configured root before reporting success', async () => {
  const {save, state} = fixture();
  const result = await save();
- assert.deepEqual(result, {id:'new-file', name:'Projekt – ny kopia.pdf', size:18, driveId:'drive', parentId:'test-root', webUrl:config.siteUrl + '/Delade%20dokument/GStest/Projekt%20%E2%80%93%20ny%20kopia.pdf'});
+ assert.deepEqual(result, {id:'new-file', name:'Projekt – ny kopia.pdf', size:18, driveId:'drive', parentId:'test-root', eTag:'"saved-1"', webUrl:config.siteUrl + '/Delade%20dokument/GStest/Projekt%20%E2%80%93%20ny%20kopia.pdf'});
  assert.equal(state.puts, 1); assert.equal(state.tokens.filter(token => token === 'write').length, 1);
  assert.equal(state.progress.at(-1).phase, 'complete');
  const putIndex = state.calls.findIndex(call => call.request.method === 'PUT');
@@ -298,7 +319,165 @@ test('An aborted save has no network effects; overlapping saves cannot create tw
 
 test('Read-only pilot remains read-only and no writer methods are added to it', () => {
  const client = new ReadOnlySharePoint({getToken:async () => 'read'});
- assert.equal(client.saveCopy, undefined); assert.equal(client.getWriteToken, undefined);
+ assert.equal(client.saveCopy, undefined); assert.equal(client.saveExisting, undefined); assert.equal(client.getWriteToken, undefined);
  assert.equal(UPLOAD_CHUNK_BYTES % (320 * 1024), 0);
  assert.throws(() => new SharePointWriter({getToken:async () => 'r', getWriteToken:async () => 'w', guard:async () => 'u', maxBytes:MAX_UPLOAD_BYTES + 1}));
+});
+
+test('Two existing-file saves retain the exact item ID and send each freshly acknowledged eTag', async () => {
+ const {saveExisting, state} = fixture();
+ const first = await saveExisting();
+ const second = await saveExisting({source:first, blob:pdf(27)});
+ assert.equal(first.id, openedSource.id); assert.equal(second.id, openedSource.id);
+ assert.equal(first.name, openedSource.name); assert.equal(second.name, openedSource.name);
+ assert.equal(first.eTag, '"saved-1"'); assert.equal(second.eTag, '"saved-2"');
+ assert.equal(second.size, 27); assert.equal(state.commits, 2);
+ const sessions = state.calls.filter(call => call.request.method === 'POST');
+ assert.deepEqual(sessions.map(call => call.url), Array(2).fill('https://graph.microsoft.com/v1.0/drives/drive/items/opened-file/createUploadSession'));
+ assert.deepEqual(sessions.map(call => call.request.headers['If-Match']), [openedSource.eTag, first.eTag]);
+ assert.equal(state.calls.some(call => call.url.includes(':/createUploadSession')), false);
+ assert.equal(state.calls.some(call => ['DELETE','PATCH'].includes(call.request.method)), false);
+ assert.equal(state.progress.filter(value => value.phase === 'complete').length, 2);
+ assert.equal(state.sourceReads, 6, 'source checked before and after token acquisition, then before each fragment');
+});
+
+test('Source identity and version are snapshotted before an asynchronous save starts', async () => {
+ const {saveExisting, state} = fixture(), source = {...openedSource};
+ const pending = saveExisting({source});
+ Object.assign(source, {id:'unrelated', name:'Other.pdf', parentId:'outside', eTag:'*'});
+ const receipt = await pending;
+ assert.equal(receipt.id, openedSource.id); assert.equal(receipt.name, openedSource.name);
+ assert.equal(state.calls.find(call => call.request.method === 'POST').request.headers['If-Match'], openedSource.eTag);
+});
+
+test('Missing, wildcard, unsafe or incomplete source versions never request credentials or upload', async () => {
+ for (const source of [undefined, {}, {...openedSource, id:''}, {...openedSource, parentId:'../outside'},
+  {...openedSource, eTag:undefined}, {...openedSource, eTag:''}, {...openedSource, eTag:'*'},
+  {...openedSource, eTag:'"tag"\r\nIf-Match: *'}, {...openedSource, eTag:' "tag"'}]) {
+  const {saveExisting, state} = fixture();
+  await assert.rejects(() => saveExisting({source}), error => error.code === 'invalid_source');
+  assert.equal(state.calls.length, 0); assert.equal(state.tokens.length, 0);
+ }
+});
+
+test('A stale source version, including a change during consent, sends no upload bytes', async () => {
+ for (const at of ['initial', 'token', 'session']) {
+  const {saveExisting, state} = fixture({
+   writeToken:state => { if (at === 'token') state.current.eTag = '"newer"'; return 'write-secret'; },
+   session:state => { if (at === 'session') state.current.eTag = '"newer"'; return Response.json({uploadUrl, expirationDateTime:expiry()}); }
+  });
+  if (at === 'initial') state.current.eTag = '"newer"';
+  await assert.rejects(() => saveExisting(), error => error.code === 'version_conflict' && !error.mayHaveSaved && /senaste versionen|Spara kopia/u.test(error.message), at);
+  assert.equal(state.puts, 0); assert.equal(state.commits, 0);
+  assert.equal(state.sessions, at === 'session' ? 1 : 0);
+ }
+});
+
+test('A version change between chunks stops the next chunk without retrying or creating a copy', async () => {
+ const {saveExisting, state} = fixture({put:state => { state.current.eTag = '"changed-during-transfer"'; }});
+ await assert.rejects(() => saveExisting({blob:pdf(UPLOAD_CHUNK_BYTES + 9)}), error => error.code === 'version_conflict' && !error.mayHaveSaved);
+ assert.equal(state.puts, 1); assert.equal(state.commits, 0); assert.equal(state.sessions, 1);
+ assert.equal(state.progress.some(value => value.phase === 'complete'), false);
+});
+
+test('Server 412 at session creation or final fragment is an actionable version conflict without retry', async () => {
+ for (const at of ['session', 'put']) {
+  const {saveExisting, state} = fixture({[at]:() => Response.json({error:{code:'resourceModified'}}, {status:412})});
+  await assert.rejects(() => saveExisting(), error => error.code === 'version_conflict' && error.status === 412 &&
+   !error.mayHaveSaved && /Spara kopia/u.test(error.message));
+  assert.equal(state.sessions, 1); assert.equal(state.commits, 0);
+  assert.equal(state.progress.some(value => value.phase === 'complete'), false);
+  assert.equal(state.calls.some(call => call.url.includes(':/createUploadSession')), false);
+ }
+});
+
+test('Renamed, moved, deleted or replaced source files are blocked before creating a session', async () => {
+ for (const kind of ['renamed','moved','deleted','404','410','different-id','different-drive','folder','shortcut']) {
+  const {saveExisting, state} = fixture({sourceRead:current => {
+   if (kind === '404' || kind === '410') return new Response('', {status:Number(kind)});
+   const item = structuredClone(current);
+   if (kind === 'renamed') item.name = 'Renamed.pdf';
+   if (kind === 'moved') item.parentReference.id = 'child';
+   if (kind === 'deleted') item.deleted = {};
+   if (kind === 'different-id') item.id = 'replacement';
+   if (kind === 'different-drive') item.parentReference.driveId = 'another-drive';
+   if (kind === 'folder') { delete item.file; item.folder = {}; }
+   if (kind === 'shortcut') item.remoteItem = {id:'elsewhere'};
+   return item;
+  }});
+  await assert.rejects(() => saveExisting(), error => ['source_changed','source_missing'].includes(error.code), kind);
+  assert.equal(state.sessions, 0); assert.equal(state.puts, 0);
+ }
+});
+
+test('An existing file must stay in the same drive and under GStest even if its ID and eTag still match', async () => {
+ for (const kind of ['wrong-drive','outside','ancestor-moved']) {
+  const {saveExisting, state} = fixture(); const source = {...openedSource};
+  if (kind === 'wrong-drive') source.driveId = 'other-drive';
+  if (kind === 'outside') { source.parentId = 'outside'; state.current.parentReference.id = 'outside'; }
+  if (kind === 'ancestor-moved') {
+   source.parentId = 'child'; state.current.parentReference.id = 'child';
+   state.folders.set('child', folder('child', 'outside'));
+  }
+  await assert.rejects(() => saveExisting({source}), error => error.code === 'invalid_destination', kind);
+  assert.equal(state.sessions, 0); assert.equal(state.puts, 0);
+ }
+ const valid = fixture(); valid.state.current.parentReference.id = 'grandchild';
+ const receipt = await valid.saveExisting({source:{...openedSource,parentId:'grandchild'}});
+ assert.equal(receipt.parentId, 'grandchild'); assert.equal(receipt.id, openedSource.id);
+});
+
+test('Existing-file uploads preserve exported bytes and apply the same chunk, size and access limits', async () => {
+ const bytes = new Uint8Array(UPLOAD_CHUNK_BYTES + 73);
+ for (let index = 0; index < bytes.length; index++) bytes[index] = (index * 31) % 256;
+ bytes.set(new TextEncoder().encode('%PDF-'));
+ const valid = fixture(); await valid.saveExisting({blob:new Blob([bytes])});
+ const parts = await Promise.all(valid.state.calls.filter(call => call.request.method === 'PUT').map(async call => Buffer.from(await call.request.body.arrayBuffer())));
+ assert.deepEqual(Buffer.concat(parts), Buffer.from(bytes));
+ assert.equal(valid.state.sourceReads, 4);
+ const tooLarge = fixture();
+ await assert.rejects(() => tooLarge.saveExisting({blob:pdf(MAX_UPLOAD_BYTES + 1)}), error => error.code === 'file_too_large');
+ assert.equal(tooLarge.state.calls.length, 0);
+ for (const kind of ['permission','account']) {
+  const blocked = fixture({put:state => { if (kind === 'permission') state.allowed = false; else state.user = 'different-account'; }});
+  await assert.rejects(() => blocked.saveExisting({blob:pdf(UPLOAD_CHUNK_BYTES + 1)}), /åtkomsten|ändrades/u);
+  assert.equal(blocked.state.puts, 1); assert.equal(blocked.state.commits, 0);
+ }
+});
+
+test('An update receipt for a different file ID is never accepted or followed by a fallback save', async () => {
+ const {saveExisting, state} = fixture({finalItem:item => ({...item,id:'new-file-instead'})});
+ await assert.rejects(() => saveExisting(), error => error.code === 'invalid_saved_file' && error.mayHaveSaved === true);
+ assert.equal(state.sessions, 1); assert.equal(state.puts, 1);
+ assert.equal(state.progress.some(value => value.phase === 'complete'), false);
+ assert.equal(state.calls.some(call => call.url.includes('/items/new-file-instead')), false);
+});
+
+test('Both save modes require a fresh readback version and detect a changed version after acknowledgement', async () => {
+ for (const mode of ['save','saveExisting']) {
+  for (const kind of ['missing','wildcard','changed']) {
+   const fixtureValue = fixture({readback:item => ({...item,eTag:kind === 'missing' ? undefined : kind === 'wildcard' ? '*' : '"concurrent-newer-version"'})});
+   await assert.rejects(() => fixtureValue[mode](), error => error.mayHaveSaved === true &&
+    error.code === (kind === 'changed' ? 'saved_version_changed' : 'invalid_saved_file'), mode + ':' + kind);
+   assert.equal(fixtureValue.state.progress.some(value => value.phase === 'complete'), false);
+  }
+ }
+});
+
+test('An existing-file final network failure stays uncertain and never silently retries', async () => {
+ const {saveExisting, state} = fixture({put:() => { throw Error('Failed ' + uploadUrl + ' write-secret'); }});
+ await assert.rejects(() => saveExisting(), error => error.code === 'network' && error.mayHaveSaved === true &&
+  /Kontrollera målmappen/u.test(error.message) && !error.message.includes('upload-secret') && !error.message.includes('write-secret'));
+ assert.equal(state.sessions, 1); assert.equal(state.puts, 1);
+ assert.equal(state.progress.some(value => value.phase === 'complete'), false);
+});
+
+test('Copy and existing-file saves share the same abort and overlapping-operation guard', async () => {
+ const aborted = fixture(), controller = new AbortController(); controller.abort();
+ await assert.rejects(() => aborted.saveExisting({signal:controller.signal}), error => error.code === 'cancelled');
+ assert.equal(aborted.state.calls.length, 0);
+ const concurrent = fixture(); const pending = concurrent.saveExisting();
+ await assert.rejects(() => concurrent.save(), error => error.code === 'busy');
+ await assert.rejects(() => concurrent.saveExisting(), error => error.code === 'busy');
+ await pending; assert.equal(concurrent.state.sessions, 1);
 });

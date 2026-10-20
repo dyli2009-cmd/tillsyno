@@ -84,6 +84,49 @@ describe('SharePoint save browser integration (synthetic local Microsoft stubs)'
 
   const state=page=>page.evaluate(()=>window.__saveBrowser.exports.at(-1));
   const receipt=page=>page.locator('#spSaveResult').textContent();
+  async function unlockReal(page){
+    await waitFor(page,()=>!!window.SmartMatchAppBridge&&!document.documentElement.hasAttribute('data-auth-pending'));
+    await page.locator('#smReadCodeGate input').fill('1234');
+    await page.locator('#smReadCodeGate button').click();
+    await waitFor(page,()=>!document.documentElement.hasAttribute('data-read-locked'));
+  }
+  async function realReady(page){
+    await waitFor(page,()=>window.SmartMatchAppBridge.getPositions().length===1&&document.querySelector('#pwScanOverlay')?.hidden!==false);
+  }
+  async function importCloudProject(page){
+    await page.locator('#pwOpenProjectEmpty').click();
+    await page.locator('#spFilePicker').waitFor({state:'visible'});
+    await page.locator('#spConnect').click();
+    await page.locator('#spFiles input[value="source-item"]').check();
+    await page.screenshot({path:artifactDir+'/open-cloud-project.png',fullPage:true});
+    await page.locator('#spImport').click();
+    await realReady(page);
+  }
+  async function openRealExport(page){
+    await page.locator('#smartPdfInspect').click();
+    await waitFor(page,()=>!document.querySelector('#smartExportBuild')?.disabled);
+    // The current reader intentionally separates preparing the verified PDF
+    // from the user's explicit save gesture.
+    await page.locator('#smartExportBuild').click();
+    await waitFor(page,()=>!document.querySelector('#smartExportBuild')?.disabled&&document.querySelector('#smartExportBuild')?.textContent==='Spara PDF');
+    await page.locator('#smartExportBuild').click();
+    await page.locator('#spSavePicker').waitFor({state:'visible'});
+  }
+  async function waitRealSaved(page){
+    await waitFor(page,()=>{const result=document.querySelector('#spSaveResult');return result&&!result.hidden&&/^(Sparad i (SharePoint|samma fil)|Kopia sparad):/.test(result.textContent||'');});
+    await waitFor(page,()=>/PDF sparad och kontrollerad/.test(document.querySelector('#smartExportStatus')?.textContent||''));
+  }
+  async function assertCompact(page,width){
+    const box=await page.locator('#spSavePicker').evaluate(dialog=>{const rect=dialog.getBoundingClientRect();return {left:rect.left,top:rect.top,width:rect.width,height:rect.height,viewportWidth:innerWidth,viewportHeight:innerHeight,overflow:dialog.scrollWidth-dialog.clientWidth};});
+    assert.ok(box.width<=580&&box.left>=0&&box.width+box.left<=width+1,JSON.stringify(box));
+    assert.ok(box.height<box.viewportHeight-70&&box.top>=12,'SharePoint must remain a compact dialog, including inside Avläsning: '+JSON.stringify(box));
+    assert.ok(box.overflow<=1,JSON.stringify(box));
+    assert.ok(await page.locator('#spSavePicker .spIcon').count()>=6,'The compact dialog retains its action and file icons.');
+    assert.equal(await page.locator('#spSaveOptions').evaluate(details=>details.open),false);
+    const actions=await page.evaluate(()=>[document.querySelector('#spSaveSubmit'),document.querySelector('#spSaveLocal')].map(button=>{const style=getComputedStyle(button);return {background:style.backgroundColor,color:style.color};}));
+    assert.notEqual(actions[0].background,actions[1].background,'The primary save action must remain visually distinct inside the module theme.');
+    assert.notEqual(actions[0].color,actions[1].color,'The primary save label retains contrast against its filled background.');
+  }
 
   test('native stream close waits for upload and verified readback; bytes and chosen folder survive',{timeout:45000},async()=>{
     await scenario('verified-copy',{holdUpload:true,holdReadback:true},async({page,graph,downloads})=>{
@@ -159,9 +202,9 @@ describe('SharePoint save browser integration (synthetic local Microsoft stubs)'
     });
   });
 
-  test('existing save-object control creates a copy instead of writing its prior native handle',{timeout:30000},async()=>{
+  test('existing save-object control uses the destination chooser instead of bypassing it',{timeout:30000},async()=>{
     await scenario('existing-object-copy',{},async({page,graph})=>{
-      assert.match(await page.locator('#smartExportSaveObject').textContent(),/kopia/i);
+      assert.match(await page.locator('#smartExportSaveObject').textContent(),/spara/i);
       await page.locator('#smartExportSaveObject').click();
       await page.locator('#spSavePicker').waitFor({state:'visible'});
       assert.equal(await page.evaluate(()=>window.__saveBrowser.directWrites),0);
@@ -276,23 +319,17 @@ describe('SharePoint save browser integration (synthetic local Microsoft stubs)'
     });
   });
 
-  test('real Avläsning TEST 9.74 exports edited project state through the nested save dialog',{timeout:60000},async()=>{
+  test('the current Avläsning test snapshot exports edited state, then updates its newly saved cloud file',{timeout:60000},async()=>{
     const input=await projectFixture(),realServer=await createHarnessServer(input.bytes,{realPage:true});
     try{
       await scenario('real-avlasning-export',{server:realServer,holdReadback:true},async({page,graph,downloads})=>{
-        await waitFor(page,()=>!!window.SmartMatchAppBridge&&!document.documentElement.hasAttribute('data-auth-pending'));
-        await page.locator('#smReadCodeGate input').fill('1234');
-        await page.locator('#smReadCodeGate button').click();
-        await waitFor(page,()=>!document.documentElement.hasAttribute('data-read-locked'));
+        await unlockReal(page);
         await page.locator('#pwFile').setInputFiles({name:'Synthetic completed project.pdf',mimeType:'application/pdf',buffer:input.bytes});
         await waitFor(page,()=>window.SmartMatchAppBridge.getPositions().length===1&&document.querySelector('#pwScanOverlay')?.hidden!==false);
         await page.evaluate(()=>window.SmartMatchAppBridge.openPosition(window.SmartMatchAppBridge.getPositions()[0]));
         await page.locator('#pwChecklist .pwCheckRow input[type="checkbox"]').first().check();
         await page.locator('#pwProtocolClose').click();
-        await page.locator('#smartPdfInspect').click();
-        await waitFor(page,()=>!document.querySelector('#smartExportBuild')?.disabled);
-        await page.locator('#smartExportBuild').click();
-        await page.locator('#spSavePicker').waitFor({state:'visible'});
+        await openRealExport(page);
         assert.equal(await page.locator('#smartExportDialog').evaluate(dialog=>dialog.open),true,'The existing workspace may hide the underlying export panel, but its save lifecycle must remain open.');
         await connect(page);
         await page.locator('#spSaveName').fill('Verified project copy.pdf');
@@ -311,6 +348,93 @@ describe('SharePoint save browser integration (synthetic local Microsoft stubs)'
         assert.equal(downloads.length,0);
         assert.equal(graph.sessionCount,1);
         await page.screenshot({path:artifactDir+'/real-avlasning-export.png',fullPage:true});
+        const first=graph.sessions[0];assert.equal(first.mode,'copy');
+        await page.locator('#smartExportClose').click();
+        await openRealExport(page);
+        assert.equal(await page.locator('#spSaveUpdate').getAttribute('aria-pressed'),'true','After the first cloud save, this local project must default to the same newly created file.');
+        assert.equal(await page.locator('#spSaveName').isVisible(),false);
+        await page.locator('#spSaveSubmit').click();
+        await waitRealSaved(page);
+        assert.equal(graph.sessions[1].mode,'update');
+        assert.equal(graph.sessions[1].id,first.id);
+        assert.equal(graph.sessions[1].ifMatch,first.receipt.eTag);
+        assert.equal((await projectData(graph.bytes)).instances[input.positionId].checks[input.itemKey],true);
+      });
+    }finally{await realServer.close();}
+  });
+
+  test('an opened SharePoint project saves repeatedly to the same item and offers an explicit separate copy',{timeout:60000},async()=>{
+    const input=await projectFixture(),realServer=await createHarnessServer(input.bytes,{realPage:true});
+    try{
+      await scenario('same-cloud-project',{server:realServer,sourceBytes:input.bytes},async({page,graph,downloads})=>{
+        await unlockReal(page);await importCloudProject(page);
+        await page.evaluate(()=>window.SmartMatchAppBridge.openPosition(window.SmartMatchAppBridge.getPositions()[0]));
+        await page.locator('#pwChecklist .pwCheckRow input[type="checkbox"]').first().check();
+        await page.locator('#pwProtocolClose').click();
+        await openRealExport(page);
+        assert.equal(await page.locator('#spSaveUpdate').getAttribute('aria-pressed'),'true');
+        assert.match(await page.locator('#spSaveExistingName').textContent(),/Existing project\.pdf/);
+        assert.equal(await page.locator('#spSaveCopyFields').isVisible(),false);
+        await assertCompact(page,1280);
+        await page.screenshot({path:artifactDir+'/same-file-desktop.png',fullPage:true});
+        await page.setViewportSize({width:390,height:844});
+        await assertCompact(page,390);
+        const touch=await page.locator('#spSavePicker button:visible').evaluateAll(buttons=>buttons.map(button=>({id:button.id,height:button.getBoundingClientRect().height,width:button.getBoundingClientRect().width})));
+        assert.ok(touch.every(button=>button.height>=44&&button.width>=44),JSON.stringify(touch));
+        await page.screenshot({path:artifactDir+'/same-file-phone.png',fullPage:true});
+        await page.locator('#spSaveSubmit').click();await waitRealSaved(page);
+        assert.equal(graph.sessions[0].mode,'update');assert.equal(graph.sessions[0].id,'source-item');
+        assert.equal(graph.sessions[0].ifMatch,'"source-v1"');
+        assert.equal((await projectData(graph.bytes)).instances[input.positionId].checks[input.itemKey],true);
+        await page.locator('#smartExportClose').click();
+        await page.setViewportSize({width:1280,height:900});
+        await openRealExport(page);
+        assert.equal(await page.locator('#spSaveUpdate').getAttribute('aria-pressed'),'true');
+        await page.locator('#spSaveSubmit').click();await waitRealSaved(page);
+        assert.equal(graph.sessions[1].id,'source-item');assert.equal(graph.sessions[1].mode,'update');
+        assert.equal(graph.sessions[1].ifMatch,graph.sessions[0].receipt.eTag);
+        const originalAfterUpdate=Buffer.from(graph.contents.get('source-item'));
+        const reopenedContext=await browser.newContext({viewport:{width:1280,height:900},serviceWorkers:'block'});
+        try{
+          await graph.install(reopenedContext,realServer.base);
+          const reopenedPage=await reopenedContext.newPage();
+          await reopenedPage.goto(realServer.base+'/sharepoint-read-test.html');
+          await unlockReal(reopenedPage);await importCloudProject(reopenedPage);
+          const restored=await reopenedPage.evaluate(()=>window.SmartMatchAppBridge.getPositions()[0]);
+          assert.equal(restored.id,input.positionId);
+          assert.equal(restored.checks[input.itemKey],true,'A fresh browser session reopening the uploaded source bytes must retain the checked row.');
+        }finally{await reopenedContext.close();}
+        await page.locator('#smartExportClose').click();await openRealExport(page);
+        await page.locator('#spSaveCopy').click();
+        await page.locator('#spSaveName').fill('Deliberate separate copy.pdf');
+        await page.locator('#spSaveSubmit').click();await waitRealSaved(page);
+        assert.equal(graph.sessions[2].mode,'copy');assert.notEqual(graph.sessions[2].id,'source-item');
+        assert.equal(graph.sessions[2].receipt.name,'Deliberate separate copy.pdf');
+        assert.deepEqual(graph.contents.get('source-item'),originalAfterUpdate,'Choosing a copy must preserve the previously saved source file.');
+        assert.equal(downloads.length,0);
+      });
+    }finally{await realServer.close();}
+  });
+
+  test('a version conflict preserves the pending project bytes for a deliberate new copy',{timeout:45000},async()=>{
+    const input=await projectFixture(),realServer=await createHarnessServer(input.bytes,{realPage:true});
+    try{
+      await scenario('same-file-conflict',{server:realServer,sourceBytes:input.bytes,updateConflict:true},async({page,graph,downloads})=>{
+        await unlockReal(page);await importCloudProject(page);await openRealExport(page);
+        await page.locator('#spSaveSubmit').click();
+        await waitFor(page,()=>!document.querySelector('#spSaveSubmit').disabled&&document.querySelector('#spSaveStatus')?.dataset.state==='error');
+        assert.match(await page.locator('#spSaveStatus').textContent(),/ändra|version|konflikt|412|uppdater/i);
+        assert.doesNotMatch(await receipt(page),/^Sparad i SharePoint/i);
+        assert.equal(await page.locator('#spSavePicker').isVisible(),true);
+        assert.equal(graph.chunks.length,0);assert.equal(downloads.length,0);
+        assert.deepEqual(graph.contents.get('source-item'),input.bytes);
+        await page.locator('#spSaveCopy').click();
+        await page.locator('#spSaveName').fill('Conflict recovery copy.pdf');
+        await page.locator('#spSaveSubmit').click();await waitRealSaved(page);
+        assert.deepEqual(graph.sessions.map(session=>session.mode),['update','copy']);
+        assert.equal((await projectData(graph.bytes)).readTestData.matching.hits[0].positionId,input.positionId);
+        assert.deepEqual(graph.contents.get('source-item'),input.bytes);
+        assert.equal(downloads.length,0);
       });
     }finally{await realServer.close();}
   });
