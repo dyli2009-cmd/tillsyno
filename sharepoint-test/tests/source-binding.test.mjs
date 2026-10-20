@@ -5,6 +5,7 @@ import {createRequire} from 'node:module';
 import {createSourceBinding,inspectProjectPdf} from '../src/source-binding.mjs';
 import {MAX_FILE_BYTES} from '../src/limits.mjs';
 const require=createRequire(import.meta.url), PDFLib=require('../../vendor/pdf-lib.min.js');
+const projectWriter=require('../../smartmatch-read-project-writer-v9-80.js');
 const identity={accountKey:'tenant/account-A',userId:'technician-A'};
 const source=(overrides={})=>({driveId:'drive-A',id:'item-A',parentId:'folder-A',name:'Samma namn.pdf',eTag:'"v1"',...identity,...overrides});
 const routeInfo={
@@ -29,6 +30,16 @@ async function pdfBytes({kind='smartmatch',id='project-A',revision=1,drawing=nul
   doc.catalog.set(P.PDFName.of(kind==='dorrservice'?'DorrserviceWork':'SecurityServiceWork'),doc.context.register(doc.context.obj({Version:3,Data:data,Drawing:original})));
  }
  return new Uint8Array(await doc.save());
+}
+async function metadataPdf(value){
+ const doc=await PDFLib.PDFDocument.create();doc.addPage([300,400]);
+ doc.catalog.set(PDFLib.PDFName.of('TillsynoSmartMatchV36Data'),typeof value==='function'?value(doc):value);
+ return new Uint8Array(await doc.save());
+}
+async function largeMetadataPdf({id='projekt-Åäö-😀',revision=1,schema=6}={}){
+ const payload={schema,projectId:id,projectRevision:revision,instances:{},automationItems:[],readTestData:{rawTable:'Lås Åäö 😀 '.repeat(18000)}};
+ assert.ok(JSON.stringify(payload).length>160000);
+ return metadataPdf(await projectWriter.create(payload,PDFLib,async()=>{}));
 }
 const file=(bytes,name='Samma namn.pdf')=>new File([bytes],name,{type:'application/pdf'});
 function environment(kind='smartmatch',{native=false,restoreStore,setup}={}){
@@ -93,6 +104,75 @@ test('opened working PDF binds exact driveItem; repeated saves refresh eTag and 
  assert.equal(env.binding.confirmSave(info,source({eTag:'"v2"'})),true);
  info=await exportInfo(env,await pdfBytes({revision:3}));assert.equal(info.source.id,'item-A');assert.equal(info.source.name,'Samma namn.pdf');assert.equal(info.source.eTag,'"v2"');
  env.binding.uninstall();
+});
+
+test('large real 9.80 project metadata keeps the exact source and eTag across full-project saves',async()=>{
+ const env=environment(),bytes=await largeMetadataPdf();env.binding.setIdentity(identity);await openCloud(env,bytes);
+ assert.deepEqual(await inspectProjectPdf(bytes,{window:env.window,kind:'smartmatch'}),{kind:'smartmatch',projectId:'projekt-Åäö-😀'});
+ for(const revision of [2,3]){
+  const info=await exportInfo(env,await largeMetadataPdf({revision}));
+  assert.equal(info.projectExport,true,'large read data is a full project, not a separate copy');
+  assert.equal(info.isCurrent(),true);assert.equal(info.source.id,'item-A');assert.equal(info.source.name,'Samma namn.pdf');
+  assert.equal(info.source.eTag,'"v'+(revision-1)+'"');
+  assert.equal(env.binding.confirmSave(info,source({eTag:'"v'+revision+'"'})),true);
+ }
+ const wrong=await exportInfo(env,await largeMetadataPdf({id:'projekt-Åäö-😀-annat'}));
+ assert.equal(wrong.projectExport,false);assert.equal(wrong.source,null);assert.equal(env.binding.confirmSave(wrong,source()),false);
+ assert.equal((await exportInfo(env,bytes)).source.eTag,'"v3"','rejecting another project cannot replace the acknowledged source version');
+ env.binding.uninstall();
+});
+
+test('a small source whose read metadata grows large on export remains the same project',async()=>{
+ const env=environment(),id='projekt-Åäö-😀',bytes=await pdfBytes({id});env.binding.setIdentity(identity);await openCloud(env,bytes);
+ const info=await exportInfo(env,await largeMetadataPdf({id,revision:2}));
+ assert.equal(info.projectExport,true);assert.equal(info.source.id,'item-A');assert.equal(info.source.eTag,'"v1"');
+ assert.equal(info.isCurrent(),true);env.binding.uninstall();
+});
+
+test('project strings preserve UTF-16 endianness and surrogate boundaries plus large literal/PDFDocEncoding text',async()=>{
+ const env=environment(),prefix='{"schema":6,"projectId":"',id='x'.repeat(8191-prefix.length)+'😀-Åäö-'+ 'x'.repeat(150000);
+ const json=prefix+id+'","instances":{},"automationItems":[]}',bigEndian=PDFLib.PDFHexString.fromText(json).asString();
+ const littleEndian='FFFE'+bigEndian.slice(4).replace(/([0-9a-f]{2})([0-9a-f]{2})/gi,'$2$1');
+ // The first surrogate is the final UTF-16 code unit in a decoding block.
+ for(const encoded of [PDFLib.PDFHexString.of(bigEndian),PDFLib.PDFHexString.of(littleEndian),PDFLib.PDFString.of(Buffer.from(bigEndian,'hex').toString('latin1'))]){
+  assert.deepEqual(await inspectProjectPdf(await metadataPdf(encoded),{window:env.window,kind:'smartmatch'}),{kind:'smartmatch',projectId:id});
+ }
+ const plainId='x'.repeat(8192-prefix.length)+'þÿ'+ 'x'.repeat(150000),plain=prefix+plainId+'","instances":{},"automationItems":[]}';
+ // The byte pair FE FF inside PDFDocEncoding must not start a new UTF-16 string.
+ for(const encoded of [PDFLib.PDFHexString.of(Buffer.from(plain,'latin1').toString('hex')),PDFLib.PDFString.of(plain)]){
+  assert.deepEqual(await inspectProjectPdf(await metadataPdf(encoded),{window:env.window,kind:'smartmatch'}),{kind:'smartmatch',projectId:plainId});
+ }
+ env.binding.uninstall();
+});
+
+test('malformed project string types, UTF-16, JSON and stream bytes cannot authorize an update or raw-project fallback',async()=>{
+ const id='smartmatch-v35-workspace-A',valid=await pdfBytes({id});
+ const invalid=[
+  PDFLib.PDFHexString.of('FEFF007'),PDFLib.PDFHexString.of('FFFE7B'),
+  PDFLib.PDFHexString.of('FEFF007Z'),PDFLib.PDFString.of('\xFE\xFF\x00'),
+  PDFLib.PDFHexString.fromText('{"schema":6,'),
+  ...['null','false','0','""','[]'].map(value=>PDFLib.PDFHexString.fromText(value)),
+  doc=>doc.context.obj({schema:6,projectId:id,instances:{},automationItems:[]}),
+  doc=>doc.context.register(doc.context.flateStream(new Uint8Array([123,34,120,34,58,34,255,34,125]))),
+ ];
+ for(const encoded of invalid){
+  const bytes=await metadataPdf(encoded),env=environment();env.binding.setIdentity(identity);await openCloud(env,valid);
+  const badOutput=await exportInfo(env,bytes);assert.equal(badOutput.projectExport,false);assert.equal(badOutput.source,null);
+  assert.equal(env.binding.confirmSave(badOutput,source()),false);
+  await openCloud(env,bytes);
+  const badSource=await exportInfo(env,valid);assert.equal(badSource.projectExport,false);assert.equal(badSource.source,null);
+  assert.equal(env.binding.confirmSave(badSource,source()),false);env.binding.uninstall();
+ }
+});
+
+test('large future-schema metadata still fails closed for the source and the completed export',async()=>{
+ const id='smartmatch-v35-workspace-A';
+ for(const [sourceSchema,outputSchema]of [[7,6],[6,7],[7,7]]){
+  const env=environment();env.binding.setIdentity(identity);await openCloud(env,await largeMetadataPdf({id,schema:sourceSchema}));
+  const info=await exportInfo(env,await largeMetadataPdf({id,schema:outputSchema}));
+  assert.equal(info.projectExport,false);assert.equal(info.source,null);assert.equal(env.binding.confirmSave(info,source()),false);
+  env.binding.uninstall();
+ }
 });
 
 test('first local project may connect after export; receipt binds the created copy for the next Save',async()=>{

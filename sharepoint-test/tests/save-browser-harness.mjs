@@ -165,7 +165,7 @@ export class GraphFixture {
   }
   get writes(){return this.requests.filter(request=>request.method!=='GET');}
   get bytes(){assert.ok(!this.options.diskRoot,'Large fixture bytes stay on disk; do not concatenate all chunks.');return Buffer.concat(this.chunks.map(chunk=>chunk.bytes));}
-  item() { return this.active?.receipt||{id:this.active?.id||'saved-item',name:this.name,size:this.size,eTag:'"saved-'+this.sessionCount+'"',file:{mimeType:'application/pdf'},parentReference:{driveId:'drive-test',id:this.parent},webUrl:SITE+'/Delade%20dokument/Great/'+encodeURIComponent(this.name)}; }
+  item() { return this.active?.receipt||{id:this.active?.id||'saved-item',name:this.name,size:this.size,eTag:'"saved-'+this.sessionCount+'"',file:{mimeType:'application/pdf'},parentReference:{driveId:'drive-test',id:this.parent},webUrl:SITE+'/Delade%20dokument/Great/'+encodeURIComponent(this.name),...this.options.putMetadata}; }
   addFile({id,name,size,source,parentId='root-folder',eTag='"fixture-v1"'}){
     const item={id,name,size:size??source?.length??0,eTag,file:{mimeType:'application/pdf'},parentReference:{driveId:'drive-test',id:parentId},webUrl:SITE+'/Delade%20dokument/Great/'+encodeURIComponent(name)};
     this.files.set(id,item);if(source)this.contents.set(id,source);return item;
@@ -279,7 +279,7 @@ export class GraphFixture {
         if(end+1<total)return json({nextExpectedRanges:[String(end+1)+'-'],expirationDateTime:'2099-01-01T00:00:00Z'},202);
         const item=this.item();this.active.receipt=item;this.active.completed=true;
         if(this.active.hash){this.active.sha256=this.active.hash.digest('hex');delete this.active.hash;}
-        this.files.set(item.id,item);this.contents.set(item.id,this.active.path||this.bytes);
+        this.files.set(item.id,{...item,...this.options.readbackMetadata});this.contents.set(item.id,this.active.path||this.bytes);
         return json(item,201);
       }
       await route.abort('blockedbyclient');

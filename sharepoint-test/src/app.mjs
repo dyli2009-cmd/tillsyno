@@ -3,7 +3,7 @@ import {SharePointFiles,accepts} from './file-client.mjs';
 import {SharePointWriter,validateCopyName} from './write-client.mjs';
 import {installExportBridge} from './export-bridge.mjs';
 import {createSourceBinding} from './source-binding.mjs';
-import {filePickerMarkup,savePickerMarkup,setButtonLabel,icon} from './ui.mjs';
+import {filePickerMarkup,savePickerMarkup,setButtonLabel,icon,lastModifiedText} from './ui.mjs';
 import {MAX_FILE_BYTES,MAX_FILE_MB,MAX_SELECTION_BYTES,MAX_SELECTION_MB} from './limits.mjs';
 const moduleName=document.body.dataset.sharepointModule||null;
 const sourceBinding=createSourceBinding({window});
@@ -76,9 +76,9 @@ function render(){
   else{const label=document.createElement('label'),check=document.createElement('input');check.type=target.multiple?'checkbox':'radio';check.name='spSelection';check.value=item.id;check.checked=selected.has(item.id);check.disabled=item.size>MAX_FILE_BYTES;
    check.onchange=()=>{if(!target.multiple)selected.clear();check.checked?selected.add(item.id):selected.delete(item.id);controls();};
    const fileIcon=document.createElement('span');fileIcon.innerHTML=icon('file');
-   const info=document.createElement('span'),name=document.createElement('span'),meta=document.createElement('small');
-   info.className='spFileInfo';name.className='spFileName';meta.className='spFileMeta';
-   name.textContent=item.name;meta.textContent=(item.size/1048576).toFixed(1)+' MB'+(check.disabled?' · över '+MAX_FILE_MB+' MB':'');info.append(name,meta);
+   const info=document.createElement('span'),name=document.createElement('span'),meta=document.createElement('small'),modified=document.createElement('small');
+   info.className='spFileInfo';name.className='spFileName';meta.className='spFileMeta';modified.className='spFileMeta spFileModified';
+   name.textContent=item.name;meta.textContent=(item.size/1048576).toFixed(1)+' MB'+(check.disabled?' · över '+MAX_FILE_MB+' MB':'');modified.textContent=lastModifiedText(item);info.append(name,meta,modified);
    label.append(check,fileIcon,info);li.append(label);}
   $('spFiles').append(li);
  }
@@ -157,6 +157,7 @@ function showSaveResult(text,item){
  if(item?.webUrl){
   try{const url=new URL(item.webUrl),site=new URL(config.pilot.siteUrl);if(url.origin===site.origin&&!url.username&&!url.password){const a=document.createElement('a');a.href=url.href;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Visa i SharePoint';saveResult.append(document.createTextNode(' '),a);}}catch{}
  }
+ if(item){const modified=document.createElement('small');modified.id='spSaveModified';modified.textContent=lastModifiedText(item);saveResult.append(document.createElement('br'),modified);}
  const close=document.createElement('button');close.type='button';close.textContent='×';close.setAttribute('aria-label','Stäng sparmeddelandet');close.onclick=()=>{saveResult.hidden=true;};saveResult.append(close);
 }
 function saveError(error){
@@ -383,5 +384,5 @@ document.addEventListener('click',event=>{
  const a=event.target.closest?.('a[href]');if(!a||a.hasAttribute('download')||a.target==='_blank')return;
  const u=new URL(a.href,location.href);if(u.origin!==location.origin)return;
  const parts=u.pathname.split('/');const name=parts.at(-1)||'index.html';if(!routes[name])return;
- parts[parts.length-1]=routes[name];u.pathname=parts.join('/');u.searchParams.set('spv','0.8');a.href=u.href;
+ parts[parts.length-1]=routes[name];u.pathname=parts.join('/');u.searchParams.set('spv','0.9');a.href=u.href;
 },true);

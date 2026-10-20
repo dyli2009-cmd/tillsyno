@@ -1,8 +1,16 @@
-# SharePoint – whole-app test 0.8
+# SharePoint – whole-app test 0.9
 
-Entry: `../sharepoint-app-test.html?spv=0.8`. Avläsning: `../sharepoint-read-test.html?spv=0.8`.
+Entry: `../sharepoint-app-test.html?spv=0.9`. Avläsning: `../sharepoint-read-test.html?spv=0.9`.
 
 ## Problem and resulting behavior
+
+The user still saw the duplicate-name error after 0.8. This time the exact error was reproduced through the real Avläsning 9.80 **Spara → Förbered PDF → Spara PDF** path with a valid project containing 162,416 JSON characters. The compressed PDF was only 7,822 bytes: the failure depended on embedded project data, not transfer size. The adapter's PDF string decoder exhausted the JavaScript call stack, its inspection returned an unrecognized export, and ordinary Save fell through to `saveCopy`. The previous 101 MiB transfer fixture had small project metadata and did not cover this case.
+
+Test 0.9 decodes UTF-16 PDF catalogue strings in bounded blocks, as the existing Avläsning reader already does. Project ID, schema, active-workspace, complete-export and original-eTag checks remain required. The correction covers both a source that already contains large metadata and metadata that grows during work. It does not grant overwrite permission to an unrelated report or unknown project format.
+
+The file list and confirmed save receipt now show **Senast ändrad i SharePoint**, using the server's `lastModifiedBy` and `lastModifiedDateTime`. The receipt uses the final verified item response. Missing names/timestamps have neutral fallbacks; the current login and device clock are not substituted as authorship evidence. This is file-level information, not a live editing indicator or a history of individual door checks. No checkout, co-authoring or automatic merge is introduced.
+
+### Retained behavior from 0.8
 
 The user reported that ordinary project saving still rejected an existing filename. The prior adapter updated a file only while its verified cloud reference remained in memory; an unbound project used the new-copy path. A single-file **Förbered ritning** handoff also discarded the import reference, and a page reload restored the local project without its cloud target. Test 0.8 corrects these paths while retaining Great, arbitrary nested folders, the **200 MiB per file and selection** limit, and the compact dialogs.
 
@@ -77,3 +85,5 @@ The browser suite requires Playwright, Chromium and OpenSSL. Large synthetic dow
 
 - https://learn.microsoft.com/en-us/graph/api/driveitem-createuploadsession?view=graph-rest-1.0
 - https://learn.microsoft.com/en-us/onedrive/developer/rest-api/concepts/addressing-driveitems?view=odsp-graph-online
+- https://learn.microsoft.com/en-us/graph/api/resources/driveitem?view=graph-rest-1.0
+- https://learn.microsoft.com/en-us/graph/api/resources/identity?view=graph-rest-1.0

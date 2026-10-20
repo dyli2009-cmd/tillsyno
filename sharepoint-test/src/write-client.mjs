@@ -3,14 +3,14 @@
  * conflict. Never delete or forward a Graph token to an upload URL.
  * API: https://learn.microsoft.com/graph/api/driveitem-createuploadsession
  */
-import {SharePointFiles, mimeFor} from './file-client.mjs';
+import {SharePointFiles, mimeFor, serverModification} from './file-client.mjs';
 import {graphUrl} from './read-only.mjs';
 import {MAX_FILE_BYTES} from './limits.mjs';
 
 export const MAX_UPLOAD_BYTES = MAX_FILE_BYTES;
 export const UPLOAD_CHUNK_BYTES = 5 * 1024 * 1024; // 16 × 320 KiB.
 const enc = value => encodeURIComponent(value);
-const ITEM_FIELDS = 'id,name,size,file,folder,remoteItem,deleted,parentReference,webUrl,eTag';
+const ITEM_FIELDS = 'id,name,size,file,folder,remoteItem,deleted,parentReference,webUrl,eTag,lastModifiedBy,lastModifiedDateTime';
 // These are existing module exports. Saving their original bytes does not add
 // JSON/CSV/text import support to the separate read-only file picker.
 const TEXT_EXPORTS = Object.freeze({json:'application/json', csv:'text/csv', txt:'text/plain'});
@@ -297,7 +297,7 @@ export class SharePointWriter extends SharePointFiles {
    await this.folderInside(root, target, context);
    await this.access(context);
    completed = true; progress('complete', blob.size);
-   return {id:saved.id, name:saved.name, size:saved.size, driveId:root.driveId, parentId:target.id, eTag:saved.eTag, webUrl:safeWebUrl(saved.webUrl, config)};
+   return {id:saved.id, name:saved.name, size:saved.size, driveId:root.driveId, parentId:target.id, eTag:saved.eTag, webUrl:safeWebUrl(saved.webUrl, config), ...serverModification(saved)};
   } catch (error) {
    if (named && !existing && error.code === 'name_conflict') {
     throw failure('En fil med samma namn skapades i SharePoint medan sparandet pågick. Uppdatera mappen och öppna den senaste filen innan du sparar igen.', 'name_race', error.status);

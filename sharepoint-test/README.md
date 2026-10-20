@@ -1,6 +1,6 @@
 # Tillsyno – SharePoint-pilot för SmartMatch / Avläsning
 
-**Aktuell kod: SharePoint-test 0.8.** Se [APP_TEST.md](APP_TEST.md) för sparande i samma fil och namn, återställd koppling efter Förbered ritning och omladdning, Great och undermappar, 200 MiB filgräns, separat kopieval, kompakt gränssnitt och verklig verifieringsstatus. Texten nedan är den ursprungliga pilotplanen; dess dåvarande publiceringsstatus och gränser är historiska.
+**Aktuell kod: SharePoint-test 0.9.** Se [APP_TEST.md](APP_TEST.md) för rättningen av projekt med stor inbäddad metadata, uppgift om senaste ändrare från SharePoint, sparande i samma fil och namn samt verklig verifieringsstatus. Great, undermappar, 200 MiB-gränsen och den kompakta filväljaren finns kvar. Texten nedan är den ursprungliga pilotplanen; dess dåvarande publiceringsstatus och gränser är historiska.
 
 ## Vald modul – förtydligat av användaren 2026-10-20
 
