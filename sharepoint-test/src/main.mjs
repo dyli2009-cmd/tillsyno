@@ -26,7 +26,7 @@ async function action(fn) {
 }
 function validAccount(a) { if(!a || a.tenantId?.toLowerCase()!==config.tenantId.toLowerCase()) throw new Error('Använd det nya Microsoft-kontot i organisationen Tillsyno.'); return a; }
 async function list() {
-  clearPdf();$('files').replaceChildren(); status('Hämtar PDF-listan från GStest…');
+  clearPdf();$('files').replaceChildren(); status('Hämtar PDF-listan från SharePoint…');
   const result=await client.folder(config.pilot);
   for(const item of result.files) {
     const row=document.createElement('li'), name=document.createElement('span'), button=document.createElement('button');
@@ -41,7 +41,7 @@ async function list() {
     }));
     row.append(name,button);$('files').append(row);
   }
-  status(result.files.length ? result.files.length+' PDF-filer hittades. Välj Hämta PDF.' : 'Inga PDF-filer finns direkt i GStest.');
+  status(result.files.length ? result.files.length+' PDF-filer hittades. Välj Hämta PDF.' : 'Inga PDF-filer finns direkt i den valda testmappen.');
 }
 async function boot() {
   try {

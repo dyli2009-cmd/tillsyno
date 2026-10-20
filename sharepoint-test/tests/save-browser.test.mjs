@@ -13,7 +13,9 @@
 import assert from 'node:assert/strict';
 import {before,after,describe,test} from 'node:test';
 import {createRequire} from 'node:module';
-import {readFile,mkdir} from 'node:fs/promises';
+import {readFile,mkdir,mkdtemp,rm,stat} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import {createHarnessServer,GraphFixture,startExport,connect,waitFor,bounded} from './save-browser-harness.mjs';
 import {projectFixture,projectData} from './save-browser-project-fixture.mjs';
 
@@ -62,7 +64,7 @@ describe('SharePoint save browser integration (synthetic local Microsoft stubs)'
   after(async()=>{await browser?.close();await server?.close();});
 
   async function scenario(name,options,fn){
-    const context=await browser.newContext({acceptDownloads:true,serviceWorkers:'block',viewport:options.viewport||{width:1280,height:900}});
+    const context=await browser.newContext({acceptDownloads:true,serviceWorkers:'block',ignoreHTTPSErrors:!!options.diskRoot,viewport:options.viewport||{width:1280,height:900}});
     const currentServer=options.server||server;
     const graph=new GraphFixture(options);
     await graph.install(context,currentServer.base);
@@ -76,10 +78,10 @@ describe('SharePoint save browser integration (synthetic local Microsoft stubs)'
       assert.deepEqual(pageErrors,[],'The integration must not throw uncaught browser errors.');
     }catch(error){
       await page.screenshot({path:artifactDir+'/'+name+'.png',fullPage:true}).catch(()=>{});
-      const diagnostics=await page.evaluate(()=>({saveStatus:document.querySelector('#spSaveStatus')?.textContent,saveResult:document.querySelector('#spSaveResult')?.textContent,dialog:document.querySelector('#spSavePicker')?.outerHTML,state:window.__saveBrowser})).catch(()=>null);
-      console.error(name,JSON.stringify(diagnostics));
+      const diagnostics=await page.evaluate(()=>({readStatus:document.querySelector('#spStatus')?.textContent,saveStatus:document.querySelector('#spSaveStatus')?.textContent,saveResult:document.querySelector('#spSaveResult')?.textContent,exportStatus:document.querySelector('#smartExportStatus')?.textContent,dialogs:[...document.querySelectorAll('dialog[open]')].map(dialog=>dialog.id),exports:window.__saveBrowser?.exports.map(({returnedBytes,...entry})=>({...entry,returnedSize:returnedBytes?.length})),errors:window.__saveBrowser?.errors})).catch(()=>null);
+      console.error(name,error.stack,JSON.stringify(diagnostics));
       throw error;
-    }finally{graph.release();await context.close();}
+    }finally{graph.release();await context.close().catch(()=>{});await graph.close();}
   }
 
   const state=page=>page.evaluate(()=>window.__saveBrowser.exports.at(-1));
@@ -90,31 +92,32 @@ describe('SharePoint save browser integration (synthetic local Microsoft stubs)'
     await page.locator('#smReadCodeGate button').click();
     await waitFor(page,()=>!document.documentElement.hasAttribute('data-read-locked'));
   }
-  async function realReady(page){
-    await waitFor(page,()=>window.SmartMatchAppBridge.getPositions().length===1&&document.querySelector('#pwScanOverlay')?.hidden!==false);
+  async function realReady(page,timeout=12000){
+    await waitFor(page,()=>window.SmartMatchAppBridge.getPositions().length===1&&document.querySelector('#pwScanOverlay')?.hidden!==false,undefined,timeout);
   }
-  async function importCloudProject(page){
+  async function importCloudProject(page,{folders=[],timeout=12000,screenshot=true}={}){
     await page.locator('#pwOpenProjectEmpty').click();
     await page.locator('#spFilePicker').waitFor({state:'visible'});
     await page.locator('#spConnect').click();
+    for(const name of folders)await page.locator('#spFiles button').filter({hasText:name}).click();
     await page.locator('#spFiles input[value="source-item"]').check();
-    await page.screenshot({path:artifactDir+'/open-cloud-project.png',fullPage:true});
+    if(screenshot)await page.screenshot({path:artifactDir+'/open-cloud-project.png',fullPage:true});
     await page.locator('#spImport').click();
-    await realReady(page);
+    await realReady(page,timeout);
   }
-  async function openRealExport(page){
+  async function openRealExport(page,{timeout=12000}={}){
     await page.locator('#smartPdfInspect').click();
     await waitFor(page,()=>!document.querySelector('#smartExportBuild')?.disabled);
     // The current reader intentionally separates preparing the verified PDF
     // from the user's explicit save gesture.
     await page.locator('#smartExportBuild').click();
-    await waitFor(page,()=>!document.querySelector('#smartExportBuild')?.disabled&&document.querySelector('#smartExportBuild')?.textContent==='Spara PDF');
+    await waitFor(page,()=>!document.querySelector('#smartExportBuild')?.disabled&&document.querySelector('#smartExportBuild')?.textContent==='Spara PDF',undefined,timeout);
     await page.locator('#smartExportBuild').click();
-    await page.locator('#spSavePicker').waitFor({state:'visible'});
+    await page.locator('#spSavePicker').waitFor({state:'visible',timeout});
   }
-  async function waitRealSaved(page){
-    await waitFor(page,()=>{const result=document.querySelector('#spSaveResult');return result&&!result.hidden&&/^(Sparad i (SharePoint|samma fil)|Kopia sparad):/.test(result.textContent||'');});
-    await waitFor(page,()=>/PDF sparad och kontrollerad/.test(document.querySelector('#smartExportStatus')?.textContent||''));
+  async function waitRealSaved(page,{timeout=12000}={}){
+    await waitFor(page,()=>{const result=document.querySelector('#spSaveResult');return result&&!result.hidden&&/^(Sparad i (SharePoint|samma fil)|Kopia sparad):/.test(result.textContent||'');},undefined,timeout);
+    await waitFor(page,()=>/PDF sparad och kontrollerad/.test(document.querySelector('#smartExportStatus')?.textContent||''),undefined,timeout);
   }
   async function assertCompact(page,width){
     const box=await page.locator('#spSavePicker').evaluate(dialog=>{const rect=dialog.getBoundingClientRect();return {left:rect.left,top:rect.top,width:rect.width,height:rect.height,viewportWidth:innerWidth,viewportHeight:innerHeight,overflow:dialog.scrollWidth-dialog.clientWidth};});
@@ -132,7 +135,7 @@ describe('SharePoint save browser integration (synthetic local Microsoft stubs)'
     await scenario('verified-copy',{holdUpload:true,holdReadback:true},async({page,graph,downloads})=>{
       await startExport(page);
       await connect(page);
-      await page.locator('#spSaveFolders button').filter({hasText:'Protokoll'}).click();
+      await page.locator('#spSaveFolders button').filter({hasText:'Projekt'}).click();
       await page.locator('#spSaveName').fill('Reviewed copy.pdf');
       await page.locator('#spSaveSubmit').click();
       await bounded(graph.uploadReceived.promise,'the first upload chunk');
@@ -272,9 +275,9 @@ describe('SharePoint save browser integration (synthetic local Microsoft stubs)'
       assert.equal(await page.evaluate(()=>window.__saveBrowser.nativePickerCalls.length),0);
     });
     await scenario('oversized-save',{},async({page,graph})=>{
-      await startExport(page,'picker','Oversized.pdf',{size:25*1024*1024+1});
+      await startExport(page,'picker','Oversized.pdf',{size:200*1024*1024+1});
       await connect(page);
-      await waitFor(page,()=>/25|stor/i.test(document.querySelector('#spSaveStatus')?.textContent||''));
+      await waitFor(page,()=>/200|stor/i.test(document.querySelector('#spSaveStatus')?.textContent||''));
       assert.equal(await page.locator('#spSaveSubmit').isEnabled(),false);
       assert.equal(graph.writes.length,0);
       assert.notEqual((await state(page)).state,'saved');
@@ -316,6 +319,70 @@ describe('SharePoint save browser integration (synthetic local Microsoft stubs)'
       await page.screenshot({path:artifactDir+'/phone-save.png',fullPage:true});
       await page.locator('#spSaveSubmit').click();
       await waitFor(page,()=>window.__saveBrowser.exports.at(-1)?.state==='saved');
+    });
+  });
+
+  test('refresh keeps the current nested folder and discovers added files and renamed folders by ID',{timeout:45000},async()=>{
+    await scenario('great-nested-refresh',{},async({page,graph})=>{
+      await page.locator('#localSource').evaluate(input=>input.click());
+      await page.locator('#spConnect').click();
+      await page.locator('#spFiles button').filter({hasText:'Projekt'}).waitFor({state:'visible'});
+      assert.deepEqual(await page.locator('#spFiles button .spButtonLabel').allTextContents(),['Ordrar','Projekt','Service']);
+      await page.locator('#spFiles button').filter({hasText:'Projekt'}).click();
+      await page.locator('#spFiles button').filter({hasText:'Etapp 1 – Västra huset'}).click();
+      await waitFor(page,()=>document.querySelector('#spStatus')?.textContent.includes('Inga passande'));
+      graph.addFile({id:'added-file',name:'Ny ritning.pdf',source:fixture,parentId:'nested-folder'});
+      await page.locator('#spReload').click();
+      await page.locator('#spFiles input[value="added-file"]').check();
+      assert.deepEqual(await page.locator('#spCrumbs button').allTextContents(),['Great','Projekt','Etapp 1 – Västra huset']);
+      assert.match(graph.requests.filter(request=>request.path.endsWith('/children')).at(-1).path,/items\/nested-folder\/children$/);
+
+      graph.folder('root-folder').name='Great – team';
+      graph.folder('child-folder').name='Projekt 2026';
+      graph.folder('nested-folder').name='Etapp 1 klar';
+      graph.files.get('added-file').name='Omdöpt ritning.pdf';
+      await page.locator('#spReload').click();
+      await waitFor(page,()=>document.querySelector('#spFiles')?.textContent.includes('Omdöpt ritning.pdf'));
+      assert.deepEqual(await page.locator('#spCrumbs button').allTextContents(),['Great – team','Projekt 2026','Etapp 1 klar']);
+      assert.equal(await page.locator('#spFiles input[value="added-file"]').isChecked(),false,'Refreshing clears a stale selection while retaining its folder.');
+      assert.equal(graph.rootLookups,1,'A renamed Great root is verified by its cached ID, not resolved again by its old name.');
+      await page.screenshot({path:artifactDir+'/great-nested-refresh.png',fullPage:true});
+      await page.locator('#spFilePicker .spClose').click();
+
+      await startExport(page,'picker','Nested project.pdf');
+      await page.locator('#spSaveFolders button').filter({hasText:'Projekt 2026'}).click();
+      await page.locator('#spSaveFolders button').filter({hasText:'Etapp 1 klar'}).click();
+      await waitFor(page,()=>!document.querySelector('#spSaveReload').disabled&&document.querySelector('#spSaveCrumbs button:last-child')?.textContent==='Etapp 1 klar');
+      graph.folders.set('new-subfolder',{id:'new-subfolder',name:'Valfri ny mapp',folder:{},parentReference:{driveId:'drive-test',id:'nested-folder'}});
+      graph.folder('nested-folder').name='Etapp 1 godkänd';
+      await page.locator('#spSaveReload').click();
+      await page.locator('#spSaveFolders button').filter({hasText:'Valfri ny mapp'}).waitFor({state:'visible'});
+      await waitFor(page,()=>!document.querySelector('#spSaveReload').disabled&&document.querySelector('#spSaveCrumbs button:last-child')?.textContent==='Etapp 1 godkänd');
+      assert.deepEqual(await page.locator('#spSaveCrumbs button').allTextContents(),['Great – team','Projekt 2026','Etapp 1 godkänd']);
+      await page.screenshot({path:artifactDir+'/great-nested-save.png',fullPage:true});
+      await page.locator('#spSaveSubmit').click();
+      await waitFor(page,()=>window.__saveBrowser.exports.at(-1)?.state==='saved');
+      assert.equal(graph.parent,'nested-folder');assert.equal(graph.name,'Nested project.pdf');
+      assert.equal(graph.rootLookups,1);assert.deepEqual(graph.bytes,fixture);
+    });
+  });
+
+  test('the browser enforces 200 MiB per file and combined selection before downloading',{timeout:30000},async()=>{
+    await scenario('selection-size-limit',{},async({page,graph})=>{
+      graph.addFile({id:'over-file-limit',name:'Over 200 MiB.pdf',size:200*1024*1024+1});
+      graph.addFile({id:'first-large',name:'First 120 MiB.pdf',size:120*1024*1024});
+      graph.addFile({id:'second-large',name:'Second 90 MiB.pdf',size:90*1024*1024});
+      await page.locator('#localSource').evaluate(input=>{input.multiple=true;input.click();});
+      await page.locator('#spConnect').click();
+      assert.equal(await page.locator('#spFiles input[value="over-file-limit"]').isDisabled(),true);
+      await page.locator('#spFiles input[value="first-large"]').check();
+      await page.locator('#spFiles input[value="second-large"]').check();
+      await page.locator('#spImport').click();
+      await waitFor(page,()=>document.querySelector('#spStatus')?.dataset.state==='error');
+      assert.match(await page.locator('#spStatus').textContent(),/200 MB/);
+      assert.equal(graph.requests.filter(request=>request.path.includes('/_api/test-download/')).length,0);
+      assert.equal(await page.locator('#spFilePicker').isVisible(),true);
+      assert.equal(graph.writes.length,0);
     });
   });
 
@@ -437,5 +504,64 @@ describe('SharePoint save browser integration (synthetic local Microsoft stubs)'
         assert.equal(downloads.length,0);
       });
     }finally{await realServer.close();}
+  });
+
+  test('a project over 100 MiB opens, saves twice under the same name and ID, then reopens its uploaded state',{timeout:240000},async()=>{
+    const directory=await mkdtemp(join(tmpdir(),'tillsyno-sharepoint-large-'));
+    let realServer;
+    try{
+      const input=await projectFixture({paddingBytes:101*1024*1024,outputPath:join(directory,'synthetic-large-project.pdf')});
+      assert.ok(input.size>100*1024*1024&&input.size<200*1024*1024);
+      realServer=await createHarnessServer(input.path,{realPage:true});
+      const name='Projekt Västra huset.pdf',folderNames=['Projekt','Etapp 1 – Västra huset'];
+      await scenario('large-project-roundtrip',{server:realServer,sourcePath:input.path,sourceSize:input.size,sourceName:name,sourceParentId:'nested-folder',diskRoot:directory},async({page,graph,downloads,context})=>{
+        await unlockReal(page);
+        await page.evaluate(()=>{
+          window.__spReadSamples=[];
+          new MutationObserver(()=>{
+            const progress=document.querySelector('#spReadProgress');if(!progress)return;
+            const sample={value:progress.value,hidden:progress.hidden,status:document.querySelector('#spStatus')?.textContent};
+            const last=window.__spReadSamples.at(-1);
+            if(!last||last.value!==sample.value||last.hidden!==sample.hidden)window.__spReadSamples.push(sample);
+          }).observe(document.querySelector('#spFilePicker'),{subtree:true,attributes:true,attributeFilter:['value','hidden'],childList:true});
+        });
+        await importCloudProject(page,{folders:folderNames,timeout:120000,screenshot:false});
+        const progress=await page.evaluate(()=>window.__spReadSamples);
+        assert.ok(progress.some(sample=>sample.value>0&&!sample.hidden&&/\d+ %/.test(sample.status||'')),'A real large-file download reports its percentage in the visible read UI.');
+        assert.ok(progress.some(sample=>sample.value===100),'The download reaches 100 percent before project parsing.');
+        await page.evaluate(()=>window.SmartMatchAppBridge.openPosition(window.SmartMatchAppBridge.getPositions()[0]));
+        await page.locator('#pwChecklist .pwCheckRow input[type="checkbox"]').first().check();
+        await page.locator('#pwProtocolClose').click();
+        for(let index=0;index<2;index++){
+          await openRealExport(page,{timeout:120000});
+          assert.equal(await page.locator('#spSaveUpdate').getAttribute('aria-pressed'),'true');
+          assert.equal(await page.locator('#spSaveExistingName').textContent(),name);
+          await page.locator('#spSaveSubmit').click();await waitRealSaved(page,{timeout:120000});
+          const session=graph.sessions[index];
+          assert.equal(session.mode,'update');assert.equal(session.id,'source-item');
+          assert.equal(session.receipt.name,name,'Ordinary Save retains the original filename without adding a revision suffix.');
+          assert.equal(session.receipt.parentReference.id,'nested-folder');
+          assert.equal(session.ifMatch,index?graph.sessions[index-1].receipt.eTag:'"source-v1"');
+          assert.ok(session.receivedBytes>100*1024*1024,'The actual uploaded project also crosses the old 100 MiB boundary.');
+          assert.equal((await stat(session.path)).size,session.receivedBytes);
+          assert.ok(session.chunks.length>=21,'The real writer sends multiple bounded upload chunks.');
+          await page.locator('#smartExportClose').click();
+        }
+        assert.equal(downloads.length,0);assert.equal(graph.copyCount,0);
+        console.log('Large fixture bytes:',input.size,'uploaded:',graph.sessions.map(session=>session.receivedBytes).join(','),'chunks:',graph.sessions.map(session=>session.chunks.length).join(','));
+        // Release the first renderer and its PDF caches before opening the exact
+        // stored bytes in an independent browser context.
+        await context.close();
+        const reopenedContext=await browser.newContext({viewport:{width:1280,height:900},serviceWorkers:'block',ignoreHTTPSErrors:true});
+        try{
+          await graph.install(reopenedContext,realServer.base);
+          const reopenedPage=await reopenedContext.newPage();await reopenedPage.goto(realServer.base+'/sharepoint-read-test.html');
+          await unlockReal(reopenedPage);await importCloudProject(reopenedPage,{folders:folderNames,timeout:120000,screenshot:false});
+          const restored=await reopenedPage.evaluate(()=>window.SmartMatchAppBridge.getPositions()[0]);
+          assert.equal(restored.id,input.positionId);assert.equal(restored.checks[input.itemKey],true);
+          await reopenedPage.screenshot({path:artifactDir+'/large-project-reopened.png',fullPage:true});
+        }finally{await reopenedContext.close();}
+      });
+    }finally{await realServer?.close();await rm(directory,{recursive:true,force:true});}
   });
 });

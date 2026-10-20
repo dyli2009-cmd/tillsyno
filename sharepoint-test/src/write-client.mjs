@@ -1,12 +1,13 @@
-/* Whole-app test only: save a new copy or update the exact opened file in GStest.
+/* Whole-app test only: save a copy or update the exact opened file below the verified root.
  * Never fall back from an item-ID update to a name-path upload or retry a
  * conflict. Never delete or forward a Graph token to an upload URL.
  * API: https://learn.microsoft.com/graph/api/driveitem-createuploadsession
  */
 import {SharePointFiles, mimeFor} from './file-client.mjs';
 import {graphUrl} from './read-only.mjs';
+import {MAX_FILE_BYTES} from './limits.mjs';
 
-export const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
+export const MAX_UPLOAD_BYTES = MAX_FILE_BYTES;
 export const UPLOAD_CHUNK_BYTES = 5 * 1024 * 1024; // 16 × 320 KiB.
 const enc = value => encodeURIComponent(value);
 const ITEM_FIELDS = 'id,name,size,file,folder,remoteItem,deleted,parentReference,webUrl,eTag';
@@ -81,13 +82,6 @@ function checkRange(data, expected, total) {
   throw failure('Microsoft bekräftade en annan fildel. Sparandet stoppades.', 'invalid_range');
  }
 }
-function checkFolder(item, driveId, id) {
- if (!object(item) || item.id !== id || !object(item.folder) || item.file || item.remoteItem || item.deleted ||
-     typeof item.name !== 'string' || !item.name || item.parentReference?.driveId !== driveId) {
-  throw failure('Målmappen kunde inte verifieras i det tillåtna SharePoint-biblioteket.', 'invalid_destination');
- }
- return item;
-}
 function checkFile(item, expected, requireParent = true) {
  const parent = item?.parentReference;
  if (!object(item) || !identifier(item.id) || !object(item.file) || item.folder || item.remoteItem || item.deleted ||
@@ -113,8 +107,8 @@ function safeWebUrl(value, config) {
  * an in-flight save. getWriteToken is separate from the read-only token callback.
  */
 export class SharePointWriter extends SharePointFiles {
- constructor({getToken, getWriteToken, guard, fetchImpl = globalThis.fetch.bind(globalThis), maxBytes = MAX_UPLOAD_BYTES}) {
-  super({getToken, fetchImpl, maxBytes});
+ constructor({getToken, getWriteToken, guard, fetchImpl = globalThis.fetch.bind(globalThis), maxBytes = MAX_UPLOAD_BYTES, rootStore = null, getContextKey = null}) {
+  super({getToken, fetchImpl, maxBytes, rootStore, getContextKey});
   if (typeof getWriteToken !== 'function' || typeof guard !== 'function') throw new TypeError('Skrivbehörighet och åtkomstkontroll saknas.');
   if (!Number.isSafeInteger(maxBytes) || maxBytes < 1 || maxBytes > MAX_UPLOAD_BYTES) throw new TypeError('Ogiltig filstorleksgräns.');
   this.getWriteToken = getWriteToken;
@@ -152,7 +146,7 @@ export class SharePointWriter extends SharePointFiles {
    if (existing && (response.status === 409 || response.status === 412)) throw versionConflict(response.status);
    const messages = {
     401:'Microsoft-inloggningen behöver förnyas innan filen kan sparas.',
-    403:'Skrivåtkomst nekad. Kontrollera behörigheten till GStest.',
+    403:'Skrivåtkomst nekad. Kontrollera behörigheten till den valda SharePoint-mappen.',
     404:'Målmappen eller uppladdningen finns inte längre. Öppna sparandet på nytt.',
     409:'En fil med det namnet finns redan. Välj ett nytt namn; den befintliga filen har inte skrivits över.',
     412:'Filnamnet är inte längre ledigt. Välj ett nytt namn; ingen befintlig fil skrivs över.',
@@ -167,18 +161,11 @@ export class SharePointWriter extends SharePointFiles {
  }
  async folderInside(root, target, context) {
   if (!identifier(target?.id) || target.driveId !== root.driveId) {
-   throw failure('Välj GStest eller en undermapp i samma SharePoint-bibliotek.', 'invalid_destination');
+   throw failure('Välj den kopplade SharePoint-mappen eller en undermapp i samma bibliotek.', 'invalid_destination');
   }
-  const visited = new Set(); let id = target.id;
-  for (let depth = 0; depth < 64; depth++) {
-   if (!identifier(id) || visited.has(id)) break;
-   visited.add(id);
-   const item = checkFolder(await this.json('/v1.0/drives/' + enc(root.driveId) + '/items/' + enc(id) + '?$select=' + ITEM_FIELDS), root.driveId, id);
-   if (context.signal?.aborted) throw failure('Sparandet avbröts.', 'cancelled');
-   if (id === root.id) return;
-   id = item.parentReference.id;
-  }
-  throw failure('Målmappen ligger inte under den konfigurerade GStest-mappen.', 'invalid_destination');
+  if (context.signal?.aborted) throw failure('Sparandet avbröts.', 'cancelled');
+  await this.folderTrail(root, target.id);
+  if (context.signal?.aborted) throw failure('Sparandet avbröts.', 'cancelled');
  }
  async currentSource(source, context) {
   let item;
@@ -213,8 +200,8 @@ export class SharePointWriter extends SharePointFiles {
   }
   validateCopyName(name);
   if (!(blob instanceof Blob) || !Number.isSafeInteger(blob.size) || blob.size < 1) throw failure('Ingen exporterad fil finns att spara.', 'invalid_file');
-  if (blob.size > this.maxBytes) throw failure('SharePoint-testet tillåter högst 25 MiB per fil. Spara en mindre fil.', 'file_too_large');
-  if (!object(config)) throw failure('Inställningarna för GStest saknas.', 'invalid_destination');
+  if (blob.size > this.maxBytes) throw failure('SharePoint-testet tillåter högst ' + (this.maxBytes / 1024 / 1024) + ' MiB per fil. Spara en mindre fil.', 'file_too_large');
+  if (!object(config)) throw failure('Inställningarna för SharePoint-mappen saknas.', 'invalid_destination');
   config = {siteUrl:config.siteUrl, libraryServerRelativePath:config.libraryServerRelativePath, folderPath:config.folderPath};
   destination = destination ? {driveId:destination.driveId, id:destination.id} : null;
   this.saving = true;
@@ -229,7 +216,7 @@ export class SharePointWriter extends SharePointFiles {
    // Resolve the configured folder each time. A UI-provided drive/folder ID is
    // not proof that the target belongs to this test boundary.
    const root = await this.root(config);
-   if (!identifier(root.id) || !identifier(root.driveId)) throw failure('GStest kunde inte verifieras.', 'invalid_destination');
+   if (!identifier(root.id) || !identifier(root.driveId)) throw failure('SharePoint-mappen kunde inte verifieras.', 'invalid_destination');
    if (existing && source.driveId !== root.driveId) throw failure('Den öppnade filen tillhör inte det konfigurerade SharePoint-biblioteket.', 'invalid_destination');
    const target = existing ? {driveId:source.driveId, id:source.parentId} :
     destination ? {driveId:destination.driveId, id:destination.id} : {driveId:root.driveId, id:root.id};

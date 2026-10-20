@@ -22,17 +22,17 @@
     "writeScopes": [
       "https://graph.microsoft.com/Files.ReadWrite.All"
     ],
-    "maxBytes": 26214400,
+    "maxBytes": 209715200,
     "liveUploadVerified": false
   },
   "pilot": {
-    "targetModule": "smartmatch-read-test-v9-78.html",
+    "targetModule": "smartmatch-read-test-v9-79.html",
     "enabled": false,
     "readOnly": true,
     "siteUrl": "https://tillsyno.sharepoint.com/sites/Tillsyno",
     "libraryServerRelativePath": "/sites/Tillsyno/Delade dokument",
-    "folderPath": "GStest",
-    "folderServerRelativePath": "/sites/Tillsyno/Delade dokument/GStest"
+    "folderPath": "Great",
+    "folderServerRelativePath": "/sites/Tillsyno/Delade dokument/Great"
   },
   "setupEvidence": {
     "source": "user-provided; not verified against Microsoft APIs",
@@ -41,7 +41,7 @@
     "tenantIdNote": "Third ID supplied after asking for Katalog-ID; second ID was explicitly identified as Objekt-ID and is not used.",
     "adminConsent": "user-reported-granted",
     "liveSignInTest": "not-performed",
-    "folderLocationSource": "Decoded from the SharePoint folder browser URL supplied by the user on 2026-10-20. The id and newTargetListUrl query parameters identify the folder and document-library paths.",
+    "folderLocationSource": "The user renamed GStest to Great in SharePoint and requested Great with arbitrary project, service and order subfolders on 2026-10-20. Live Graph verification is still pending.",
     "folderAccessVerified": false
   }
 }

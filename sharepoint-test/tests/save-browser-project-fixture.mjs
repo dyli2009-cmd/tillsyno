@@ -2,15 +2,23 @@
 // It deliberately avoids fresh OCR: this regression concerns saving completed
 // work and retaining the application's embedded project state.
 import {createRequire} from 'node:module';
+import {writeFile} from 'node:fs/promises';
 const require=createRequire(import.meta.url);
-export const {PDFDocument,PDFName,PDFHexString,StandardFonts}=require('../../vendor/pdf-lib.min.js');
+export const {PDFDocument,PDFName,PDFHexString,PDFRawStream,StandardFonts}=require('../../vendor/pdf-lib.min.js');
 
-export async function projectFixture(){
+export async function projectFixture({paddingBytes=0,outputPath}={}){
   const document=await PDFDocument.create(),font=await document.embedFont(StandardFonts.Helvetica);
   const plan=document.addPage([595,842]),card=document.addPage([595,842]);
   plan.drawText('Synthetic drawing GS23',{x:60,y:650,size:18,font});
   card.drawText('Beslagskod: GS23',{x:60,y:750,size:20,font});
   card.drawText('Synthetic lock EL580',{x:60,y:670,size:14,font});
+  if(paddingBytes){
+    // An application-specific page stream is valid PDF data and survives the
+    // real exporter. It adds transfer size without private data, a huge decoded
+    // image or hundreds of pages. Rendering speed is not the subject of this test.
+    const stream=PDFRawStream.of(document.context.obj({Type:PDFName.of('SyntheticTestData')}),new Uint8Array(paddingBytes));
+    plan.node.set(PDFName.of('SyntheticLargeFixture'),document.context.register(stream));
+  }
   const positionId='sharepoint-fixture:GS23',itemKey='synthetic-lock',id='synthetic-card:GS23';
   const rect={x:.08,y:.08,w:.84,h:.06},table={x:.06,y:.16,w:.84,h:.26};
   const readTestData={
@@ -21,7 +29,9 @@ export async function projectFixture(){
   };
   const payload={schema:6,projectId:'project:sharepoint-browser',projectRevision:1,instances:{},automationItems:[],readTestData};
   for(const key of ['TillsynoSmartMatchV36Data','TillsynoSmartMatchV30Data'])document.catalog.set(PDFName.of(key),PDFHexString.fromText(JSON.stringify(payload)));
-  return {bytes:Buffer.from(await document.save()),positionId,itemKey};
+  const saved=await document.save(),bytes=Buffer.from(saved.buffer,saved.byteOffset,saved.byteLength);
+  if(outputPath){await writeFile(outputPath,bytes);return {path:outputPath,size:bytes.length,positionId,itemKey};}
+  return {bytes,positionId,itemKey};
 }
 
 export async function projectData(bytes){

@@ -4,11 +4,15 @@ import {SharePointWriter,validateCopyName} from './write-client.mjs';
 import {installExportBridge} from './export-bridge.mjs';
 import {createSourceBinding} from './source-binding.mjs';
 import {filePickerMarkup,savePickerMarkup,setButtonLabel,icon} from './ui.mjs';
+import {MAX_FILE_BYTES,MAX_FILE_MB,MAX_SELECTION_BYTES,MAX_SELECTION_MB} from './limits.mjs';
 const moduleName=document.body.dataset.sharepointModule||null;
 const sourceBinding=createSourceBinding({window});
 const READ_SCOPES=['https://graph.microsoft.com/Sites.Read.All'];
 const WRITE_SCOPES=['https://graph.microsoft.com/Files.ReadWrite.All'];
 let initPromise,msal,config,account,client,root,stack=[],items=[],selected=new Set(),target=null,bypass=false,busy=false,op=0;
+let currentUserId='',readController=null;
+const rootStore=(()=>{try{return window.localStorage;}catch{return null;}})();
+const getContextKey=()=>account&&currentUserId?accountKey(account)+'/'+currentUserId:'';
 let pendingSave=null,saveBusy=false,saveRoot=null,saveStack=[],saveFolderReady=false,writeAccountKey='';
 const dialog=document.createElement('dialog');dialog.id='spFilePicker';
 dialog.setAttribute('aria-labelledby','spFileTitle');
@@ -22,6 +26,7 @@ async function gate(){
  const auth=window.TillsynoAuth;if(!auth)throw Error('Tillsyno-inloggningen saknas.');
  const access=await auth.verify({allowOffline:false});
  if(access.role!=='admin'||!auth.permitted(access,moduleName))throw Error('Endast behörig administratör får använda detta test.');
+ currentUserId=access.userId;
  if(account)sourceBinding.setIdentity({accountKey:accountKey(account),userId:access.userId});
  return access.userId;
 }
@@ -40,12 +45,13 @@ async function initialize(){
   if(new URL(config.msal.auth.redirectUri).origin!==location.origin)throw Error('Öppna testet på den publicerade adressen.');
   msal=new PublicClientApplication({auth:{...config.msal.auth},cache:{cacheLocation:'sessionStorage'},system:{loggerOptions:{piiLoggingEnabled:false,loggerCallback:()=>{}}}});await msal.initialize();
   account=msal.getAllAccounts().find(a=>a.tenantId?.toLowerCase()===config.tenantId.toLowerCase())||null;
-  client=new SharePointFiles({getToken:()=>tokenFor(READ_SCOPES)});
+  client=new SharePointFiles({getToken:()=>tokenFor(READ_SCOPES),rootStore,getContextKey});
  })().catch(e=>{initPromise=null;throw e;});
  return initPromise;
 }
 function controls(){
  for(const button of dialog.querySelectorAll('button'))button.disabled=busy;
+ if(readController)dialog.querySelector('.spClose').disabled=false;
  $('spConnect').disabled=busy||!msal;
  setButtonLabel($('spConnect'),account?'Byt konto':'Anslut Microsoft','cloud');
  $('spImport').disabled=busy||!selected.size;
@@ -65,23 +71,31 @@ function render(){
   if(!item.folder&&(!item.file||!accepts(item.name,target.accept)))continue;count++;
   const li=document.createElement('li');
   if(item.folder){const b=document.createElement('button');b.type='button';setButtonLabel(b,item.name,'folder');b.onclick=()=>void run(async current=>{stack.push({id:item.id,name:item.name});await list(current);});li.append(b);}
-  else{const label=document.createElement('label'),check=document.createElement('input');check.type=target.multiple?'checkbox':'radio';check.name='spSelection';check.value=item.id;check.checked=selected.has(item.id);check.disabled=item.size>25*1024*1024;
+  else{const label=document.createElement('label'),check=document.createElement('input');check.type=target.multiple?'checkbox':'radio';check.name='spSelection';check.value=item.id;check.checked=selected.has(item.id);check.disabled=item.size>MAX_FILE_BYTES;
    check.onchange=()=>{if(!target.multiple)selected.clear();check.checked?selected.add(item.id):selected.delete(item.id);controls();};
    const fileIcon=document.createElement('span');fileIcon.innerHTML=icon('file');
    const info=document.createElement('span'),name=document.createElement('span'),meta=document.createElement('small');
    info.className='spFileInfo';name.className='spFileName';meta.className='spFileMeta';
-   name.textContent=item.name;meta.textContent=(item.size/1048576).toFixed(1)+' MB'+(check.disabled?' · över 25 MB':'');info.append(name,meta);
+   name.textContent=item.name;meta.textContent=(item.size/1048576).toFixed(1)+' MB'+(check.disabled?' · över '+MAX_FILE_MB+' MB':'');info.append(name,meta);
    label.append(check,fileIcon,info);li.append(label);}
   $('spFiles').append(li);
  }
  status(count?'Välj fil'+(target.multiple?'er':'')+' och tryck Öppna i appen.':'Inga passande filer i denna mapp.');controls();
 }
 async function list(current){
- selected.clear();status('Hämtar filer från SharePoint…');
- const result=await client.children(root.driveId,stack.at(-1).id);if(current!==op)return;
+ selected.clear();items=[];$('spFiles').replaceChildren();status('Hämtar filer från SharePoint…');
+ const trail=await client.folderTrail(root,stack.at(-1).id);if(current!==op)return;
+ const result=await client.children(root.driveId,trail.at(-1).id);if(current!==op)return;
+ stack=trail;
  items=result.sort((a,b)=>Number(!!b.folder)-Number(!!a.folder)||a.name.localeCompare(b.name,'sv'));render();
 }
 async function start(current){root=await client.root(config.pilot);if(current!==op)return;stack=[{id:root.id,name:root.name}];await list(current);}
+async function refresh(current){
+ const folderId=stack.at(-1)?.id;
+ selected.clear();items=[];$('spFiles').replaceChildren();
+ const nextRoot=await client.root(config.pilot);if(current!==op)return;
+ root=nextRoot;stack=[{id:folderId||root.id,name:root.name}];await list(current);
+}
 function loginFromClick(){
  let promise;try{promise=msal.loginPopup({scopes:READ_SCOPES,prompt:'select_account'});}catch(error){promise=Promise.reject(error);}
  // A failed access recheck may stop the operation before it awaits the popup.
@@ -91,33 +105,39 @@ $('spConnect').onclick=()=>{
  if(busy||!msal)return;const login=loginFromClick();
  void run(async (current,user)=>{const response=await login;if(current!==op)return;account=validAccount(response.account);writeAccountKey='';sourceBinding.setIdentity({accountKey:accountKey(account),userId:user});msal.setActiveAccount(account);await start(current);});
 };
-$('spReload').onclick=()=>void run(start);
+$('spReload').onclick=()=>void run(refresh);
 $('spDisconnect').onclick=()=>void run(async()=>{await msal.clearCache({account});account=null;writeAccountKey='';sourceBinding.setIdentity({accountKey:null,userId:null});root=null;items=[];stack=[];selected.clear();$('spFiles').replaceChildren();$('spCrumbs').replaceChildren();status('Microsoft-testkontot är frånkopplat i denna flik.');});
 $('spLocal').onclick=()=>{const input=target;dialog.close();bypass=true;try{input.click();}finally{bypass=false;}};
 $('spImport').onclick=()=>void run(async(current,user)=>{
  const input=target,chosen=items.filter(i=>selected.has(i.id));
  if(!chosen.length||(!input.multiple&&chosen.length!==1))throw Error('Välj rätt antal filer.');
- if(chosen.reduce((sum,f)=>sum+(f.size||0),0)>100*1024*1024)throw Error('Välj högst 100 MB åt gången.');
+ if(chosen.reduce((sum,f)=>sum+(f.size||0),0)>MAX_SELECTION_BYTES)throw Error('Välj högst '+MAX_SELECTION_MB+' MB åt gången.');
  const files=[],sources=[],expectedAccount=accountKey(account),folderLabel=stack.map(folder=>folder.name).join(' / ');let bytes=0;
- for(let i=0;i<chosen.length;i++){
+ const controller=new AbortController();readController=controller;controls();$('spReadProgress').hidden=false;
+ try{for(let i=0;i<chosen.length;i++){
+  $('spReadProgress').value=0;
   status('Hämtar '+(i+1)+'/'+chosen.length+': '+chosen[i].name);
-  const opened=await client.fileWithSource(root.driveId,chosen[i].id,input.accept);if(current!==op)return;
-  bytes+=opened.file.size;if(bytes>100*1024*1024)throw Error('Filerna överstiger 100 MB.');
+  const opened=await client.fileWithSource(root.driveId,chosen[i].id,input.accept,{signal:controller.signal,onProgress:progress=>{
+   if(current!==op||controller.signal.aborted)return;
+   const percent=progress.total?Math.min(100,Math.floor(progress.loaded/progress.total*100)):0;
+   $('spReadProgress').value=percent;status('Hämtar '+(i+1)+'/'+chosen.length+' · '+percent+' % · '+chosen[i].name);
+  }});if(current!==op)return;
+  bytes+=opened.file.size;if(bytes>MAX_SELECTION_BYTES)throw Error('Filerna överstiger '+MAX_SELECTION_MB+' MB.');
   files.push(opened.file);sources.push({...opened.source,accountKey:expectedAccount,userId:user,folderLabel});
- }
+ }}finally{if(readController===controller)readController=null;$('spReadProgress').hidden=true;}
  if(await gate()!==user||accountKey(account)!==expectedAccount)throw Error('Inloggningen ändrades. Öppna filväljaren igen.');
  if(current!==op||!input.isConnected)return;
- await sourceBinding.observeImport(input,files,sources);
+ status('Kontrollerar projektfilen…');await sourceBinding.observeImport(input,files,sources);
  if(current!==op||!input.isConnected||accountKey(account)!==expectedAccount)return;
  const transfer=new DataTransfer();files.forEach(f=>transfer.items.add(f));input.files=transfer.files;
  dialog.close();input.dispatchEvent(new Event('change',{bubbles:true}));
 });
-dialog.addEventListener('close',()=>{op++;selected.clear();items=[];$('spFiles').replaceChildren();$('spCrumbs').replaceChildren();});
+dialog.addEventListener('close',()=>{op++;readController?.abort();selected.clear();items=[];$('spFiles').replaceChildren();$('spCrumbs').replaceChildren();$('spReadProgress').hidden=true;});
 document.addEventListener('click',event=>{
  const input=event.target;
  if(!(input instanceof HTMLInputElement)||input.type!=='file'||bypass)return;
  event.preventDefault();event.stopImmediatePropagation();if(locked()||busy||pendingSave)return;
- target=input;op++;selected.clear();items=[];stack=[];status('Välj den här enheten eller anslut Microsoft.');controls();dialog.showModal();
+ target=input;op++;selected.clear();items=[];stack=[];$('spReadProgress').hidden=true;status('Välj den här enheten eller anslut Microsoft.');controls();dialog.showModal();
  void run(async current=>{if(account)await start(current);});
 },true);
 
@@ -156,7 +176,7 @@ function saveControls(){
  s('spSaveCopy').setAttribute('aria-pressed',String(value?.mode==='copy'));
  s('spSaveExisting').hidden=!updating;
  s('spSaveCopyFields').hidden=updating;
- s('spSaveSubmit').disabled=saveBusy||!value||!account||!saveFolderReady||value.blob.size>25*1024*1024;
+ s('spSaveSubmit').disabled=saveBusy||!value||!account||!saveFolderReady||value.blob.size>MAX_FILE_BYTES;
  setButtonLabel(s('spSaveSubmit'),updating?'Spara':value?.mode==='copy'?'Spara kopia':'Spara i SharePoint','save');
  s('spSaveReload').hidden=!account||updating;
  setButtonLabel(s('spSaveConnect'),account?'Byt konto':'Anslut Microsoft','cloud');
@@ -187,13 +207,15 @@ async function saveRun(fn){
 }
 async function saveList(value){
  saveFolderReady=false;saveStatus('Hämtar mappar…');s('spSaveFolders').replaceChildren();
- const folders=await client.children(saveRoot.driveId,saveStack.at(-1).id);
+ const trail=await client.folderTrail(saveRoot,saveStack.at(-1).id);if(!currentSave(value))return;
+ const folders=await client.children(saveRoot.driveId,trail.at(-1).id);
  if(!currentSave(value))return;
+ saveStack=trail;
  s('spSaveCrumbs').replaceChildren();
  saveStack.forEach((folder,index)=>{const b=document.createElement('button');b.type='button';setButtonLabel(b,folder.name,index===0?'folder':null);b.onclick=()=>void saveRun(async v=>{saveStack=saveStack.slice(0,index+1);await saveList(v);});s('spSaveCrumbs').append(b);});
  for(const folder of folders.filter(i=>i.folder).sort((a,b)=>a.name.localeCompare(b.name,'sv'))){const li=document.createElement('li'),b=document.createElement('button');b.type='button';setButtonLabel(b,folder.name,'folder');b.onclick=()=>void saveRun(async v=>{saveStack.push({id:folder.id,name:folder.name});await saveList(v);});li.append(b);s('spSaveFolders').append(li);}
  saveFolderReady=true;
- saveStatus(value.blob.size>25*1024*1024?'Över 25 MB. Välj Den här enheten.':value.mode==='copy'?'En separat kopia skapas.':'Klar att spara i vald mapp.');
+ saveStatus(value.blob.size>MAX_FILE_BYTES?'Över '+MAX_FILE_MB+' MB. Välj Den här enheten.':value.mode==='copy'?'En separat kopia skapas.':'Klar att spara i vald mapp.');
 }
 async function saveStart(value){
  saveFolderReady=false;
@@ -203,14 +225,21 @@ async function saveStart(value){
  const source=value.info.source;
  if(value.mode==='update'){
   if(source.driveId!==saveRoot.driveId)throw Error('Filen hör till ett annat dokumentbibliotek. Öppna rätt fil igen.');
+  saveStack=await client.folderTrail(saveRoot,source.parentId);if(!currentSave(value))return;
+  s('spSaveExistingFolder').textContent=saveStack.map(f=>f.name).join(' / ');
   saveFolderReady=true;
-  saveStatus(value.blob.size>25*1024*1024?'Över 25 MB. Välj Den här enheten.':'Dina ändringar sparas i samma fil.');
+  saveStatus(value.blob.size>MAX_FILE_BYTES?'Över '+MAX_FILE_MB+' MB. Välj Den här enheten.':'Dina ändringar sparas i samma fil.');
   return;
  }
  if(source?.driveId===saveRoot.driveId&&source.parentId!==saveRoot.id){
   saveStack.push({id:source.parentId,name:source.folderLabel?.split(' / ').at(-1)||'Projektmapp'});
  }
  await saveList(value);
+}
+async function refreshSave(value){
+ const folderId=saveStack.at(-1)?.id;saveFolderReady=false;
+ const nextRoot=await client.root(config.pilot);if(!currentSave(value))return;
+ saveRoot=nextRoot;saveStack=[{id:folderId||saveRoot.id,name:saveRoot.name}];await saveList(value);
 }
 function finishSave(result,error){
  const value=pendingSave;if(!value)return;
@@ -240,7 +269,7 @@ async function offerSave({blob,name,context}){
  s('spSaveName').value=info.source?copyFilename(info.source.name):original;
  s('spSaveSummary').textContent=(info.source?.name||original)+' · '+(blob.size/1048576).toFixed(1)+' MB';
  s('spSaveExistingName').textContent=info.source?.name||'';
- s('spSaveExistingFolder').textContent=info.source?.folderLabel||'GStest';
+ s('spSaveExistingFolder').textContent=info.source?.folderLabel||'Great';
  s('spSaveCrumbs').replaceChildren();s('spSaveFolders').replaceChildren();s('spSaveProgress').hidden=true;s('spSaveProgress').value=0;
  saveStatus('Förbereder sparandet…');saveDialog.showModal();saveControls();
  void saveRun(async value=>{if(account)await saveStart(value);else saveStatus('Anslut Microsoft eller välj Den här enheten.');});
@@ -262,7 +291,7 @@ s('spSaveConnect').onclick=()=>{
   msal.setActiveAccount(account);await saveStart(value);
  });
 };
-s('spSaveReload').onclick=()=>void saveRun(saveStart);
+s('spSaveReload').onclick=()=>void saveRun(refreshSave);
 s('spSaveLocal').onclick=()=>{if(!saveBusy&&pendingSave){showSaveResult('Filen lämnas till enhetens sparfunktion.');finishSave({destination:'local'});}};
 s('spSaveCancel').onclick=cancelSave;
 saveDialog.addEventListener('cancel',event=>{event.preventDefault();cancelSave();});
@@ -288,9 +317,11 @@ s('spSaveSubmit').onclick=()=>{
    const [user,response]=await Promise.all([checkSaveOwner(value),consent]);
    if(accountKey(response.account)!==expectedAccount||accountKey(account)!==expectedAccount)throw Error('Microsoft-kontot ändrades. Försök igen med samma testkonto.');
    writeAccountKey=expectedAccount;
-   const writer=new SharePointWriter({getToken:()=>tokenFor(READ_SCOPES),getWriteToken:()=>tokenFor(WRITE_SCOPES),guard:async()=>{
+   const writer=new SharePointWriter({getToken:()=>tokenFor(READ_SCOPES),getWriteToken:()=>tokenFor(WRITE_SCOPES),rootStore,getContextKey,guard:async()=>{
     const latest=await checkSaveOwner(value);if(latest!==user||accountKey(account)!==expectedAccount)throw Error('Inloggningen ändrades. Sparandet stoppades.');return latest+'|'+expectedAccount;
    }});
+   // Reuse the same verified root identity, also when persistent storage is blocked.
+   writer.root=options=>client.root(options);
    const options={config:config.pilot,blob:value.blob,signal:value.controller.signal,onProgress:progress=>{
     if(!currentSave(value))return;
     const fraction=progress.total?Math.floor(progress.loaded/progress.total*100):0;
@@ -299,7 +330,7 @@ s('spSaveSubmit').onclick=()=>{
    }};
    const item=updating?await writer.saveExisting({...options,source}):await writer.saveCopy({...options,destination,name});
    if(!currentSave(value))return;
-   const folderLabel=updating?source.folderLabel:saveStack.map(f=>f.name).join(' / ');
+   const folderLabel=saveStack.map(f=>f.name).join(' / ');
    sourceBinding.confirmSave(value.info,{...item,accountKey:expectedAccount,userId:user,folderLabel});
    showSaveResult((updating?'Sparad i samma fil: ':value.mode==='copy'?'Kopia sparad: ':'Sparad i SharePoint: ')+item.name,item);
    finishSave({destination:'sharepoint',item});
@@ -312,10 +343,10 @@ s('spSaveSubmit').onclick=()=>{
 window.addEventListener('beforeunload',event=>{if(pendingSave){event.preventDefault();event.returnValue='';}});
 installExportBridge({window,offerSave,captureContext:()=>sourceBinding.captureExport(),onError:error=>{if(error?.name!=='AbortError')showSaveResult('Exporten kunde inte lämnas till sparfunktionen. '+saveError(error));}});
 // Keep ordinary home/module navigation inside the explicitly separate test copies.
-const routes={'index.html':'sharepoint-app-test.html','all-in-one.html':'sharepoint-control-test.html','security.html':'sharepoint-security-test.html','smartmatch-slr-test.html':'sharepoint-smartmatch-test.html','smartmatch-read-test-v9-74.html':'sharepoint-read-test.html','smartmatch-read-test-v9-78.html':'sharepoint-read-test.html','drawing-tools.html':'sharepoint-drawing-test.html','ce-markning.html':'sharepoint-ce-test.html'};
+const routes={'index.html':'sharepoint-app-test.html','all-in-one.html':'sharepoint-control-test.html','security.html':'sharepoint-security-test.html','smartmatch-slr-test.html':'sharepoint-smartmatch-test.html','smartmatch-read-test-v9-74.html':'sharepoint-read-test.html','smartmatch-read-test-v9-78.html':'sharepoint-read-test.html','smartmatch-read-test-v9-79.html':'sharepoint-read-test.html','drawing-tools.html':'sharepoint-drawing-test.html','ce-markning.html':'sharepoint-ce-test.html'};
 document.addEventListener('click',event=>{
  const a=event.target.closest?.('a[href]');if(!a||a.hasAttribute('download')||a.target==='_blank')return;
  const u=new URL(a.href,location.href);if(u.origin!==location.origin)return;
  const parts=u.pathname.split('/');const name=parts.at(-1)||'index.html';if(!routes[name])return;
- parts[parts.length-1]=routes[name];u.pathname=parts.join('/');u.searchParams.set('spv','0.6');a.href=u.href;
+ parts[parts.length-1]=routes[name];u.pathname=parts.join('/');u.searchParams.set('spv','0.7');a.href=u.href;
 },true);

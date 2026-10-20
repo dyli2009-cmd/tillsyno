@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {webcrypto} from 'node:crypto';
 import {createRequire} from 'node:module';
 import {createSourceBinding,inspectProjectPdf} from '../src/source-binding.mjs';
+import {MAX_FILE_BYTES} from '../src/limits.mjs';
 const require=createRequire(import.meta.url), PDFLib=require('../../vendor/pdf-lib.min.js');
 const identity={accountKey:'tenant/account-A',userId:'technician-A'};
 const source=(overrides={})=>({driveId:'drive-A',id:'item-A',parentId:'folder-A',name:'Samma namn.pdf',eTag:'"v1"',...identity,...overrides});
@@ -202,5 +203,99 @@ test('multiple source PDFs cannot silently choose one overwrite target; missing 
 
 test('recognized project parsing is bounded and does not accept a PDF-looking filename as metadata',async()=>{
  const env=environment();assert.equal(await inspectProjectPdf(new Blob(['not a pdf']),{window:env.window,kind:'smartmatch'}),null);
- let read=false;assert.equal(await inspectProjectPdf({size:26*1024*1024,arrayBuffer(){read=true;}},{window:env.window,kind:'smartmatch'}),null);assert.equal(read,false);
+ let read=false;assert.equal(await inspectProjectPdf({size:MAX_FILE_BYTES+1,arrayBuffer(){read=true;}},{window:env.window,kind:'smartmatch'}),null);assert.equal(read,false);
+});
+
+test('project metadata accepts the existing Uint8Array view without copying its buffer',async()=>{
+ const env=environment(),bytes=await pdfBytes(),backing=new Uint8Array(bytes.length+16);backing.set(bytes,8);
+ const view=backing.subarray(8,bytes.length+8);let loads=0;
+ env.window.PDFLib={...PDFLib,PDFDocument:{load:async(input,options)=>{loads++;assert.equal(input,view);return PDFLib.PDFDocument.load(input,options);}}};
+ assert.deepEqual(await inspectProjectPdf(view,{window:env.window,kind:'smartmatch'}),{kind:'smartmatch',projectId:'project-A'});
+ assert.equal(loads,1);
+});
+
+// Real, uncompressed PDF stream plus a real project catalogue. Build one byte
+// array directly rather than asking a serializer to allocate another 100 MiB
+// filler buffer. Updated exports reuse immutable Blob slices; nothing is saved
+// in the repository and no test fixture contains customer data.
+function opaqueProjectPdf(opaqueBytes){
+ const encoder=new TextEncoder();
+ const prefix=revision=>{
+  const payload={schema:6,projectId:'large-project-A',projectRevision:revision,instances:{},automationItems:[]};
+  const objects=[
+   '1 0 obj\n<< /Type /Catalog /Pages 2 0 R /TillsynoSmartMatchV36Data '+PDFLib.PDFHexString.fromText(JSON.stringify(payload)).toString()+' /SyntheticOpaque 4 0 R >>\nendobj\n',
+   '2 0 obj\n<< /Type /Pages /Count 1 /Kids [3 0 R] >>\nendobj\n',
+   '3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 400] /Resources << >> >>\nendobj\n',
+   '4 0 obj\n<< /Length '+opaqueBytes+' >>\nstream\n',
+  ];
+  let text='%PDF-1.7\n',offsets=[];for(const entry of objects){offsets.push(text.length);text+=entry;}
+  return {bytes:encoder.encode(text),offsets};
+ };
+ const head=prefix(1),ending='\nendstream\nendobj\n',xrefOffset=head.bytes.length+opaqueBytes+ending.length;
+ const suffix=encoder.encode(ending+'xref\n0 5\n0000000000 65535 f \n'+head.offsets.map(offset=>String(offset).padStart(10,'0')+' 00000 n \n').join('')+'trailer\n<< /Size 5 /Root 1 0 R >>\nstartxref\n'+xrefOffset+'\n%%EOF\n');
+ const bytes=new Uint8Array(head.bytes.length+opaqueBytes+suffix.length);bytes.set(head.bytes);bytes.set(suffix,head.bytes.length+opaqueBytes);
+ return {bytes,headBytes:head.bytes.length,updated:(original,revision)=>{
+  const next=prefix(revision).bytes;assert.equal(next.length,head.bytes.length);
+  return new File([next,original.slice(head.bytes.length)],'Stor projektfil.pdf',{type:'application/pdf'});
+ }};
+}
+
+test('100 MiB project imports, saves and saves again to the same ID with bounded hashing and sequential cached source parsing',async t=>{
+ const env=environment(),fixture=opaqueProjectPdf(100*1024*1024);
+ const observed={importFullReads:0,maxImportSlice:0,importSlices:0,maxDigestBytes:0,digestActive:0,maxDigestActive:0,pdfActive:0,maxPdfActive:0,originalParses:0,outputParses:0};
+ class ImportFile extends File {
+  async arrayBuffer(){observed.importFullReads++;return super.arrayBuffer();}
+  slice(start,end,type){if(Number.isFinite(end)){observed.importSlices++;observed.maxImportSlice=Math.max(observed.maxImportSlice,end-start);}return super.slice(start,end,type);}
+ }
+ const imported=new ImportFile([fixture.bytes],'Stor projektfil.pdf',{type:'application/pdf'});
+ assert.ok(imported.size>100*1024*1024&&imported.size<=MAX_FILE_BYTES);
+ env.window.Blob=class extends Blob {constructor(){throw Error('The adapter must not create a full-file Blob copy.');}};
+ env.window.crypto={subtle:{digest:async(algorithm,input)=>{
+  observed.maxDigestBytes=Math.max(observed.maxDigestBytes,input.byteLength);
+  observed.maxDigestActive=Math.max(observed.maxDigestActive,++observed.digestActive);
+  try{return await webcrypto.subtle.digest(algorithm,input);}finally{observed.digestActive--;}
+ }}};
+ env.window.PDFLib={...PDFLib,PDFDocument:{load:async(input,options)=>{
+  if(input===fixture.bytes)observed.originalParses++;else observed.outputParses++;
+  observed.maxPdfActive=Math.max(observed.maxPdfActive,++observed.pdfActive);
+  try{return await PDFLib.PDFDocument.load(input,options);}finally{observed.pdfActive--;}
+ }}};
+ env.binding.setIdentity(identity);
+ assert.equal(await env.binding.observeImport(env.input,[imported],[source({size:imported.size})]),true);
+ assert.equal(observed.importFullReads,0,'cloud import must not read a second whole-file arrayBuffer just to verify identity');
+ assert.equal(observed.originalParses+observed.outputParses,0,'SmartMatch import needs only a byte fingerprint');
+ assert.ok(observed.importSlices>1);assert.ok(observed.maxImportSlice<=2*1024*1024);
+ env.input.files=[imported];env.emit('change',env.input);
+ env.setRuntime({kind:'smartmatch',key:'large-workspace',session:null,bytes:fixture.bytes});
+ for(const revision of [2,3]){
+  const output=fixture.updated(imported,revision);
+  const info=await env.binding.inspectExport({blob:output,name:output.name,context:env.captureProject()});
+  assert.equal(info.projectExport,true);assert.equal(info.isCurrent(),true);
+  assert.equal(info.source?.id,'item-A','a large file must update the opened file, not silently fall back to creating a duplicate');
+  assert.equal(info.source.eTag,'"v'+(revision-1)+'"');
+  assert.equal(env.binding.confirmSave(info,source({size:output.size,eTag:'"v'+revision+'"'})),true);
+ }
+ assert.equal(observed.originalParses,1,'the existing active original byte object is parsed once across repeated saves');
+ assert.equal(observed.outputParses,2,'each newly completed export is inspected');
+ assert.equal(observed.maxPdfActive,1,'source and output PDF parses must not run in parallel');
+ assert.equal(observed.maxDigestActive,1);assert.ok(observed.maxDigestBytes<=2*1024*1024,'crypto may copy only a bounded chunk, never the whole 100 MiB file');
+ t.diagnostic('Generated '+imported.size+' PDF bytes in memory; max hash input '+observed.maxDigestBytes+' bytes, one active PDF parse, one cached original parse. This is Node allocation-path evidence, not a physical iPad/Safari memory guarantee.');
+ env.binding.uninstall();
+});
+
+test('large opaque content beyond the first hash chunk must also match before a source can bind',async()=>{
+ const env=environment(),fixture=opaqueProjectPdf(2*1024*1024+128),imported=file(fixture.bytes);
+ env.binding.setIdentity(identity);await env.binding.observeImport(env.input,[imported],[source()]);env.input.files=[imported];env.emit('change',env.input);
+ const changed=fixture.bytes.slice();changed[fixture.headBytes+2*1024*1024+64]=91;
+ env.setRuntime({kind:'smartmatch',key:'large-workspace',session:null,bytes:changed});
+ const info=await exportInfo(env,changed);
+ assert.equal(info.projectExport,true,'the PDF catalogue remains valid and names the active project');
+ assert.equal(info.source,null,'different opaque drawing bytes cannot inherit the opened file identity');
+});
+
+test('imports above the shared 200 MiB limit are rejected before reading or hashing',async()=>{
+ const env=environment();env.binding.setIdentity(identity);let read=false;
+ const tooLarge={name:'För stor.pdf',size:MAX_FILE_BYTES+1,arrayBuffer(){read=true;},slice(){read=true;}};
+ assert.equal(await env.binding.observeImport(env.input,[tooLarge],[source()]),false);assert.equal(read,false);
+ assert.equal(MAX_FILE_BYTES,200*1024*1024);
 });
