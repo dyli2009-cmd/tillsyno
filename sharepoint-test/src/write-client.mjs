@@ -1,4 +1,4 @@
-/* Whole-app test only: save a copy or update the exact opened file below the verified root.
+/* Whole-app test only: save by exact name, save a copy, or update an opened file.
  * Never fall back from an item-ID update to a name-path upload or retry a
  * conflict. Never delete or forward a Graph token to an upload URL.
  * API: https://learn.microsoft.com/graph/api/driveitem-createuploadsession
@@ -37,7 +37,7 @@ function versionTag(value) {
   value !== '*' && !/[^\x21-\x7e]/u.test(value);
 }
 function versionConflict(status) {
- return failure('Filen har ändrats i SharePoint sedan den öppnades. Öppna den senaste versionen eller välj Spara kopia; försök inte skriva över den.', 'version_conflict', status);
+ return failure('Filen har ändrats i SharePoint sedan den valdes. Öppna den senaste versionen och kontrollera ändringarna innan du sparar igen.', 'version_conflict', status);
 }
 
 export function validateCopyName(value) {
@@ -186,10 +186,30 @@ export class SharePointWriter extends SharePointFiles {
   if (!versionTag(item.eTag) || item.eTag !== source.eTag) throw versionConflict();
   return item;
  }
+ async namedSource(target, name, context) {
+  await this.access(context);
+  let item;
+  try {
+   // Resolve only this exact name inside the verified parent. Full metadata
+   // preserves the opaque eTag used for all subsequent ID-based checks.
+   item = await this.json('/v1.0/drives/' + enc(target.driveId) + '/items/' + enc(target.id) + ':/' + enc(name));
+  } catch (error) {
+   await this.access(context);
+   if (error.status === 404) return null;
+   throw error;
+  }
+  await this.access(context);
+  try { checkFile(item, {name, driveId:target.driveId, parentId:target.id}); }
+  catch { throw failure('Filen med detta namn kunde inte verifieras i den valda mappen. Uppdatera mappen och välj rätt fil.', 'invalid_named_file'); }
+  if (!versionTag(item.eTag)) throw failure('Filens version kunde inte verifieras. Öppna den senaste filen i SharePoint innan du sparar.', 'invalid_named_file');
+  return Object.freeze({driveId:target.driveId, id:item.id, parentId:target.id, name:item.name, eTag:item.eTag});
+ }
  async saveCopy(options = {}) { return this.saveFile(options, false); }
  async saveExisting(options = {}) { return this.saveFile(options, true); }
- async saveFile({config, destination, source, blob, name, onProgress, signal} = {}, existing) {
+ async saveNamed(options = {}) { return this.saveFile(options, false, true); }
+ async saveFile({config, destination, source, blob, name, onProgress, signal} = {}, existing, named = false) {
   if (this.saving) throw failure('En fil sparas redan. Vänta tills den är klar.', 'busy');
+  if (named && source != null) throw failure('En redan öppnad fil måste sparas med sin verifierade identitet och version.', 'invalid_source');
   if (existing) {
    if (!object(source) || !identifier(source.driveId) || !identifier(source.id) ||
        !identifier(source.parentId) || !versionTag(source.eTag)) {
@@ -221,6 +241,10 @@ export class SharePointWriter extends SharePointFiles {
    const target = existing ? {driveId:source.driveId, id:source.parentId} :
     destination ? {driveId:destination.driveId, id:destination.id} : {driveId:root.driveId, id:root.id};
    await this.folderInside(root, target, context);
+   if (named) {
+    source = await this.namedSource(target, name, context);
+    existing = !!source;
+   }
    if (existing) await this.currentSource(source, context);
    const url = graphUrl('/v1.0/drives/' + enc(root.driveId) + '/items/' +
     (existing ? enc(source.id) : enc(target.id) + ':/' + enc(name) + ':') + '/createUploadSession');
@@ -275,6 +299,9 @@ export class SharePointWriter extends SharePointFiles {
    completed = true; progress('complete', blob.size);
    return {id:saved.id, name:saved.name, size:saved.size, driveId:root.driveId, parentId:target.id, eTag:saved.eTag, webUrl:safeWebUrl(saved.webUrl, config)};
   } catch (error) {
+   if (named && !existing && error.code === 'name_conflict') {
+    throw failure('En fil med samma namn skapades i SharePoint medan sparandet pågick. Uppdatera mappen och öppna den senaste filen innan du sparar igen.', 'name_race', error.status);
+   }
    // The last PUT may have committed before a connection or verification error.
    // Do not retry, rename, overwrite or delete automatically.
    if (finalStarted && !completed && error.code !== 'name_conflict' &&

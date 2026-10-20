@@ -1,8 +1,9 @@
-/* In-memory provenance for the seven test pages. A filename is never identity.
+/* Provenance for the seven test pages. A filename is never identity.
  * Import intent alone is insufficient: the active module's source bytes and
  * the completed PDF's own project catalogue must both agree. Reports, ZIPs,
  * attachments and the drawing tool's unmarked/split PDFs remain copy exports.
- * No provenance is written into customer PDFs, localStorage or production JS.
+ * SmartMatch may retain a small, tab-scoped restore reference in sessionStorage.
+ * No PDF bytes, tokens or provenance are written into customer PDFs or production JS.
  */
 import {isSharePointTestPage} from './export-bridge.mjs';
 import {MAX_FILE_BYTES} from './limits.mjs';
@@ -18,6 +19,8 @@ const ROUTES = Object.freeze({
 });
 const SOURCE_HASH_CHUNK_BYTES = 2 * 1024 * 1024;
 const SOURCE_HASH_DOMAIN = new TextEncoder().encode('Tillsyno ordered source chunks SHA-256 v1\n');
+const RESTORE_PREFIX = 'tillsyno-sharepoint-source:v1:';
+const RESTORE_REFERENCE_LIMIT = 32768;
 const FULL_PROJECT_ACTIONS = Object.freeze({
  smartmatch:['smartExportBuild','smartExportSaveAs','smartExportSaveObject','smartExportDownload','smartExportShare'],
  dorrservice:['exportBtn'],
@@ -105,7 +108,7 @@ export async function inspectProjectPdf(input,{window,kind}={}) {
 async function fingerprint(window,input) {
  const bytes = byteView(input), size = inputSize(input);
  if (!Number.isSafeInteger(size) || size < 1 || size > MAX_FILE_BYTES) throw new Error('Projektfilens storlek kan inte verifieras.');
- // This private, in-memory fingerprint covers every byte in order. It is not
+ // This private source fingerprint covers every byte in order. It is not
  // advertised as a conventional whole-file SHA-256 checksum. Domain, file
  // length and fixed chunk size are included so equal chunks cannot be moved,
  // truncated or regrouped unnoticed. Only one <=2 MiB digest runs at a time;
@@ -133,18 +136,42 @@ async function fingerprint(window,input) {
  * inspectExport({blob,name,context}): {projectExport,source,reason,isCurrent()}.
  * confirmSave(info,source): call only after writer acknowledgement. Returns true
  * when this full project is now bound to that receipt (including a new copy).
+ * restoreStore: optional tab-scoped Storage; defaults to sessionStorage. Keeping
+ * eTags separate between tabs prevents another tab's receipt from silently
+ * advancing the base version of an older local project. null disables storage.
  */
-export function createSourceBinding({window,readActive}={}) {
+export function createSourceBinding({window,readActive,restoreStore}={}) {
  const page = String(window?.location?.pathname || '').split('/').at(-1), route = ROUTES[page];
  const enabled = !!route && isSharePointTestPage(window), document = window?.document;
  const tickets = new WeakMap(), inspections = new WeakMap(), changes = new WeakMap(), byteCache = new WeakMap(), restores = [];
+ const restoreReferences = new Map();
+ let storage = null;
+ if (enabled && route.kind === 'smartmatch') {
+  try { storage = restoreStore === undefined ? window.sessionStorage : restoreStore; } catch (_) { /* Storage can be blocked. */ }
+  if (typeof storage?.getItem !== 'function' || typeof storage?.setItem !== 'function' || typeof storage?.removeItem !== 'function') storage = null;
+ }
+ const restoreEpochKey = RESTORE_PREFIX+'epoch:'+page;
+ const newRestoreEpoch = () => window.crypto?.randomUUID?.() || Date.now()+'-'+Math.random();
+ let restoreEpoch = newRestoreEpoch();
+ function disableRestoreStorage() {
+  // Removing an existing key does not need quota. Without the epoch, a later
+  // reload cannot revive old references after a local-import revocation or a
+  // newer receipt failed to persist. The current page keeps its memory proof.
+  if (storage) try { storage.removeItem(restoreEpochKey); } catch (_) { /* Storage may be completely blocked. */ }
+  storage = null;
+ }
+ if (storage) try {
+  const storedEpoch = storage.getItem(restoreEpochKey);
+  if (nonempty(storedEpoch) && storedEpoch.length <= 128) restoreEpoch = storedEpoch;
+  else storage.setItem(restoreEpochKey,restoreEpoch);
+ } catch (_) { disableRestoreStorage(); }
  let active = enabled, generation = 0, savedVersion = 0, identity = '', bound = null, pendingImport = null;
- let ceRuntime = null, ceBuild = null, exportIntent = null;
+ let ceRuntime = null, ceBuild = null, exportIntent = null, cachedRestore = null;
  let inspectionTail = Promise.resolve();
  const inspectSequentially = task => {
   const result = inspectionTail.then(task);inspectionTail = result.catch(()=>{});return result;
  };
- const invalidate = () => { generation++; bound = null; pendingImport = null; ceBuild = null; exportIntent = null; };
+ const invalidate = () => { generation++; bound = null; pendingImport = null; ceBuild = null; exportIntent = null; cachedRestore = null; };
  function runtime() {
   if (!active) return null;
   try {
@@ -192,14 +219,82 @@ export function createSourceBinding({window,readActive}={}) {
   }
   return cached;
  }
+ const smartProjectKey = (current,original) => original?.metadata?.unsupported ? '' : original?.metadata?.projectId || 'smartmatch-v35-'+current.key;
+ const restoreKey = current => identity && nonempty(current?.key) ? RESTORE_PREFIX+JSON.stringify([page,identity,current.key]) : '';
+ function forgetRestores() {
+  if (route.kind !== 'smartmatch') return;
+  restoreReferences.clear();
+  // A local import may have identical bytes/workspace to a previous cloud file.
+  // Revoke old restore records before it is cached, including when Microsoft
+  // has not been connected in this page yet. A later reload must stay local.
+  restoreEpoch = newRestoreEpoch();
+  if (storage) try { storage.setItem(restoreEpochKey,restoreEpoch); } catch (_) { disableRestoreStorage(); }
+ }
+ function rememberSource() {
+  if (route.kind !== 'smartmatch' || !bound?.originalHash || identityKey(bound.source) !== identity) return;
+  const key = restoreKey(bound.runtime);if (!key) return;
+  const reference = {version:1,page,epoch:restoreEpoch,runtimeKey:bound.runtime.key,projectKey:bound.projectKey,originalHash:bound.originalHash,source:bound.source};
+  const text = JSON.stringify(reference);if (text.length > RESTORE_REFERENCE_LIMIT) return;
+  restoreReferences.set(key,reference);
+  if (storage) try { storage.setItem(key,text); } catch (_) { disableRestoreStorage(); }
+ }
+ function restoredSource(current,projectKey,originalHash) {
+  if (route.kind !== 'smartmatch' || !cachedRestore || cachedRestore.generation !== generation ||
+   !sameRuntime(cachedRestore.runtime,current) || cachedRestore.runtime.bytes !== current.bytes ||
+   cachedRestore.projectKey !== projectKey || cachedRestore.originalHash !== originalHash) return null;
+  const key = restoreKey(current);if (!key) return null;
+  let reference = restoreReferences.get(key);
+  if (!reference && storage) {
+   try {
+    const text = storage.getItem(key);
+    if (typeof text === 'string' && text.length <= RESTORE_REFERENCE_LIMIT) reference = JSON.parse(text);
+   } catch (_) { /* Missing, blocked or corrupt storage never proves a source. */ }
+  }
+  const source = trustedSource(reference?.source);
+  if (!source || reference.version !== 1 || reference.page !== page || reference.epoch !== restoreEpoch || reference.runtimeKey !== current.key ||
+   reference.projectKey !== projectKey || reference.originalHash !== originalHash || identityKey(source) !== identity) return null;
+  restoreReferences.set(key,reference);
+  return source;
+ }
+ function bindSource(source,current,projectKey,originalHash) {
+  bound = {source,runtime:current,generation,projectKey,originalHash};rememberSource();
+ }
+ function importedSource(current,original) {
+  const imported = pendingImport;
+  if (!imported || imported.generation !== generation || identityKey(imported.source) !== identity || imported.opening) return null;
+  // A rejected import must not bind the still-open previous project, even when
+  // the selected cloud item happens to contain identical bytes.
+  if (route.kind === 'smartmatch' && (!imported.delivered || imported.previousBytes.has(current.bytes))) return null;
+  const matches = ['smartmatch','ce'].includes(route.kind)
+   ? original?.hash === imported.hash : original?.hash === (imported.metadata?.drawingHash || imported.hash);
+  return matches ? imported.source : null;
+ }
+ async function rememberCachedCurrent(ownGeneration) {
+  // cachePdf is called just before analyze() finishes two paint frames. Wait
+  // briefly for that existing opener to finish; never infer success from its
+  // filename or from a cache write while the module is still opening a file.
+  for (let i=0;i<40 && active && generation === ownGeneration && window.SmartMatchAppBridge?.isOpeningProject?.();i++)
+   await new Promise(resolve=>setTimeout(resolve,25));
+  if (!active || generation !== ownGeneration) return;
+  const current = runtime();if (!current) return;
+  return inspectSequentially(async()=>{
+   const original = await metadataFor(current.bytes);
+   if (!active || generation !== ownGeneration || !sameRuntime(current,runtime()) || current.bytes !== runtime()?.bytes || original?.metadata?.unsupported) return;
+   const projectKey = smartProjectKey(current,original);
+   const source = importedSource(current,original) || (bound && sameRuntime(bound.runtime,current) && bound.projectKey === projectKey && identityKey(bound.source) === identity ? bound.source : null);
+   if (source) bindSource(source,current,projectKey,original.hash);
+  });
+ }
  async function observeImport(input,files,sources=[]) {
   if (!active || !route.inputs.includes(input?.id)) return false;
+  const previousBytes = new WeakSet();
+  if (runtime()?.bytes) previousBytes.add(runtime().bytes);
   invalidate();
   const ownGeneration = generation, list = Array.from(files || []);
   changes.set(input,{generation:ownGeneration,files:list});
-  if (list.length !== 1 || sources.length !== 1 || !/\.pdf$/i.test(list[0]?.name || '')) return false;
+  if (list.length !== 1 || sources.length !== 1 || !/\.pdf$/i.test(list[0]?.name || '')) { forgetRestores();return false; }
   const source = trustedSource(sources[0]);
-  if (!source || identityKey(source) !== identity || !Number.isSafeInteger(list[0].size) || list[0].size < 1 || list[0].size > MAX_FILE_BYTES || route.kind === 'drawing') return false;
+  if (!source || identityKey(source) !== identity || !Number.isSafeInteger(list[0].size) || list[0].size < 1 || list[0].size > MAX_FILE_BYTES || route.kind === 'drawing') { forgetRestores();return false; }
   return inspectSequentially(async()=>{
    if (!active || generation !== ownGeneration) return false;
    let hash,metadata=null;
@@ -214,7 +309,7 @@ export function createSourceBinding({window,readActive}={}) {
     metadata = await inspectProjectPdf(bytes,{window,kind:route.kind}).catch(()=>({unsupported:true}));
    }
    if (!active || generation !== ownGeneration) return false;
-   pendingImport = {generation:ownGeneration,source,hash,metadata};
+   pendingImport = {generation:ownGeneration,source,hash,metadata,file:list[0],inputId:input.id,previousBytes,delivered:false,handoffUsed:false,opening:false};
    return true;
   });
  }
@@ -242,7 +337,7 @@ export function createSourceBinding({window,readActive}={}) {
    } catch (_) { /* Unrecognized/malformed output can be copied, never updated. */ }
    if (output && !output.unsupported && !original?.metadata?.unsupported && isCurrent(ticket)) {
     if (route.kind === 'smartmatch') {
-     projectKey = original?.metadata?.projectId || 'smartmatch-v35-'+ticket.runtime.key;
+     projectKey = smartProjectKey(ticket.runtime,original);
      projectExport = output.projectId === projectKey;
     } else if (route.kind === 'ce') {
      projectKey = ticket.runtime.key;
@@ -253,28 +348,25 @@ export function createSourceBinding({window,readActive}={}) {
     }
     if (projectExport) {
      if (bound && (!sameRuntime(bound.runtime,ticket.runtime) || bound.generation !== generation || bound.projectKey !== projectKey || identityKey(bound.source) !== identity)) bound = null;
-     if (!bound && pendingImport?.generation === generation && identityKey(pendingImport.source) === identity) {
-      const imported = pendingImport;
-      const matches = route.kind === 'smartmatch' || route.kind === 'ce'
-       ? original?.hash === imported.hash
-       : original?.hash === (imported.metadata?.drawingHash || imported.hash);
-      if (matches) bound = {source:imported.source,runtime:ticket.runtime,generation,projectKey};
+     if (!bound) {
+      const candidate = importedSource(ticket.runtime,original) || restoredSource(ticket.runtime,projectKey,original?.hash);
+      if (candidate) bindSource(candidate,ticket.runtime,projectKey,original?.hash);
      }
      source = bound?.source || null;
-     reason = source ? '' : 'Projektet har ingen verifierad SharePoint-källa. Spara det som en ny fil.';
+     reason = source ? '' : 'Välj mapp och filnamn för projektet.';
     }
    }
   }
   if (!isCurrent(ownTicket)) reason = 'Projektet eller kontot har ändrats. Exportera det aktuella projektet igen.';
   const info = Object.freeze({projectExport,source,reason,isCurrent:()=>isCurrent(ownTicket)});
-  inspections.set(info,{ticket:ownTicket,projectExport,projectKey});
+  inspections.set(info,{ticket:ownTicket,projectExport,projectKey,originalHash:original?.hash});
   return info;
   });
  }
  function confirmSave(info,value) {
   const record = inspections.get(info), source = trustedSource(value);
   if (!record?.projectExport || !source || !info.isCurrent() || !identity || identityKey(source) !== identity) return false;
-  bound = {source,runtime:record.ticket.runtime,generation,projectKey:record.projectKey};
+  bindSource(source,record.ticket.runtime,record.projectKey,record.originalHash);
   pendingImport = null; savedVersion++;
   return true;
  }
@@ -289,8 +381,11 @@ export function createSourceBinding({window,readActive}={}) {
    const input = event.target;
    if (!route.inputs.includes(input?.id) || !input.files?.length) return;
    const expected = changes.get(input); changes.delete(input);
-   if (expected?.generation === generation && expected.files.length === input.files.length && expected.files.every((file,index)=>file === input.files[index])) return;
-   invalidate();
+   if (expected?.generation === generation && expected.files.length === input.files.length && expected.files.every((file,index)=>file === input.files[index])) {
+    if (pendingImport?.generation === generation && pendingImport.file === input.files[0]) pendingImport.delivered = true;
+    return;
+   }
+   invalidate();forgetRestores();
   };
   document.addEventListener('change',change,true);
   restores.push(()=>document.removeEventListener('change',change,true));
@@ -306,8 +401,48 @@ export function createSourceBinding({window,readActive}={}) {
   document.addEventListener('click',click,true);
   restores.push(()=>document.removeEventListener('click',click,true));
   if (route.kind === 'smartmatch') {
-   replace(window.SmartMatchAppBridge,'openCachedPdf',original=>function(...args){invalidate();return original.apply(this,args);});
-   replace(window.SmartMatchAppBridge,'openReadFile',original=>function(...args){invalidate();return original.apply(this,args);});
+   replace(window.SmartMatchAppBridge,'openCachedPdf',original=>async function(file,view,...args){
+    const previousBytes = new WeakSet();if (runtime()?.bytes) previousBytes.add(runtime().bytes);
+    invalidate();const ownGeneration = generation;
+    try {
+     const result = await original.call(this,file,view,...args), current = runtime();
+     const workspace = view?.workspaceId || view?.fileKey;
+     if (result === false || !active || generation !== ownGeneration || !current || previousBytes.has(current.bytes) || !nonempty(workspace) || current.key !== workspace) return result;
+     try { await inspectSequentially(async()=>{
+      const restoredHash = await fingerprint(window,file), metadata = await metadataFor(current.bytes);
+      if (!active || generation !== ownGeneration || !sameRuntime(current,runtime()) || current.bytes !== runtime()?.bytes || metadata?.metadata?.unsupported || metadata?.hash !== restoredHash) return;
+      const projectKey = smartProjectKey(current,metadata);
+      if (view?.localPayload?.projectId && view.localPayload.projectId !== projectKey) return;
+      cachedRestore = {generation,runtime:current,projectKey,originalHash:metadata.hash};
+      const source = restoredSource(current,projectKey,metadata.hash);
+      if (source) bindSource(source,current,projectKey,metadata.hash);
+     }); } catch (_) { if (generation === ownGeneration) invalidate(); /* Restore succeeded; only its cloud proof is unavailable. */ }
+     return result;
+    } catch (error) { if (generation === ownGeneration) invalidate();throw error; }
+   });
+   replace(window.SmartMatchAppBridge,'openReadFile',original=>async function(file,options,...args){
+    const candidate = pendingImport;
+    const handoff = candidate?.generation === generation && candidate.file === file && candidate.inputId === 'rtMultiFiles' &&
+     candidate.delivered && !candidate.handoffUsed && identityKey(candidate.source) === identity && options?.readTestIntent === 'prepare';
+    if (handoff) { candidate.handoffUsed = true;candidate.opening = true; } else { invalidate();forgetRestores(); }
+    const ownGeneration = generation;
+    try {
+     const result = await original.call(this,file,options,...args);
+     if (handoff && generation === ownGeneration && pendingImport === candidate) {
+      candidate.opening = false;
+      if (result !== true) invalidate();
+      else try { await rememberCachedCurrent(ownGeneration); } catch (_) { if (generation === ownGeneration) invalidate(); }
+     }
+     return result;
+    } catch (error) { if (generation === ownGeneration) invalidate();throw error; }
+   });
+   replace(window.SmartMatchSession,'cachePdf',original=>async function(...args){
+    const ownGeneration = generation, result = await original.apply(this,args);
+    if (result === true && generation === ownGeneration && (pendingImport || bound)) {
+     try { await rememberCachedCurrent(ownGeneration); } catch (_) { /* A cache observer cannot fail the module's own save. */ }
+    }
+    return result;
+   });
   }
   if (route.kind === 'ce') {
    const module = window.TillsynoCETest;

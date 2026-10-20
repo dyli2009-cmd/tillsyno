@@ -44,7 +44,9 @@ async function initialize(){
   if(!config.pilot.readOnly||JSON.stringify(config.graphScopes)!==JSON.stringify(READ_SCOPES))throw Error('Inställningen för filöppning är ogiltig.');
   if(new URL(config.msal.auth.redirectUri).origin!==location.origin)throw Error('Öppna testet på den publicerade adressen.');
   msal=new PublicClientApplication({auth:{...config.msal.auth},cache:{cacheLocation:'sessionStorage'},system:{loggerOptions:{piiLoggingEnabled:false,loggerCallback:()=>{}}}});await msal.initialize();
-  account=msal.getAllAccounts().find(a=>a.tenantId?.toLowerCase()===config.tenantId.toLowerCase())||null;
+  const allowedAccounts=msal.getAllAccounts().filter(a=>a.tenantId?.toLowerCase()===config.tenantId.toLowerCase());
+  const activeAccount=msal.getActiveAccount();
+  account=activeAccount?.tenantId?.toLowerCase()===config.tenantId.toLowerCase()?activeAccount:allowedAccounts.length===1?allowedAccounts[0]:null;
   client=new SharePointFiles({getToken:()=>tokenFor(READ_SCOPES),rootStore,getContextKey});
  })().catch(e=>{initPromise=null;throw e;});
  return initPromise;
@@ -171,8 +173,9 @@ function saveControls(){
  setButtonLabel(s('spSaveCancel'),stopping?'Stoppa':'',stopping?'stop':'close');
  s('spSaveCancel').setAttribute('aria-label',stopping?'Stoppa överföringen och behåll filen':'Avbryt sparandet');
  s('spSaveName').disabled=saveBusy||updating;
- s('spSaveModes').hidden=!value?.info.source;
- s('spSaveUpdate').setAttribute('aria-pressed',String(updating));
+ s('spSaveModes').hidden=!value?.info.projectExport;
+ setButtonLabel(s('spSaveUpdate'),value?.info.source?'Samma fil':'Samma namn','save');
+ s('spSaveUpdate').setAttribute('aria-pressed',String(!!value&&value.mode!=='copy'));
  s('spSaveCopy').setAttribute('aria-pressed',String(value?.mode==='copy'));
  s('spSaveExisting').hidden=!updating;
  s('spSaveCopyFields').hidden=updating;
@@ -198,10 +201,27 @@ function checkSourceAccount(value){
  }
  return source;
 }
+async function syncSaveIdentity(value){
+ if(!account)return;
+ const key=accountKey(account)+'\n'+value.userId;
+ sourceBinding.setIdentity({accountKey:accountKey(account),userId:value.userId});
+ if(!value.info.isCurrent())throw Error('Projektet eller kontot har ändrats. Exportera det aktuella projektet igen.');
+ if(value.info.source||value.inspectedIdentity===key)return;
+ const info=await sourceBinding.inspectExport({blob:value.blob,name:value.name,context:value.context});
+ if(!currentSave(value))return;
+ if(!info.isCurrent())throw Error('Projektet eller kontot har ändrats. Exportera det aktuella projektet igen.');
+ value.info=info;value.inspectedIdentity=key;
+ if(info.source){
+  if(value.mode!=='copy')value.mode='update';
+  s('spSaveExistingName').textContent=info.source.name;
+  s('spSaveExistingFolder').textContent=info.source.folderLabel||'Great';
+  s('spSaveSummary').textContent=info.source.name+' · '+(value.blob.size/1048576).toFixed(1)+' MB';
+ }
+}
 async function saveRun(fn){
  if(saveBusy||!pendingSave)return;
  const value=pendingSave;saveBusy=true;saveControls();
- try{await checkSaveOwner(value);await initialize();if(!currentSave(value))return;await fn(value);}
+ try{await checkSaveOwner(value);await initialize();if(!currentSave(value))return;await syncSaveIdentity(value);if(!currentSave(value))return;await fn(value);}
  catch(error){if(currentSave(value)){saveStatus(saveError(error),'error');showSaveResult('Inte sparad i SharePoint. '+saveError(error));}}
  finally{saveBusy=false;saveControls();}
 }
@@ -215,9 +235,9 @@ async function saveList(value){
  saveStack.forEach((folder,index)=>{const b=document.createElement('button');b.type='button';setButtonLabel(b,folder.name,index===0?'folder':null);b.onclick=()=>void saveRun(async v=>{saveStack=saveStack.slice(0,index+1);await saveList(v);});s('spSaveCrumbs').append(b);});
  for(const folder of folders.filter(i=>i.folder).sort((a,b)=>a.name.localeCompare(b.name,'sv'))){const li=document.createElement('li'),b=document.createElement('button');b.type='button';setButtonLabel(b,folder.name,'folder');b.onclick=()=>void saveRun(async v=>{saveStack.push({id:folder.id,name:folder.name});await saveList(v);});li.append(b);s('spSaveFolders').append(li);}
  saveFolderReady=true;
- saveStatus(value.blob.size>MAX_FILE_BYTES?'Över '+MAX_FILE_MB+' MB. Välj Den här enheten.':value.mode==='copy'?'En separat kopia skapas.':'Klar att spara i vald mapp.');
+ saveStatus(value.blob.size>MAX_FILE_BYTES?'Över '+MAX_FILE_MB+' MB. Välj Den här enheten.':value.mode==='copy'?'En separat kopia skapas.':value.info.projectExport?'Finns filnamnet i mappen uppdateras den filen.':'Exporten sparas som en separat fil.');
 }
-async function saveStart(value){
+async function saveStart(value,preferredFolderId=null){
  saveFolderReady=false;
  if(value.mode==='update')checkSourceAccount(value);
  saveRoot=await client.root(config.pilot);if(!currentSave(value))return;
@@ -231,7 +251,9 @@ async function saveStart(value){
   saveStatus(value.blob.size>MAX_FILE_BYTES?'Över '+MAX_FILE_MB+' MB. Välj Den här enheten.':'Dina ändringar sparas i samma fil.');
   return;
  }
- if(source?.driveId===saveRoot.driveId&&source.parentId!==saveRoot.id){
+ if(preferredFolderId&&preferredFolderId!==saveRoot.id){
+  saveStack.push({id:preferredFolderId,name:'Vald mapp'});
+ }else if(source?.driveId===saveRoot.driveId&&source.parentId!==saveRoot.id){
   saveStack.push({id:source.parentId,name:source.folderLabel?.split(' / ').at(-1)||'Projektmapp'});
  }
  await saveList(value);
@@ -260,13 +282,20 @@ async function offerSave({blob,name,context}){
  if(locked())throw Error('Lås upp Avläsning med din vanliga kod först.');
  if(pendingSave||busy)throw Error('Slutför den öppna filrutan först.');
  if(!(blob instanceof Blob)||!blob.size)throw Error('Exportfilen är tom.');
+ // A restored project can recover its saved cloud reference only after the
+ // current account is known. Local export stays available if online setup fails.
+ let userId=window.TillsynoCurrentAccess?.userId||null,inspectedIdentity='';
+ try{
+  userId=await gate();await initialize();
+  if(account){sourceBinding.setIdentity({accountKey:accountKey(account),userId});inspectedIdentity=accountKey(account)+'\n'+userId;}
+ }catch{/* saveRun reports the cloud error; the local choice remains available. */}
  const info=await sourceBinding.inspectExport({blob,name,context});
  if(!info.isCurrent())throw new DOMException('Projektet byttes under exporten. Spara det aktuella projektet igen.','AbortError');
  if(pendingSave||busy)throw Error('Slutför den öppna filrutan först.');
  const original=String(name||'Tillsyno.pdf');
- const promise=new Promise((resolve,reject)=>{pendingSave={blob,name:original,info,mode:info.source?'update':'create',resolve,reject,userId:window.TillsynoCurrentAccess?.userId||null};});
+ const promise=new Promise((resolve,reject)=>{pendingSave={blob,name:original,context,info,inspectedIdentity,mode:info.source?'update':'create',regularName:original,copyName:copyFilename(info.source?.name||original),resolve,reject,userId};});
  saveRoot=null;saveStack=[];saveFolderReady=false;saveResult.hidden=true;
- s('spSaveName').value=info.source?copyFilename(info.source.name):original;
+ s('spSaveName').value=info.source?pendingSave.copyName:original;
  s('spSaveSummary').textContent=(info.source?.name||original)+' · '+(blob.size/1048576).toFixed(1)+' MB';
  s('spSaveExistingName').textContent=info.source?.name||'';
  s('spSaveExistingFolder').textContent=info.source?.folderLabel||'Great';
@@ -276,9 +305,14 @@ async function offerSave({blob,name,context}){
  return promise;
 }
 function changeSaveMode(mode){
- if(saveBusy||!pendingSave||!pendingSave.info.source)return;
- pendingSave.mode=mode;saveFolderReady=false;saveControls();
- void saveRun(async value=>{if(account)await saveStart(value);});
+ if(saveBusy||!pendingSave||!pendingSave.info.projectExport)return;
+ const preferredFolderId=!pendingSave.info.source?saveStack.at(-1)?.id:null;
+ if(pendingSave.mode==='copy')pendingSave.copyName=s('spSaveName').value;
+ else if(pendingSave.mode==='create')pendingSave.regularName=s('spSaveName').value;
+ pendingSave.mode=mode==='copy'?'copy':pendingSave.info.source?'update':'create';
+ s('spSaveName').value=pendingSave.mode==='create'?pendingSave.regularName:pendingSave.copyName;
+ saveFolderReady=false;saveControls();
+ void saveRun(async value=>{if(account)await saveStart(value,preferredFolderId);});
 }
 s('spSaveUpdate').onclick=()=>changeSaveMode('update');
 s('spSaveCopy').onclick=()=>changeSaveMode('copy');
@@ -287,8 +321,9 @@ s('spSaveConnect').onclick=()=>{
  void saveRun(async value=>{
   const response=await login;
   if(!currentSave(value))return;account=validAccount(response.account);writeAccountKey='';
-  sourceBinding.setIdentity({accountKey:accountKey(account),userId:value.userId});
-  msal.setActiveAccount(account);await saveStart(value);
+  msal.setActiveAccount(account);
+  await syncSaveIdentity(value);if(!currentSave(value))return;
+  await saveStart(value);
  });
 };
 s('spSaveReload').onclick=()=>void saveRun(refreshSave);
@@ -301,7 +336,7 @@ s('spSaveSubmit').onclick=()=>{
  if(config.save?.enabled!==true||config.save.mode!=='update-source'||JSON.stringify(config.save.writeScopes)!==JSON.stringify(WRITE_SCOPES)){
   saveStatus('Sparande till SharePoint är inte aktiverat i denna testversion.');return;
  }
- const value=pendingSave,expectedAccount=accountKey(account),updating=value.mode==='update';
+ const value=pendingSave,expectedAccount=accountKey(account),updating=value.mode==='update',named=value.mode==='create'&&value.info.projectExport;
  const destination={driveId:saveRoot.driveId,id:saveStack.at(-1).id};
  let name,source;
  try{source=updating?checkSourceAccount(value):null;name=validateCopyName(updating?source.name:s('spSaveName').value.trim());}
@@ -328,7 +363,7 @@ s('spSaveSubmit').onclick=()=>{
     s('spSaveProgress').value=progress.phase==='complete'?100:Math.min(99,fraction);
     saveStatus(progress.phase==='verifying'?'Bekräftar sparandet…':progress.phase==='validating'?(updating?'Kontrollerar filens version…':'Kontrollerar mappen…'):'Sparar… '+Math.min(99,fraction)+' %');
    }};
-   const item=updating?await writer.saveExisting({...options,source}):await writer.saveCopy({...options,destination,name});
+   const item=updating?await writer.saveExisting({...options,source}):named?await writer.saveNamed({...options,destination,name}):await writer.saveCopy({...options,destination,name});
    if(!currentSave(value))return;
    const folderLabel=saveStack.map(f=>f.name).join(' / ');
    sourceBinding.confirmSave(value.info,{...item,accountKey:expectedAccount,userId:user,folderLabel});
@@ -343,10 +378,10 @@ s('spSaveSubmit').onclick=()=>{
 window.addEventListener('beforeunload',event=>{if(pendingSave){event.preventDefault();event.returnValue='';}});
 installExportBridge({window,offerSave,captureContext:()=>sourceBinding.captureExport(),onError:error=>{if(error?.name!=='AbortError')showSaveResult('Exporten kunde inte lämnas till sparfunktionen. '+saveError(error));}});
 // Keep ordinary home/module navigation inside the explicitly separate test copies.
-const routes={'index.html':'sharepoint-app-test.html','all-in-one.html':'sharepoint-control-test.html','security.html':'sharepoint-security-test.html','smartmatch-slr-test.html':'sharepoint-smartmatch-test.html','smartmatch-read-test-v9-74.html':'sharepoint-read-test.html','smartmatch-read-test-v9-78.html':'sharepoint-read-test.html','smartmatch-read-test-v9-79.html':'sharepoint-read-test.html','drawing-tools.html':'sharepoint-drawing-test.html','ce-markning.html':'sharepoint-ce-test.html'};
+const routes={'index.html':'sharepoint-app-test.html','all-in-one.html':'sharepoint-control-test.html','security.html':'sharepoint-security-test.html','smartmatch-slr-test.html':'sharepoint-smartmatch-test.html','smartmatch-read-test-v9-74.html':'sharepoint-read-test.html','smartmatch-read-test-v9-78.html':'sharepoint-read-test.html','smartmatch-read-test-v9-79.html':'sharepoint-read-test.html','smartmatch-read-test-v9-80.html':'sharepoint-read-test.html','drawing-tools.html':'sharepoint-drawing-test.html','ce-markning.html':'sharepoint-ce-test.html'};
 document.addEventListener('click',event=>{
  const a=event.target.closest?.('a[href]');if(!a||a.hasAttribute('download')||a.target==='_blank')return;
  const u=new URL(a.href,location.href);if(u.origin!==location.origin)return;
  const parts=u.pathname.split('/');const name=parts.at(-1)||'index.html';if(!routes[name])return;
- parts[parts.length-1]=routes[name];u.pathname=parts.join('/');u.searchParams.set('spv','0.7');a.href=u.href;
+ parts[parts.length-1]=routes[name];u.pathname=parts.join('/');u.searchParams.set('spv','0.8');a.href=u.href;
 },true);

@@ -2,6 +2,18 @@
 export class InteractionRequiredAuthError extends Error {}
 
 const state = () => window.__saveBrowser.msal;
+// Only synthetic state is persisted. A real page reload must model MSAL's
+// account cache so the production source-binding restoration is exercised.
+const cacheKey='sharepoint-browser-fixture-account';
+const consentKey='sharepoint-browser-fixture-write-consent';
+const accountsKey='sharepoint-browser-fixture-accounts';
+const activeKey='sharepoint-browser-fixture-active';
+const cacheAccounts=(accounts,active)=>{
+  state().accounts=accounts;state().active=active;state().cached=accounts.length>0;
+  sessionStorage.setItem(cacheKey,accounts.length?'1':'0');
+  sessionStorage.setItem(accountsKey,JSON.stringify(accounts));
+  sessionStorage.setItem(activeKey,JSON.stringify(active));
+};
 const record = (method, request = {}) => state().calls.push({method, scopes: request.scopes || [], prompt: request.prompt || ''});
 const account = () => ({
   username: 'browser-test@example.invalid',
@@ -18,11 +30,20 @@ const response = request => {
 };
 
 export class PublicClientApplication {
-  constructor(config) { state().constructorConfig = config; }
-  async initialize() { record('initialize'); }
-  getAllAccounts() { return state().cached ? [account()] : []; }
+  constructor(config) { state().constructorConfig=config;state().cacheAccountsForReload=cacheAccounts; }
+  async initialize() {
+    record('initialize');
+    state().cached=state().cached||sessionStorage.getItem(cacheKey)==='1';
+    state().accounts=state().accounts||JSON.parse(sessionStorage.getItem(accountsKey)||'null');
+    state().active=state().active||JSON.parse(sessionStorage.getItem(activeKey)||'null');
+    if(sessionStorage.getItem(consentKey)==='1')state().requireWritePopup=false;
+  }
+  getAllAccounts() { return state().cached ? state().accounts||[account()] : []; }
   getActiveAccount() { return state().active || null; }
-  setActiveAccount(value) { state().active = value; }
+  setActiveAccount(value) {
+    const accounts=state().accounts||[];
+    cacheAccounts(value?[...accounts.filter(item=>item.homeAccountId!==value.homeAccountId),value]:accounts,value);
+  }
   async loginPopup(request) { record('loginPopup', request); return response(request); }
   async acquireTokenSilent(request) {
     record('acquireTokenSilent', request);
@@ -39,7 +60,12 @@ export class PublicClientApplication {
       throw error;
     }
     state().requireWritePopup = false;
+    sessionStorage.setItem(consentKey,'1');
     return response(request);
   }
-  async clearCache() { record('clearCache'); state().active = null; state().cached = false; }
+  async clearCache() {
+    record('clearCache');state().active=null;state().cached=false;
+    sessionStorage.removeItem(cacheKey);sessionStorage.removeItem(consentKey);
+    sessionStorage.removeItem(accountsKey);sessionStorage.removeItem(activeKey);state().accounts=[];
+  }
 }
