@@ -277,8 +277,8 @@ html[data-auth-pending] body{visibility:hidden}
 
 </style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.442"></script><script src="auth/guard.js?v=2.4.442" defer></script>
 <link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.359">
-<link rel="stylesheet" href="sharepoint-test/app.css?v=0.4">
-<script src="sharepoint-test/app.js?v=0.4" defer></script>
+<link rel="stylesheet" href="sharepoint-test/app.css?v=0.5">
+<script src="sharepoint-test/app.js?v=0.5" defer></script>
 </head><body data-require-role="admin" data-sharepoint-module="" data-view="drawing" class="homeMode">
 <div id="tillsynoNavCurtain" aria-hidden="true"></div>
 <section id="appHome" class="appHome" aria-label="Välj arbetsläge">
@@ -315,17 +315,17 @@ html[data-auth-pending] body{visibility:hidden}
       <p>Vad vill du arbeta med idag?</p>
     </div>
     <div class="homeChoices">
-      <a class="homeChoice" href="sharepoint-control-test.html?spv=0.4">
+      <a class="homeChoice" href="sharepoint-control-test.html?spv=0.5">
         <span class="homeChoiceIcon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v4H9M9 12l1.5 1.5 2.5-3M9 17l1.5 1.5 2.5-3M15 12h1.5M15 17h1.5"/></svg></span>
         <span class="homeChoiceCopy"><strong>Kontrollflöde</strong><small>Revision · egenkontroll · CE-märkning</small></span>
         <span class="homeChoiceArrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></span>
       </a>
-      <a class="homeChoice" href="sharepoint-smartmatch-test.html?spv=0.4">
+      <a class="homeChoice" href="sharepoint-smartmatch-test.html?spv=0.5">
         <span class="homeChoiceIcon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V4h4M16 4h4v4M4 16v4h4M16 20h4v-4M8 12h8M12 8v8"/><circle cx="12" cy="12" r="2"/></svg></span>
         <span class="homeChoiceCopy"><strong>SmartMatch</strong><small>Ritningar · dörrkort · CE-märkning</small></span>
         <span class="homeChoiceArrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></span>
       </a>
-      <a class="homeChoice" href="sharepoint-read-test.html?spv=0.4" style="margin-top:8px">
+      <a class="homeChoice" href="sharepoint-read-test.html?spv=0.5" style="margin-top:8px">
         <span class="homeChoiceIcon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg></span>
         <span class="homeChoiceCopy"><strong>Avläsning</strong><small>Dörrkort · material · tid</small></span>
         <span class="homeChoiceArrow" aria-hidden="true">›</span>
@@ -333,7 +333,7 @@ html[data-auth-pending] body{visibility:hidden}
     </div>
     <div class="homeTools">
       <div class="homeSectionLabel">Verktyg</div>
-      <a class="homeToolsLink" href="sharepoint-drawing-test.html?spv=0.4">
+      <a class="homeToolsLink" href="sharepoint-drawing-test.html?spv=0.5">
         <span class="homeToolsIcon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></svg></span>
         <span class="homeToolCopy"><strong>Ritningsverktyg</strong><small>Redigera · rensa · optimera PDF</small></span>
         <span class="homeChoiceArrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></span>
@@ -377,7 +377,7 @@ html[data-auth-pending] body{visibility:hidden}
 </dialog>
 
 <dialog id="overviewDialog" class="view" aria-labelledby="overviewTitle"><div class="overviewHead"><div><span class="eyebrow">OBJEKTETS AUTOMATIKER</span><h2 id="overviewTitle">Dörrar och anmärkningar</h2></div><div class="overviewHeadControls"><button id="closeOverview" aria-label="Till ritningen">×</button></div></div><div id="overviewProject" class="overviewProject"></div><p id="overviewSummary" role="status"></p><div class="overviewFilters"><label>Visa<select id="overviewFilter"><option value="all">Alla dörrar</option><option value="problems">Dörrar med fel</option><option value="untested">Ej klara</option><option value="ok">Godkända utan fel</option></select></label><label>Sök<input id="overviewSearch" type="search" placeholder="ID, modell, placering"></label></div><div class="overviewActions"><button id="overviewPdf">PDF anmärkningslista</button><button id="overviewBtn" hidden>Översikt</button></div><div id="overviewList"></div></dialog>
-<section id="projectPanel" class="view" hidden><div class="sheetHead"><div><span class="eyebrow">GEMENSAMT FÖR ALLA DÖRRAR</span><h2>Projekt och service</h2></div><button id="closeProject" aria-label="Till ritningen">×</button></div><p id="drawingInfo" class="muted"></p><p id="workFileInfo" class="fileInfo">En sparad arbets-PDF kan öppnas av nästa tekniker.</p><a class="securityLaunch" href="sharepoint-security-test.html?spv=0.4"><strong>Säkerhetsservice</strong><span>Inbrottslarm · Lås & Dörrmiljö · Passer</span><b>Öppna ›</b></a><div class="previewToolbar"><button id="toggleCustomerPreview" type="button" class="primary">👁 Visa kundmall</button><span>Ingen PDF sparas. Visningen följer alla ändringar i projekt och dörr.</span></div><div class="projectPreviewLayout"><div class="projectEditor"><div class="projectSections">
+<section id="projectPanel" class="view" hidden><div class="sheetHead"><div><span class="eyebrow">GEMENSAMT FÖR ALLA DÖRRAR</span><h2>Projekt och service</h2></div><button id="closeProject" aria-label="Till ritningen">×</button></div><p id="drawingInfo" class="muted"></p><p id="workFileInfo" class="fileInfo">En sparad arbets-PDF kan öppnas av nästa tekniker.</p><a class="securityLaunch" href="sharepoint-security-test.html?spv=0.5"><strong>Säkerhetsservice</strong><span>Inbrottslarm · Lås & Dörrmiljö · Passer</span><b>Öppna ›</b></a><div class="previewToolbar"><button id="toggleCustomerPreview" type="button" class="primary">👁 Visa kundmall</button><span>Ingen PDF sparas. Visningen följer alla ändringar i projekt och dörr.</span></div><div class="projectPreviewLayout"><div class="projectEditor"><div class="projectSections">
 <section class="projectCard"><div class="projectCardHead"><span>1</span><div><h3>Anläggning & jobb</h3><p>Grunduppgifter för hela projektet</p></div></div><div class="grid2"><label class="wide">Anläggning / objekt<input id="projectName" placeholder="Exempel: Håsten Skolan"></label><label>Anläggningsnummer<input id="facilityNo" placeholder="1111-1"></label><label>Ordernummer / AO<input id="projectOrder"></label><label>Bokat besök datum<input id="inspectionDate" type="date"></label><label>Nästa provning datum<input id="projectNextDate" type="date"></label></div></section>
 <section class="projectCard"><div class="projectCardHead"><span>2</span><div><h3>Beställare</h3><p>Fyll i kundens uppgifter först</p></div></div><div class="grid2"><label>Beställare / företag<input id="customer" placeholder="Exempel: Varbergs Bostad"></label><label>Avtalsnummer<input id="agreementNo"></label><label>Kontaktperson<input id="contact"></label><label>Telefonnummer<input id="phone" type="text" inputmode="text" placeholder="070-123 45 67"></label><label>Adress<input id="address"></label><label>Postnummer<input id="postalCode" type="text" inputmode="text" placeholder="432 65"></label><label>Postadress<input id="postalCity"></label></div></section>
 <section class="projectCard"><div class="projectCardHead"><span>3</span><div><h3>Serviceföretag</h3><p>Fyll sedan i företaget som utför servicen</p></div></div><div class="grid2"><label>Företag<input id="company"></label><label>Kontaktman på objektet<input id="companyContact"></label><label>Telefonnummer<input id="companyPhone" type="text" inputmode="text" placeholder="0340-12 34 56"></label><label>Adress<input id="companyAddress"></label><label>Postnummer<input id="companyPostalCode" type="text" inputmode="text" placeholder="432 65"></label><label>Postadress<input id="companyPostalCity"></label></div></section>
@@ -401,6 +401,6 @@ html[data-auth-pending] body{visibility:hidden}
 })();</script>
 <script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let observer=null;function reveal(){if(root.hasAttribute('data-auth-pending')){if(!observer){observer=new MutationObserver(reveal);observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}return}if(observer){observer.disconnect();observer=null}root.classList.add('tillsyno-nav-ready')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',reveal)})();</script>
 <script src="tillsyno-appearance.js?v=2.4.398"></script>
-<aside class="spTestBadge">SharePoint TEST 0.4 · <a href="sharepoint-app-test.html?spv=0.4">Teststartsida</a></aside></body></html>
+<aside class="spTestBadge">SharePoint TEST 0.5 · <a href="sharepoint-app-test.html?spv=0.5">Teststartsida</a></aside></body></html>
 
 

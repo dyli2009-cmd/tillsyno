@@ -1,0 +1,219 @@
+// Synthetic local browser harness. Every non-local network request is intercepted.
+import assert from 'node:assert/strict';
+import {createServer} from 'node:http';
+import {readFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import {resolve,sep,extname} from 'node:path';
+
+const project = fileURLToPath(new URL('../', import.meta.url));
+export const TENANT = '23d1ec30-32c7-404c-92f4-22415c2bf2dd';
+export const SITE = 'https://tillsyno.sharepoint.com/sites/Tillsyno';
+
+export const fixtureScript = String.raw`
+window.__saveBrowser = {
+  tenantId: '${TENANT}',
+  access: {role:'admin', userId:'browser-test-user',email:'browser-test@example.invalid'}, permitted:true,
+  msal:{calls:[],cached:false,requireWritePopup:true},
+  exports:[], nativePickerCalls:[], nativeShares:[], directWrites:0, errors:[]
+};
+window.TillsynoAuth = {
+  verify:async()=>({...window.__saveBrowser.access}),
+  permitted:()=>window.__saveBrowser.permitted,
+  logout:async()=>{},
+  client:{rpc:async(name,parameters)=>{
+    if(name!=='tillsyno_verify_read_code'||parameters?.p_pin!=='1234')throw Error('Only the synthetic fixture PIN is accepted.');
+    return {data:{ok:true},error:null};
+  }}
+};
+window.addEventListener('unhandledrejection',event=>{
+  window.__saveBrowser.errors.push(String(event.reason?.message||event.reason));
+});
+window.showSaveFilePicker = async options => {
+  window.__saveBrowser.nativePickerCalls.push({suggestedName:options?.suggestedName});
+  const directory=await navigator.storage.getDirectory();
+  return directory.getFileHandle(options?.suggestedName||'local-copy.pdf',{create:true});
+};
+Object.defineProperty(navigator,'canShare',{configurable:true,value:()=>true});
+Object.defineProperty(navigator,'share',{configurable:true,value:async data=>{
+  const files=[];
+  for(const file of data.files||[])files.push({name:file.name,type:file.type,bytes:Array.from(new Uint8Array(await file.arrayBuffer()))});
+  window.__saveBrowser.nativeShares.push({title:data.title,files});
+}});
+window.__startExport = async function(kind='picker',name='Synthetic protocol.pdf',options={}){
+  const state={kind,name,state:'preparing'};
+  window.__saveBrowser.exports.push(state);
+  const response=await fetch('/fixture.pdf');
+  const original=await response.blob();
+  const blob=options.size ? new Blob([new Uint8Array(options.size)],{type:'application/pdf'}) : original;
+  state.bytes=blob.size;
+  try{
+    if(kind==='anchor'){
+      const url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=name;
+      state.state='awaiting-destination';
+      a.click();
+      URL.revokeObjectURL(url); // Match the actual exporters' short-lived Blob URL.
+      return;
+    }
+    if(kind==='share'){
+      state.state='awaiting-destination';
+      await navigator.share({title:'Synthetic browser protocol',files:[new File([blob],name,{type:blob.type})]});
+    }else{
+      const handle=await showSaveFilePicker({suggestedName:name,types:[{description:'PDF',accept:{'application/pdf':['.pdf']}}]});
+      const writable=await handle.createWritable();
+      await writable.write(blob);
+      state.state='awaiting-destination';
+      await writable.close();
+      state.handleName=handle.name;
+      if(handle.getFile){const file=await handle.getFile();state.returnedBytes=Array.from(new Uint8Array(await file.arrayBuffer()));}
+    }
+    state.state='saved';
+  }catch(error){state.state=error?.name==='AbortError'?'cancelled':'error';state.error=error?.message||String(error);}
+};
+document.querySelector('#smartExportSaveObject').onclick=()=>{window.__saveBrowser.directWrites++;};
+document.querySelector('#smartExportSaveAs').onclick=()=>void window.__startExport('picker','Fresh copy.pdf');
+`;
+
+export async function createHarnessServer(pdfBytes,options={}) {
+  const {build}=await import('esbuild');
+  const result = await build({
+    absWorkingDir: project,
+    entryPoints: ['src/app.mjs'], bundle: true, write: false,
+    format: 'iife', platform: 'browser', target: ['es2020'],
+    plugins: [{name: 'fixture-msal', setup(plugin) {
+      plugin.onResolve({filter: /^@azure\/msal-browser$/}, () => ({path: fileURLToPath(new URL('./save-browser.msal-stub.mjs', import.meta.url))}));
+    }}],
+  });
+  const app = result.outputFiles[0].contents;
+  const config = JSON.parse(await readFile(project + 'auth-config.json', 'utf8'));
+  const server = createServer(async(request, response) => {
+    const path = new URL(request.url, 'http://localhost').pathname;
+    if (path === '/app.bundle.js'||options.realPage&&path==='/sharepoint-test/app.js') {
+      response.writeHead(200, {'Content-Type':'text/javascript'}); response.end(app);
+    } else if (path === '/fixture.pdf') {
+      response.writeHead(200, {'Content-Type':'application/pdf'}); response.end(pdfBytes);
+    } else if (path === '/sharepoint-test/auth-config.json') {
+      const adjusted = structuredClone(config);
+      adjusted.msal.auth.redirectUri = 'http://127.0.0.1:' + server.address().port + '/sharepoint-test/auth-callback.html';
+      response.writeHead(200, {'Content-Type':'application/json'}); response.end(JSON.stringify(adjusted));
+    } else if (path === '/sharepoint-test/app.css') {
+      readFile(project+'app.css').then(css=>{response.writeHead(200,{'Content-Type':'text/css'});response.end(css);}).catch(()=>response.end());
+    } else if(options.realPage&&path==='/auth/client.js'){
+      const script=fixtureScript.slice(0,fixtureScript.indexOf("document.querySelector('#smartExportSaveObject').onclick"));
+      response.writeHead(200,{'Content-Type':'text/javascript'});response.end(script);
+    } else if(options.realPage){
+      const repo=resolve(project,'..'),filename=resolve(repo,decodeURIComponent(path).replace(/^\//,''));
+      if(!filename.startsWith(repo+sep)){response.writeHead(403);response.end();return;}
+      try{
+        const bytes=await readFile(filename);
+        response.writeHead(200,{'Content-Type':({'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.wasm':'application/wasm','.json':'application/json','.png':'image/png','.svg':'image/svg+xml'})[extname(filename)]||'application/octet-stream'});
+        response.end(bytes);
+      }catch{response.writeHead(404);response.end();}
+    } else {
+      response.writeHead(200, {'Content-Type':'text/html'});
+      response.end(`<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/sharepoint-test/app.css"></head><body data-sharepoint-module="smartmatch"><main><h1>Synthetic export integration fixture</h1><input id="localSource" type="file" accept=".pdf"><button id="smartExportSaveObject" type="button">Spara objekt</button><button id="smartExportSaveAs" type="button">Spara som</button></main><script>${fixtureScript}</script><script src="/app.bundle.js"></script></body></html>`);
+    }
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  return {
+    base: 'http://127.0.0.1:' + server.address().port,
+    close: () => new Promise((resolve,reject)=>server.close(error=>error?reject(error):resolve())),
+  };
+}
+
+function latch() {
+  let release;
+  const promise = new Promise(resolve => { release=resolve; });
+  return {promise, release};
+}
+
+export class GraphFixture {
+  constructor(options={}) {
+    this.options=options; this.requests=[]; this.chunks=[]; this.sessionCount=0;
+    this.uploadReceived=latch();this.uploadRelease=latch();
+    this.readbackReceived=latch();this.readbackRelease=latch();
+    this.name='';this.parent='root-folder';this.size=0;
+  }
+  get writes(){return this.requests.filter(request=>request.method!=='GET');}
+  get bytes(){return Buffer.concat(this.chunks.map(chunk=>chunk.bytes));}
+  item() { return {id:'saved-item',name:this.name,size:this.size,file:{mimeType:'application/pdf'},parentReference:{driveId:'drive-test',id:this.parent},webUrl:SITE+'/Delade%20dokument/GStest/'+encodeURIComponent(this.name)}; }
+  folder(id) {
+    if(id==='root-folder')return {id,name:'GStest',folder:{},parentReference:{driveId:'drive-test',id:'library-root'}};
+    if(id==='child-folder')return {id,name:'Protokoll',folder:{},parentReference:{driveId:'drive-test',id:'root-folder'}};
+    if(id==='outside-folder')return {id,name:'Outside',folder:{},parentReference:{driveId:'drive-test',id:'library-root'}};
+    return {id:'library-root',name:'Documents',folder:{},root:{},parentReference:{driveId:'drive-test'}};
+  }
+  async install(context,base) {
+    await context.route('**/*',async route=>{
+      const request=route.request(),url=new URL(request.url());
+      if(url.origin===base)return route.continue();
+      if(request.method()==='OPTIONS')return route.fulfill({status:204,headers:{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, POST, PUT','Access-Control-Allow-Headers':'authorization,content-type,content-range'}});
+      const record={url:url.href,path:decodeURIComponent(url.pathname),method:request.method(),headers:await request.allHeaders(),body:request.postDataBuffer()};
+      this.requests.push(record);
+      const json=(body,status=200)=>route.fulfill({status,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'*'},body:JSON.stringify(body)});
+      if(url.origin==='https://graph.microsoft.com'){
+        if(record.method==='POST'&&record.path.endsWith('/createUploadSession')){
+          this.sessionCount++;
+          assert.equal(record.headers.authorization,'Bearer stub-write-token');
+          const body=JSON.parse(record.body.toString());
+          assert.equal(body.item['@microsoft.graph.conflictBehavior'],'fail');
+          this.name=body.item.name;
+          this.parent=record.path.match(/\/items\/([^:]+):\//)?.[1]||'root-folder';
+          if(this.options.conflict)return json({error:{code:'nameAlreadyExists',message:'Fixture conflict'}},409);
+          return json({uploadUrl:'https://tillsyno.sharepoint.com/_api/test-upload/session',expirationDateTime:'2099-01-01T00:00:00Z',nextExpectedRanges:['0-']});
+        }
+        assert.equal(record.method,'GET','Only new-copy upload-session creation may mutate Graph.');
+        assert.equal(record.headers.authorization,'Bearer stub-read-token');
+        if(record.path==='/v1.0/sites/tillsyno.sharepoint.com:/sites/Tillsyno')return json({id:'site-test',webUrl:SITE});
+        if(record.path==='/v1.0/sites/site-test/drives')return json({value:[{id:'drive-test',webUrl:SITE+'/Delade%20dokument'}]});
+        if(record.path==='/v1.0/drives/drive-test/root:/GStest')return json(this.folder('root-folder'));
+        if(record.path.endsWith('/children'))return json({value:record.path.includes('/child-folder/')?[]:[this.folder('child-folder'),{id:'existing-file',name:'Existing.pdf',size:10,file:{mimeType:'application/pdf'}}]});
+        if(record.path==='/v1.0/drives/drive-test/items/saved-item'){
+          this.readbackReceived.release();
+          if(this.options.holdReadback)await this.readbackRelease.promise;
+          if(this.options.badReadback)return json({...this.item(),size:this.size+1});
+          return json(this.item());
+        }
+        const match=record.path.match(/^\/v1\.0\/drives\/drive-test\/items\/([^/]+)$/);
+        if(match)return json(this.folder(match[1]));
+      }else if(url.origin==='https://tillsyno.sharepoint.com'&&url.pathname==='/_api/test-upload/session'){
+        assert.equal(record.method,'PUT');
+        assert.equal(record.headers.authorization,undefined,'Preauthenticated upload URLs must never receive a Bearer token.');
+        const range=record.headers['content-range'].match(/^bytes (\d+)-(\d+)\/(\d+)$/);
+        assert.ok(range,'Each upload chunk has an explicit Content-Range.');
+        const [,start,end,total]=range.map(Number);
+        assert.equal(record.body.length,end-start+1);
+        assert.equal(start,this.bytes.length,'No chunk is silently retried or skipped.');
+        this.chunks.push({bytes:record.body,start,end,total});this.size=total;
+        this.uploadReceived.release();
+        if(this.options.failUpload)return route.abort('failed');
+        if(this.options.holdUpload)await this.uploadRelease.promise;
+        if(end+1<total)return json({nextExpectedRanges:[String(end+1)+'-'],expirationDateTime:'2099-01-01T00:00:00Z'},202);
+        return json(this.item(),201);
+      }
+      await route.abort('blockedbyclient');
+      throw new Error('Unexpected non-local request blocked: '+record.method+' '+url.href);
+    });
+  }
+  release(){this.uploadRelease.release();this.readbackRelease.release();}
+}
+
+export async function waitFor(page,predicate,arg) {
+  await page.waitForFunction(predicate,arg,{timeout:12000});
+}
+
+export async function bounded(promise,label) {
+  let timer;
+  try{return await Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Timed out waiting for '+label)),12000);})]);}
+  finally{clearTimeout(timer);}
+}
+
+export async function startExport(page,kind='picker',name='Synthetic protocol.pdf',options={}) {
+  await page.evaluate(({kind,name,options})=>{void window.__startExport(kind,name,options);},{kind,name,options});
+  await page.locator('#spSavePicker').waitFor({state:'visible'});
+}
+
+export async function connect(page) {
+  await page.locator('#spSaveConnect').click();
+  await waitFor(page,()=>document.querySelector('#spSaveFolders')?.textContent.includes('Protokoll')||!!document.querySelector('#spSaveSubmit')&&!document.querySelector('#spSaveSubmit').disabled);
+}
