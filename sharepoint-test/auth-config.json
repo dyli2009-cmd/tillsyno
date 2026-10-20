@@ -20,8 +20,10 @@
     "targetModule": "smartmatch-read-test-v9-74.html",
     "enabled": false,
     "readOnly": true,
-    "siteUrl": null,
-    "folderPath": null
+    "siteUrl": "https://tillsyno.sharepoint.com/sites/Tillsyno",
+    "libraryServerRelativePath": "/sites/Tillsyno/Delade dokument",
+    "folderPath": "GStest",
+    "folderServerRelativePath": "/sites/Tillsyno/Delade dokument/GStest"
   },
   "setupEvidence": {
     "source": "user-provided; not verified against Microsoft APIs",
@@ -29,6 +31,8 @@
     "tenantIdLabelConfirmed": false,
     "tenantIdNote": "Third ID supplied after asking for Katalog-ID; second ID was explicitly identified as Objekt-ID and is not used.",
     "adminConsent": "user-reported-granted",
-    "liveSignInTest": "not-performed"
+    "liveSignInTest": "not-performed",
+    "folderLocationSource": "Decoded from the SharePoint folder browser URL supplied by the user on 2026-10-20. The id and newTargetListUrl query parameters identify the folder and document-library paths.",
+    "folderAccessVerified": false
   }
 }
