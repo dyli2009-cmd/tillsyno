@@ -53,12 +53,51 @@ function legacyRuntime(kind) {
  return null;
 }
 
+function projectString(entry,PDFLib) {
+ // PDFLib's decodeText spreads every decoded character into one call. Real
+ // read projects can exceed that argument limit even when the PDF is small.
+ // Preserve the reader's UTF-16 code units in blocks, including surrogate
+ // pairs across block boundaries, without a second full numeric byte array.
+ let length,byteAt,hex;
+ if (entry instanceof PDFLib.PDFHexString) {
+  const raw = entry.asString();
+  if (typeof raw !== 'string') throw new Error('Ogiltig projektsträng.');
+  hex = raw.replace(/\s/g,'');
+  if (/[^0-9a-f]/i.test(hex)) throw new Error('Ogiltig hexadecimal projektinformation.');
+  length = Math.ceil(hex.length/2);
+  byteAt = index => parseInt(hex.slice(index*2,index*2+2).padEnd(2,'0'),16);
+ } else if (entry instanceof PDFLib.PDFString) {
+  // Literal PDF strings may contain escaped bytes. Let the library unescape
+  // those bytes once, then avoid its unbounded text-decoding call.
+  const bytes = entry.asBytes();length = bytes.length;byteAt = index => bytes[index];
+ } else throw new Error('Projektinformationen är inte en PDF-sträng.');
+ const first = byteAt(0),second = byteAt(1),little = first === 255 && second === 254;
+ const utf16 = little || (first === 254 && second === 255),parts = [];
+ if (utf16) {
+  if (length%2 || (hex !== undefined && hex.length%4)) throw new Error('Ofullständig UTF-16-projektinformation.');
+  let units = [];
+  for (let offset=2;offset<length;offset+=2) {
+   const a=byteAt(offset),b=byteAt(offset+1);units.push(little ? b*256+a : a*256+b);
+   if (units.length===8192) { parts.push(String.fromCharCode(...units));units=[]; }
+  }
+  if (units.length) parts.push(String.fromCharCode(...units));
+ } else {
+  // PDFDocEncoding is byte-based. A leading space prevents an internal byte
+  // pair at a chunk boundary from being mistaken for a fresh UTF-16 BOM.
+  for (let offset=0;offset<length;offset+=8192) {
+   const block=['20'];
+   for (let index=offset;index<Math.min(offset+8192,length);index++) block.push(byteAt(index).toString(16).padStart(2,'0'));
+   parts.push(PDFLib.PDFHexString.of(block.join('')).decodeText().slice(1));
+  }
+ }
+ return parts.join('');
+}
+
 function catalogueValue(doc,key,PDFLib) {
  const entry = doc.catalog.lookup(PDFLib.PDFName.of(key));
  if (!entry) return null;
- if (entry instanceof PDFLib.PDFRawStream) return JSON.parse(new TextDecoder().decode(PDFLib.decodePDFRawStream(entry).decode()));
- const text = entry.decodeText?.() || entry.asString?.();
- return text ? JSON.parse(text) : null;
+ if (entry instanceof PDFLib.PDFRawStream) return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(PDFLib.decodePDFRawStream(entry).decode()));
+ return JSON.parse(projectString(entry,PDFLib));
 }
 
 function byteView(input) {
@@ -79,15 +118,16 @@ export async function inspectProjectPdf(input,{window,kind}={}) {
  if (!new TextDecoder().decode(bytes.subarray(0,1024)).includes('%PDF-')) return null;
  const P = window.PDFLib, doc = await P.PDFDocument.load(bytes,{updateMetadata:false});
  if (kind === 'smartmatch') {
-  const value = catalogueValue(doc,'TillsynoSmartMatchV36Data',P) || catalogueValue(doc,'TillsynoSmartMatchV30Data',P);
-  if (!value) return null;
+  const key = ['TillsynoSmartMatchV36Data','TillsynoSmartMatchV30Data'].find(name=>doc.catalog.has(P.PDFName.of(name)));
+  if (!key) return null;
+  const value = catalogueValue(doc,key,P);
   if (!object(value) || !Number.isInteger(value.schema) || value.schema < 1 || value.schema > 6) return {kind,unsupported:true};
   if (!nonempty(value.projectId) || !object(value.instances) || !Array.isArray(value.automationItems)) return {kind,unsupported:true};
   return {kind,projectId:value.projectId};
  }
  if (kind === 'ce') {
+  if (!doc.catalog.has(P.PDFName.of('TillsynoCETestData'))) return null;
   const value = catalogueValue(doc,'TillsynoCETestData',P);
-  if (!value) return null;
   if (!object(value) || !Number.isInteger(value.schema) || value.schema < 2 || value.schema > 60 || value.format !== 'Tillsyno CE-märkning TEST '+value.schema || !nonempty(value.projectId) || !object(value.meta) || !Array.isArray(value.doors)) return {kind,unsupported:true};
   return {kind,projectId:value.projectId};
  }

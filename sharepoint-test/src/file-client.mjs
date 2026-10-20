@@ -17,6 +17,21 @@ function checkFolder(item,driveId,id){
  return item;
 }
 export const MIME={pdf:'application/pdf',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp',zip:'application/zip'};
+// Optional presentation data from Graph. Keep it separate from source identity
+// and never substitute the signed-in account or a client-generated timestamp.
+export function serverModification(item){
+ const result={},rawName=item?.lastModifiedBy?.user?.displayName;
+ if(typeof rawName==='string'){
+  const name=rawName.slice(0,1024).replace(/[\u0000-\u001f\u007f-\u009f]/gu,' ').replace(/[\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]/gu,'').replace(/\s+/gu,' ').trim();
+  const characters=Array.from(name);
+  if(characters.length)result.lastModifiedBy={user:{displayName:characters.length>120?characters.slice(0,119).join('')+'…':name}};
+ }
+ const date=item?.lastModifiedDateTime;
+ if(typeof date==='string'&&date.length<=40&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?(?:Z|[+-]\d{2}:\d{2})$/u.test(date)&&Number.isFinite(Date.parse(date))){
+  result.lastModifiedDateTime=date;
+ }
+ return result;
+}
 export function mimeFor(name){return MIME[String(name).split('.').pop().toLowerCase()]||'';}
 export function accepts(name,accept=''){
  const mime=mimeFor(name);if(!mime)return false;
@@ -110,7 +125,7 @@ export class SharePointFiles extends ReadOnlySharePoint{
   }
   throw failure('Mappen ligger inte under den valda SharePoint-mappen.','invalid_destination');
  }
- children(driveId,id){return this.all('/v1.0/drives/'+enc(driveId)+'/items/'+enc(id)+'/children?$select=id,name,size,file,folder');}
+ children(driveId,id){return this.all('/v1.0/drives/'+enc(driveId)+'/items/'+enc(id)+'/children?$select=id,name,size,file,folder,lastModifiedBy,lastModifiedDateTime');}
  async fileWithSource(driveId,id,accept,{signal,onProgress}={}){
   // Bind the downloaded bytes to one stable cloud revision. The ordinary
   // read-only file() API is unchanged for callers that do not save back.

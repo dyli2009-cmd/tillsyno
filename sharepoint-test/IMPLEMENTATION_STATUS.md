@@ -1,6 +1,31 @@
-# SharePoint-test 0.8 – status 2026-10-20
+# SharePoint-test 0.9 – status 2026-10-20
 
-## Implementerat
+## Ny rättning efter det upprepade namnfelet
+
+Användaren fick samma namnfel efter 0.8. Felet har nu återskapats genom den riktiga Avläsning 9.80-vägen **Spara → Förbered PDF → Spara PDF**. En giltig projektfil med **162 416 JSON-tecken** öppnades korrekt av Avläsning, men SharePoint-adapterns `PDFLib.decodeText()` överskred JavaScripts argumentgräns. Adaptern klassade då exporten som separat fil och valde `saveCopy`, vilket gav exakt den rapporterade feltexten. Den komprimerade PDF:en var bara **7 822 bytes**. Det tidigare 101 MiB-testet hade liten projektmetadata och täckte därför inte denna risk.
+
+Projektsträngar avkodas nu i block om högst 8 192 kodenheter. Rättningen täcker både stor metadata redan vid öppning och en liten källa vars information växer vid export. Projekt-ID, schema, fullprojektsparning, konto, aktiv arbetsyta, käll-ID och eTag måste fortfarande stämma. En befintlig katalog med exempelvis JSON `null`, fel PDF-typ eller okänd framtida schema får inte behandlas som en rå ritning utan metadata.
+
+Fillistan och den verifierade sparbekräftelsen visar nu **Senast ändrad i SharePoint: namn · tid**. Namnet och tidsstämpeln kommer från Microsofts `lastModifiedBy` och `lastModifiedDateTime`; sparbekräftelsen använder den sista redan verifierade metadatahämtningen. Saknade uppgifter visas neutralt. Aktuellt inloggat konto och enhetens klocka används inte som ersättning för serveruppgifterna. Datum visas på svenska i enhetens lokala tidszon. Detta är uppgift om filens senaste ändring, inte närvaro, ett redigeringslås eller historik per dörr.
+
+### Verifiering av 0.9
+
+- **147 direkta Node-testfall passerade:** läsklient/mappar/fetch 37, exportbrygga 16, källbindning 37, skrivklient 50 och ändringsmetadata 7. `npm test`, byggning och syntaxkontroll passerar.
+- Fem nya källbindningsfall täcker stor riktig 9.80-metadata, tillväxt vid export, Unicode/byteordning/blockgränser samt avvisning av fel projekt, felaktig metadata och framtida schema. Fil-ID, namn och tidigare eTag bevaras genom upprepade sparningar.
+- Sju metadatafall kontrollerar servernamn/tid, lokala tidszoner, neutrala reservtexter och att den sista verifierade GET-responsen används även när PUT-responsen innehåller ett annat namn och en annan tid.
+- Två nya riktiga Avläsningsflöden öppnar en genererad projekt-PDF med mer än 180 000 JSON-tecken, ändrar en arbetsrad, sparar två gånger till samma fil-ID/namn och öppnar resultatet i en ny webbläsarkontext med bocken kvar. Det ena öppnar från SharePoint; det andra öppnar lokalt och använder det befintliga namnet i vald mapp. Inga kopior skapas. Den långa källtabellen finns kvar i de faktiskt uppladdade bytesen.
+- **24 av 24 webbläsarfall passerade på 56,98 sekunder**, inklusive de två nya stora-JSON-fallen och tidigare konflikt-, kopie-, konto-, återställnings- och avbrottsfall. 101 MiB-rundturen öppnade 105 908 528 bytes och sparade 105 916 295 respektive 105 916 294 bytes i 21 delar vardera till samma fil, följt av återöppning med bocken kvar.
+- Fillistan och kvittensen visar serverns namn/tid, även när uppladdningssvaret medvetet anger en annan person. Telefonvyn har bildgranskats utan horisontell överströmning.
+
+Endast de isolerade SharePoint-testkopiorna och `sharepoint-test/` ändras. Avläsningssnapshoten är fortsatt 9.80. **Ingen faktisk uppladdning till användarens Microsoft-tenant eller provning av användarens riktiga PDF har utförts här.** `save.liveUploadVerified` är fortsatt `false`.
+
+### Flera personer
+
+Uppgiften om senaste ändrare löser spårbarhet på filnivå. Den sammanfogar inte två personers kompletta projekt-PDF:er. Använd en person åt gången i samma projekt tills ett separat flöde för låsning eller strukturerade samtidiga ändringar har beslutats och verifierats. Nästa person behöver öppna den senaste gemensamma filen. SharePoints versionshistorik kan bevara äldre versioner under samma synliga filnamn beroende på bibliotekets inställningar; någon sådan inställning har inte ändrats eller verifierats här.
+
+Den separata vägen **Skicka mejl över 18 MiB → Fortsätt** kan fortfarande tappa adapterklassificeringen under bekräftelsedialogen. 0.9 rättar den vanliga projektsparningen och stor projektmetadata; export-intent för e-post har inte ändrats.
+
+## Kvarvarande beteende från 0.8
 
 **Vanligt Spara uppdaterar samma projektfil med samma namn.** En känd SharePoint-källa sparas på sitt verifierade fil-ID. Om ett komplett projekt saknar kopplingen letar **Samma namn** efter det valda namnet i den valda mappen: finns filen uppdateras den, annars skapas den där. Nästa sparning använder det bekräftade fil-ID:t. **Ny kopia** är ett uttryckligt separat val och skriver inte över en befintlig namne.
 
@@ -34,7 +59,7 @@ SmartMatch-/CE-importens interna fingerprint beräknas i ordnade bitar om högst
 
 Konflikt, avbrott eller nätfel skapar ingen automatisk kopia. Exporten finns kvar för ett uttryckligt nytt försök, kopieval eller lokalt sparande. Vid osäkert svar efter sista filblocket uppmanas användaren att kontrollera SharePoint först. Ingen automatisk retry sker.
 
-## Verifiering
+## Tidigare verifiering av 0.8
 
 - **135 direkta Node-testfall passerade:** läsklient/mappar/fetch 37, exportbrygga 16, källbindning 32 och skrivklient 50. Nya fall täcker namnsparning i exakt vald mapp, nya kvittenser, skapanderace, versionsändringar, förberedelseöverlämning, återställning före första export, skilda eTag per flik, lokal filöppning och lagringsfel. Tidigare fall för mappar, filstorlek, hämtning och avbrott passerar också.
 - En riktig syntetisk projekt-PDF på **104 858 478 bytes** verifierar import, två sparningar till samma ID och nya eTag. Instrumentering visar högst 2 MiB per hashoperation, ingen extra helfilsbuffer vid SmartMatch-import och en aktiv PDF-parsning. En separat **100 MiB-byteöverföring** har laddats upp två gånger i 40 delar om 5 MiB, med SHA-256-kontroll av båda fullständiga resultaten.
@@ -72,3 +97,6 @@ Inga kundfiler, autentiseringstoken eller tillfälliga upload-URL:er har lagts t
 
 - https://learn.microsoft.com/en-us/graph/api/driveitem-createuploadsession?view=graph-rest-1.0
 - https://learn.microsoft.com/en-us/onedrive/developer/rest-api/concepts/addressing-driveitems?view=odsp-graph-online
+- https://learn.microsoft.com/en-us/graph/api/resources/driveitem?view=graph-rest-1.0
+- https://learn.microsoft.com/en-us/graph/api/driveitem-list-versions?view=graph-rest-1.0
+- https://support.microsoft.com/en-us/sharepoint/get-started-with-sharepoint/document-collaboration-and-co-authoring

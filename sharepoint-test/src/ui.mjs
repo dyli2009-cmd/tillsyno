@@ -1,6 +1,12 @@
 /* Shared presentation for the isolated SharePoint pickers. The app supplies
  * dynamic file/account text via textContent; no state belongs in this module. */
 import {MAX_FILE_MB,MAX_SELECTION_MB} from './limits.mjs';
+import {serverModification} from './file-client.mjs';
+export function lastModifiedText(item){
+ const metadata=serverModification(item),name=metadata.lastModifiedBy?.user?.displayName||'namn saknas';
+ const date=metadata.lastModifiedDateTime?new Intl.DateTimeFormat('sv-SE',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(metadata.lastModifiedDateTime)):'tid saknas';
+ return 'Senast ändrad i SharePoint: '+name+' · '+date;
+}
 const paths=Object.freeze({
  cloud:'<path d="M6.2 18a4.2 4.2 0 0 1-.8-8.3A6.5 6.5 0 0 1 18 8.4 4.8 4.8 0 0 1 18.2 18Z"/>',
  folder:'<path d="M3 7.5V6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M3 9h18"/>',

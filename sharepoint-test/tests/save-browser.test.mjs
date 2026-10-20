@@ -690,6 +690,92 @@ describe('SharePoint save browser integration (synthetic local Microsoft stubs)'
     }finally{await realServer.close();}
   });
 
+  for(const origin of ['cloud','local'])test('a '+origin+' project with large embedded JSON remains a full-project save through the ordinary Save button',{timeout:60000},async()=>{
+    const input=await projectFixture({sourceTableCharacters:180000}),realServer=await createHarnessServer(input.bytes,{realPage:true});
+    const name='Metadata-rikt projekt.pdf';
+    assert.ok(input.projectJSONLength>150000,'The project catalogue must cross the old decodeText argument limit.');
+    assert.ok(input.bytes.length<1024*1024,'Metadata size must be tested independently of large file transfer size.');
+    try{
+      await scenario('large-project-json-'+origin,{server:realServer,sourceBytes:input.bytes,sourceName:name,
+        putMetadata:{lastModifiedBy:{user:{displayName:'Unverified upload response'}},lastModifiedDateTime:'2026-10-19T08:00:00Z'},
+        readbackMetadata:{lastModifiedBy:{user:{displayName:'Serverns sparande kollega'}},lastModifiedDateTime:'2026-10-20T14:31:00Z'},
+      },async({page,graph,downloads})=>{
+        Object.assign(graph.files.get('source-item'),{lastModifiedBy:{user:{displayName:'Tidigare kollega i SharePoint'}},lastModifiedDateTime:'2026-10-20T10:42:00Z'});
+        await unlockReal(page);
+        if(origin==='cloud'){
+          await page.locator('#pwOpenProjectEmpty').click();await page.locator('#spConnect').click();
+          const row=page.locator('#spFiles label').filter({has:page.locator('input[value="source-item"]')});
+          await row.locator('input').check();
+          const modified=await row.locator('.spFileModified').textContent();
+          const date=await page.evaluate(value=>({day:new Date(value).toLocaleDateString('sv-SE',{year:'numeric',month:'short',day:'numeric'}),time:new Date(value).toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'})}),'2026-10-20T10:42:00Z');
+          assert.match(modified,/Tidigare kollega i SharePoint/);assert.ok(modified.includes(date.day)&&modified.includes(date.time),modified);
+          assert.doesNotMatch(modified,/browser-test@example/,'The listed editor must come from SharePoint, not the logged-in stub.');
+          await page.screenshot({path:artifactDir+'/server-editor-file-list-desktop.png',fullPage:true});
+          await page.setViewportSize({width:390,height:844});
+          const bounds=await page.locator('#spFilePicker').evaluate(dialog=>{const rect=dialog.getBoundingClientRect();return {left:rect.left,right:rect.right,overflow:dialog.scrollWidth-dialog.clientWidth,width:innerWidth};});
+          assert.ok(bounds.left>=0&&bounds.right<=bounds.width+1&&bounds.overflow<=1,JSON.stringify(bounds));
+          await page.screenshot({path:artifactDir+'/server-editor-file-list-phone.png',fullPage:true});
+          await page.setViewportSize({width:1280,height:900});
+          await page.locator('#spImport').click();await realReady(page);
+        }
+        else{
+          await page.locator('#pwFile').setInputFiles({name,mimeType:'application/pdf',buffer:input.bytes});
+          await realReady(page);
+        }
+        await checkRealWork(page);
+        // Use the ordinary visible Save / Prepare PDF / Save PDF controls.
+        // A transport-only export stub would miss the original regression.
+        await openRealExport(page);
+        if(origin==='local')await connect(page);
+        await waitFor(page,()=>!document.querySelector('#spSaveSubmit').disabled);
+        assert.equal(await page.locator('#spSaveModes').isVisible(),true,'A valid large catalogue must never silently become a separate-copy export.');
+        assert.match(await page.locator('#spSaveUpdate').textContent(),origin==='cloud'?/Samma fil/:/Samma namn/);
+        if(origin==='local')await page.locator('#spSaveName').fill(name);
+        await page.locator('#spSaveSubmit').click();await waitRealSaved(page);
+        const modified=await page.locator('#spSaveModified').textContent();
+        const savedDate=await page.evaluate(value=>({day:new Date(value).toLocaleDateString('sv-SE',{year:'numeric',month:'short',day:'numeric'}),time:new Date(value).toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'})}),'2026-10-20T14:31:00Z');
+        assert.match(modified,/Serverns sparande kollega/);assert.ok(modified.includes(savedDate.day)&&modified.includes(savedDate.time),modified);
+        assert.doesNotMatch(modified,/Unverified upload response|browser-test@example/,'The save receipt must use the final authenticated metadata read, not the PUT response or login identity.');
+        const first=graph.sessions[0];
+        assert.equal(first.mode,'update');assert.equal(first.id,'source-item');assert.equal(first.ifMatch,'"source-v1"');
+        assert.equal(first.receipt.name,name);assert.equal(graph.copyCount,0);
+        const saved=await projectData(graph.bytes);
+        assert.equal(saved.instances[input.positionId].checks[input.itemKey],true);
+        assert.equal(Object.values(saved.readTestData.cards)[0].rawTable.length,180000,'The actual uploaded PDF retains the large source table and its checked work.');
+        const namedLookups=()=>graph.requests.filter(request=>request.method==='GET'&&/\/items\/[^/:]+:\//.test(request.path)).length;
+        assert.equal(namedLookups(),origin==='local'?1:0);
+        await page.locator('#smartExportClose').click();
+        if(origin==='cloud'){
+          await page.screenshot({path:artifactDir+'/server-editor-save-receipt-desktop.png',fullPage:true});
+          await page.setViewportSize({width:390,height:844});
+          const bounds=await page.locator('#spSaveResult').evaluate(result=>{const rect=result.getBoundingClientRect();return {left:rect.left,right:rect.right,bottom:rect.bottom,overflow:result.scrollWidth-result.clientWidth,width:innerWidth,height:innerHeight};});
+          assert.ok(bounds.left>=0&&bounds.right<=bounds.width+1&&bounds.bottom<=bounds.height+1&&bounds.overflow<=1,JSON.stringify(bounds));
+          await page.screenshot({path:artifactDir+'/server-editor-save-receipt-phone.png',fullPage:true});
+          await page.setViewportSize({width:1280,height:900});
+        }
+        await openRealExport(page);
+        assert.match(await page.locator('#spSaveUpdate').textContent(),/Samma fil/);
+        await page.locator('#spSaveSubmit').click();await waitRealSaved(page);
+        assert.equal(graph.sessions[1].mode,'update');assert.equal(graph.sessions[1].id,'source-item');
+        assert.equal(graph.sessions[1].ifMatch,first.receipt.eTag);assert.equal(graph.sessions[1].receipt.name,name);
+        assert.equal(namedLookups(),origin==='local'?1:0,'Subsequent saves use the confirmed item ID and eTag.');
+        const latest=await projectData(graph.bytes);
+        assert.equal(latest.instances[input.positionId].checks[input.itemKey],true);
+        assert.equal(Object.values(latest.readTestData.cards)[0].rawTable.length,180000);
+        console.log('Large project JSON:',origin,'source chars:',input.projectJSONLength,'input bytes:',input.bytes.length,'uploaded bytes:',graph.sessions.map(session=>session.receivedBytes).join(','),'latest JSON chars:',JSON.stringify(latest).length);
+        assert.equal(downloads.length,0);
+        const reopenedContext=await browser.newContext({viewport:{width:1280,height:900},serviceWorkers:'block'});
+        try{
+          await graph.install(reopenedContext,realServer.base);
+          const reopenedPage=await reopenedContext.newPage();await reopenedPage.goto(realServer.base+'/sharepoint-read-test.html');
+          await unlockReal(reopenedPage);await importCloudProject(reopenedPage,{screenshot:false});
+          const position=await reopenedPage.evaluate(()=>window.SmartMatchAppBridge.getPositions()[0]);
+          assert.equal(position.id,input.positionId);assert.equal(position.checks[input.itemKey],true);
+        }finally{await reopenedContext.close();}
+      });
+    }finally{await realServer.close();}
+  });
+
   test('a project over 100 MiB opens, saves twice under the same name and ID, then reopens its uploaded state',{timeout:240000},async()=>{
     const directory=await mkdtemp(join(tmpdir(),'tillsyno-sharepoint-large-'));
     let realServer;
