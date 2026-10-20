@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "applicationName": "Tillsyno SharePoint Test",
-  "status": "configuration-only-not-active",
+  "status": "isolated-test-read-and-save-copy",
   "tenantId": "23d1ec30-32c7-404c-92f4-22415c2bf2dd",
   "msal": {
     "auth": {
@@ -16,6 +16,15 @@
   "graphScopes": [
     "https://graph.microsoft.com/Sites.Read.All"
   ],
+  "save": {
+    "enabled": true,
+    "mode": "new-copy",
+    "writeScopes": [
+      "https://graph.microsoft.com/Files.ReadWrite.All"
+    ],
+    "maxBytes": 26214400,
+    "liveUploadVerified": false
+  },
   "pilot": {
     "targetModule": "smartmatch-read-test-v9-74.html",
     "enabled": false,
