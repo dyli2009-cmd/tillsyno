@@ -1,0 +1,410 @@
+{
+  "sourceFile": "mängdning.xlsx",
+  "sheet": "Blad1",
+  "sha256": "d00b989d0df7e2a890ddda87bbe5dadf3ff2c1f5390dc603d3eda30327f91d1e",
+  "sourceUnit": "decimal_hours",
+  "rows": [
+    {
+      "row": 15,
+      "article": "212-50",
+      "category": "Låshus",
+      "hours": 0.1
+    },
+    {
+      "row": 16,
+      "article": "222-50",
+      "category": "Låshus",
+      "hours": 0.1
+    },
+    {
+      "row": 17,
+      "article": "232-50 mikro",
+      "category": "Låshus",
+      "hours": 1.5
+    },
+    {
+      "row": 18,
+      "article": "310-50",
+      "category": "Låshus",
+      "hours": 0.1
+    },
+    {
+      "row": 19,
+      "article": "310-50 mikro",
+      "category": "Låshus",
+      "hours": 1.5
+    },
+    {
+      "row": 20,
+      "article": "311-50 mikro",
+      "category": "Låshus",
+      "hours": 1.5
+    },
+    {
+      "row": 21,
+      "article": "410-50",
+      "category": "Låshus",
+      "hours": 1.5
+    },
+    {
+      "row": 22,
+      "article": "410-50 mikro",
+      "category": "Låshus",
+      "hours": 1.5
+    },
+    {
+      "row": 23,
+      "article": "411-50",
+      "category": "Låshus",
+      "hours": 0.1
+    },
+    {
+      "row": 24,
+      "article": "622-50",
+      "category": "Låshus",
+      "hours": 0.2
+    },
+    {
+      "row": 25,
+      "article": "610-50",
+      "category": "Låshus",
+      "hours": 0.1
+    },
+    {
+      "row": 26,
+      "article": "610-50 mikro",
+      "category": "Låshus",
+      "hours": 1.5
+    },
+    {
+      "row": 27,
+      "article": "622-50 mikro",
+      "category": "Låshus",
+      "hours": 1.5
+    },
+    {
+      "row": 28,
+      "article": "636-50 mikro",
+      "category": "Låshus",
+      "hours": 1.5
+    },
+    {
+      "row": 29,
+      "article": "710-50 Mikro",
+      "category": "Låshus",
+      "hours": 1.5
+    },
+    {
+      "row": 30,
+      "article": "722-50",
+      "category": "Låshus",
+      "hours": 0.1
+    },
+    {
+      "row": 31,
+      "article": "732-50",
+      "category": "Låshus",
+      "hours": 0.1
+    },
+    {
+      "row": 34,
+      "article": "256",
+      "category": "Behör",
+      "hours": 0.2
+    },
+    {
+      "row": 35,
+      "article": "Cyl ring",
+      "category": "Behör",
+      "hours": 0.2
+    },
+    {
+      "row": 36,
+      "article": "2356",
+      "category": "Behör",
+      "hours": 0.2
+    },
+    {
+      "row": 37,
+      "article": "2456",
+      "category": "Behör",
+      "hours": 0.2
+    },
+    {
+      "row": 38,
+      "article": "4265",
+      "category": "Behör",
+      "hours": 0.2
+    },
+    {
+      "row": 39,
+      "article": "18256",
+      "category": "Behör",
+      "hours": 0.2
+    },
+    {
+      "row": 40,
+      "article": "5265",
+      "category": "Behör",
+      "hours": 0.2
+    },
+    {
+      "row": 41,
+      "article": "9565T-2 inkl draghandtag",
+      "category": "Behör",
+      "hours": 0.5
+    },
+    {
+      "row": 42,
+      "article": "3212",
+      "category": "Behör",
+      "hours": 0.2
+    },
+    {
+      "row": 44,
+      "article": "Step40",
+      "category": "ELLÅS",
+      "hours": 0.33
+    },
+    {
+      "row": 45,
+      "article": "Step90",
+      "category": "ELLÅS",
+      "hours": 0.33
+    },
+    {
+      "row": 46,
+      "article": "Step92",
+      "category": "ELLÅS",
+      "hours": 0.33
+    },
+    {
+      "row": 47,
+      "article": "EL580",
+      "category": "ELLÅS",
+      "hours": 1.5
+    },
+    {
+      "row": 48,
+      "article": "SL630",
+      "category": "ELLÅS",
+      "hours": 1.5
+    },
+    {
+      "row": 49,
+      "article": "SL620",
+      "category": "ELLÅS",
+      "hours": 1.5
+    },
+    {
+      "row": 50,
+      "article": "SL621",
+      "category": "ELLÅS",
+      "hours": 1.5
+    },
+    {
+      "row": 51,
+      "article": "835c-50",
+      "category": "ELLÅS",
+      "hours": null
+    },
+    {
+      "row": 53,
+      "article": "6696",
+      "category": "Trycke/draghandtag",
+      "hours": 0.2
+    },
+    {
+      "row": 54,
+      "article": "draghandtag",
+      "category": "Trycke/draghandtag",
+      "hours": 1.0
+    },
+    {
+      "row": 57,
+      "article": "793",
+      "category": "Utrymning",
+      "hours": 0.5
+    },
+    {
+      "row": 58,
+      "article": "794",
+      "category": "Utrymning",
+      "hours": 0.5
+    },
+    {
+      "row": 59,
+      "article": "8061",
+      "category": "Utrymning",
+      "hours": 0.5
+    },
+    {
+      "row": 61,
+      "article": "EA281",
+      "category": "Karmöverföring",
+      "hours": 0.33
+    },
+    {
+      "row": 63,
+      "article": "7801",
+      "category": "Låssystem",
+      "hours": 0.1
+    },
+    {
+      "row": 64,
+      "article": "7803",
+      "category": "Låssystem",
+      "hours": 0.1
+    },
+    {
+      "row": 65,
+      "article": "7811",
+      "category": "Låssystem",
+      "hours": 0.1
+    },
+    {
+      "row": 66,
+      "article": "7813",
+      "category": "Låssystem",
+      "hours": 0.1
+    },
+    {
+      "row": 67,
+      "article": "Nyckel",
+      "category": "Låssystem",
+      "hours": 0.1
+    },
+    {
+      "row": 68,
+      "article": "blindcyl",
+      "category": "Låssystem",
+      "hours": 0.2
+    },
+    {
+      "row": 70,
+      "article": "SW300",
+      "category": "Dörrstängning",
+      "hours": 3.0
+    },
+    {
+      "row": 71,
+      "article": "AK",
+      "category": "Dörrstängning",
+      "hours": 0.33
+    },
+    {
+      "row": 72,
+      "article": "Flatscan",
+      "category": "Dörrstängning",
+      "hours": 1.5
+    },
+    {
+      "row": 73,
+      "article": "Batteri",
+      "category": "Dörrstängning",
+      "hours": 1.0
+    },
+    {
+      "row": 74,
+      "article": "programväljare",
+      "category": "Dörrstängning",
+      "hours": 0.5
+    },
+    {
+      "row": 75,
+      "article": "Dc300",
+      "category": "Dörrstängning",
+      "hours": 0.5
+    },
+    {
+      "row": 76,
+      "article": "uppst dc300",
+      "category": "Dörrstängning",
+      "hours": 0.5
+    },
+    {
+      "row": 77,
+      "article": "Dc640",
+      "category": "Dörrstängning",
+      "hours": 1.0
+    },
+    {
+      "row": 78,
+      "article": "Dc700",
+      "category": "Dörrstängning",
+      "hours": 0.5
+    },
+    {
+      "row": 79,
+      "article": "Dc700 ac",
+      "category": "Dörrstängning",
+      "hours": 0.5
+    },
+    {
+      "row": 80,
+      "article": "A152",
+      "category": "Dörrstängning",
+      "hours": 0.5
+    },
+    {
+      "row": 81,
+      "article": "A151",
+      "category": "Dörrstängning",
+      "hours": 0.5
+    },
+    {
+      "row": 82,
+      "article": "G460",
+      "category": "Dörrstängning",
+      "hours": 2.0
+    },
+    {
+      "row": 83,
+      "article": "G461",
+      "category": "Dörrstängning",
+      "hours": 2.0
+    },
+    {
+      "row": 84,
+      "article": "G464",
+      "category": "Dörrstängning",
+      "hours": 2.0
+    },
+    {
+      "row": 85,
+      "article": "Dörrtillslutare",
+      "category": "Dörrstängning",
+      "hours": 1.0
+    },
+    {
+      "row": 87,
+      "article": "Förb nattlås",
+      "category": "Övrigt",
+      "hours": 1.0
+    },
+    {
+      "row": 88,
+      "article": "Magnetkontakt",
+      "category": "Övrigt",
+      "hours": 0.5
+    },
+    {
+      "row": 89,
+      "article": "Jc35",
+      "category": "Övrigt",
+      "hours": 2.0
+    },
+    {
+      "row": 90,
+      "article": "Porthållare 270",
+      "category": "Övrigt",
+      "hours": 2.0
+    },
+    {
+      "row": 91,
+      "article": "dörrtillslutare",
+      "category": "Övrigt",
+      "hours": 1.0
+    }
+  ]
+}
