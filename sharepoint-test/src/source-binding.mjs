@@ -5,6 +5,7 @@
  * No provenance is written into customer PDFs, localStorage or production JS.
  */
 import {isSharePointTestPage} from './export-bridge.mjs';
+import {MAX_FILE_BYTES} from './limits.mjs';
 
 const ROUTES = Object.freeze({
  'sharepoint-app-test.html': {kind:'dorrservice', inputs:['file']},
@@ -15,7 +16,8 @@ const ROUTES = Object.freeze({
  'sharepoint-ce-test.html': {kind:'ce', inputs:['ceOpenPdf','ceHomePdfPicker']},
  'sharepoint-drawing-test.html': {kind:'drawing', inputs:['toolFile']},
 });
-const MAX_INSPECT_BYTES = 25 * 1024 * 1024;
+const SOURCE_HASH_CHUNK_BYTES = 2 * 1024 * 1024;
+const SOURCE_HASH_DOMAIN = new TextEncoder().encode('Tillsyno ordered source chunks SHA-256 v1\n');
 const FULL_PROJECT_ACTIONS = Object.freeze({
  smartmatch:['smartExportBuild','smartExportSaveAs','smartExportSaveObject','smartExportDownload','smartExportShare'],
  dorrservice:['exportBtn'],
@@ -56,10 +58,21 @@ function catalogueValue(doc,key,PDFLib) {
  return text ? JSON.parse(text) : null;
 }
 
-/** Read only recognized complete working-PDF formats, never filename patterns. */
-export async function inspectProjectPdf(blob,{window,kind}={}) {
- if (!blob?.size || blob.size > MAX_INSPECT_BYTES || !window?.PDFLib) return null;
- const bytes = new Uint8Array(await blob.arrayBuffer());
+function byteView(input) {
+ if (input instanceof Uint8Array) return input;
+ if (ArrayBuffer.isView(input)) return new Uint8Array(input.buffer,input.byteOffset,input.byteLength);
+ if (input instanceof ArrayBuffer) return new Uint8Array(input);
+ return null;
+}
+const inputSize = input => byteView(input)?.byteLength ?? input?.size;
+
+/** Read recognized complete working-PDF formats. Existing byte views are read
+ * directly: never wrap the active original in Blob and read a second copy. */
+export async function inspectProjectPdf(input,{window,kind}={}) {
+ const size = inputSize(input);
+ if (!Number.isSafeInteger(size) || size < 1 || size > MAX_FILE_BYTES || !window?.PDFLib) return null;
+ const bytes = byteView(input) || new Uint8Array(await input.arrayBuffer());
+ if (bytes.byteLength !== size) return null;
  if (!new TextDecoder().decode(bytes.subarray(0,1024)).includes('%PDF-')) return null;
  const P = window.PDFLib, doc = await P.PDFDocument.load(bytes,{updateMetadata:false});
  if (kind === 'smartmatch') {
@@ -85,12 +98,32 @@ export async function inspectProjectPdf(blob,{window,kind}={}) {
   const state = JSON.parse(new TextDecoder().decode(P.decodePDFRawStream(data).decode()));
   if (state?.app !== kind || Number(state.version) < 2 || !object(state.project) || !Array.isArray(kind === 'dorrservice' ? state.doors : state.items)) continue;
   const drawingBytes = P.decodePDFRawStream(drawing).decode();
-  return {kind,drawingHash:await digest(window,drawingBytes)};
+  return {kind,drawingHash:await fingerprint(window,drawingBytes)};
  }
  return null;
 }
-async function digest(window,bytes) {
- return Array.from(new Uint8Array(await window.crypto.subtle.digest('SHA-256',bytes)),n=>n.toString(16).padStart(2,'0')).join('');
+async function fingerprint(window,input) {
+ const bytes = byteView(input), size = inputSize(input);
+ if (!Number.isSafeInteger(size) || size < 1 || size > MAX_FILE_BYTES) throw new Error('Projektfilens storlek kan inte verifieras.');
+ // This private, in-memory fingerprint covers every byte in order. It is not
+ // advertised as a conventional whole-file SHA-256 checksum. Domain, file
+ // length and fixed chunk size are included so equal chunks cannot be moved,
+ // truncated or regrouped unnoticed. Only one <=2 MiB digest runs at a time;
+ // a Blob import never needs its own 100–200 MiB arrayBuffer just for hashing.
+ const headerLength = SOURCE_HASH_DOMAIN.length + 12;
+ const manifest = new Uint8Array(headerLength + Math.ceil(size / SOURCE_HASH_CHUNK_BYTES) * 32);
+ manifest.set(SOURCE_HASH_DOMAIN);
+ const header = new DataView(manifest.buffer,SOURCE_HASH_DOMAIN.length,12);
+ header.setUint32(0,Math.floor(size / 0x100000000));header.setUint32(4,size >>> 0);header.setUint32(8,SOURCE_HASH_CHUNK_BYTES);
+ let index = 0;
+ for (let offset = 0; offset < size; offset += SOURCE_HASH_CHUNK_BYTES) {
+  const end = Math.min(size,offset + SOURCE_HASH_CHUNK_BYTES);
+  const part = bytes ? bytes.subarray(offset,end) : new Uint8Array(await input.slice(offset,end).arrayBuffer());
+  if (part.byteLength !== end-offset) throw new Error('Hela projektfilen kunde inte verifieras.');
+  const hash = new Uint8Array(await window.crypto.subtle.digest('SHA-256',part));
+  manifest.set(hash,headerLength + index++ * 32);
+ }
+ return Array.from(new Uint8Array(await window.crypto.subtle.digest('SHA-256',manifest)),n=>n.toString(16).padStart(2,'0')).join('');
 }
 
 /**
@@ -107,6 +140,10 @@ export function createSourceBinding({window,readActive}={}) {
  const tickets = new WeakMap(), inspections = new WeakMap(), changes = new WeakMap(), byteCache = new WeakMap(), restores = [];
  let active = enabled, generation = 0, savedVersion = 0, identity = '', bound = null, pendingImport = null;
  let ceRuntime = null, ceBuild = null, exportIntent = null;
+ let inspectionTail = Promise.resolve();
+ const inspectSequentially = task => {
+  const result = inspectionTail.then(task);inspectionTail = result.catch(()=>{});return result;
+ };
  const invalidate = () => { generation++; bound = null; pendingImport = null; ceBuild = null; exportIntent = null; };
  function runtime() {
   if (!active) return null;
@@ -142,8 +179,15 @@ export function createSourceBinding({window,readActive}={}) {
   if (!bytes || !bytes.byteLength) return null;
   let cached = byteCache.get(bytes);
   if (!cached) {
-   cached = Promise.all([digest(window,bytes),inspectProjectPdf(new window.Blob([bytes],{type:'application/pdf'}),{window,kind:route.kind}).catch(()=>({unsupported:true}))])
-    .then(([hash,metadata])=>({hash,metadata}));
+   cached = (async()=>{
+    const hash = await fingerprint(window,bytes);
+    // Service modules already expose their extracted drawing as active bytes;
+    // its identity needs a fingerprint, not another full PDF parse. SmartMatch
+    // and CE additionally need the source schema/project ID safety check.
+    const metadata = ['smartmatch','ce'].includes(route.kind)
+     ? await inspectProjectPdf(bytes,{window,kind:route.kind}).catch(()=>({unsupported:true})) : null;
+    return {hash,metadata};
+   })();
    byteCache.set(bytes,cached);
   }
   return cached;
@@ -155,12 +199,24 @@ export function createSourceBinding({window,readActive}={}) {
   changes.set(input,{generation:ownGeneration,files:list});
   if (list.length !== 1 || sources.length !== 1 || !/\.pdf$/i.test(list[0]?.name || '')) return false;
   const source = trustedSource(sources[0]);
-  if (!source || identityKey(source) !== identity || list[0].size > MAX_INSPECT_BYTES) return false;
-  const bytes = new Uint8Array(await list[0].arrayBuffer());
-  const original = await metadataFor(bytes);
-  if (!active || generation !== ownGeneration) return false;
-  pendingImport = {generation:ownGeneration,source,hash:original.hash,metadata:original.metadata};
-  return true;
+  if (!source || identityKey(source) !== identity || !Number.isSafeInteger(list[0].size) || list[0].size < 1 || list[0].size > MAX_FILE_BYTES || route.kind === 'drawing') return false;
+  return inspectSequentially(async()=>{
+   if (!active || generation !== ownGeneration) return false;
+   let hash,metadata=null;
+   if (['smartmatch','ce'].includes(route.kind)) {
+    // These formats keep the imported PDF as the active original. Verify the
+    // immutable File now, then parse the module's existing byte object once on
+    // export. No original-import PDF document or whole-file copy is needed.
+    hash = await fingerprint(window,list[0]);
+   } else {
+    const bytes = new Uint8Array(await list[0].arrayBuffer());
+    hash = await fingerprint(window,bytes);
+    metadata = await inspectProjectPdf(bytes,{window,kind:route.kind}).catch(()=>({unsupported:true}));
+   }
+   if (!active || generation !== ownGeneration) return false;
+   pendingImport = {generation:ownGeneration,source,hash,metadata};
+   return true;
+  });
  }
  function setIdentity(value={}) {
   const next = identityKey(value);
@@ -172,13 +228,17 @@ export function createSourceBinding({window,readActive}={}) {
  async function inspectExport({blob,name,context}={}) {
   const ticket = tickets.get(context);
   const ownTicket = ticket || {generation,savedVersion,identity,runtime:runtime()};
+  return inspectSequentially(async()=>{
   let projectExport = false, source = null, reason = 'Den här exporten sparas som en separat fil.', projectKey = '';
   let output = null, original = null;
-  if (ticket?.completeProject && isCurrent(ticket) && ticket.runtime && /\.pdf$/i.test(name || '') && blob?.size <= MAX_INSPECT_BYTES) {
+  if (ticket?.completeProject && isCurrent(ticket) && ticket.runtime && /\.pdf$/i.test(name || '') && blob?.size <= MAX_FILE_BYTES) {
    try {
-    [output,original] = await Promise.all([
-     inspectProjectPdf(blob,{window,kind:route.kind}), metadataFor(ticket.runtime.bytes),
-    ]);
+    // Never hold two concurrently parsing PDF documents. The cached original
+    // result contains only small identity data; its PDF document is released
+    // before the completed export is read. A stale/unsupported source also
+    // stops us from allocating a large output inspection unnecessarily.
+    original = await metadataFor(ticket.runtime.bytes);
+    if (isCurrent(ticket) && !original?.metadata?.unsupported) output = await inspectProjectPdf(blob,{window,kind:route.kind});
    } catch (_) { /* Unrecognized/malformed output can be copied, never updated. */ }
    if (output && !output.unsupported && !original?.metadata?.unsupported && isCurrent(ticket)) {
     if (route.kind === 'smartmatch') {
@@ -209,6 +269,7 @@ export function createSourceBinding({window,readActive}={}) {
   const info = Object.freeze({projectExport,source,reason,isCurrent:()=>isCurrent(ownTicket)});
   inspections.set(info,{ticket:ownTicket,projectExport,projectKey});
   return info;
+  });
  }
  function confirmSave(info,value) {
   const record = inspections.get(info), source = trustedSource(value);

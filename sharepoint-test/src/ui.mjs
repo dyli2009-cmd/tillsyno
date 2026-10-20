@@ -1,5 +1,6 @@
 /* Shared presentation for the isolated SharePoint pickers. The app supplies
  * dynamic file/account text via textContent; no state belongs in this module. */
+import {MAX_FILE_MB,MAX_SELECTION_MB} from './limits.mjs';
 const paths=Object.freeze({
  cloud:'<path d="M6.2 18a4.2 4.2 0 0 1-.8-8.3A6.5 6.5 0 0 1 18 8.4 4.8 4.8 0 0 1 18.2 18Z"/>',
  folder:'<path d="M3 7.5V6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M3 9h18"/>',
@@ -29,8 +30,9 @@ export function filePickerMarkup(){return `<form method="dialog" class="spHead">
 <div class="spActions spSourceActions"><button id="spConnect" class="spPrimary" type="button">${content('cloud','Anslut Microsoft')}</button><button id="spLocal" class="spSecondary" type="button">${content('device','Den här enheten')}</button></div>
 <div class="spFolderToolbar"><nav id="spCrumbs" class="spCrumbs" aria-label="SharePoint-mappar"></nav><button id="spReload" class="spIconButton" type="button" hidden aria-label="Uppdatera filer" title="Uppdatera filer">${icon('refresh')}</button></div>
 <ul id="spFiles" class="spFileList" aria-label="Filer och mappar"></ul>
+<progress id="spReadProgress" max="100" value="0" hidden aria-label="Hämtning från SharePoint"></progress>
 <p id="spStatus" class="spStatus" role="status" aria-live="polite"></p>
-<details id="spFileOptions" class="spDetails"><summary>${icon('account')}<span>Konto &amp; alternativ</span>${icon('chevron')}</summary><div class="spDetailsBody"><p id="spAccount" class="spAccount"></p><button id="spDisconnect" class="spQuiet" type="button" hidden>${content('disconnect','Koppla från')}</button><p class="spNote">GStest och undermappar · högst 25 MB per fil, 100 MB per val.</p></div></details>
+<details id="spFileOptions" class="spDetails"><summary>${icon('account')}<span>Konto &amp; alternativ</span>${icon('chevron')}</summary><div class="spDetailsBody"><p id="spAccount" class="spAccount"></p><button id="spDisconnect" class="spQuiet" type="button" hidden>${content('disconnect','Koppla från')}</button><p class="spNote">Högst ${MAX_FILE_MB} MB per fil, ${MAX_SELECTION_MB} MB per val.</p></div></details>
 <div class="spFooter"><button id="spImport" class="spPrimary" type="button" disabled>${content('file','Öppna i appen')}</button></div>`;}
 export function savePickerMarkup(){return `<div class="spHead">
  <div class="spHeading"><span class="spHeadingIcon">${icon('save')}</span><div><span class="spEyebrow">SHAREPOINT</span><h2 id="spSaveTitle">Spara fil</h2></div></div>
@@ -44,5 +46,5 @@ export function savePickerMarkup(){return `<div class="spHead">
 </div>
 <div class="spActions spConnection"><button id="spSaveConnect" class="spSecondary" type="button">${content('cloud','Anslut Microsoft')}</button></div>
 <progress id="spSaveProgress" max="100" value="0" hidden aria-label="Uppladdning till SharePoint"></progress><p id="spSaveStatus" class="spStatus" role="status" aria-live="polite"></p>
-<details id="spSaveOptions" class="spDetails"><summary>${icon('account')}<span>Konto &amp; alternativ</span>${icon('chevron')}</summary><div class="spDetailsBody"><p id="spSaveAccount" class="spAccount"></p><p class="spNote">Upp till 25 MB. Microsoft kan be om skrivåtkomst första gången.</p></div></details>
+<details id="spSaveOptions" class="spDetails"><summary>${icon('account')}<span>Konto &amp; alternativ</span>${icon('chevron')}</summary><div class="spDetailsBody"><p id="spSaveAccount" class="spAccount"></p><p class="spNote">Upp till ${MAX_FILE_MB} MB. Microsoft kan be om skrivåtkomst första gången.</p></div></details>
 <div class="spSaveButtons spFooter"><button id="spSaveSubmit" class="spPrimary" type="button" disabled>${content('save','Spara i SharePoint')}</button><button id="spSaveLocal" class="spSecondary" type="button">${content('device','Den här enheten')}</button></div>`;}

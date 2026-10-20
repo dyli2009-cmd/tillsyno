@@ -1,13 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 import {SharePointWriter, MAX_UPLOAD_BYTES, UPLOAD_CHUNK_BYTES, safeUploadUrl, validateCopyName} from '../src/write-client.mjs';
 import {ReadOnlySharePoint} from '../src/read-only.mjs';
 
-const config = {siteUrl:'https://tillsyno.sharepoint.com/sites/Tillsyno', libraryServerRelativePath:'/sites/Tillsyno/Delade dokument', folderPath:'GStest'};
+const config = {siteUrl:'https://tillsyno.sharepoint.com/sites/Tillsyno', libraryServerRelativePath:'/sites/Tillsyno/Delade dokument', folderPath:'Great'};
 const uploadUrl = 'https://tillsyno.sharepoint.com/upload/session?temporary=upload-secret';
 const expiry = () => new Date(Date.now() + 3600000).toISOString();
-const folder = (id, parent, extra = {}) => ({id, name:id === 'test-root' ? 'GStest' : id, folder:{}, parentReference:{driveId:'drive', id:parent}, ...extra});
-const pdf = size => new Blob(['%PDF-', new Uint8Array(Math.max(0, size - 5))], {type:'application/pdf'});
+const folder = (id, parent, extra = {}) => ({id, name:id === 'test-root' ? 'Great' : id, folder:{}, parentReference:{driveId:'drive', id:parent}, ...extra});
+// Blob parts reuse one small immutable block; limit tests do not allocate a
+// second 200 MiB typed array or retain copies of every upload body.
+const zeroBlock = new Blob([new Uint8Array(1024 * 1024)]);
+const pdf = size => {
+ const remainder = Math.max(0, size - 5);
+ return new Blob(['%PDF-', ...Array(Math.floor(remainder / zeroBlock.size)).fill(zeroBlock), zeroBlock.slice(0, remainder % zeroBlock.size)], {type:'application/pdf'});
+};
 const openedSource = {driveId:'drive', id:'opened-file', parentId:'test-root', name:'Öppnat projekt.pdf', eTag:'"opened-1"'};
 
 function fixture(options = {}) {
@@ -48,7 +55,7 @@ function fixture(options = {}) {
    assert.equal(request.method, 'GET', 'Graph metadata uses GET only');
    if (parsed.pathname === '/v1.0/sites/tillsyno.sharepoint.com:/sites/Tillsyno') return Response.json({id:'site', webUrl:config.siteUrl});
    if (parsed.pathname === '/v1.0/sites/site/drives') return Response.json({value:[{id:'drive', webUrl:config.siteUrl + '/Delade%20dokument'}]});
-   if (parsed.pathname === '/v1.0/drives/drive/root:/GStest') return Response.json(folders.get('test-root'));
+   if (parsed.pathname === '/v1.0/drives/drive/root:/Great') return Response.json(folders.get('test-root'));
    const match = /^\/v1\.0\/drives\/([^/]+)\/items\/([^/]+)$/u.exec(parsed.pathname);
    assert.ok(match, 'unexpected Graph route: ' + parsed.pathname);
    assert.equal(decodeURIComponent(match[1]), 'drive');
@@ -79,7 +86,7 @@ function fixture(options = {}) {
   if (options.put) { const response = await options.put(state, {start, end, total, request}); if (response) return response; }
   if (end + 1 < total) return Response.json({nextExpectedRanges:[String(end + 1) + '-'], expirationDateTime:expiry()}, {status:202});
   state.commits++;
-  state.item = {id:state.sessionId, name:state.sessionName, size:total, eTag:'"saved-' + state.commits + '"', file:{}, parentReference:{driveId:'drive', id:state.sessionParent}, webUrl:config.siteUrl + '/Delade%20dokument/GStest/' + encodeURIComponent(state.sessionName)};
+  state.item = {id:state.sessionId, name:state.sessionName, size:total, eTag:'"saved-' + state.commits + '"', file:{}, parentReference:{driveId:'drive', id:state.sessionParent}, webUrl:config.siteUrl + '/Delade%20dokument/Great/' + encodeURIComponent(state.sessionName)};
   if (state.sessionId === 'opened-file') state.current = structuredClone(state.item);
   return Response.json(options.finalItem ? options.finalItem(state.item, state) : state.item, {status:201});
  };
@@ -97,7 +104,7 @@ function fixture(options = {}) {
 test('A new exported file is verified under the configured root before reporting success', async () => {
  const {save, state} = fixture();
  const result = await save();
- assert.deepEqual(result, {id:'new-file', name:'Projekt – ny kopia.pdf', size:18, driveId:'drive', parentId:'test-root', eTag:'"saved-1"', webUrl:config.siteUrl + '/Delade%20dokument/GStest/Projekt%20%E2%80%93%20ny%20kopia.pdf'});
+ assert.deepEqual(result, {id:'new-file', name:'Projekt – ny kopia.pdf', size:18, driveId:'drive', parentId:'test-root', eTag:'"saved-1"', webUrl:config.siteUrl + '/Delade%20dokument/Great/Projekt%20%E2%80%93%20ny%20kopia.pdf'});
  assert.equal(state.puts, 1); assert.equal(state.tokens.filter(token => token === 'write').length, 1);
  assert.equal(state.progress.at(-1).phase, 'complete');
  const putIndex = state.calls.findIndex(call => call.request.method === 'PUT');
@@ -130,7 +137,7 @@ test('Wrong drives, outside folders, parent cycles and shortcuts never create an
  }
 });
 
-test('A folder moved outside GStest during an upload stops before the next chunk', async () => {
+test('A folder moved outside Great during an upload stops before the next chunk', async () => {
  const {save, state} = fixture({put:state => { state.folders.set('child', folder('child', 'outside')); }});
  await assert.rejects(() => save({destination:{driveId:'drive', id:'child'}, blob:pdf(UPLOAD_CHUNK_BYTES + 8)}), error => error.code === 'invalid_destination');
  assert.equal(state.puts, 1); assert.equal(state.item, null);
@@ -181,8 +188,9 @@ test('Allowing text exports never allows HTML, JavaScript or other active file t
  }
 });
 
-test('The 25 MiB limit accepts its boundary and rejects larger files before credentials or network', async () => {
- const accepted = fixture(); await accepted.save({blob:pdf(MAX_UPLOAD_BYTES)}); assert.equal(accepted.state.puts, 5);
+test('The 200 MiB limit accepts its boundary and rejects larger files before credentials or network', async () => {
+ assert.equal(MAX_UPLOAD_BYTES, 200 * 1024 * 1024);
+ const accepted = fixture(); await accepted.save({blob:pdf(MAX_UPLOAD_BYTES)}); assert.equal(accepted.state.puts, 40);
  const rejected = fixture();
  await assert.rejects(() => rejected.save({blob:pdf(MAX_UPLOAD_BYTES + 1)}), error => error.code === 'file_too_large');
  assert.equal(rejected.state.calls.length, 0); assert.equal(rejected.state.tokens.length, 0);
@@ -341,6 +349,44 @@ test('Two existing-file saves retain the exact item ID and send each freshly ack
  assert.equal(state.sourceReads, 6, 'source checked before and after token acquisition, then before each fragment');
 });
 
+test('Renaming Great leaves two same-file saves on the verified root ID without a new name lookup', async () => {
+ const {saveExisting, state} = fixture();
+ const first = await saveExisting();
+ state.folders.get('test-root').name = 'Great – omdöpt';
+ const second = await saveExisting({source:first});
+ assert.equal(second.id, first.id); assert.equal(second.parentId, first.parentId); assert.equal(second.name, first.name);
+ assert.equal(state.calls.filter(call => call.url.includes('/root:/Great')).length, 1);
+ assert.equal(state.sessions, 2); assert.equal(state.commits, 2);
+});
+
+test('A real 100 MiB file uploads twice in exact 5 MiB chunks with unchanged bytes and the same item ID', async () => {
+ const pattern = new Uint8Array(UPLOAD_CHUNK_BYTES);
+ for (let index = 0; index < pattern.length; index++) pattern[index] = (index * 37 + Math.floor(index / 997)) % 256;
+ const block = new Blob([pattern]), firstBlock = new Blob(['%PDF-', block.slice(5)]);
+ const blob = new Blob([firstBlock, ...Array(19).fill(block)], {type:'application/pdf'});
+ assert.equal(blob.size, 100 * 1024 * 1024);
+ const expectedHash = createHash('sha256');
+ expectedHash.update(new Uint8Array(await firstBlock.arrayBuffer()));
+ for (let index = 1; index < 20; index++) expectedHash.update(pattern);
+ const expected = expectedHash.digest('hex'), received = [];
+ let currentHash = createHash('sha256');
+ const {saveExisting, state} = fixture({put:async (_state, {end, total, request}) => {
+  // At most one 5 MiB body is materialized at a time. Retain only its hash.
+  currentHash.update(new Uint8Array(await request.body.arrayBuffer()));
+  if (end + 1 === total) { received.push(currentHash.digest('hex')); currentHash = createHash('sha256'); }
+ }});
+ const first = await saveExisting({blob}), second = await saveExisting({blob,source:first});
+ assert.deepEqual(received, [expected, expected]);
+ assert.equal(first.id, openedSource.id); assert.equal(second.id, first.id);
+ assert.equal(first.name, openedSource.name); assert.equal(second.name, first.name);
+ assert.equal(first.eTag, '"saved-1"'); assert.equal(second.eTag, '"saved-2"');
+ assert.equal(second.size, blob.size); assert.equal(state.puts, 40); assert.equal(state.sessions, 2);
+ const sessions = state.calls.filter(call => call.request.method === 'POST');
+ assert.ok(sessions.every(call => call.url.endsWith('/items/opened-file/createUploadSession')));
+ assert.deepEqual(sessions.map(call => call.request.headers['If-Match']), [openedSource.eTag, first.eTag]);
+ assert.equal(state.progress.filter(value => value.phase === 'complete' && value.loaded === blob.size).length, 2);
+});
+
 test('Source identity and version are snapshotted before an asynchronous save starts', async () => {
  const {saveExisting, state} = fixture(), source = {...openedSource};
  const pending = saveExisting({source});
@@ -410,7 +456,7 @@ test('Renamed, moved, deleted or replaced source files are blocked before creati
  }
 });
 
-test('An existing file must stay in the same drive and under GStest even if its ID and eTag still match', async () => {
+test('An existing file must stay in the same drive and under Great even if its ID and eTag still match', async () => {
  for (const kind of ['wrong-drive','outside','ancestor-moved']) {
   const {saveExisting, state} = fixture(); const source = {...openedSource};
   if (kind === 'wrong-drive') source.driveId = 'other-drive';
