@@ -46,3 +46,25 @@ test('Oversize metadata prevents download',async()=>{
 test('Actual byte limit rejects undersized metadata and non-PDF data',async()=>{
  for(const body of ['%PDF-more-than-five','hello']){let n=0;const c=new ReadOnlySharePoint({getToken:async()=> 's',maxBytes:5,fetchImpl:async()=>++n===1?json({name:'a.pdf',file:{},size:1,'@microsoft.graph.downloadUrl':'https://tillsyno.sharepoint.com/download'}):new Response(body)});await assert.rejects(()=>c.pdf('d','i'));}
 });
+
+test('Missing projected download URL retries full metadata before downloading',async()=>{
+ const calls=[];const metadata={name:'a.pdf',file:{},size:8};
+ const c=new ReadOnlySharePoint({getToken:async()=> 's',fetchImpl:async(u,o)=>{
+  calls.push([u,o]);
+  if(calls.length===1)return json(metadata);
+  if(calls.length===2)return json({...metadata,'@microsoft.graph.downloadUrl':'https://tillsyno.sharepoint.com/download'});
+  return new Response('%PDF-1.7');
+ }});
+ assert.equal(await (await c.pdf('d','i')).blob.text(),'%PDF-1.7');
+ assert.equal(calls[1][0],'https://graph.microsoft.com/v1.0/drives/d/items/i');
+ assert.equal(calls[2][1].headers,undefined);
+});
+test('Missing URL after retry fails clearly without downloading',async()=>{
+ let calls=0; const c=new ReadOnlySharePoint({getToken:async()=> 's',fetchImpl:async()=>{calls++;return json({name:'a.pdf',file:{},size:8});}});
+ await assert.rejects(()=>c.pdf('d','i'),/ingen nedladdningsadress/);assert.equal(calls,2);
+});
+test('Malformed download URLs fail without leaking their contents',()=>{
+ for(const value of [undefined,null,'',{},'not-a-url-secret']){
+  assert.throws(()=>safeDownloadUrl(value),e=>!e.message.includes('secret') && /nedladdningsadress/.test(e.message));
+ }
+});
