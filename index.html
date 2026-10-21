@@ -275,6 +275,20 @@ html[data-auth-pending] body{visibility:hidden}
  #appHome .homeChoice:hover,#appHome .homeToolsLink:hover{transform:none!important}
 }
 
+/* v2.4.454: active tests collected at the bottom of the ordinary home page. */
+#appHome .homeTests{box-sizing:border-box;width:min(390px,100%);margin:16px auto 0;color:#d9eaf3;font:12px/1.4 system-ui;text-align:left}
+#appHome .homeTests>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;box-sizing:border-box;padding:10px 12px;border:1px solid #6c92a17a;border-radius:10px;background:#112f42;cursor:pointer;list-style:none;font-weight:650}
+#appHome .homeTests>summary::-webkit-details-marker{display:none}
+#appHome .homeTests>summary::marker{content:''}
+#appHome .homeTestsChevron{width:16px;height:16px;flex:none;transition:transform .15s}
+#appHome .homeTests[open] .homeTestsChevron{transform:rotate(90deg)}
+#appHome .homeTestList{display:grid;gap:8px;padding-top:10px}
+#appHome .homeTests .homeTestLink{display:grid!important;grid-template-columns:minmax(0,1fr) 18px!important;gap:10px!important;min-height:66px!important;padding:12px!important;background:#173b50!important;border-radius:10px!important}
+#appHome .homeTestCopy{display:grid;gap:4px;min-width:0}
+#appHome .homeTests .homeTestLink strong{font-size:13px!important;overflow-wrap:anywhere}
+#appHome .homeTests .homeTestLink small{font-size:11px!important;color:#b1cbd8!important;margin:0!important;line-height:1.4!important}
+#appHome .homeTests>summary:focus-visible{outline:2px solid #9fdced;outline-offset:3px}
+
 </style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.442"></script><script src="auth/guard.js?v=2.4.442" defer></script>
 <link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.359">
 </head><body data-view="drawing" class="homeMode">
@@ -342,8 +356,22 @@ html[data-auth-pending] body{visibility:hidden}
         <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12M18.36 5.64l-2.12 2.12M7.76 16.24l-2.12 2.12"/><circle cx="12" cy="12" r="4"/></svg>
         <span>Mitt konto</span>
       </button>
-      <small class="homeVersion">v2.4.453</small>
+      <small class="homeVersion">v2.4.454</small>
     </div>
+    <details id="homeTests" class="homeTests">
+      <summary><span>Testversioner</span><svg class="homeTestsChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></summary>
+      <div class="homeTestList">
+        <a class="homeChoice homeTestLink" href="sharepoint-app-test.html?spv=0.9" data-home-test="sharepoint">
+          <span class="homeTestCopy"><strong>SharePoint-test · <span data-test-version>v0.9</span></strong><small>Teststartsida för appen med SharePoint.</small></span><span aria-hidden="true">→</span>
+        </a>
+        <a class="homeChoice homeTestLink" href="sharepoint-read-test.html?spv=0.9" data-home-test="sharepoint-read">
+          <span class="homeTestCopy"><strong>Avläsning med SharePoint · <span data-test-version>v0.9</span></strong><small>Gå direkt till avläsningen. Öppna och spara i SharePoint.</small></span><span aria-hidden="true">→</span>
+        </a>
+        <a class="homeChoice homeTestLink" href="smartmatch-read-test.html?v=9.85" data-home-test="read">
+          <span class="homeTestCopy"><strong>Avläsning TEST · <span data-test-version>v9.85</span></strong><small>Senaste avläsningstestet för dörrkort, material och tid.</small></span><span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </details>
   </div>
 </section>
 <header class="appHeader">
@@ -387,6 +415,38 @@ html[data-auth-pending] body{visibility:hidden}
 <button id="mobileProtocol"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h8M9 3h6v3H9zM7 5H5v16h14V5h-2"/><path d="m8 13 2 2 5-5"/></svg></span><span class="navLabel">Protokoll</span></button>
 <button id="settingsBtn"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V7l8-4 8 4v13H4Z"/><path d="M8 10h2M14 10h2M8 14h2M14 14h2M10 20v-3h4v3"/></svg></span><span class="navLabel">Projekt</span></button>
 </nav><script src="ui-text-scale.js?v=2.4.217"></script><script src="drawing-annotations.js?v=2.4.217"></script><script src="session-history.js?v=2.4.217"></script><script src="app.js?v=2.4.256"></script><script src="reports.js?v=2.4.217"></script><script src="v2.js?v=2.4.217"></script><script src="customer-preview-pager.js?v=2.4.217"></script><script src="drawing-transfer.js?v=2.4.217"></script><script src="offline.js?v=2.4.398"></script>
+<script id="tillsyno-home-test-versions">(function(){
+ 'use strict';
+ const panel=document.getElementById('homeTests');
+ if(!panel)return;
+ let checking=false;
+ panel.addEventListener('toggle',async()=>{
+  if(!panel.open||checking||!navigator.onLine)return;
+  checking=true;
+  try{
+   await Promise.all(Array.from(panel.querySelectorAll('[data-home-test]'),async link=>{
+    // Read labels only; never execute test-page scripts or open a project.
+    const href=link.getAttribute('href')||link.dataset.originalHref;
+    if(!href)return;
+    try{
+     const response=await fetch(new URL(href,location.href),{cache:'no-store'});
+     if(!response.ok)return;
+     const page=new DOMParser().parseFromString(await response.text(),'text/html');
+     const isRead=link.dataset.homeTest==='read';
+     const label=isRead?page.querySelector('#pwBuildVersion'):page.querySelector('.spTestBadge');
+     const match=(label?.textContent||'').match(isRead?/Avläsning TEST\s+(\d+(?:\.\d+)+)/:/SharePoint TEST\s+(\d+(?:\.\d+)+)/);
+     if(!match)return;
+     link.querySelector('[data-test-version]').textContent='v'+match[1];
+     const url=new URL(href,location.href);
+     url.searchParams.set(isRead?'v':'spv',match[1]);
+     const target=url.pathname.split('/').pop()+url.search;
+     if(link.hasAttribute('data-original-href'))link.dataset.originalHref=target;
+     else link.setAttribute('href',target);
+    }catch(_){/* Keep the published fallback label and link when offline. */}
+   }));
+  }finally{checking=false;}
+ });
+})();</script>
 <script id="tillsyno-home-footer-account-v295">(function(){
  'use strict';
  const footer=document.getElementById('homeFooterAccount');
