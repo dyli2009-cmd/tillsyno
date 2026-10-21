@@ -10,7 +10,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>SmartMatch – Avläsning TEST 9.85</title>
+<title>SmartMatch – Avläsning 9.92</title>
 
 
 <script src="smartmatch-protocol-templates.js"></script>
@@ -430,11 +430,21 @@ html[data-read-locked] body>:not(#smReadCodeGate):not(script):not(style){visibil
 #smReadCodeGate{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:var(--ta-page,#edf4f6);padding:20px;box-sizing:border-box;font:14px system-ui;color:var(--ta-ink,#193746)}
 #smReadCodeGate[hidden]{display:none!important}#smReadCodeGate form{width:min(320px,100%);display:grid;gap:12px;padding:24px;box-sizing:border-box;background:var(--ta-card,#fff);border:1px solid var(--ta-border,#b9cbd2);border-radius:12px}#smReadCodeGate h1{font-size:22px;margin:0}#smReadCodeGate label{display:grid;gap:6px}#smReadCodeGate input{width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--ta-border,#b9cbd2);border-radius:6px;font:22px system-ui;letter-spacing:8px;background:var(--ta-page,#edf4f6);color:inherit}#smReadCodeGate button{min-height:42px;border:0;border-radius:6px;background:var(--ta-blue-dark,#175849);color:var(--ta-card,#fff);font:700 14px system-ui}#smReadCodeGate button:disabled{opacity:.6}#smReadCodeGate p{margin:0;font-size:12px;min-height:16px}#smReadCodeGate a{color:var(--ta-blue-dark,#175849);font-size:12px}
 </style>
+<style>
+.rtCardMatchCount{margin:5px 0 0 20px;font-size:12px;font-weight:600;line-height:1.4}
+.rtCompactResult[data-match-state=missing]{border-left:3px solid #b42318}
+.rtCompactResult[data-match-state=missing] .rtCardSummary{background:#fff0ef;color:#9c2018}
+.rtCompactResult[data-match-state=missing] .rtReviewBadge{background:#fcd9d5;color:#9c2018}
+.rtCompactResult[data-review-state=pending] .rtCardSummary{background:#edf2f6;color:#34465a}
+.rtCompactResult[data-review-state=pending] .rtReviewBadge{background:#dce5ee;color:#34465a}
+</style>
+<style>.rtManualLinkBar{padding:12px;background:#e9f5fb;border:2px solid #19769b;border-radius:8px}.rtManualLinkBar p{margin:0 0 8px;font-weight:600}.rtManualLinkBar button{margin:3px;padding:9px}.rtManualLinkBar[hidden]{display:none}</style>
+<style>.rtManualLinkBar>label{display:block;margin:8px 0}.rtManualLinkBar input[type=search]{display:block;width:100%;box-sizing:border-box;padding:10px;font-size:16px}.rtManualSearchList{max-height:220px;overflow:auto}.rtManualSearchList>div{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #ccdce5}.rtManualSearchList label{display:flex;align-items:center;gap:7px}.rtManualSearchList input{min-width:20px;min-height:20px}.rtManualSearchResults p{font-weight:400;font-size:13px}</style>
 </head>
 <body class="pwStartMode smCompactWorkspace">
 <section id="smReadCodeGate" aria-label="Lås upp Avläsning"><form><h1>Avläsning</h1><label>Kod<input type="password" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" autocomplete="off" required aria-label="Kod till Avläsning"></label><button type="submit" disabled>Öppna</button><p role="status" aria-live="polite">Kontrollerar inloggning…</p><a href="index.html">Till startsidan</a></form></section>
 <script src="smartmatch-read-access-v9-85.js"></script>
-<footer class="smStartVersion" aria-label="SmartMatch-testets version"><span>SmartMatch · </span><span id="pwBuildVersion" class="pwTitleVersion" data-build="36.228" title="SmartMatch avläsning TEST 9.85">Avläsning TEST 9.85</span></footer>
+<footer class="smStartVersion" aria-label="SmartMatch-testets version"><span>SmartMatch · </span><span id="pwBuildVersion" class="pwTitleVersion" data-build="36.228" title="SmartMatch avläsning 9.92">Avläsning 9.92</span></footer>
 <script src="smartmatch-compact-workspace-v9-44.js"></script>
 <header class="pwHeader">
   <a class="pwHome" href="./" aria-label="Hem"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg>Hem</a>
@@ -1114,34 +1124,35 @@ html[data-read-locked] body>:not(#smReadCodeGate):not(script):not(style){visibil
  <p class="smSaveReminder">Spara PDF bäddar in avläsning, kopplingar, produkter och avprickningar i filen. Den öppnas direkt på nästa dator utan ny avläsning. Spara lokalt är en arbetskopia i den här webbläsaren.</p>
 </dialog>
 <script src="vendor/jszip-3.10.1.min.js"></script>
-<script src="smartmatch-slr-test-module-read-v9-85.js?v=9.85"></script>
+<script src="smartmatch-slr-test-module-read-v9-85.js?v=9.92"></script>
 <script src="smartmatch-slr-test-da-v36-132.js?v=36.132"></script>
 <script src="smartmatch-stamp-shapes-v36-78.js?v=36-78"></script>
 <script src="smartmatch-table-layouts-v36-94.js?v=36-106"></script>
 <script src="smartmatch-beslagskod-v36-133.js?v=36.133"></script>
-<link rel="stylesheet" href="smartmatch-read-test-v9-85.css?v=9.85">
+<link rel="stylesheet" href="smartmatch-read-test-v9-85.css?v=9.92">
 <script src="smartmatch-read-stamps-v5.js?v=5"></script>
-<script src="smartmatch-read-text-v9-6.js?v=9.85"></script>
-<script src="smartmatch-read-appearance-v9-29.js?v=9.85"></script>
-<script src="smartmatch-read-match-v9-29.js?v=9.85"></script>
-<script src="smartmatch-read-codes-v9-6.js?v=9.85"></script>
+<script src="smartmatch-read-text-v9-6.js?v=9.92"></script>
+<script src="smartmatch-read-step-v9-88.js?v=9.92"></script>
+<script src="smartmatch-read-appearance-v9-86.js?v=9.92"></script>
+<script src="smartmatch-read-match-v9-92.js?v=9.92"></script>
+<script src="smartmatch-read-codes-v9-6.js?v=9.92"></script>
 <script src="smartmatch-read-image-regions-v7.js?v=7"></script>
-<script src="smartmatch-read-work-v9-32.js?v=9.85"></script>
+<script src="smartmatch-read-work-v9-32.js?v=9.92"></script>
 <script src="smartmatch-read-progress-v9-1.js?v=9.1"></script>
-<script src="smartmatch-read-project-v9-29.js?v=9.85"></script>
-<script src="smartmatch-read-project-writer-v9-85.js?v=9.85"></script>
-<script src="smartmatch-read-review-v9-85.js?v=9.85"></script>
-<script src="smartmatch-read-workflow-v9-29.js?v=9.85"></script>
+<script src="smartmatch-read-project-v9-29.js?v=9.92"></script>
+<script src="smartmatch-read-project-writer-v9-85.js?v=9.92"></script>
+<script src="smartmatch-read-review-v9-90.js?v=9.92"></script>
+<script src="smartmatch-read-workflow-v9-29.js?v=9.92"></script>
 <script src="smartmatch-read-table-ocr-v9-33.js"></script>
-<script src="smartmatch-read-test-v9-85.js?v=9.85"></script>
-<script src="smartmatch-read-export-progress-v9-51.js?v=9.85"></script>
+<script src="smartmatch-read-v9-92.js?v=9.92"></script>
+<script src="smartmatch-read-export-progress-v9-51.js?v=9.92"></script>
 <script src="smartmatch-card-view-v9-38.js"></script>
-<script src="smartmatch-read-test-main-v9-85.js?v=9.85"></script>
-<script src="smartmatch-read-equipment-symbols-v9-85.js?v=9.85"></script>
-<script src="smartmatch-read-extra-v9-29.js?v=9.85"></script>
+<script src="smartmatch-read-main-v9-90.js?v=9.92"></script>
+<script src="smartmatch-read-equipment-symbols-v9-85.js?v=9.92"></script>
+<script src="smartmatch-read-extra-v9-86.js?v=9.92"></script>
 <script src="smartmatch-protocol-export-v36-96.js?v=36-106"></script>
-<script src="smartmatch-read-test-session-v9-85.js?v=9.85"></script>
-<script id="smartmatch-visual-release-v1-3">(function(){var label=document.getElementById('pwBuildVersion');if(!label)return;label.textContent='Avläsning TEST 9.85';label.title='SmartMatch avläsning TEST 9.85';label.setAttribute('aria-label','SmartMatch avläsning TEST 9.85');/* data-build and data-loaded-build use 36.228 for internal updater. */})();</script>
+<script src="smartmatch-read-test-session-v9-85.js?v=9.92"></script>
+<script id="smartmatch-visual-release-v1-3">(function(){var label=document.getElementById('pwBuildVersion');if(!label)return;label.textContent='Avläsning 9.92';label.title='SmartMatch avläsning 9.92';label.setAttribute('aria-label','SmartMatch avläsning 9.92');/* data-build and data-loaded-build use 36.228 for internal updater. */})();</script>
 <script src="tillsyno-appearance.js?v=2.4.397"></script>
 
 <!-- Session module handles refresh + reopen -->
@@ -1151,4 +1162,3 @@ html[data-read-locked] body>:not(#smReadCodeGate):not(script):not(style){visibil
 </script>
 </body>
 </html>
-
