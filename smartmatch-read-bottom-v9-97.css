@@ -1,0 +1,20 @@
+/* Avläsning 9.97: the finish controls share a dock outside the card rail. */
+.rtDialog.rtSimpleReader .rtRailScroll{display:flex;flex-direction:column}
+.rtDialog.rtSimpleReader .rtRailScroll>.rtRailSection{flex:none}
+.rtDialog.rtSimpleReader .rtFinishDock{flex:none;min-width:0;background:var(--ta-card,#fff);border-top:1px solid var(--ta-border,#bfd0d8)}
+.rtDialog.rtSimpleReader .rtBottomPanel{display:flex;flex-direction:column;gap:8px;margin:0;padding:8px 9px}
+.rtDialog.rtSimpleReader .rtBottomPanel>.rtApproval{display:none;flex-direction:row;align-items:center;gap:8px;margin:0}
+.rtDialog.rtSimpleReader[data-products-only='false'][data-read-step='4'] .rtBottomPanel>.rtApproval{display:flex}
+.rtDialog.rtSimpleReader .rtBottomPanel>.rtApproval input{flex:none}
+.rtDialog.rtSimpleReader .rtBottomPanel #rtMarkSection{margin:0}
+.rtDialog.rtSimpleReader .rtFinishDock .rtReaderSettings[open]{max-height:min(36dvh,320px);overflow:auto;overscroll-behavior:contain}
+@media(min-width:761px){
+ .rtDialog.rtSimpleReader .rtFinishDock{display:flex;flex-direction:column;max-height:100%}
+ .rtDialog.rtSimpleReader .rtBottomPanel{min-height:0}
+ .rtDialog.rtSimpleReader .rtBottomPanel #rtMarkSection{min-height:0;overflow:auto}
+ .rtDialog.rtSimpleReader .rtBottomPanel>.rtApproval,.rtDialog.rtSimpleReader .rtFinishDock>.rtFooter{flex:none}
+}
+@media(max-width:760px){
+ .rtDialog.rtSimpleReader .rtReview{display:contents}
+ .rtDialog.rtSimpleReader .rtFinishDock{position:sticky;bottom:0;z-index:8;box-shadow:0 -3px 10px #19374614}
+}
