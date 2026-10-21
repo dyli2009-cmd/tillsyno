@@ -1,0 +1,8 @@
+/* Avläsning 9.95: settings and approval follow every result list. */
+.rtDialog.rtSimpleReader .rtRailScroll{display:flex;flex-direction:column}
+.rtDialog.rtSimpleReader .rtRailScroll>.rtRailSection{flex:none}
+.rtDialog.rtSimpleReader .rtBottomPanel{flex:none;display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:10px;border-top:1px solid var(--ta-border,#bfd0d8)}
+.rtDialog.rtSimpleReader .rtBottomPanel>.rtApproval{display:none;flex-direction:row;margin:0;align-items:center;gap:8px}
+.rtDialog.rtSimpleReader[data-products-only='false'][data-read-step='4'] .rtBottomPanel>.rtApproval{display:flex}
+.rtDialog.rtSimpleReader .rtBottomPanel>.rtApproval input{flex:none}
+.rtDialog.rtSimpleReader .rtBottomPanel #rtMarkSection{margin:0}
