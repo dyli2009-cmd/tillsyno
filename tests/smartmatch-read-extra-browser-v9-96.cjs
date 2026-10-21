@@ -1,0 +1,91 @@
+'use strict';
+// Generated PDF only: the printed appearance differs from both its descriptive
+// metadata and the chosen door-card name. Background page text must not win.
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http');
+const {PDFDocument,StandardFonts,PDFName,PDFHexString,PDFNumber,rgb}=require('../vendor/pdf-lib.min.js');
+const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
+const root=path.resolve(__dirname,'..'),entry=process.env.SMARTMATCH_ENTRY||'smartmatch-read-v9-96.html';
+const devices=[{name:'desktop',width:1366,height:900},{name:'ipad',width:820,height:1180,touch:true},{name:'iphone',width:390,height:844,touch:true}].filter(d=>!process.env.SMARTMATCH_DEVICE||d.name===process.env.SMARTMATCH_DEVICE);
+const printed='DBX b-hold',cardName='DBX B holdx',drawingCode='DBXBHOLD',sourceCode='DBXBHOLDX',sourceWork=['Lashus · CASE2'];
+const codeRect={x:.08,y:.08,w:.78,h:.06},tableRect={x:.06,y:.20,w:.89,h:.35};
+const sample={page:1,rect:{x:278/1200,y:208/700,w:114/1200,h:64/700}},oldId='scan:GS23@1:65,575,195,610';
+const key=value=>String(value||'').toUpperCase().replace(/[\s/_.–—−-]+/g,'');
+const rowKey=(text,index)=>{let h=2166136261;for(const c of text)h=Math.imul(h^c.charCodeAt(0),16777619);return 'read:'+index+':'+(h>>>0).toString(36);};
+const server=http.createServer((req,res)=>{const file=path.resolve(root,decodeURIComponent(new URL(req.url,'http://local').pathname).slice(1));if(!file.startsWith(root+path.sep)){res.writeHead(403);return res.end();}try{res.setHeader('Content-Type',({'.js':'application/javascript','.html':'text/html','.css':'text/css'})[path.extname(file)]||'application/octet-stream');res.end(fs.readFileSync(file));}catch(_){res.writeHead(404);res.end();}});
+async function fixture(){
+ const doc=await PDFDocument.create(),font=await doc.embedFont(StandardFonts.Helvetica),one=doc.addPage([1200,700]),two=doc.addPage([1200,700]);
+ doc.setTitle('Generated manual appearance regression');one.drawText('GS23',{x:70,y:580,size:28,font});
+ function stamp(page,x,y,label=printed,color=rgb(1,.88,.05),subject='Descriptive held-open access component',ghost=false){
+  const helper=doc.addPage([110,60]);helper.drawEllipse({x:55,y:30,xScale:54,yScale:29,color});
+  const [first,...rest]=label.split(' ');helper.drawText(first,{x:55-font.widthOfTextAtSize(first,15)/2,y:34,size:15,font});const last=rest.join(' ');helper.drawText(last,{x:55-font.widthOfTextAtSize(last,12)/2,y:17,size:12,font});
+  if(ghost)helper.drawText('KL HWC Wc',{x:140,y:22,size:12,font});
+  const form=doc.context.register(doc.context.flateStream(helper.getContentStream().getUnencodedContents(),{Type:'XObject',Subtype:'Form',BBox:[0,0,110,60],Resources:helper.node.Resources()}));doc.removePage(doc.getPageCount()-1);
+  page.node.addAnnot(doc.context.register(doc.context.obj({Type:'Annot',Subtype:'Stamp',Subj:PDFHexString.fromText(subject),Rect:[x,y,x+110,y+60],F:4,AP:{N:form}})));
+  page.drawText('ROOM 14',{x:x+22,y:y+25,font,size:12});
+ }
+ stamp(one,65,565,'GS23',rgb(1,.88,.05),'GS23',true);stamp(one,280,430);stamp(one,760,430,printed,rgb(.1,.4,.9));stamp(one,280,200,printed+'2');stamp(two,180,410);
+ const rows=[['Komponent','Produkt','Levereras av','Monteras av'],['Lashus','SL660','GS','GS'],['Trycke','6696','DT','GS']];
+ for(const code of ['GS23',cardName,'DX25','DX26']){const card=doc.addPage([595,842]);card.drawText('Beslagskod: '+code,{x:60,y:750,size:20,font});for(const [row,values] of rows.entries())for(const [column,text]of values.entries())card.drawText(text,{x:[40,190,350,460][column],y:650-row*35,size:11,font});}
+ doc.catalog.set(PDFName.of('SmartMatch21OriginalPages'),PDFNumber.of(6));
+ const work=['Lashus · SL660','Trycke · 6696'],oldRect=[65,575,195,610],cards={
+  old:{id:'old',page:3,code:'GS23',originalCardCode:'GS23',header:'Beslagskod: GS23',rawTable:rows.map(row=>row.join(' ')).join('\n'),work,workItems:work.map((text,index)=>({text,label:['Lashus','Trycke'][index],value:['SL660','6696'][index],section:'Daglasning'})),workState:'ready',workPolicy:'gs-install-v2',codeRect,tableRect,bounds:{x:0,y:0,w:1,h:1},choices:['GS23'],method:'PDF-text',confidence:100},
+  source:{id:'source',page:4,code:sourceCode,originalCardCode:cardName,header:'Beslagskod: '+cardName,rawTable:'',work:sourceWork,workItems:[{text:sourceWork[0],label:'Lashus',value:'CASE2',key:'source-work'}],workState:'ready',workPolicy:'manual-v1',codeRect,tableRect,bounds:{x:0,y:0,w:1,h:1},choices:[sourceCode],method:'PDF-text',confidence:100,deferred:true,deferredReasons:['Ingen vald stämpel']}
+ };
+ const deferredCards={source:cards.source,...Object.fromEntries(['DX25','DX26'].map((code,index)=>['deferred'+index,{id:'deferred'+index,page:index+5,code,originalCardCode:code,header:'Beslagskod: '+code,work:[],workState:'pending',codeRect,tableRect:null,bounds:{x:0,y:0,w:1,h:1},choices:[code],method:'PDF-text',confidence:100,deferred:true,deferredReasons:['Ingen vald stämpel']}]))};delete cards.source;
+ const readTestData={schema:2,sourceId:'generated-appearance-extra',phase:'codes',rects:{code:codeRect,table:tableRect},pages:[3,4,5,6],cards,deferredCards,checks:{[oldId]:{[rowKey(work[0],0)]:true}},matching:{version:2,hits:[{page:1,code:'GS23',rect:oldRect,box:{x:65/1200,y:90/700,w:130/1200,h:35/700},source:'PDF-text',scanSource:'read-tool-v9',sourceKind:'gs',order:870000,selected:true,label:'GS23'}],pages:[{page:1,count:1}],warnings:[],review:{version:1,approved:true}},name:'Generated reviewed fixture'};
+ const project={schema:6,projectRevision:1,projectId:'manual-appearance-regression',instances:{[oldId]:{checks:{[rowKey(work[0],0)]:true},progress:50}},automationItems:[],readTestData};
+ doc.catalog.set(PDFName.of('TillsynoSmartMatchV36Data'),PDFHexString.fromText(JSON.stringify(project)));return Buffer.from(await doc.save());
+}
+async function makeContext(browser,device){
+ const context=await browser.newContext({viewport:{width:device.width,height:device.height},hasTouch:!!device.touch,isMobile:!!device.touch,acceptDownloads:true,userAgent:device.touch?'Mozilla/5.0 ('+(device.name==='ipad'?'iPad':'iPhone')+'; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1':undefined});
+ await context.route('**/auth/guard.js*',route=>route.fulfill({contentType:'application/javascript',body:"document.addEventListener('DOMContentLoaded',()=>document.documentElement.removeAttribute('data-auth-pending'));"}));
+ await context.route('**/smartmatch-read-access-v9-85.js*',route=>route.fulfill({contentType:'application/javascript',body:"document.documentElement.removeAttribute('data-read-locked');document.getElementById('smReadCodeGate').hidden=true;"}));
+ await context.addInitScript(()=>{
+  window.showSaveFilePicker=undefined;window.__ocrCalls=0;window.__pageDelay=0;window.Tesseract={createWorker(){window.__ocrCalls++;throw Error('Appearance text does not need OCR');}};
+  let library;Object.defineProperty(window,'pdfjsLib',{configurable:true,get:()=>library,set:value=>{library=new Proxy(value,{get(target,key){if(key!=='getDocument')return Reflect.get(target,key);return(...args)=>{const task=target.getDocument(...args);let promise;return new Proxy(task,{get(task,key){if(key!=='promise'){const value=task[key];return typeof value==='function'?value.bind(task):value;}return promise||=(task.promise.then(pdf=>new Proxy(pdf,{get(pdf,key){if(key!=='getPage'){const value=pdf[key];return typeof value==='function'?value.bind(pdf):value;}return async number=>{if(window.__pageDelay)await new Promise(resolve=>setTimeout(resolve,window.__pageDelay));return pdf.getPage(number);};}})));}});};}});}});
+ });return context;
+}
+async function ready(page,count){await page.waitForFunction(count=>window.SmartMatchReadExtraV94&&window.SmartMatchAppBridge?.getPdf()&&SmartMatchAppBridge.getPositions().length===count&&document.getElementById('pwScanOverlay').hidden,count,{timeout:90000});}
+async function oldWork(page){return page.evaluate(id=>{const position=SmartMatchAppBridge.getPositions().find(p=>p.id===id);return {checks:structuredClone(position?.checks||{}),readChecks:structuredClone(SmartMatchReadTest.payload().checks[id]||{}),work:structuredClone(SmartMatchReadTest.cardFor('GS23',3)?.work||[])};},oldId);}
+async function mark(page,context,touch){
+ await page.locator('#pwFit').click();await page.locator('#exOpenExtra').click();await page.waitForFunction(()=>!document.getElementById('exDialog')?.open);
+ const b=await page.locator('#pwCanvas').boundingBox();assert(b&&b.width>0);const a={x:b.x+sample.rect.x*b.width,y:b.y+sample.rect.y*b.height},z={x:a.x+sample.rect.w*b.width,y:a.y+sample.rect.h*b.height};
+ if(touch){const c=await context.newCDPSession(page);await c.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:a.x,y:a.y,id:1}]});for(let i=1;i<=8;i++)await c.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:a.x+(z.x-a.x)*i/8,y:a.y+(z.y-a.y)*i/8,id:1}]});await c.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await c.detach();}
+ else{await page.mouse.move(a.x,a.y);await page.mouse.down();await page.mouse.move(z.x,z.y,{steps:8});await page.mouse.up();}
+ await page.waitForSelector('#exDialog[open]');await page.waitForFunction(()=>!document.getElementById('exSearch').disabled);
+}
+async function search(page){await page.locator('#exSearch').click();await page.waitForFunction(()=>!document.getElementById('exSearch').disabled,null,{timeout:90000});return page.evaluate(()=>SmartMatchReadExtraV94.state());}
+async function exportProject(page){await page.locator('#smartPdfInspect').click();await page.waitForSelector('#smartExportDialog[open]');await page.locator('#smartExportBuild').click();await page.waitForFunction(()=>{const b=document.getElementById('smartExportBuild');return !b.disabled&&b.textContent==='Spara PDF'||document.getElementById('smartExportStatus').dataset.level==='warning';},null,{timeout:90000});assert.equal(await page.locator('#smartExportBuild').innerText(),'Spara PDF',await page.locator('#smartExportStatus').innerText());const downloading=page.waitForEvent('download',{timeout:90000});await page.locator('#smartExportBuild').click();const download=await downloading;return fs.readFileSync(await download.path());}
+async function run(browser,device,bytes){
+ const trace=message=>{if(process.env.SMARTMATCH_DEBUG)console.log(device.name+': '+message);};
+ let context=await makeContext(browser,device),page=await context.newPage();const errors=[];page.setDefaultTimeout(15000);page.on('pageerror',error=>errors.push(error.message));
+ try{
+  await page.goto('http://127.0.0.1:'+server.address().port+'/'+entry);await page.locator('#pwFile').setInputFiles({name:'generated-appearance.pdf',mimeType:'application/pdf',buffer:bytes});await ready(page,1);trace('opened');const before=await oldWork(page);assert(Object.values(before.checks).some(Boolean));
+  await page.evaluate(async()=>{
+   window.__appearanceSubjects=[];const original=SmartMatchReadStamps;window.SmartMatchReadStamps={...original,readAppearances:options=>{__appearanceSubjects.push(...options.index.map(record=>record.subject));return original.readAppearances(options);}};
+   await SmartMatchReadExtraV94.open({markFirst:false});await SmartMatchReadExtraV94.setSample({page:1,rect:{x:63/1200,y:73/700,w:114/1200,h:64/700}});
+  });
+  assert.equal(await page.locator('#exCode').inputValue(),'GS23','literal known stamp metadata keeps clipped legacy AP lettering out');assert.deepEqual(await page.evaluate(()=>__appearanceSubjects),[],'known literal stamp does not need its ghost appearance read');await page.evaluate(()=>SmartMatchReadExtraV94.close());
+  await mark(page,context,device.touch);trace('marked');
+  for(const [number,label]of [[4,cardName],[5,'DX25'],[6,'DX26']])assert(key(await page.locator('#exCardPage option[value="'+number+'"]').innerText()).includes(key(label)),'deferred original name is shown on its known card page');
+  assert.equal(await page.locator('#exCode').inputValue(),printed,'the marked appearance wins over native room text and descriptive metadata');
+  // An older caller may know card pages/index but return an empty reader-name
+  // list. Existing indexed identity must remain visible and selectable.
+  await page.evaluate(()=>{window.__originalReader=SmartMatchReadTest;window.SmartMatchReadTest={...SmartMatchReadTest,getCardNames:()=>[],getOriginalCardCode:()=>''};});
+  await page.evaluate(()=>SmartMatchReadExtraV94.open({markFirst:false}));
+  const option=await page.locator('#exCardPage option[value="4"]').innerText();assert(!/känt dörrkort/.test(option)&&key(option).includes(sourceCode),'known card index supplies a usable identity');
+  await page.locator('#exCardPage').selectOption('4');assert.equal(key(await page.locator('#exCardCode').inputValue()),sourceCode);
+  await page.evaluate(()=>{window.SmartMatchReadTest=window.__originalReader;});
+  trace('source selected');const found=await search(page);trace('searched '+JSON.stringify(found.result?.hits.map(h=>({code:h.code,page:h.page,status:h.status}))));assert.equal(found.result?.hits.length,2,await page.locator('#exStatus').innerText());assert.deepEqual(found.result.hits.map(h=>h.page).sort(),[1,2]);
+  assert(found.result.hits.every(h=>key(h.code)===drawingCode),'the complete printed suffix is retained');assert.equal(await page.locator('#exHits input[type=checkbox]:checked').count(),2);
+  await page.locator('#exApply').click();trace('apply requested '+await page.locator('#exStatus').innerText());await ready(page,3);trace('applied');assert.deepEqual(await oldWork(page),before,'linking leaves prior work and checks intact');
+  const after=await page.evaluate(()=>({read:SmartMatchReadTest.payload(),mapping:SmartMatchAppBridge.getDoorCardMapping(),positions:SmartMatchAppBridge.getPositions()}));const savedSample=after.read.drawingSample;assert.equal(savedSample?.code,drawingCode,'successful apply saves the marked search example');assert.equal(after.mapping[drawingCode],4);assert.equal(after.read.cards.source.code,sourceCode);assert.equal(after.read.cards.source.originalCardCode,cardName);assert.deepEqual(after.read.cards.source.work,sourceWork);assert(!after.read.deferredCards.source,'chosen source promoted once');assert.deepEqual(Object.keys(after.read.deferredCards).sort(),['deferred0','deferred1'],'other deferred sources untouched');assert.equal(after.positions.filter(p=>p.code===drawingCode).length,2);
+  await page.evaluate(()=>SmartMatchReadExtraV94.open({markFirst:false}));await page.evaluate(()=>{window.__pageDelay=500;});const stable=await page.evaluate(()=>SmartMatchReadTest.payload());await page.locator('#exSearch').click();await page.waitForSelector('#exCancelScan:not([hidden])');await page.locator('#exCancelScan').click();await page.waitForFunction(()=>!document.getElementById('exSearch').disabled);assert.deepEqual(await page.evaluate(()=>SmartMatchReadTest.payload()),stable,'cancelled search does not mutate links');await page.evaluate(()=>{window.__pageDelay=0;SmartMatchReadExtraV94.close();});
+  assert.deepEqual(await page.evaluate(()=>SmartMatchReadTest.getDrawingSample()),savedSample,'cancellation retains the search example');trace('cancelled');const exported=await exportProject(page);trace('exported');const saved=await PDFDocument.load(exported),payload=JSON.parse(saved.catalog.get(PDFName.of('TillsynoSmartMatchV36Data')).decodeText());assert.deepEqual(payload.readTestData.drawingSample,savedSample,'the portable PDF embeds the complete search example');assert(Object.values(payload.readTestData.cards).some(c=>c.code===drawingCode&&c.sourceCardId==='source'),'the reviewed alias is embedded in the portable PDF');
+  await context.close();context=await makeContext(browser,device);page=await context.newPage();page.setDefaultTimeout(15000);page.on('pageerror',error=>errors.push(error.message));await page.goto('http://127.0.0.1:'+server.address().port+'/'+entry);await page.locator('#pwFile').setInputFiles({name:'saved-appearance.pdf',mimeType:'application/pdf',buffer:exported});await ready(page,3);assert.deepEqual(await oldWork(page),before,'work/checks survive reopening');assert.equal(await page.evaluate(code=>SmartMatchAppBridge.getDoorCardMapping()[code],drawingCode),4);
+  assert.deepEqual(await page.evaluate(()=>SmartMatchReadTest.getDrawingSample()),savedSample,'a fresh session restores the example from the file');await page.evaluate(()=>SmartMatchReadExtraV94.open({markFirst:false}));assert.deepEqual(await page.evaluate(()=>SmartMatchReadExtraV94.state().sample),savedSample,'Koppla restores the same search example');assert.equal(key(await page.locator('#exCode').inputValue()),drawingCode);assert.equal(await page.locator('#exCardPage').inputValue(),'4','the saved alias selects its original source without another manual card choice');const repeated=await search(page);assert.equal(repeated.result?.hits.length,2,'the saved alias finds both physical appearances again');assert(repeated.result.hits.every(h=>h.status==='linked'&&!h.selected),'reopening recognises existing links instead of adding duplicates');
+  assert.equal(await page.evaluate(()=>__ocrCalls),0);assert.deepEqual(errors,[]);await page.screenshot({path:path.join(root,'work/extra96-'+device.name+'.png')});console.log('PASS '+device.name+': printed AP over room/metadata; indexed card names; two exact same-style stamps; chosen alias, old work, cancellation and portable reopen; no OCR');
+ }catch(error){console.error(device.name,await page.evaluate(()=>({code:document.getElementById('exCode')?.value,status:document.getElementById('exStatus')?.textContent,card:document.getElementById('exCardCode')?.value,body:document.body.innerText.slice(-1200)})).catch(()=>null));throw error;}
+ finally{await context.close();}
+}
+(async()=>{await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));let browser;try{browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});const bytes=await fixture();for(const device of devices)await run(browser,device,bytes);}finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}})().catch(error=>{console.error(error);process.exitCode=1;});
