@@ -10,7 +10,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>SmartMatch – Avläsning 9.93</title>
+<title>SmartMatch – Avläsning 9.94</title>
 
 
 <script src="smartmatch-protocol-templates.js"></script>
@@ -444,8 +444,8 @@ html[data-read-locked] body>:not(#smReadCodeGate):not(script):not(style){visibil
 <body class="pwStartMode smCompactWorkspace">
 <section id="smReadCodeGate" aria-label="Lås upp Avläsning"><form><h1>Avläsning</h1><label>Kod<input type="password" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" autocomplete="off" required aria-label="Kod till Avläsning"></label><button type="submit" disabled>Öppna</button><p role="status" aria-live="polite">Kontrollerar inloggning…</p><a href="index.html">Till startsidan</a></form></section>
 <script src="smartmatch-read-access-v9-85.js"></script>
-<footer class="smStartVersion" aria-label="SmartMatch-testets version"><span>SmartMatch · </span><span id="pwBuildVersion" class="pwTitleVersion" data-build="36.228" title="SmartMatch avläsning 9.93">Avläsning 9.93</span></footer>
-<script src="smartmatch-compact-workspace-v9-44.js"></script>
+<footer class="smStartVersion" aria-label="SmartMatch-testets version"><span>SmartMatch · </span><span id="pwBuildVersion" class="pwTitleVersion" data-build="36.229" title="SmartMatch avläsning 9.94">Avläsning 9.94</span></footer>
+<script src="smartmatch-compact-workspace-v9-94.js"></script>
 <header class="pwHeader">
   <a class="pwHome" href="./" aria-label="Hem"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg>Hem</a>
   <div class="pwTitle">
@@ -481,22 +481,24 @@ html[data-read-locked] body>:not(#smReadCodeGate):not(script):not(style){visibil
  <div class="pwToolbarWork" aria-label="Ritningsverktyg">
   <button id="pwFit" type="button">Passa</button>
   <button id="pwBulkSelect" type="button" aria-pressed="false" title="Välj flera positioner">Välj</button>
+  <button id="exOpenExtra" type="button" title="Markera och koppla stämplar" aria-label="Koppla stämplar till dörrkort"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 15 6-6M8 16l-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0M16 8l1-1a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0"/></svg><span>Koppla</span></button>
   <button id="rtOpenSettings" type="button" class="rtSettingsButton" hidden aria-hidden="true" tabindex="-1">Ändra förberedelse</button>
   <button id="pwProjectMaterialButton" type="button">Material</button>
   <button id="pwTimeReport" type="button" title="Beräknad arbetstid">Tid</button>
-  <button id="labDiagnoseOpen" class="pwAnalysisShortcut" type="button" title="Analys & rapporter: dörrkort, GS-rapport, PDF-analys och felsökning" aria-label="Öppna Analys och rapporter">▤ Analys</button>
+
   <div class="pwDrawTools" aria-label="Ritverktyg">
     <div class="pwToolWrap">
       <button id="pwToolMenuButton" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="pwToolMenu">Verktyg ▾</button>
       <div id="pwToolMenu" class="pwToolMenu" hidden>
-        <button id="exOpenExtra" type="button"><span class="smToolLabel">Koppla stämplar</span><small class="smToolHelp">Markera och hitta saknade stämplar</small></button>
-        <button id="rtMenuSettings" type="button"><span class="smToolLabel">Ställ in avläsning</span><small class="smToolHelp">Välj kod och kompakt GS-område</small></button>
+        <button id="labDiagnoseOpen" class="pwAnalysisShortcut" type="button" title="Analys & rapporter: dörrkort, GS-rapport, PDF-analys och felsökning" aria-label="Öppna Analys och rapporter">▤ Analys</button>
+
+
         <button id="rtMenuProducts" type="button" hidden><span class="smToolLabel">Läs om produkter</span><small class="smToolHelp">Valfritt, bara om du vill ändra sparad avläsning</small></button>
         <button id="pwToolText" type="button" aria-pressed="false"><svg aria-hidden="true" class="smToolSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M12 6v13M8 19h8"/></svg><span class="smToolLabel">Text</span><small class="smToolHelp">Skriv på ritning</small></button>
         <button id="pwToolCallout" type="button" aria-pressed="false"><svg aria-hidden="true" class="smToolSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13v10H8l-4 4z"/><path d="M13 20l7-7m-5 0h5v5"/></svg><span class="smToolLabel">Text + pil</span><small class="smToolHelp">Text med pil</small></button>
         <button id="pwToolArrow" type="button" aria-pressed="false"><svg aria-hidden="true" class="smToolSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L19 5m-8 0h8v8"/></svg><span class="smToolLabel">Pil</span><small class="smToolHelp">Rita pil</small></button>
         <button id="pwToolImage" type="button"><svg aria-hidden="true" class="smToolSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M8 5l1-2h6l1 2"/></svg><span class="smToolLabel">Kamera</span><small class="smToolHelp">Ta eller välj foto</small></button>
-        <button id="rtEditPreparation" type="button" title="Öppna läsområden för att själv ändra förberedelsen">Ändra förberedelse</button>
+        <button id="rtEditPreparation" type="button" title="Justera dörrkort och ritningskopplingar">Ändra avläsning</button>
         <button id="pwToolLegend" type="button"><svg aria-hidden="true" class="smToolSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="7" cy="9" r="1.5" fill="#168147" stroke="none"/><path d="M11 9h6"/><circle cx="7" cy="15" r="1.5" fill="#8755b8" stroke="none"/><path d="M11 15h6"/></svg><span class="smToolLabel">Färgförklaring</span><small class="smToolHelp">Placera en flyttbar legend på ritningen</small></button>
         <button id="pwDALinkTool" type="button"><svg aria-hidden="true" class="smToolSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.1 0l3-3a5 5 0 0 0-7-7l-2 2"/><path d="M14 11a5 5 0 0 0-7.1 0l-3 3a5 5 0 0 0 7 7l2-2"/></svg><span class="smToolLabel">Koppla DA</span><small class="smToolHelp">Länka till GS</small></button>
 
@@ -608,15 +610,17 @@ html[data-read-locked] body>:not(#smReadCodeGate):not(script):not(style){visibil
         </div>
 
 
+        <h1 class="rtHomeTitle">Avläsning</h1>
+        <p class="rtHomeSubtitle">Läs dörrkort och matcha mot ritningen.</p>
         <div class="rtWorkflowEntries">
-          <section id="rtPrepareEntry" class="rtWorkflowEntry" aria-label="Förbered ny PDF"><button id="rtChooseFiles" class="rtEntryButton" type="button" aria-label="Förbered ritning"><svg aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h10l6 6v20H7V3h2m10 0v7h6M11 16h10m-10 5h7"/><path d="M23 21v8m-4-4h8"/></svg><span class="rtEntryLabel">Förbered ritning</span></button></section>
-          <section id="rtWorkEntry" class="rtWorkflowEntry" aria-label="Öppna färdig PDF"><button id="pwOpenProjectEmpty" class="rtEntryButton" type="button" aria-label="Öppna PDF"><svg aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 27V5h15v22m0-15h7v15M3 27h26M10 17l3 3 6-7"/></svg><span class="rtEntryLabel">Öppna PDF</span></button></section>
+          <section id="rtPrepareEntry" class="rtWorkflowEntry" aria-label="Förbered ny PDF"><button id="rtChooseFiles" class="rtEntryButton" type="button" aria-label="Läs dörrkort från ny PDF"><svg aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h10l6 6v20H7V3h2m10 0v7h6M11 16h10m-10 5h7"/><path d="M23 21v8m-4-4h8"/></svg><span class="rtEntryLabel">Läs dörrkort</span></button></section>
+          <section id="rtWorkEntry" class="rtWorkflowEntry" aria-label="Öppna färdig PDF"><button id="pwOpenProjectEmpty" class="rtEntryButton" type="button" aria-label="Öppna sparat projekt"><svg aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 27V5h15v22m0-15h7v15M3 27h26M10 17l3 3 6-7"/></svg><span class="rtEntryLabel">Öppna projekt</span></button></section>
         </div>
         <input id="rtMultiFiles" type="file" accept="application/pdf,.pdf" multiple hidden>
         <p id="pwHomeStatus" class="smHomeStatus" role="status" aria-live="polite"></p>
         <div class="smLegacyRecovery">
-          <button id="pwRecoverOldProjects" type="button">Hitta tidigare lokalt sparade projekt</button>
-          <small>Söker säkert i äldre TEST-versioner på den här datorn. Inget raderas eller skrivs över.</small>
+          <button id="pwRecoverOldProjects" type="button">Hitta äldre projekt</button>
+
         </div>
         <div id="pwRecentProjects" class="smRecentProjects" hidden>
           <div class="smRecentHead">
@@ -632,7 +636,7 @@ html[data-read-locked] body>:not(#smReadCodeGate):not(script):not(style){visibil
 
   <div id="pwScanOverlay" class="pwScanOverlay" hidden role="status" aria-live="polite" aria-atomic="true">
     <div class="pwScanCard">
-      <span class="pwScanEyebrow" id="rtOpenProgressTitle">ÖPPNAR SPARAT PROJEKT</span>
+      <span class="pwScanEyebrow" id="rtOpenProgressTitle">ÖPPNAR PROJEKT</span>
       <strong class="pwScanNumber" id="pwScanPercentage">0%</strong>
       <span class="pwScanPhase" id="pwScanProgressPhase">Öppnar PDF</span>
       <div id="pwScanProgressTrack" class="pwScanProgressTrack" role="progressbar" aria-label="Öppnar projekt-PDF" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -1124,39 +1128,42 @@ html[data-read-locked] body>:not(#smReadCodeGate):not(script):not(style){visibil
  <p class="smSaveReminder">Spara PDF bäddar in avläsning, kopplingar, produkter och avprickningar i filen. Den öppnas direkt på nästa dator utan ny avläsning. Spara lokalt är en arbetskopia i den här webbläsaren.</p>
 </dialog>
 <script src="vendor/jszip-3.10.1.min.js"></script>
-<script src="smartmatch-slr-test-module-read-v9-85.js?v=9.93"></script>
+<script src="smartmatch-slr-test-module-read-v9-85.js?v=9.94"></script>
 <script src="smartmatch-slr-test-da-v36-132.js?v=36.132"></script>
 <script src="smartmatch-stamp-shapes-v36-78.js?v=36-78"></script>
 <script src="smartmatch-table-layouts-v36-94.js?v=36-106"></script>
 <script src="smartmatch-beslagskod-v36-133.js?v=36.133"></script>
-<link rel="stylesheet" href="smartmatch-read-test-v9-85.css?v=9.93">
-<script src="smartmatch-read-stamps-v9-93.js?v=9.93"></script>
-<script src="smartmatch-read-text-v9-6.js?v=9.93"></script>
-<script src="smartmatch-read-step-v9-88.js?v=9.93"></script>
-<script src="smartmatch-read-appearance-v9-86.js?v=9.93"></script>
-<script src="smartmatch-read-match-v9-93.js?v=9.93"></script>
-<script src="smartmatch-read-codes-v9-6.js?v=9.93"></script>
+<link rel="stylesheet" href="smartmatch-read-test-v9-85.css?v=9.94">
+<script src="smartmatch-read-stamps-v9-93.js?v=9.94"></script>
+<script src="smartmatch-read-text-v9-6.js?v=9.94"></script>
+<script src="smartmatch-read-step-v9-88.js?v=9.94"></script>
+<script src="smartmatch-read-appearance-v9-86.js?v=9.94"></script>
+<script src="smartmatch-read-match-v9-93.js?v=9.94"></script>
+<script src="smartmatch-read-codes-v9-6.js?v=9.94"></script>
 <script src="smartmatch-read-image-regions-v7.js?v=7"></script>
-<script src="smartmatch-read-work-v9-32.js?v=9.93"></script>
+<script src="smartmatch-read-work-v9-32.js?v=9.94"></script>
 <script src="smartmatch-read-progress-v9-1.js?v=9.1"></script>
-<script src="smartmatch-read-project-v9-29.js?v=9.93"></script>
-<script src="smartmatch-read-project-writer-v9-85.js?v=9.93"></script>
-<script src="smartmatch-read-review-v9-90.js?v=9.93"></script>
-<script src="smartmatch-read-workflow-v9-29.js?v=9.93"></script>
+<script src="smartmatch-read-project-v9-29.js?v=9.94"></script>
+<script src="smartmatch-read-project-writer-v9-85.js?v=9.94"></script>
+<script src="smartmatch-read-review-v9-94.js?v=9.94"></script>
+<script src="smartmatch-read-workflow-v9-94.js?v=9.94"></script>
 <script src="smartmatch-read-table-ocr-v9-33.js"></script>
-<script src="smartmatch-read-v9-93.js?v=9.93"></script>
-<script src="smartmatch-read-export-progress-v9-51.js?v=9.93"></script>
+<script src="smartmatch-read-v9-94.js?v=9.94"></script>
+<script src="smartmatch-read-export-progress-v9-51.js?v=9.94"></script>
 <script src="smartmatch-card-view-v9-38.js"></script>
-<script src="smartmatch-read-main-v9-90.js?v=9.93"></script>
-<script src="smartmatch-read-equipment-symbols-v9-85.js?v=9.93"></script>
-<script src="smartmatch-read-extra-v9-86.js?v=9.93"></script>
+<script src="smartmatch-read-main-v9-94.js?v=9.94"></script>
+<script src="smartmatch-read-equipment-symbols-v9-85.js?v=9.94"></script>
+<script src="smartmatch-read-extra-v9-94.js?v=9.94"></script>
 <script src="smartmatch-protocol-export-v36-96.js?v=36-106"></script>
-<script src="smartmatch-read-test-session-v9-85.js?v=9.93"></script>
-<script id="smartmatch-visual-release-v1-3">(function(){var label=document.getElementById('pwBuildVersion');if(!label)return;label.textContent='Avläsning 9.93';label.title='SmartMatch avläsning 9.93';label.setAttribute('aria-label','SmartMatch avläsning 9.93');/* data-build and data-loaded-build use 36.228 for internal updater. */})();</script>
+<script src="smartmatch-read-test-session-v9-85.js?v=9.94"></script>
+<script id="smartmatch-visual-release-v1-3">(function(){var label=document.getElementById('pwBuildVersion');if(!label)return;label.textContent='Avläsning 9.94';label.title='SmartMatch avläsning 9.94';label.setAttribute('aria-label','SmartMatch avläsning 9.94');/* data-build and data-loaded-build use 36.229 for internal updater. */})();</script>
 <script src="tillsyno-appearance.js?v=2.4.397"></script>
 
 <!-- Session module handles refresh + reopen -->
 <link rel="stylesheet" href="smartmatch-compact-workspace-v9-44.css">
+<link rel="stylesheet" href="smartmatch-read-shell-v9-94.css?v=9.94">
+<link rel="stylesheet" href="smartmatch-read-v9-94.css?v=9.94">
+<link rel="stylesheet" href="smartmatch-read-extra-v9-94.css?v=9.94">
 <script>
 (function(){const menu=document.getElementById('pwPositionToolsMenu'),query=matchMedia('(max-width:1100px), (pointer:coarse)');function sync(){menu.open=!query.matches}sync();query.addEventListener('change',sync)})();
 </script>
