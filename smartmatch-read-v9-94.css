@@ -1,0 +1,144 @@
+/* Avläsning 9.94: quiet card-first guide, scoped to this reader only. */
+.rtDialog.rtSimpleReader{font-size:13px;color:var(--ta-ink,#193746)}
+.rtDialog.rtSimpleReader [hidden]{display:none!important}
+.rtDialog.rtSimpleReader button{min-height:32px;padding:5px 9px;font-size:12px;line-height:1.3;border-radius:7px;box-shadow:none}
+.rtDialog.rtSimpleReader input,.rtDialog.rtSimpleReader select{min-height:32px;padding:5px 7px;font-size:13px}
+.rtDialog.rtSimpleReader input[type='checkbox']{min-height:20px;width:20px;height:20px;padding:0;flex:none}
+.rtDialog.rtSimpleReader button:focus-visible,.rtDialog.rtSimpleReader summary:focus-visible{outline:2px solid var(--ta-blue,#26778a);outline-offset:2px}
+.rtDialog.rtSimpleReader .rtHead h2{font-size:20px;margin:0}
+.rtDialog.rtSimpleReader .rtHead small{font-size:10px}
+.rtDialog.rtSimpleReader .rtRailIntro{display:flex;align-items:center;gap:14px;padding:0;border:0;flex:none}
+.rtDialog.rtSimpleReader .rtGuide{display:flex;gap:5px;flex:none;margin:0;font-size:11px}
+.rtDialog.rtSimpleReader .rtGuide li{min-height:29px;gap:5px;padding:4px 7px;border-width:1px;background:transparent;white-space:nowrap}
+.rtDialog.rtSimpleReader .rtGuide b{width:18px;height:18px;font-size:10px}
+.rtDialog.rtSimpleReader .rtNextHint{margin:0;padding:5px 8px;border-left-width:2px;font-size:12px;font-weight:500;line-height:1.4;flex:1}
+.rtDialog.rtSimpleReader .rtLayout{gap:8px}
+.rtDialog.rtSimpleReader .rtDocument{gap:5px}
+.rtDialog.rtSimpleReader .rtOriginalHeading{padding:2px 0;font-size:11px}
+.rtDialog.rtSimpleReader .rtDocumentTools{flex:none;display:flex;flex-direction:column;gap:5px}
+.rtDialog.rtSimpleReader .rtControls{margin:0;gap:5px;flex-wrap:wrap}
+.rtDialog.rtSimpleReader .rtControls label{font-size:12px;gap:5px}
+.rtDialog.rtSimpleReader .rtControls input{width:57px}
+.rtDialog.rtSimpleReader .rtControls button{min-width:32px;padding:4px 7px}
+.rtDialog.rtSimpleReader .rtControls #rtZoomLevel{min-width:43px;text-align:center;font-size:11px}
+.rtDialog.rtSimpleReader .rtModes{display:flex;flex-wrap:wrap;gap:5px;margin:0}
+.rtDialog.rtSimpleReader .rtModes button{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:5px 9px}
+.rtDialog.rtSimpleReader .rtModes button:before{content:'';display:block;flex:none;width:15px;height:15px;background:currentColor;mask-position:center;mask-size:contain;mask-repeat:no-repeat}
+.rtDialog.rtSimpleReader #rtCode:before{mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5M8 12h8'/%3E%3C/svg%3E")}
+.rtDialog.rtSimpleReader #rtTable:before{mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='16' rx='1'/%3E%3Cpath d='M3 10h18M9 4v16'/%3E%3C/svg%3E")}
+.rtDialog.rtSimpleReader #rtStamp:before{mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M8 14V9a4 4 0 1 1 8 0v5l4 3v3H4v-3zM7 23h10'/%3E%3C/svg%3E")}
+.rtDialog.rtSimpleReader #rtMove:before{mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M12 3v18M3 12h18M8 7l4-4 4 4M17 8l4 4-4 4M8 17l4 4 4-4M7 8l-4 4 4 4'/%3E%3C/svg%3E")}
+.rtDialog.rtSimpleReader .rtDocument .rtViewport{padding:8px;min-height:160px}
+.rtDialog.rtSimpleReader .rtZoomHelp{padding:0;margin:0;font-size:10px;line-height:1.35}
+.rtDialog.rtSimpleReader .rtReview{padding:0;border-radius:9px}
+.rtDialog.rtSimpleReader .rtRailScroll{padding:9px;gap:9px}
+.rtDialog.rtSimpleReader .rtRailSection{margin:0;padding:0;border:0}
+.rtDialog.rtSimpleReader #rtReadSection:empty{display:none}
+.rtDialog.rtSimpleReader:not(.rtHasReviewCards) #rtReviewSection{display:none}
+.rtDialog.rtSimpleReader .rtStatus{min-height:0;font-size:12px;line-height:1.4;margin:7px 0 0}
+.rtDialog.rtSimpleReader .rtStatus:empty{display:none}
+.rtDialog.rtSimpleReader .rtReview>.rtPrimary,.rtDialog.rtSimpleReader .rtRailSection>.rtPrimary{min-height:34px;font-size:13px;margin:0}
+.rtDialog.rtSimpleReader #rtPreview{margin-top:7px}
+.rtDialog.rtSimpleReader #rtGoMatches{display:none!important}
+.rtDialog.rtSimpleReader .rtReadProgress[data-state='done']{display:none}
+.rtDialog.rtSimpleReader #rtDiscover:disabled{opacity:.55}
+.rtDialog.rtSimpleReader #rtDiscoveryResults h3{font-size:13px;margin:8px 0 4px}
+.rtDialog.rtSimpleReader #rtDiscoveryResults p{font-size:11px;line-height:1.4;margin:4px 0}
+.rtDialog.rtSimpleReader #rtDiscoveryResults .rtPageChoice{font-size:12px;padding:5px 0}
+.rtDialog.rtSimpleReader .rtReaderSettings{margin:0;padding:0}
+.rtDialog.rtSimpleReader .rtReaderSettings>summary{font-size:12px;padding:6px 0;cursor:pointer}
+.rtDialog.rtSimpleReader .rtReaderSettings>div,.rtDialog.rtSimpleReader .rtReaderSettings>section{margin-top:8px}
+.rtDialog.rtSimpleReader .rtReaderSettings h4{font-size:12px;margin:9px 0 5px}
+.rtDialog.rtSimpleReader .rtReaderSettings label{font-size:12px}
+.rtDialog.rtSimpleReader .rtSearchHelp,.rtDialog.rtSimpleReader .rtIntro{font-size:11px;line-height:1.4;margin:5px 0}
+.rtDialog.rtSimpleReader .rtAreaSettings{padding:7px;gap:6px;margin:8px 0}
+.rtDialog.rtSimpleReader .rtAreaSettings label{font-size:11px;min-width:0;flex:1 1 140px;display:flex;flex-direction:column;align-items:stretch}
+.rtDialog.rtSimpleReader .rtAreaSettings select{width:100%;font-size:12px;min-height:32px}
+.rtDialog.rtSimpleReader .rtAreaSettings p{font-size:11px;line-height:1.4;flex-basis:100%}
+.rtDialog.rtSimpleReader .rtSetup{display:grid;grid-template-columns:1fr;gap:7px;margin:0}
+.rtDialog.rtSimpleReader #rtCoordinates fieldset{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding:6px;margin:5px 0;border:1px solid var(--ta-border,#b9cbd2);border-radius:7px;min-width:0}
+.rtDialog.rtSimpleReader #rtCoordinates label{font-size:10px}
+.rtDialog.rtSimpleReader #rtCoordinates input{min-width:0;width:100%;padding:4px}
+.rtDialog.rtSimpleReader .rtSaveOptions label{margin:7px 0}
+.rtDialog.rtSimpleReader .rtSaveChoice,.rtDialog.rtSimpleReader .rtMultiCardLayoutLabel{flex-direction:row;align-items:center;gap:7px;font-size:12px;font-weight:500}
+.rtDialog.rtSimpleReader .rtSaveChoice input,.rtDialog.rtSimpleReader .rtMultiCardLayoutLabel input{width:19px;height:19px;min-height:19px;flex:none;padding:0}
+.rtDialog.rtSimpleReader .rtReadProgress{position:static;margin:8px 0;padding:8px;box-shadow:none}
+.rtDialog.rtSimpleReader .rtReadProgressHead strong{font-size:12px}
+.rtDialog.rtSimpleReader .rtReadProgress p{font-size:11px;margin:4px 0}
+.rtDialog.rtSimpleReader .rtReadProgress progress{height:10px}
+.rtDialog.rtSimpleReader .rtReadProgress #rtReadProgressPercent{font-size:12px}
+.rtDialog.rtSimpleReader .rtReadProgress #rtReadProgressCancel{min-height:30px;padding:4px 7px;font-size:11px}
+.rtDialog.rtSimpleReader .rtProgressDetails{font-size:11px;margin-top:3px}
+.rtDialog.rtSimpleReader .rtProgressDetails summary{cursor:pointer}
+.rtDialog.rtSimpleReader .rtReviewToolbar{margin:0;padding:0 0 7px;border:0;background:transparent}
+.rtDialog.rtSimpleReader .rtReviewToolbarHead{gap:5px}
+.rtDialog.rtSimpleReader .rtReviewToolbarHead h3{font-size:13px}
+.rtDialog.rtSimpleReader .rtReviewCounts{font-size:11px;margin:5px 0}
+.rtDialog.rtSimpleReader .rtReviewFilters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px}
+.rtDialog.rtSimpleReader .rtReviewFilters label{font-size:11px}
+.rtDialog.rtSimpleReader .rtContinueRow{margin:7px 0 0;gap:5px}
+.rtDialog.rtSimpleReader .rtContinueRow p{font-size:10px}
+.rtDialog.rtSimpleReader .rtCardSummary{padding:8px}
+.rtDialog.rtSimpleReader .rtCardBody{padding:8px}
+.rtDialog.rtSimpleReader .rtReviewRowActions{gap:5px;margin:5px 0}
+.rtDialog.rtSimpleReader .rtReviewRowActions button{min-height:30px;font-size:11px;padding:4px 7px}
+.rtDialog.rtSimpleReader .rtReviewMore{border:0;padding:0}
+.rtDialog.rtSimpleReader .rtReviewMore p{font-size:11px;margin:4px 0}
+.rtDialog.rtSimpleReader .rtReadMethod,.rtDialog.rtSimpleReader .rtMatchHint{display:none}
+.rtDialog.rtSimpleReader .rtMatchReview{margin-top:8px;padding:0}
+.rtDialog.rtSimpleReader #rtDrawingResults h3{font-size:12px;line-height:1.4;margin:7px 0}
+.rtDialog.rtSimpleReader #rtDrawingResults>p{font-size:11px;line-height:1.4;margin:5px 0}
+.rtDialog.rtSimpleReader .rtMatchList{max-height:35dvh}
+.rtDialog.rtSimpleReader .rtMatchRow{padding:5px;gap:5px}
+.rtDialog.rtSimpleReader .rtMatchRow label{font-size:12px}
+.rtDialog.rtSimpleReader .rtApproval{font-size:12px;line-height:1.4;margin:9px 0}
+.rtDialog.rtSimpleReader .rtFooter{padding:8px 9px;gap:4px}
+.rtDialog.rtSimpleReader .rtFooter .rtPrimary{min-height:35px;font-size:13px}
+.rtDialog.rtSimpleReader[data-read-step='1'] .rtFooter,.rtDialog.rtSimpleReader[data-read-step='2'] .rtFooter,.rtDialog.rtSimpleReader[data-products-only='false'][data-read-step='3'] .rtFooter{display:none}
+.rtDialog.rtSimpleReader .rtSaveHelp{font-size:10px;margin:0}
+.rtDialog.rtSimpleReader .rtReviewBlockReason{font-size:11px;padding:5px 7px;margin:0}
+.rtDialog.rtSimpleReader #rtManualLinkBar{padding:8px;gap:6px}
+.rtDialog.rtSimpleReader #rtManualLinkBar p{font-size:12px;line-height:1.4;margin:3px 0}
+.rtDialog.rtSimpleReader #rtManualLinkBar label{font-size:12px}
+.rtDialog.rtSimpleReader #rtManualLinkBar button{min-height:32px;font-size:12px;padding:5px 8px}
+.rtDialog.rtSimpleReader #rtManualLinkBar #rtManualSearch{background:var(--ta-blue-dark,#1c6a59);color:#fff;border-color:var(--ta-blue-dark,#1c6a59)}
+@media(max-width:760px){
+ .rtDialog.rtSimpleReader[open]{padding:9px;gap:7px}
+ .rtDialog.rtSimpleReader .rtHead h2{font-size:18px}
+ .rtDialog.rtSimpleReader .rtRailIntro{flex-direction:column;align-items:stretch;gap:5px;margin:7px 0}
+ .rtDialog.rtSimpleReader .rtGuide{justify-content:space-between;gap:3px;font-size:10px}
+ .rtDialog.rtSimpleReader .rtGuide li{flex:1;justify-content:center;gap:3px;padding:4px;min-height:30px;white-space:normal}
+ .rtDialog.rtSimpleReader .rtNextHint{font-size:12px;padding:5px 7px}
+ .rtDialog.rtSimpleReader .rtDocument{height:48dvh;min-height:310px;margin-top:0;gap:5px}
+ .rtDialog.rtSimpleReader .rtOriginalHeading{display:none}
+ .rtDialog.rtSimpleReader .rtDocument .rtViewport{min-height:150px;padding:6px}
+ .rtDialog.rtSimpleReader .rtReview{overflow:visible}
+ .rtDialog.rtSimpleReader .rtRailScroll{padding:8px;overflow:visible}
+ .rtDialog.rtSimpleReader .rtControls{gap:4px}
+ .rtDialog.rtSimpleReader .rtControls label{font-size:12px}
+ .rtDialog.rtSimpleReader .rtControls button{min-width:38px;min-height:38px}
+ .rtDialog.rtSimpleReader .rtControls input{width:52px;min-height:38px}
+ .rtDialog.rtSimpleReader .rtControls #rtPageCount{font-size:11px}
+ .rtDialog.rtSimpleReader .rtControls #rtZoomLevel{font-size:10px;min-width:36px}
+ .rtDialog.rtSimpleReader .rtModes button{min-height:39px;padding:6px 9px;font-size:12px}
+ .rtDialog.rtSimpleReader .rtModes button:before{width:16px;height:16px}
+ .rtDialog.rtSimpleReader .rtReviewRowActions button,.rtDialog.rtSimpleReader #rtManualLinkBar button,.rtDialog.rtSimpleReader .rtFooter .rtPrimary,.rtDialog.rtSimpleReader .rtRailSection>.rtPrimary{min-height:40px}
+ .rtDialog.rtSimpleReader .rtAreaSettings label,.rtDialog.rtSimpleReader .rtAreaSettings button{flex-basis:100%}
+ .rtDialog.rtSimpleReader #rtCoordinates fieldset{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .rtDialog.rtSimpleReader .rtMatchList{max-height:40dvh}
+}
+@media(pointer:coarse){
+ .rtDialog.rtSimpleReader button{min-height:40px}
+ .rtDialog.rtSimpleReader .rtControls button{min-width:40px}
+ .rtDialog.rtSimpleReader .rtReviewRowActions button{min-height:38px}
+ .rtDialog.rtSimpleReader .rtReaderSettings select,.rtDialog.rtSimpleReader .rtReaderSettings input:not([type=checkbox]),.rtDialog.rtSimpleReader .rtReviewFilters select,.rtDialog.rtSimpleReader .rtReviewFilters input{min-height:40px}
+ .rtDialog.rtSimpleReader .rtModes button:before{width:17px;height:17px}
+ .rtDialog.rtSimpleReader input:not([type='checkbox']),.rtDialog.rtSimpleReader select,.rtDialog.rtSimpleReader textarea{font-size:16px!important}
+}
+html[data-tillsyno-device='phone'] .rtDialog.rtSimpleReader input:not([type='checkbox']),html[data-tillsyno-device='phone'] .rtDialog.rtSimpleReader select,html[data-tillsyno-device='phone'] .rtDialog.rtSimpleReader textarea,html[data-tillsyno-device='tablet'] .rtDialog.rtSimpleReader input:not([type='checkbox']),html[data-tillsyno-device='tablet'] .rtDialog.rtSimpleReader select,html[data-tillsyno-device='tablet'] .rtDialog.rtSimpleReader textarea{font-size:16px!important}
+html[data-tillsyno-device='phone'] .rtDialog.rtSimpleReader .rtModes button:before{width:16px;height:16px}
+html[data-tillsyno-device='tablet'] .rtDialog.rtSimpleReader .rtModes button:before{width:17px;height:17px}
+@media(min-width:761px){
+ html:not([data-tillsyno-device='phone']) .rtDialog.rtSimpleReader .rtRailSection>.rtPrimary{width:auto;min-width:160px;max-width:100%}
+ html:not([data-tillsyno-device='phone']) .rtDialog.rtSimpleReader .rtFooter .rtPrimary{width:auto;min-width:170px;max-width:100%;align-self:flex-end}
+}
