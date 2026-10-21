@@ -1,0 +1,27 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const sandbox={window:{},setTimeout,clearTimeout,setInterval,clearInterval};
+vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../smartmatch-read-step-v9-88.js'),'utf8'),sandbox);
+const wait=sandbox.window.SmartMatchReadStep.wait;
+(async()=>{
+ assert.equal(await wait(Promise.resolve(12)),12);
+ await assert.rejects(wait(Promise.reject(Error('PDF failed'))),/PDF failed/);
+ let stopped=0,resolve;const stuck=new Promise(r=>resolve=r);
+ await assert.rejects(wait(stuck,{timeoutMs:15,label:'PDF-sida 1',onStop:()=>stopped++}),e=>e.code==='READ_STEP_TIMEOUT'&&/PDF-sida 1/.test(e.message));
+ assert.equal(stopped,1);resolve(99);await Promise.resolve();assert.equal(stopped,1);
+ await assert.rejects(wait(new Promise(()=>{}),{cancelled:()=>true,onStop:()=>stopped++}),e=>e.code==='READ_CANCELLED');assert.equal(stopped,2);
+ const source=fs.readFileSync(path.join(__dirname,'../smartmatch-read-v9-88.js'),'utf8');
+ const a=source.indexOf(' async function release(){'),b=source.indexOf(' async function recognize(',a);assert(a>=0&&b>a);
+ const context={workerPromise:new Promise(()=>{})};vm.createContext(context);vm.runInContext(source.slice(a,b),context);
+ await Promise.race([context.release(),new Promise((_,reject)=>setTimeout(()=>reject(Error('cleanup blocked by unresolved worker startup')),50))]);assert.equal(context.workerPromise,null);
+ let renderCancelled=0,cleaned=0,canvas;
+ const pg={getViewport:({scale})=>({width:900*scale,height:600*scale}),getTextContent:async()=>({items:[]}),getAnnotations:async()=>[],render:()=>({promise:new Promise(()=>{}),cancel(){renderCancelled++;}}),cleanup(){cleaned++;}};
+ sandbox.window.SmartMatchReadStep={wait:(promise,options)=>wait(promise,{...options,timeoutMs:15})};
+ sandbox.window.SmartMatchReadAppearanceV98={regions:()=>[]};
+ sandbox.document={createElement(){canvas={width:0,height:0,getContext:()=>({fillRect(){},clearRect(){}})};return canvas;}};
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../smartmatch-read-match-v9-88.js'),'utf8'),sandbox);
+ await assert.rejects(sandbox.window.SmartMatchReadMatcher.scan({pdf:{numPages:1,getPage:async()=>pg},cardPages:[],codes:['DBL'],imageMode:'text'}),e=>e.code==='READ_STEP_TIMEOUT');
+ assert.equal(renderCancelled,1);assert.equal(cleaned,1);assert.equal(canvas.width,0);assert.equal(canvas.height,0);
+ console.log('PASS stalled PDF render is cancelled, released, and reported as an error rather than successful empty matching');
+ console.log('PASS bounded step waits: success, error, timeout, cancellation, late resolution and cleanup of a worker stuck during startup');
+})().catch(e=>{console.error(e);process.exitCode=1;});
