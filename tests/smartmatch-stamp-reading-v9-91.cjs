@@ -1,0 +1,45 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http');
+const {PDFDocument,StandardFonts,rgb}=require('../vendor/pdf-lib.min.js');
+const vm=require('node:vm');
+const canvas=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/@napi-rs/canvas');
+global.DOMMatrix=canvas.DOMMatrix;global.Path2D=canvas.Path2D;
+const canvasFactory={create(w,h){const c=canvas.createCanvas(w,h);return {canvas:c,context:c.getContext('2d')};},reset(target,w,h){target.canvas.width=w;target.canvas.height=h;},destroy(target){target.canvas.width=target.canvas.height=0;target.canvas=null;target.context=null;}};
+const pdfjs=require('../vendor/pdf.min.js');pdfjs.GlobalWorkerOptions.workerSrc=path.resolve(__dirname,'../vendor/pdf.worker.min.js');
+const sandbox={window:{},setTimeout,clearTimeout,setInterval,clearInterval,Uint8Array,Uint8ClampedArray,Int32Array,document:{createElement:()=>canvas.createCanvas(1,1)}};
+for(const file of ['smartmatch-read-step-v9-88.js','smartmatch-read-appearance-v9-86.js','smartmatch-read-match-v9-91.js'])vm.runInNewContext(fs.readFileSync(path.join(__dirname,'..',file),'utf8'),sandbox);
+const {SmartMatchReadAppearanceV98,SmartMatchReadMatcher}=sandbox.window;
+(async()=>{
+ const doc=await PDFDocument.create(),font=await doc.embedFont(StandardFonts.Helvetica),pg=doc.addPage([900,600]);
+ function stamp(lines,x,y,color=rgb(1,.9,0)) {pg.drawEllipse({x,y,xScale:40,yScale:25,color});lines.forEach((text,i)=>{const size=lines.length>1?12:17;pg.drawText(text,{x:x-font.widthOfTextAtSize(text,size)/2,y:y+(lines.length-1)*7-5-i*14,size,font});});}
+ stamp(['DBL'],100,500);stamp(['DBL'],300,500);pg.drawText('120',{x:335,y:495,size:9,font});
+ stamp(['WC','DS'],100,350);stamp(['DBL','B uppst'],300,350);stamp(['GS1'],500,350);stamp(['GS2'],700,350);
+ stamp(['DBL','DS'],100,180);stamp(['DBL'],300,180,rgb(.1,.5,.9));pg.drawText('DBL',{x:500,y:180,size:17,font});
+ doc.addPage([600,800]).drawText('Beslagskod: DBL',{x:50,y:700,font,size:17});
+ const bitmap=canvas.createCanvas(160,100),bc=bitmap.getContext('2d');bc.fillStyle='white';bc.fillRect(0,0,160,100);bc.fillStyle='#ffe600';bc.beginPath();bc.ellipse(80,50,65,40,0,0,Math.PI*2);bc.fill();bc.fillStyle='black';bc.font='20px sans-serif';bc.fillText('WC',62,45);bc.fillText('DS',62,68);
+ const png=await doc.embedPng(bitmap.toBuffer('image/png'));doc.addPage([400,300]).drawImage(png,{x:100,y:100,width:160,height:100});
+ const pdf=await pdfjs.getDocument({data:await doc.save(),canvasFactory,disableFontFace:true,useSystemFonts:false,standardFontDataUrl:process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/pdfjs-dist/standard_fonts/'}).promise;
+ const result=await (async()=>{
+ const base={pdf,cardPages:[2,3],imageMode:'text',codeOnly:true,getWorker:()=>{throw Error('Text mode must not OCR');},recognize:()=>{throw Error('Unexpected OCR');}};
+ let renders=0;const details=[];
+ const all=await SmartMatchReadMatcher.scan({...base,onRenderTask:task=>{if(task)renders++;},onDetail:info=>details.push(info),codes:['DBL','WC','WCDS','DBLBUPPST','DBLDS','GS1','GS2']});
+ assert.equal(renders,1,'colour matching renders the drawing only once, not once per tile');assert(details.some(d=>d.phase==='stamp-colour'&&d.done>0&&d.done<d.total),'colour scan reports intermediate completed areas');
+ const pg=await pdf.getPage(1),rect={x:55/900,y:70/600,w:90/900,h:60/600};
+ const profile=await SmartMatchReadAppearanceV98.renderProfile(pg,rect);const sample={page:1,code:'DBL',rect,appearance:SmartMatchReadAppearanceV98.learn(profile,rect,all.hits.find(h=>h.code==='DBL').box,pg.getViewport({scale:1}))};
+ const selected=await SmartMatchReadMatcher.scan({...base,codes:['DBL'],sample});
+ const multilineRect={x:55/900,y:220/600,w:90/900,h:60/600};
+ const multi=await SmartMatchReadMatcher.scan({...base,codes:['WCDS'],sample:{page:1,code:'WCDS',rect:multilineRect}});
+ let ocrBlocks=0;const worker={mode:0,setParameters:async function(p){this.mode=p.tessedit_pageseg_mode;}};
+ const raster=await SmartMatchReadMatcher.scan({...base,cardPages:[1,2],codes:['WC','WCDS'],imageMode:'full',getWorker:async()=>worker,recognize:async(w,c)=>{if(w.mode!==6)return {data:{words:[]}};ocrBlocks++;return {data:{words:[{text:'WC',confidence:95,bbox:{x0:c.width*.35,y0:c.height*.25,x1:c.width*.65,y1:c.height*.45}},{text:'DS',confidence:95,bbox:{x0:c.width*.35,y0:c.height*.55,x1:c.width*.65,y1:c.height*.75}}]}};}});
+ assert.equal(ocrBlocks,1,'one bounded whole-stamp OCR block');assert.deepEqual(Array.from(raster.hits.map(h=>h.code)),['WCDS'],'image stamp preserves both rows; OCR recognizer stubbed');
+ return {all:all.hits.map(h=>({code:h.code,source:h.source})),selected:selected.hits.map(h=>h.code),multi:multi.hits.map(h=>h.code)};
+ })();
+ console.log(JSON.stringify(result));
+ assert.equal(result.all.filter(h=>h.code==='DBL').length,4,'three coloured DBL and one plain text');
+ for(const code of ['WCDS','DBLBUPPST','DBLDS','GS1','GS2'])assert.equal(result.all.filter(h=>h.code===code).length,1,code);
+ assert.equal(result.all.filter(h=>h.code==='WC').length,0,'WC DS must not link to WC');
+ assert.deepEqual(Array.from(result.selected),['DBL','DBL'],'same-colour DBL only, including adjacent outside text');
+ assert.deepEqual(Array.from(result.multi),['WCDS'],'multi-line sample accepted and deduplicated');
+ console.log('PASS actual PDF renderer: coloured whole labels, multiline sample, neighboring text, GS1/GS2 boundaries, colour filter, no partial card links and no OCR in text mode');
+ await pdf.destroy();
+})().catch(e=>{console.error(e);process.exitCode=1;});
