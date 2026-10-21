@@ -1,0 +1,22 @@
+# Avläsning 9.99 – markera bara produkterna och Lev av/Mont av
+
+9.98:s tillägg för tom produktrubrik krävde även Ansl av, Funk ansvar och Anm. En smalare markering med bara komponent, produkt, Lev av och Mont av gav därför fortfarande varningen om saknad Övrigt/Produkt. Ett tidigare sparat fel lästes dessutom inte om bara för att appversionen byttes.
+
+9.99 lägger till profilen `responsibility-matrix-two-owner-columns-v1`. Markeringen får sluta efter Mont av och behöver ingen rubrik över komponent-/produktkolumnerna. Profilen kräver ett tydligt Lev av/Mont av-par, samstämmig kolumngeometri, minst tre produktrader och minst två kända avsnitt. Tvetydiga, upprepade eller ofullständiga strukturer förblir olösta. Befintlig 9.32/9.98-läsning körs först och dess fungerande resultat återanvänds oförändrat. Inga artikelnummer, dörrbeteckningar eller fasta sidkoordinater styr läsningen.
+
+Samma ansvarsregel gäller: tydligt GS i Lev av eller Mont av ger en kontrollpunkt. GS endast i andra kolumner räcker inte. DT och otydligt Best/GS väljer inte själva GS-punkter. Separata produktrader och avsnitt bevaras, även när samma modell står på flera rader. Den tillfälliga virtuella produktrubriken ändrar varken originalord, källrader eller PDF-bytes.
+
+På kort med sparat produktfel finns nu **Läs om kortet**, bredvid den befintliga läsområdesknappen. Den läser bara det kortets tabell med dess sparade eller uttryckligen justerade område. Ingen områdesändring behövs för att försöka igen. Beteckning, originalnamn, ritningskopplingar och tidigare arbetsrader/nycklar behålls; nya rader kompletteras utan att gamla avprickningar nollställs. Alias uppdateras från samma källkort. Andra kort och deras ändrade områden påverkas inte. Misslyckad omläsning behåller felet samt tidigare arbete och produktinventering. En pågående ändring av kodområdet måste läsas med den vanliga områdesläsningen först. Ingen automatisk omläsning sker vid öppning, och ändringar blir projektdata först genom befintligt sparflöde.
+
+Arbetsgång: öppna 9.99, markera som i exemplet från ansvarsrubrikerna till sista produktraden under Larm/Passer, med komponent/produkt till vänster och Lev av/Mont av till höger. Tryck **Läs produkter**, eller **Läs om kortet** för ett tidigare felkort, granska och spara produkterna. Koden läses fortfarande först och matchas genom befintlig ritningssökning.
+
+Startsida, fast testadress och offlinecache följer 9.99 / app 2.4.469, HTML-build 36.234. Sparade läsmallar från 9.96–9.98 återanvänds. Layouten från 9.97 bevaras. Tidigare versionsfiler, ordinarie SmartMatch, Kontrollflöde, auth och projektformat ändras inte.
+
+Verifiering:
+
+- Det bifogade PDF-exemplet har lästs privat med appens verkliga PDF.js-ordpositioner och en markering som slutar efter Mont av: 16 produkter, 11 GS-punkter och fyra avsnitt. Samma markering misslyckas i 9.98. Full markering ger exakt tidigare 9.98-resultat. Fem tidigare kort med produktrubrik ger exakt samma resultat som 9.32. Originalord och PDF-bytes ändras inte; kundfiler och utdrag ingår inte i repot.
+- `tests/smartmatch-read-work-v9-99.cjs` verifierar den smala profilen, saknade valfria rubriker, gammalt beteende, GS-ansvar, inventering, avsnitt, stabila källrader, geometri samt strukturer som ska förbli olösta. Tidigare parserprov inklusive OCR-radjustering passerar via 9.99.
+- `tests/smartmatch-read-matrix-browser-v9-99.cjs` verifierar på dator/iPad/iPhone: separata ritnings-/kortfiler, koder först, exakta kopplingar, smal produktmarkering, GS-rader och avsnitt, PDF-export och återöppning i ny session. Sparade v4-felkort läses om utan ändrat område. Lyckad omläsning bevarar tidigare arbetsrader, nycklar, egna punkter, bockar, alias och övriga kort/kopplingar. Misslyckad omläsning behåller fel, arbete och inventering; Avbryt lämnar det öppna projektet identiskt. Ett extra datorprov verifierar att en ändrad kodmarkering förblir oläst och blockerar tabellomläsningen tills kodändringen lästs uttryckligen.
+- Det befintliga kompletta avläsningsflödet passerar på sex enhetsprofiler. Syntax, fast HTML-adress, laddningsordning, lokala referenser och 874 offlinefiler är kontrollerade.
+
+Skärmbildens separata GS1-projektfil har inte bifogats; sparad felstatus verifieras därför med genererade projekt. Browserproven använder Chromium med emulerad skärmstorlek/pekfunktion. Fysisk Safari/iOS och bildbaserade original har inte testats för detta tillägg.
