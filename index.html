@@ -275,19 +275,21 @@ html[data-auth-pending] body{visibility:hidden}
  #appHome .homeChoice:hover,#appHome .homeToolsLink:hover{transform:none!important}
 }
 
-/* v2.4.454: active tests collected at the bottom of the ordinary home page. */
-#appHome .homeTests{box-sizing:border-box;width:min(390px,100%);margin:16px auto 0;color:#d9eaf3;font:12px/1.4 system-ui;text-align:left}
-#appHome .homeTests>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;box-sizing:border-box;padding:10px 12px;border:1px solid #6c92a17a;border-radius:10px;background:#112f42;cursor:pointer;list-style:none;font-weight:650}
+/* v2.4.455: test headings, descriptions and disclosure follow the selected theme. */
+#appHome .homeTests{box-sizing:border-box;width:min(390px,100%);margin:16px auto 0;color:var(--ta-ink,#d9eaf3);font:12px/1.4 system-ui;text-align:left}
+#appHome .homeTests>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;box-sizing:border-box;padding:10px 12px;border:1px solid var(--ta-border,#6c92a1);border-radius:10px;background:var(--ta-card,#112f42);color:var(--ta-ink,#d9eaf3);cursor:pointer;list-style:none;font-weight:650}
 #appHome .homeTests>summary::-webkit-details-marker{display:none}
 #appHome .homeTests>summary::marker{content:''}
 #appHome .homeTestsChevron{width:16px;height:16px;flex:none;transition:transform .15s}
 #appHome .homeTests[open] .homeTestsChevron{transform:rotate(90deg)}
 #appHome .homeTestList{display:grid;gap:8px;padding-top:10px}
-#appHome .homeTests .homeTestLink{display:grid!important;grid-template-columns:minmax(0,1fr) 18px!important;gap:10px!important;min-height:66px!important;padding:12px!important;background:#173b50!important;border-radius:10px!important}
+#appHome .homeTests .homeTestLink{display:grid!important;grid-template-columns:minmax(0,1fr) 18px!important;gap:10px!important;min-height:66px!important;padding:12px!important;background:var(--ta-card,#173b50)!important;border-radius:10px!important}
 #appHome .homeTestCopy{display:grid;gap:4px;min-width:0}
-#appHome .homeTests .homeTestLink strong{font-size:13px!important;overflow-wrap:anywhere}
-#appHome .homeTests .homeTestLink small{font-size:11px!important;color:#b1cbd8!important;margin:0!important;line-height:1.4!important}
-#appHome .homeTests>summary:focus-visible{outline:2px solid #9fdced;outline-offset:3px}
+#appHome .homeTests .homeTestLink strong{font-size:13px!important;color:var(--ta-ink,#f4fbfe)!important;overflow-wrap:anywhere}
+#appHome .homeTests .homeTestLink small{font-size:11px!important;color:var(--ta-ink,#b1cbd8)!important;margin:0!important;line-height:1.4!important}
+#appHome .homeTests .homeTestLink>span[aria-hidden]{color:var(--ta-ink,#d9eaf3)!important}
+#appHome .homeTests .homeTestLink:hover,#appHome .homeTests>summary:hover{background:var(--ta-soft2,#204e66)!important}
+#appHome .homeTests>summary:focus-visible,#appHome .homeTests .homeTestLink:focus-visible{outline:2px solid var(--ta-blue-dark,#9fdced)!important;outline-offset:3px!important}
 
 </style><script src="vendor/supabase-2.49.10.min.js"></script><script src="auth-config.js"></script><script src="auth/client.js?v=2.4.442"></script><script src="auth/guard.js?v=2.4.442" defer></script>
 <link rel="stylesheet" href="tillsyno-appearance.css?v=2.4.359">
@@ -356,7 +358,7 @@ html[data-auth-pending] body{visibility:hidden}
         <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12M18.36 5.64l-2.12 2.12M7.76 16.24l-2.12 2.12"/><circle cx="12" cy="12" r="4"/></svg>
         <span>Mitt konto</span>
       </button>
-      <small class="homeVersion">v2.4.454</small>
+      <small class="homeVersion">v2.4.455</small>
     </div>
     <details id="homeTests" class="homeTests">
       <summary><span>Testversioner</span><svg class="homeTestsChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></summary>
