@@ -157,7 +157,7 @@
   function setActive(code) {
     // A card chosen outside the drawing must not leave another card's stamp selected.
     if(selectedPlacements().some(p=>(state.stencils[p.stencilId]?.kind==='card'?p.code:null)!==code)){selected=[];viewer?.setSelection([]);}
-    activeCode=code; draft=code?clone(state.cards[code]||D.createCard(code)):null; dirty=false;
+    activeCode=code&&state.cards[code]?code:null; draft=activeCode?clone(state.cards[activeCode]):null; dirty=false;
     const stencil=code&&stencilForCode(code);if(stencil){currentStencil=stencil.id;revealStencil(stencil);}
   }
   function draftChanged() { dirty=!!draft&&(JSON.stringify(draft)!==JSON.stringify(state.cards[activeCode]||D.createCard(activeCode))); status(); }
@@ -193,7 +193,7 @@
   }
   async function chooseStencil(id) {
     const stencil=state.stencils[id]; if(!stencil)throw Error('Stencilen finns inte.');
-    const code=stencil.kind==='card'?stencil.code:null;
+    const code=stencil.kind==='card'&&state.cards[stencil.code]?stencil.code:null;
     if(code!==activeCode){if(!await leaveDraft())return;setActive(code);}
     currentStencil=id;revealStencil(stencil);viewer.setStencil(id); setTool('place'); renderAll();
     if(matchMedia('(max-width:1100px)').matches)showView('drawing');
@@ -417,7 +417,7 @@
     $('cardCode').textContent=activeCode||'Dörrkort';
     $('cardUsage').textContent=activeCode?`Används av ${state.placements.filter(p=>p.code===activeCode&&state.stencils[p.stencilId].kind==='card').length} dörrar`:'Välj en dörrstämpel eller skapa ett dörrkort.';
     $('cardNote').disabled=!draft;$('cardNote').value=draft?.note||'';
-    if(!draft){$('cardMeta').innerHTML='';$('cardRows').innerHTML='<div class="card-empty"><p>Välj en dörrstämpel för att fylla i dörrkortet.</p><p>Symbolerna under Övrigt har inget dörrkort.</p></div>';return;}
+    if(!draft){$('cardMeta').innerHTML='';$('cardRows').innerHTML='<div class="card-empty"><p>Placera en stencil på ritningen för att skapa dörrkortet. Du kan också välja Nytt dörrkort.</p><p>Symbolerna under Övrigt har inget dörrkort.</p></div>';return;}
     const metaLabels={littera:'Littera',hanging:'Hängning',doorType:'Dörrtyp',fire:'Brandkrav',security:'Skyddsklass',escape:'Utrymningskrav',reentry:'Återinrymning'};
     $('cardMeta').innerHTML=Object.entries(metaLabels).map(([key,label])=>`<label><span>${label}</span><input data-meta="${key}" value="${esc(draft.meta[key])}" maxlength="120" aria-label="${label}"></label>`).join('');
     $('cardRows').innerHTML=D.SECTIONS.map(section=>`<details class="card-section" open><summary>${esc(section.title)}</summary><div class="card-table-wrap"><table><thead><tr><th>Komponent</th><th>Produkt</th><th>Antal</th><th>Lev av</th><th>Mont av</th></tr></thead><tbody>${section.rows.map(def=>{
@@ -928,7 +928,7 @@
       }
       state=libraryProject(state,{fresh:!restoredProject});
       setActive(state.cards.GS1?'GS1':Object.keys(state.cards).sort(natural)[0]||null);if(!libraryStencils().some(stencil=>stencil.id===currentStencil))currentStencil=firstLibraryStencil();revealStencil(state.stencils[currentStencil]);bind();makeViewer();if(original.length)await viewer.open(original);renderAll();showView('drawing');
-      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.15'});
+      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.16'});
     }catch(error){message(error?.message||'Projektet kunde inte öppnas.',true);}
   }
   window.addEventListener('tillsyno-authorized',()=>void boot());

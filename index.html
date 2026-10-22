@@ -372,7 +372,7 @@ html[data-auth-pending] body{visibility:hidden}
         <a class="homeChoice homeTestLink" href="smartmatch-read-test.html?v=9.85" data-home-test="read">
           <span class="homeTestCopy"><strong>Avläsning TEST · <span data-test-version>v9.85</span></strong><small>Senaste avläsningstestet för dörrkort, material och tid.</small></span><span aria-hidden="true">→</span>
         </a>
-        <a class="homeChoice homeTestLink" href="smartmatch-projektering-v2-15.html?v=2.15" id="homeProjectTest">
+        <a class="homeChoice homeTestLink" href="smartmatch-projektering-v2-15.html?v=2.16" id="homeProjectTest">
           <span class="homeTestCopy"><strong>Tillsyno Projekt</strong><small>Egna ritningar · stämplar · dörrkort</small></span><span aria-hidden="true">→</span>
         </a>
       </div>
@@ -465,6 +465,3 @@ html[data-auth-pending] body{visibility:hidden}
 <script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let observer=null;function reveal(){if(root.hasAttribute('data-auth-pending')){if(!observer){observer=new MutationObserver(reveal);observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}return}if(observer){observer.disconnect();observer=null}root.classList.add('tillsyno-nav-ready')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',reveal)})();</script>
 <script src="tillsyno-appearance.js?v=2.4.398"></script>
 </body></html>
-
-
-
