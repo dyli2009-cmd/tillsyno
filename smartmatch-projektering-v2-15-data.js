@@ -1,4 +1,4 @@
-/* Tillsyno Projektering 2.15. GS-only door cards and vector WC/HWC symbols. */
+/* Tillsyno Projektering 2.15. Text WC/HWC door cards with rounder standard stamps. */
 (function(root,factory){
  'use strict'; const api=factory();
  if(typeof module==='object'&&module.exports)module.exports=api;
@@ -7,7 +7,7 @@
  'use strict';
  const LIMITS=Object.freeze({cards:500,placements:5000,pages:200,stencils:2000,customProducts:1000,materialTimes:20000});
  const META_KEYS=Object.freeze(['littera','hanging','doorType','fire','security','escape','reentry']);
- const SPECIAL_CODES=Object.freeze(['DGS100','WC','HWC','DBL','DA','DS','DFS']);
+ const SPECIAL_CODES=Object.freeze(['WC','HWC','DBL','DA','DS','DFS']);
  const TOOLBAR_TOOLS=Object.freeze(['toolPan','toolErase','undo','redo','duplicateSelection','deleteSelection','lockSelection','newStencilTool','newCardTool','rotateLeft','rotateRight','selectAllTool']);
  const DEFAULT_TOOLBAR_TOOLS=Object.freeze(['undo','redo','duplicateSelection','deleteSelection','newStencilTool','newCardTool','rotateLeft','rotateRight']);
  const PRODUCT_TYPES=Object.freeze(['none','doorAutomation','doorCloser','elbowContact','other']);
@@ -1353,8 +1353,21 @@
     const code=normalizeCode(value),restroom=restroomSymbol(code),specialSymbol=/^DBL(?::?[1-9][0-9]*)?$/.test(code),symbol=['DA','DS','DFS','DADS'].includes(code);
     const productType=code==='DA'?'doorAutomation':code==='DS'?'doorCloser':code==='DFS'?'other':'none';
     const restroomMark=!!restroom||specialSymbol;
-    const stencil={id:code,name:code==='DA'?'Dörrautomatik':code==='DS'?'Dörrstängare':code,code,kind:symbol?'symbol':'card',productType,shape:restroomMark?'oval':symbol?'square':'oval',fill:restroomMark?'#ffdb5c':symbol?(code==='DS'?'#f3b65d':'#db756c'):'#ffdb5c',stroke:restroomMark?'#97792c':symbol?'#815044':'#97792c',textColor:'#26323b',width:restroomMark?68:symbol?(code==='DADS'?38:28):Math.max(48,code.length*7+16),height:restroomMark?34:28,fontSize:11};
+    const stencil={id:code,name:code==='DA'?'Dörrautomatik':code==='DS'?'Dörrstängare':code,code,kind:symbol?'symbol':'card',productType,shape:restroomMark?'oval':symbol?'square':'oval',fill:restroomMark?'#ffdb5c':symbol?(code==='DS'?'#f3b65d':'#db756c'):'#ffdb5c',stroke:restroomMark?'#97792c':symbol?'#815044':'#97792c',textColor:'#26323b',width:restroom?Math.max(52,code.length*6+14):specialSymbol?68:symbol?(code==='DADS'?38:28):Math.max(48,code.length*7+16),height:restroomMark?34:28,fontSize:11};
     return {...stencil,category:defaultCategory(stencil)};
+  }
+  // Only the previous built-in pictogram style is upgraded. Retain custom
+  // artwork/sizes, card content, identities, positions, and product records.
+  function upgradeRestroomStencils(project){
+    const next=clone(project);
+    for(const stencil of Object.values(next.stencils)){
+      if(!restroomSymbol(stencil.code)||stencil.kind!=='card'||stencil.shape!=='oval'||stencil.width!==68||stencil.height!==34||stencil.fill!=='#ffdb5c'||stencil.stroke!=='#97792c'||stencil.textColor!=='#26323b'||stencil.fontSize!==11)continue;
+      const width=defaultStencil(stencil.code).width;
+      stencil.width=width;
+      // Narrowing the old 68 x 34 stamp keeps it inside its original bounds.
+      for(const item of next.placements)if(item.stencilId===stencil.id&&item.width===68&&item.height===34)item.width=Math.min(68,width);
+    }
+    return next;
   }
   function defaultStencilFor(state,value){
     const stencil=defaultStencil(value),size=normalizedPreferences(state.preferences).doorSize;
@@ -1628,6 +1641,7 @@
     });
   }
 
-  return Object.freeze({LIMITS,META_KEYS,SPECIAL_CODES,SECTIONS,PRODUCTS,LEGACY_PRODUCTS,RETIRED_PRODUCTS,PRODUCT_ALIASES,isRetiredProduct,OWNER_VALUES,TOOLBAR_TOOLS,SIZE_SCOPES,PRODUCT_TYPES,PRODUCT_TYPE_LABELS,CATEGORY_DEFAULTS,defaultPreferences,normalizeCode,matchKey,clone,createEmpty,initialCardCode,createCard,validate,defaultStencil,defaultStencilFor,restroomSymbol,stencilLabel,stencilCategory,isProductStencil,productMultiplier,equipmentFor,placementCounts,listStencils,searchProducts,addProduct,ensureCard,updateCard,copyCard,suggestCardCode,suggestForkCode,suggestStencilCode,forkPlacementCard,removeCard,addStencil,updateStencil,removeStencil,addPlacement,updatePlacement,updateEquipment,removePlacements,duplicatePlacements,setPreferences,setMaterialTime,resizeTargets,resizeShared,resizeStencilShared,alignPlacements});
+  return Object.freeze({LIMITS,META_KEYS,SPECIAL_CODES,SECTIONS,PRODUCTS,LEGACY_PRODUCTS,RETIRED_PRODUCTS,PRODUCT_ALIASES,isRetiredProduct,OWNER_VALUES,TOOLBAR_TOOLS,SIZE_SCOPES,PRODUCT_TYPES,PRODUCT_TYPE_LABELS,CATEGORY_DEFAULTS,defaultPreferences,normalizeCode,matchKey,clone,createEmpty,initialCardCode,createCard,validate,defaultStencil,defaultStencilFor,restroomSymbol,upgradeRestroomStencils,stencilLabel,stencilCategory,isProductStencil,productMultiplier,equipmentFor,placementCounts,listStencils,searchProducts,addProduct,ensureCard,updateCard,copyCard,suggestCardCode,suggestForkCode,suggestStencilCode,forkPlacementCard,removeCard,addStencil,updateStencil,removeStencil,addPlacement,updatePlacement,updateEquipment,removePlacements,duplicatePlacements,setPreferences,setMaterialTime,resizeTargets,resizeShared,resizeStencilShared,alignPlacements});
 });
+
 

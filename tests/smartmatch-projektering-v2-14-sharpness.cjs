@@ -122,6 +122,15 @@ function assertBudget(h) { for(const call of h.calls) { assert(call.width*call.h
     const saved = JSON.stringify(placed); h.viewer.setProject(placed);
     assert(h.get('p2-canvas-overlay').innerHTML.includes('translate(2359 1668.8)'), 'SVG stays in PDF coordinates');
     assert.equal(JSON.stringify(placed),saved,'rendering does not mutate stamp data');
+    // Restroom cards use the full code as native SVG text at every rotation.
+    for(const code of ['WC:1','HWC:1']) {
+      const restroom={preferences:{},stencils:{[code]:{kind:'card',shape:'oval',fontSize:11}},placements:[{id:'restroom',page:1,code,stencilId:code,x:.7,y:.7,width:52,height:34,rotation:180}]};
+      h.viewer.setProject(restroom);
+      const markup=h.get('p2-canvas-overlay').innerHTML;
+      assert(markup.includes('>'+code+'</text>'),'full restroom code is visible text');
+      assert(markup.includes('transform="rotate(180)"'),'upside-down stamp text stays readable');
+      assert(!/<(?:path|circle)\b/.test(markup),'unselected restroom stamp contains no pictogram');
+    }
 
     // A queued render from page one cannot land on the rotated second page.
     const pdf = h.viewer.getSearchDocument(), getPage = pdf.getPage; let release;
@@ -145,6 +154,6 @@ function assertBudget(h) { for(const call of h.calls) { assert(call.width*call.h
 
   const phone = harness(3,390,600);
   try { await phone.viewer.open(bytes); phone.viewer.zoomTo(16); await idle(phone); assertBudget(phone); const detail=phone.get('p2-canvas-detail'); assert(detail.width/detail.getBoundingClientRect().width>2.99,'phone keeps 3x screen density'); phone.viewer.zoomTo(8); phone.viewer.destroy(); await pause(150); assert.equal(phone.host.children.length,0,'destroy cancels queued work'); assert.equal(detail.width,1); } finally { phone.viewer.destroy(); }
-  for(const name of ['smartmatch-projektering.html','smartmatch-projektering-v2-14.html','smartmatch-projektering-v2-15.html']) assert(fs.readFileSync(path.join(root,name),'utf8').includes('smartmatch-projektering-v2-14-canvas.js?v=2.14.1'),name+' uses the fixed renderer');
+  for(const name of ['smartmatch-projektering.html','smartmatch-projektering-v2-14.html','smartmatch-projektering-v2-15.html']) assert(fs.readFileSync(path.join(root,name),'utf8').includes('smartmatch-projektering-v2-14-canvas.js?v=2.14.2'),name+' uses the fixed renderer');
   console.log('PASS: real PDF raster pixels at 1600%, Retina/phone density, pan, rotated CropBox, stale page/zoom races, memory bounds, cleanup, original bytes and stamp coordinates.');
 })().catch(error => { console.error(error); process.exitCode=1; });

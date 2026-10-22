@@ -1,7 +1,7 @@
 /* Projektering 2.13: reusable personal library; saved choices keep their exact card identities. */
 (function(root,factory){
  'use strict';
- const api=factory(()=>typeof module==='object'&&module.exports?require('./smartmatch-projektering-v2-13-data.js'):root.Proj2Data,()=>root.indexedDB);
+ const api=factory(()=>typeof module==='object'&&module.exports?require('./smartmatch-projektering-v2-15-data.js'):root.Proj2Data,()=>root.indexedDB);
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.Proj2Library=api;
 })(typeof window==='object'?window:globalThis,function(dataProvider,indexedDBProvider){
@@ -49,7 +49,7 @@
  function stencil(value){
   keys(value,['id','name','code','kind','productType','category','shape','fill','stroke','textColor','width','height','fontSize'],'Stencilmallen');
   const state={schema:2,project:{id:'library-validation',name:'Bibliotek',revision:1,updatedAt:now()},drawing:{name:'',pages:[]},cards:{},stencils:{[value.id]:value},placements:[],customProducts:[],preferences:data().defaultPreferences()};
-  return data().validate(state).stencils[value.id];
+  return data().validate(data().upgradeRestroomStencils(state)).stencils[value.id];
  }
  function validate(raw){
   keys(raw,['schema','revision','updatedAt','labels','groups','assignments','hiddenCodes','stencils','products','hiddenProductIds','categoryLabels'],'Biblioteket');
@@ -60,14 +60,21 @@
   const labels={cards:text(raw.labels.cards,'Dörrkortens namn',60),other:text(raw.labels.other,'Symbolernas namn',60)};
   if(fold(labels.cards)===fold(labels.other))throw Error('Huvudgrupperna måste ha olika namn.');
   let groups=array(raw.groups,'Grupperna',LIMITS.groups).map(group);
-  const legacyCombined=groups.find(value=>value.id==='WC-HWC'&&value.section==='cards');
-  if(legacyCombined){groups=groups.filter(value=>value!==legacyCombined);if(!groups.some(value=>value.id==='WC'&&value.section==='cards'))groups.push({id:'WC',name:'WC',section:'cards',prefixes:['WC'],fallback:false});if(!groups.some(value=>value.id==='HWC'&&value.section==='cards'))groups.push({id:'HWC',name:'HWC',section:'cards',prefixes:['HWC'],fallback:false});}
+  // Consolidate the two previous built-in tabs; explicit assignments follow.
+  const restroomGroups=groups.filter(value=>value.section==='cards'&&!value.fallback&&['WC','HWC'].includes(value.id));
+  if(restroomGroups.length){
+   const combined=groups.find(value=>value.id==='WC-HWC'&&value.section==='cards');
+   const prefixes=[...new Set((combined?.prefixes||[]).concat(restroomGroups.flatMap(value=>value.prefixes)))];
+   const target=combined?{...combined,prefixes}:{id:'WC-HWC',name:'WC / HWC',section:'cards',prefixes,fallback:false};
+   const insertion=groups.findIndex(value=>restroomGroups.includes(value));
+   groups=groups.filter(value=>!restroomGroups.includes(value)&&value!==combined);groups.splice(Math.min(insertion,groups.length),0,target);
+  }
   groups=groups.map(value=>value.id==='cards-other'&&value.section==='cards'?{...value,name:'Övriga dörrkort'}:value);
   unique(groups.map(value=>value.id),'Grupp-ID');unique(groups.map(value=>value.section+':'+fold(value.name)),'Gruppnamnen');
   unique(groups.flatMap(value=>value.prefixes.map(start=>value.section+':'+start)),'Gruppernas prefix');
   for(const section of ['cards','other'])if(groups.filter(value=>value.section===section&&value.fallback).length!==1)throw Error('Varje huvudgrupp måste ha exakt en reservgrupp.');
   if(!object(raw.assignments)||Object.keys(raw.assignments).length>LIMITS.assignments)throw Error('Stencilernas grupper är ogiltiga.');
-  const assignments={};for(const [name,value]of Object.entries(raw.assignments)){const normalized=code(name);if(normalized!==name||Object.hasOwn(assignments,normalized))throw Error('En gruppkoppling har en ogiltig beteckning.');let target=value;if(legacyCombined&&value==='WC-HWC')target=name.startsWith('HWC')?'HWC':'WC';const groupId=id(target,'Grupp-ID');if(!groups.some(item=>item.id===groupId))throw Error('En stencils grupp saknas.');assignments[normalized]=groupId;}
+  const assignments={};for(const [name,value]of Object.entries(raw.assignments)){const normalized=code(name);if(normalized!==name||Object.hasOwn(assignments,normalized))throw Error('En gruppkoppling har en ogiltig beteckning.');let target=value;if(restroomGroups.some(entry=>entry.id===value))target='WC-HWC';const groupId=id(target,'Grupp-ID');if(!groups.some(item=>item.id===groupId))throw Error('En stencils grupp saknas.');assignments[normalized]=groupId;}
   const hiddenCodes=unique(array(raw.hiddenCodes,'Dolda stenciler',LIMITS.hiddenCodes).map(code),'Dolda stenciler');
   const stencils=array(raw.stencils,'Stencilmallarna',LIMITS.stencils).map(stencil);
   unique(stencils.map(value=>value.id),'Stencilmallarnas ID');unique(stencils.map(value=>data().matchKey(value.code)),'Stencilmallarnas beteckningar');
@@ -81,8 +88,7 @@
  function createDefault(){return validate({schema:1,revision:1,updatedAt:now(),labels:{cards:'Dörrkort',other:'Övrigt'},groups:[
   {id:'GS',name:'GS1–GS100',section:'cards',prefixes:['GS'],fallback:false},
   {id:'DBL',name:'DBL',section:'cards',prefixes:['DBL'],fallback:false},
-  {id:'WC',name:'WC',section:'cards',prefixes:['WC'],fallback:false},
-  {id:'HWC',name:'HWC',section:'cards',prefixes:['HWC'],fallback:false},
+  {id:'WC-HWC',name:'WC / HWC',section:'cards',prefixes:['WC','HWC'],fallback:false},
   {id:'cards-other',name:'Övriga dörrkort',section:'cards',prefixes:[],fallback:true},
   {id:'symbols-other',name:'Övrigt',section:'other',prefixes:[],fallback:true}
  ],assignments:{},hiddenCodes:['VC','HVC'],stencils:[],products:[],hiddenProductIds:[],categoryLabels:{}});}
@@ -154,7 +160,7 @@
   next.stencils=next.stencils.filter(value=>!aliases.some(alias=>alias.id===value.id));
   const byCode=next.stencils.findIndex(value=>value.code===entry.code),byId=next.stencils.findIndex(value=>value.id===entry.id);if(byCode>=0&&byId>=0&&byCode!==byId)throw Error('Stencilmallens ID används av en annan beteckning.');const index=Math.max(byCode,byId);if(index<0)next.stencils.push(entry);else next.stencils[index]=entry;next.hiddenCodes=next.hiddenCodes.filter(value=>value!==entry.code);
  });}
- function isHidden(lib,name){return read(lib).hiddenCodes.includes(code(name));}
+ function isHidden(lib,name){const value=code(name);return /^DGS(?:100)?(?::[1-9][0-9]*)?$/.test(value)||read(lib).hiddenCodes.includes(value);}
  function setHidden(lib,name,hidden){if(typeof hidden!=='boolean')throw Error('Stencilens synlighet är ogiltig.');return changed(lib,next=>{const value=code(name);next.hiddenCodes=next.hiddenCodes.filter(item=>item!==value);if(hidden)next.hiddenCodes.push(value);});}
  function setLabels(lib,patch){keys(patch,['cards','other'],'Huvudgruppernas namn');return changed(lib,next=>Object.assign(next.labels,patch));}
  function setCategoryLabel(lib,key,label){return changed(lib,next=>{next.categoryLabels[category(key)]=text(label,'Kategorinamn',80);});}
@@ -221,3 +227,4 @@
  }
  return Object.freeze({DB_NAME,STORE_NAME,FORMAT,LIMITS,createDefault,validate,groupsFor,groupFor,categories,listProducts,searchProducts,saveGroup,removeGroup,assignGroup,saveProduct,removeProduct,saveStencil,isHidden,setHidden,setLabels,setCategoryLabel,merge,load,save,close,pack,unpack});
 });
+

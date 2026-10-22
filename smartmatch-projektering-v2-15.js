@@ -1,4 +1,4 @@
-/* Projektering 2.15. Separate WC/HWC symbols from GS door cards. */
+/* Projektering 2.15. Text WC/HWC door cards in their own group. */
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
@@ -24,11 +24,6 @@
   const stencilForCode = code => Object.values(state.stencils).find(s => s.code === code);
   const definitions = () => D.SECTIONS.flatMap(section => section.rows.map(row => ({...row,section:section.title})));
   function stencilGroup(stencil){return L.groupFor(library,stencil);}
-  function stencilBadge(stencil){
-    const mark=D.restroomSymbol(stencil.code);if(!mark)return esc(stencil.code);
-    const icon=mark.type==='WC'?'<rect x="7" y="1.5" width="10" height="4.5" rx="1" fill="currentColor"/><circle cx="12" cy="3.5" r=".7" fill="var(--stamp-fill)"/><path d="M7 7h10l1.3 2v5.2c0 4.5-2.8 8.3-6.3 8.3s-6.3-3.8-6.3-8.3V9z" fill="currentColor"/><ellipse cx="12" cy="14" rx="2.7" ry="4.3" fill="var(--stamp-fill)"/>':'<circle cx="15" cy="3.4" r="2.1" fill="currentColor"/><path d="M12.7 6.2c-1.1.3-1.8 1.2-2.1 2.6l-.9 4.8h6.1l-1.1-4.1 3.8 1.1 1.1-2.1-5-2.1c-.6-.3-1.2-.4-1.9-.2Z" fill="currentColor"/><circle cx="8.2" cy="16.3" r="5.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M11 12.8h5.2l2.7 4.6 3.4 1.2M10.2 13.5h5.3M15.2 11.3l2.1 2.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>';
-    return `<svg viewBox="0 0 64 28" aria-hidden="true"><g transform="translate(6 1) scale(.9)">${icon}</g><path d="M32 3v22" stroke="currentColor" stroke-width="1"/><text x="47" y="19" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">${esc(mark.number)}</text></svg>`;
-  }
   function revealStencil(stencil){
     if(!stencil)return;currentCategory=stencil.kind==='card'?'cards':'other';
     currentCardGroup=stencilGroup(stencil);
@@ -38,7 +33,7 @@
   }
   function firstLibraryStencil(){const list=libraryStencils();return list.find(stencil=>stencil.id===(state.stencils.GS1?'GS1':'GS1:1'))?.id||list[0]?.id||'';}
   function libraryProject(project,{fresh=false}={}){
-    const next=clone(project);
+    const next=D.upgradeRestroomStencils(project);
     const projectCodes=new Set(Object.values(next.stencils).map(stencil=>stencil.code));
     const explicitCodes=new Set(library.stencils.map(stencil=>stencil.code));
     for(const savedTemplate of library.stencils){
@@ -408,7 +403,7 @@
     $('stampList').innerHTML=stencils.map(s=>{
       const count=state.placements.filter(p=>p.stencilId===s.id).length;
       const label=D.stencilLabel(s),kind=s.kind==='card'?'Dörrkort':'Symbol · Övrigt',description=s.kind==='card'?'Dörrkort':s.name===s.code?'Symbol':s.name;
-      return `<button type="button" draggable="true" class="stencil-item${s.id===currentStencil?' is-active':''}" data-stencil-id="${esc(s.id)}" aria-pressed="${s.id===currentStencil}" title="${esc(s.code+' · '+label+' · '+kind)}. Dra till ritningen."><span class="stencil-preview shape-${s.shape}${D.restroomSymbol(s.code)?' stencil-restroom':''}" style="--stamp-fill:${esc(s.fill)};--stamp-stroke:${esc(s.stroke)};--stamp-text:${esc(s.textColor)}">${stencilBadge(s)}</span><small>${esc(description)}${count?' · '+count+' st':''}</small></button>`;
+      return `<button type="button" draggable="true" class="stencil-item${s.id===currentStencil?' is-active':''}" data-stencil-id="${esc(s.id)}" aria-pressed="${s.id===currentStencil}" title="${esc(s.code+' · '+label+' · '+kind)}. Dra till ritningen."><span class="stencil-preview shape-${s.shape}${D.restroomSymbol(s.code)?' stencil-restroom-text':''}" style="--stamp-fill:${esc(s.fill)};--stamp-stroke:${esc(s.stroke)};--stamp-text:${esc(s.textColor)}">${esc(s.code)}</span><small>${esc(description)}${count?' · '+count+' st':''}</small></button>`;
     }).join('')||'<p class="empty-note">Ingen stencil hittades. Skapa en egen.</p>';
     const cardQuery=$('cardSearch').value.trim().toUpperCase();
     $('cardList').innerHTML=Object.keys(state.cards).sort(natural).filter(code=>code.includes(cardQuery)).map(code=>{
@@ -939,3 +934,4 @@
   window.addEventListener('tillsyno-authorized',()=>void boot());
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>void boot(),{once:true});else void boot();
 })();
+
