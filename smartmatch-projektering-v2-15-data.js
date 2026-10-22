@@ -1353,19 +1353,22 @@
     const code=normalizeCode(value),restroom=restroomSymbol(code),specialSymbol=/^DBL(?::?[1-9][0-9]*)?$/.test(code),symbol=['DA','DS','DFS','DADS'].includes(code);
     const productType=code==='DA'?'doorAutomation':code==='DS'?'doorCloser':code==='DFS'?'other':'none';
     const restroomMark=!!restroom||specialSymbol;
-    const stencil={id:code,name:code==='DA'?'Dörrautomatik':code==='DS'?'Dörrstängare':code,code,kind:symbol?'symbol':'card',productType,shape:restroomMark?'oval':symbol?'square':'oval',fill:restroomMark?'#ffdb5c':symbol?(code==='DS'?'#f3b65d':'#db756c'):'#ffdb5c',stroke:restroomMark?'#97792c':symbol?'#815044':'#97792c',textColor:'#26323b',width:restroom?Math.max(52,code.length*6+14):specialSymbol?68:symbol?(code==='DADS'?38:28):Math.max(48,code.length*7+16),height:restroomMark?34:28,fontSize:11};
+    const stencil={id:code,name:code==='DA'?'Dörrautomatik':code==='DS'?'Dörrstängare':code,code,kind:symbol?'symbol':'card',productType,shape:restroomMark?'oval':symbol?'square':'oval',fill:restroomMark?'#ffdb5c':symbol?(code==='DS'?'#f3b65d':'#db756c'):'#ffdb5c',stroke:restroomMark?'#97792c':symbol?'#815044':'#97792c',textColor:'#26323b',width:symbol?(code==='DADS'?38:28):Math.max(52,code.length*6+14),height:symbol?28:Math.ceil(Math.max(52,code.length*6+14)/1.4),fontSize:11};
     return {...stencil,category:defaultCategory(stencil)};
   }
-  // Only the previous built-in pictogram style is upgraded. Retain custom
-  // artwork/sizes, card content, identities, positions, and product records.
+  // Upgrade only known standard card sizes; preserve custom styles and sizes.
   function upgradeRestroomStencils(project){
     const next=clone(project);
     for(const stencil of Object.values(next.stencils)){
-      if(!restroomSymbol(stencil.code)||stencil.kind!=='card'||stencil.shape!=='oval'||stencil.width!==68||stencil.height!==34||stencil.fill!=='#ffdb5c'||stencil.stroke!=='#97792c'||stencil.textColor!=='#26323b'||stencil.fontSize!==11)continue;
-      const width=defaultStencil(stencil.code).width;
-      stencil.width=width;
-      // Narrowing the old 68 x 34 stamp keeps it inside its original bounds.
-      for(const item of next.placements)if(item.stencilId===stencil.id&&item.width===68&&item.height===34)item.width=Math.min(68,width);
+      if(stencil.kind!=='card'||stencil.shape!=='oval'||stencil.fill!=='#ffdb5c'||stencil.stroke!=='#97792c'||stencil.textColor!=='#26323b'||stencil.fontSize!==11)continue;
+      const restroom=restroomSymbol(stencil.code),special=restroom||/^DBL(?::?[1-9][0-9]*)?$/.test(stencil.code);
+      const legacy=(stencil.height===28&&stencil.width===Math.max(48,stencil.code.length*7+16))||(special&&stencil.height===34&&stencil.width===68)||(restroom&&stencil.height===34&&stencil.width===Math.max(52,stencil.code.length*6+14));
+      if(!legacy)continue;
+      const oldWidth=stencil.width,oldHeight=stencil.height,{width,height}=defaultStencil(stencil.code);
+      Object.assign(stencil,{width,height});
+      // Keep existing stamps inside their previous bounds, including rotated ones.
+      const fit=Math.min(1,oldWidth/width,oldHeight/height);
+      for(const item of next.placements)if(item.stencilId===stencil.id&&item.width===oldWidth&&item.height===oldHeight)Object.assign(item,{width:width*fit,height:height*fit});
     }
     return next;
   }

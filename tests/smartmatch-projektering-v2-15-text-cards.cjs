@@ -38,7 +38,7 @@ const clone = value => JSON.parse(JSON.stringify(value));
 
   const {state, original} = await PDF.blank('WC och HWC');
   for (const code of ['WC:1', 'HWC:1']) {
-    state.stencils[code].width = 68;
+    state.stencils[code].width = 68; state.stencils[code].height = 34;
     D.addPlacement(state, {stencilId:code,page:1,x:code === 'WC:1' ? .4 : .6,y:.5,rotation:code === 'WC:1' ? 0 : 180});
     state.cards[code].note = 'Sparat innehåll för ' + code;
     state.cards[code].rows[0].product = 'Sparad produkt';
@@ -53,7 +53,7 @@ const clone = value => JSON.parse(JSON.stringify(value));
   assert.deepEqual(updated.preferences, before.preferences);
   assert.deepEqual(updated.placements[2], before.placements[2], 'personal size survives');
   assert.deepEqual(updated.placements[3], before.placements[3], 'used DGS placement survives');
-  for (let i = 0; i < 2; i++) assert.deepEqual(updated.placements[i], {...before.placements[i],width:52});
+  for (let i = 0; i < 2; i++) assert.deepEqual(updated.placements[i], {...before.placements[i],width:52*(34/38),height:34});
   assert.deepEqual(D.upgradeRestroomStencils(updated), updated, 'stamp upgrade is idempotent');
   const personal = clone(before); personal.stencils['WC:1'].fill = '#123456';
   assert.deepEqual(D.upgradeRestroomStencils(personal).stencils['WC:1'], personal.stencils['WC:1']);
@@ -72,9 +72,9 @@ const clone = value => JSON.parse(JSON.stringify(value));
   await document.destroy();
   for (const file of ['smartmatch-projektering.html','smartmatch-projektering-v2-14.html','smartmatch-projektering-v2-15.html']) {
     const html = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
-    for (const module of ['data.js','pdf.js']) assert(html.includes('v2-15-' + module + '?v=2.15.1'));
-    assert(html.includes('v2-15-library.js?v=2.15.2'));
-    assert(html.includes('v2-15.js?v=2.15.1'));
+    for (const module of ['data.js','pdf.js']) assert(html.includes('v2-15-' + module + '?v=2.16'));
+    assert(html.includes('v2-15-library.js?v=2.16'));
+    assert(html.includes('v2-15.js?v=2.16'));
   }
   console.log('PASS: groups, 100 GS defaults, no default DGS, DA under Other, safe saved-data migrations, rounder stamps, native WC/HWC PDF text, editable PDF round trip and current entry points.');
 })().catch(error => {console.error(error);process.exitCode = 1;});

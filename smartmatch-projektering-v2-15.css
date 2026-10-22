@@ -94,7 +94,7 @@ h3 { font-size: 13px; margin-bottom: 7px; }
 .stamp-preview, .stencil-preview-mark, .stamp-code { display: inline-flex; justify-content: center; align-items: center; min-width: 45px; min-height: 22px; border: 1px solid #c3a341; border-radius: 50%; padding: 2px 7px; background: var(--yellow); color: #41371b; font-size: 11px; font-weight: 700; line-height: 1.1; max-width: 100%; overflow-wrap: anywhere; }
 .stencil-preview { display: inline-flex; justify-content: center; align-items: center; min-width: 45px; min-height: 23px; max-width: 100%; border: 1px solid var(--stamp-stroke, #c3a341); border-radius: 50%; padding: 2px 7px; background: var(--stamp-fill, var(--yellow)); color: var(--stamp-text, #41371b); font-size: 11px; font-weight: 700; line-height: 1.1; overflow-wrap: anywhere; }
 .stencil-preview.shape-square { border-radius: 2px; min-width: 25px; }
-.stencil-preview.stencil-restroom-text { min-width: 52px; min-height: 34px; padding: 2px 7px; white-space: nowrap; }
+.stencil-preview.stencil-restroom-text { min-width: 52px; min-height: 38px; padding: 2px 7px; white-space: nowrap; }
 .stencil-preview.shape-rectangle { border-radius: 3px; }
 .stamp-preview.square, .stamp-preview.stamp-square, .stamp-code.square, [data-shape=square] .stamp-code, .stencil-preview-mark.square { border-radius: 2px; }
 .stamp-preview.rectangle, .stamp-code.rectangle, [data-shape=rectangle] .stamp-code { border-radius: 3px; }
@@ -893,3 +893,8 @@ body[data-pane-resizing] .drawing-host { pointer-events: none; }
  .material-table [data-material-time] { width: 3.2em; padding: 0; min-height: 0; border: 0; background: transparent; font-size: 10pt; }
 }
 
+
+/* 2.16: rounder card stamps in the picker, matching the drawing defaults. */
+.stencil-preview.shape-oval { min-width: 52px; min-height: 38px; }
+
+.projektering-version { position: fixed; right: 6px; bottom: 2px; z-index: 20; font-size: 9px; color: #53665b; background: #fff; padding: 1px 4px; border-radius: 3px; pointer-events: none; }
