@@ -1,0 +1,19 @@
+# Projektering 2.10 – eget dörrkort, PDF-text och flexibel arbetsyta
+
+En markerad dörr kan få ett eget dörrkort genom **Ändra bara denna dörr**. Knappen kopierar det aktuella kortet, inklusive osparade ändringar, till en egen beteckning som GS4-A. Bara den markerade placeringens kortkoppling ändras; övriga GS4 och deras sparade kort behålls. Egen beteckning kontrolleras mot alla befintliga kort och stenciler, även beteckningar med samma matchnyckel. Låst geometri bevaras. Det nya kortet hör till projektet och följer med i projektfil/PDF; det läggs inte automatiskt i det personliga stencilbiblioteket.
+
+**Skapa dörrkort** öppnar en vit A3-sida i liggande format utan importerad ritning. Stämplar, dörrkort och export fungerar som på en vanlig PDF. Befintligt arbete skyddas av samma val för osparat kort och projektbyte som tidigare. Personliga stencilmallar tillämpas vid det nya projektet.
+
+När Levereras av ändras fylls Monteras av i med samma värde. Monteras av kan därefter ändras separat. Detta sker vid den uttryckliga ändringen i fältet; tidigare sparade avvikande ansvar skrivs inte om när kortet öppnas. Befintliga egna ansvarskoder fungerar också.
+
+Textsökningen läser PDF:ens text över alla sidor. PDF-text kan markeras, kopieras med vanlig textkopiering eller knappen Kopiera och användas i Sök markerad text. Träffar kan väljas i listan eller med pilarna och visas markerade på rätt sida. Sökningen hanterar uppdelade beteckningar, sidrotation och hela beteckningar, så att GS4 inte träffar GS40. Den använder originalets textlager, inte OCR; bild-PDF utan text får ett tydligt meddelande. Fel på enskilda sidor och begränsat antal träffar redovisas.
+
+Sökindex skapas först vid sökning och återanvänder visningens PDF-dokument. Dokumentbyte, ny fråga, manuell navigering och ny träff invaliderar gamla asynkrona resultat. Text, sökfrågor och markering av träffar ändrar inte original-PDF eller projektdata.
+
+På dator centreras verktyg, vyflikar, antal och sidnavigering. Panelernas gränser kan dras eller justeras med tangentbord; bredderna sparas lokalt för arbetsytan. Telefon, iPad och uttryckliga kompakta enhetslägen behåller sin vyindelning. Filraden har Öppna ritning, Exportera PDF och en kompakt meny för projektkommandon. Säkerhetskopiering och projektöppning finns kvar. De nedre panelerna för vald markering och markeringar på ritningen är oförändrade; den långa verktygsinstruktionen döljs.
+
+Anpassningen av ritningen observerar den yttre värdens storlek och undviker återkoppling från rullister, upprepade identiska storlekar och fraktionella mått. Den rapporterade skakningen kunde inte återskapas i headless Chromium. Den nya vyn har kontrollerats numeriskt över flera bildrutor och ändrade panelmått; fysisk Safari har inte verifierats.
+
+Projektformatet är fortsatt schema 2. Produktbiblioteket med 86 inbyggda modeller samt personliga produkter, stenciler och dolda val behålls. Biblioteksmoduler 2.9, produktförslag 2.8, materialberäkning 2.6 och projektlagringen återanvänds. Nya versionsfiler för data, PDF, canvas, sökning, arbetsyta, HTML/CSS och huvudkod används. Den stabila projekteringsadressen visar 2.10 och Home/sw visar Tillsyno v2.4.480. Ingen ny kontosynkronisering, authändring eller TestFlight-build ingår; native-källa saknas i arbetsytan.
+
+Verifiering: modell-/PDF-tester för eget kort, osparad kopia, gränser, atomiska fel, material och blank sida; verklig PDF-text med uppdelade beteckningar, rotation och sidfel; canvasregression för mus, pekning, zoom, urval, geometri och föråldrad navigering; integrerade webbläsarflöden på dator samt emulerad iPad och iPhone. Dessa omfattar avbruten/ogiltig kortdelning, sparning/återöppning, ansvarsfält, textmarkering och urklipp, gamla sökresultat vid dokumentbyte, exportsidor, centrering och panelbredder. Inga bilder eller skärmbilder har skapats.

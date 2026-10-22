@@ -5,24 +5,26 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#173e3a">
   <meta name="description" content="Projektera dörrar på egna PDF-ritningar med stenciler, gemensamma dörrkort och sökbar PDF-export.">
-  <title>Projektering 2.9 | Tillsyno</title>
+  <title>Projektering 2.10 | Tillsyno</title>
   <style>html[data-auth-pending] body{visibility:hidden!important}</style>
   <script src="vendor/supabase-2.49.10.min.js"></script>
   <script src="auth-config.js"></script>
   <script src="auth/client.js?v=2.4.270"></script>
   <script src="auth/guard.js?v=2.4.270" defer></script>
-  <link rel="stylesheet" href="smartmatch-projektering-v2-9.css?v=2.9">
+  <link rel="stylesheet" href="smartmatch-projektering-v2-10.css?v=2.10">
   <script src="vendor/pdf.min.js" defer></script>
   <script src="vendor/pdf-lib.min.js" defer></script>
-  <script src="smartmatch-projektering-v2-9-data.js?v=2.9" defer></script>
+  <script src="smartmatch-projektering-v2-10-data.js?v=2.10" defer></script>
   <script src="smartmatch-projektering-v2-store.js?v=2" defer></script>
-  <script src="smartmatch-projektering-v2-6-canvas.js?v=2.6" defer></script>
-  <script src="smartmatch-projektering-v2-9-pdf.js?v=2.9" defer></script>
+  <script src="smartmatch-projektering-v2-10-canvas.js?v=2.10" defer></script>
+  <script src="smartmatch-projektering-v2-10-pdf.js?v=2.10" defer></script>
   <script src="smartmatch-projektering-v2-6-materials.js?v=2.6" defer></script>
   <script src="smartmatch-projektering-v2-9-library.js?v=2.9" defer></script>
   <script src="smartmatch-projektering-v2-8-suggest.js?v=2.8" defer></script>
   <script src="smartmatch-projektering-v2-9-library-ui.js?v=2.9" defer></script>
-  <script src="smartmatch-projektering-v2-9.js?v=2.9" defer></script>
+  <script src="smartmatch-projektering-v2-10-search.js?v=2.10" defer></script>
+  <script src="smartmatch-projektering-v2-10-layout.js?v=2.10" defer></script>
+  <script src="smartmatch-projektering-v2-10.js?v=2.10" defer></script>
 </head>
 <body data-view="drawing">
   <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -60,7 +62,7 @@
   </defs></svg>
 
   <header class="app-header">
-    <a class="brand" href="index.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small>Projektering 2.9</small></span></a>
+    <a class="brand" href="index.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small>Projektering 2.10</small></span></a>
     <div class="project-name"><label for="projectName">Projekt</label><input id="projectName" value="Nytt projekt" maxlength="120" aria-label="Projektnamn" autocomplete="off"></div>
     <div class="header-status"><span class="status-dot" aria-hidden="true"></span><output id="saveStatus" aria-live="polite">Öppna en ritning för att börja</output></div>
     <button id="help" class="icon-button" type="button" aria-label="Öppna guiden" title="Guide och kortkommandon"><svg><use href="#i-help"/></svg></button>
@@ -70,10 +72,8 @@
     <div class="project-counts"><span><b id="placementCount">0</b> markeringar</span><span><b id="cardCount">0</b> dörrkort</span><span title="DA · Dörrautomatik"><b id="automationCount">0</b> dörrautomatiker</span><span title="DS · Dörrstängare"><b id="closerCount">0</b> dörrstängare</span><span title="DFS och egna produkter"><b id="otherProductCount">0</b> övriga produkter</span></div>
     <div class="file-actions">
       <button id="openDrawing" type="button" class="button drawing-open"><svg><use href="#i-plan"/></svg><span>Öppna ritning</span></button>
-      <button id="openProject" type="button" class="button"><svg><use href="#i-folder"/></svg><span>Öppna projekt</span></button>
-      <button id="saveProject" type="button" class="button"><svg><use href="#i-download"/></svg><span>Spara projekt</span></button>
-      <button id="exportPdf" type="button" class="button primary" title="Ritning och dörrkort i samma PDF" aria-label="Exportera ritning och dörrkort i samma PDF"><svg><use href="#i-download"/></svg><span>Exportera PDF</span></button>
-      <details class="project-menu"><summary title="Fler projektval" aria-label="Fler projektval">···</summary><div><button id="exportDrawing" type="button">Ritning med stämplar · PDF</button><button id="exportCards" type="button">Endast dörrkort · PDF</button><button id="exportSchedule" type="button">Förteckning · CSV</button><hr><button id="exampleProject" type="button">Öppna exempel med 50 dörrar</button><button id="newProject" type="button">Nytt tomt projekt</button></div></details>
+      <details id="pdfExportMenu" class="project-menu pdf-export-menu"><summary><svg aria-hidden="true"><use href="#i-download"/></svg><span>Exportera PDF</span><svg aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div><button id="exportPdf" type="button" title="Ritning och dörrkort i samma PDF">Ritning och dörrkort · PDF</button><button id="exportDrawing" type="button">Ritning med stämplar · PDF</button><button id="exportCards" type="button">Endast dörrkort · PDF</button></div></details>
+      <details id="projectOptions" class="project-menu project-options"><summary title="Projektfiler och fler val"><span>Projekt</span><svg aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div><button id="openProject" type="button">Öppna projekt</button><button id="saveProject" type="button">Spara projektfil</button><button id="exportSchedule" type="button">Förteckning · CSV</button><hr><button id="exampleProject" type="button">Öppna exempel med 50 dörrar</button><button id="newProject" type="button">Nytt tomt projekt</button></div></details>
     </div>
     <input id="drawingFile" type="file" accept=".pdf,application/pdf" hidden>
     <input id="projectFile" type="file" accept=".json,.pdf,application/json,application/pdf" hidden>
@@ -81,7 +81,7 @@
 
   <nav class="workspace-tabs" aria-label="Arbetsvy"><button type="button" data-view="drawing" aria-selected="true"><svg><use href="#i-plan"/></svg>Ritning</button><button type="button" data-view="cards" aria-selected="false"><svg><use href="#i-card"/></svg>Dörrkort</button><button type="button" data-view="stencils" aria-selected="false"><svg><use href="#i-stamp"/></svg>Stenciler</button><button type="button" data-view="materials" aria-selected="false"><svg><use href="#i-card"/></svg>Material</button></nav>
 
-  <main class="workspace">
+  <main class="workspace" id="projectWorkspace">
     <aside id="libraryPane" class="pane library-pane" aria-labelledby="libraryHeading">
       <div class="pane-heading"><div><p class="eyebrow">Bibliotek</p><h1 id="libraryHeading">Stenciler</h1></div><div class="pane-heading-actions"><button id="manageLibrary" type="button" class="button library-manage-button" title="Grupper, produkter och säkerhetskopia">Bibliotek</button><button id="newStencil" type="button" class="icon-button" aria-label="Skapa egen stencil" title="Skapa egen stencil"><svg><use href="#i-plus"/></svg></button></div></div>
       <label class="search-field"><svg aria-hidden="true"><use href="#i-search"/></svg><input id="stampSearch" type="search" aria-label="Sök bland alla stenciler" placeholder="Sök GS65, DBL, DA…" autocomplete="off"></label>
@@ -96,6 +96,8 @@
       </div>
       <p class="library-foot">Samma beteckning använder samma dörrkort.</p>
     </aside>
+
+    <button id="resizeLibraryPane" type="button" class="pane-resizer" role="separator" aria-orientation="vertical" aria-label="Ändra bibliotekets bredd" aria-controls="libraryPane" aria-valuemin="180" aria-valuemax="460" aria-valuenow="230" tabindex="0"><span aria-hidden="true"></span></button>
 
     <section id="drawingPane" class="pane drawing-pane" aria-labelledby="drawingHeading">
       <div class="drawing-toolbar" role="toolbar" aria-label="Ritningsverktyg">
@@ -138,18 +140,22 @@
           <div class="drawing-settings"><label title="Fäst placeringen i ett rutnät på 5 PDF-punkter"><input id="gridSnap" type="checkbox">Rutnät</label><label><input id="showStamps" type="checkbox" checked>Visa stämplar</label><label class="setting-wide"><input id="autoOpenCard" type="checkbox" checked>Öppna kort efter placering</label></div>
         </div></details>
       </div>
+      <details id="pdfSearchPanel" class="pdf-search-panel"><summary><svg aria-hidden="true"><use href="#i-search"/></svg><span>Sök text i PDF</span><svg aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="pdf-search-content"><div class="pdf-search-query"><label class="search-field"><svg aria-hidden="true"><use href="#i-search"/></svg><input id="pdfSearchInput" type="search" placeholder="Sök på alla sidor" aria-label="Sök text på alla PDF-sidor" autocomplete="off"></label><button id="pdfSearchButton" type="button" class="button">Sök</button></div><div class="pdf-search-actions"><button id="pdfTextSelectButton" type="button" class="button" aria-pressed="false">Markera text</button><button id="pdfCopyText" type="button" class="button">Kopiera</button><button id="pdfSearchSelected" type="button" class="button">Sök markerad text</button></div><div class="pdf-search-feedback"><output id="pdfSearchStatus" role="status" aria-live="polite"></output><div class="pdf-search-navigation"><button id="pdfSearchPrev" type="button" class="icon-button" aria-label="Föregående sökträff" title="Föregående sökträff" disabled><svg><use href="#i-chevron-left"/></svg></button><button id="pdfSearchNext" type="button" class="icon-button" aria-label="Nästa sökträff" title="Nästa sökträff" disabled><svg><use href="#i-chevron-right"/></svg></button></div></div><div id="pdfSearchResults" class="pdf-search-results" role="group" aria-label="Sökresultat i PDF"></div></div></details>
       <div class="drawing-stage">
         <h2 id="drawingHeading" class="sr-only">Ritning och stämplar</h2>
         <div id="drawingHost" class="drawing-host" tabindex="0" aria-label="Ritningsyta"></div>
-        <div id="drawingEmpty" class="drawing-empty"><div class="empty-plan-icon"><svg><use href="#i-plan"/></svg></div><p class="eyebrow">Börja projektera</p><h2>Din ritning.<br>Dina dörrkort.</h2><p>Öppna en PDF och placera stämplar där dörrarna finns.</p><button type="button" class="button primary" data-open-drawing><svg><use href="#i-folder"/></svg>Välj PDF-ritning</button><button type="button" class="text-button" data-example>Prova exemplet med 50 dörrar<svg><use href="#i-chevron-right"/></svg></button><div class="empty-mini-stamps" aria-hidden="true"><span>GS1</span><span>GS65</span><span class="square">DA</span></div></div>
+        <div id="drawingEmpty" class="drawing-empty"><div class="empty-plan-icon"><svg><use href="#i-plan"/></svg></div><p class="eyebrow">Börja projektera</p><h2>Din ritning.<br>Dina dörrkort.</h2><p>Öppna en PDF och placera stämplar där dörrarna finns.</p><button type="button" class="button primary" data-open-drawing><svg><use href="#i-folder"/></svg>Välj PDF-ritning</button><button id="createBlankDrawing" type="button" class="button blank-card-button"><svg><use href="#i-card-plus"/></svg>Skapa dörrkort</button><button type="button" class="text-button" data-example>Prova exemplet med 50 dörrar<svg><use href="#i-chevron-right"/></svg></button><div class="empty-mini-stamps" aria-hidden="true"><span>GS1</span><span>GS65</span><span class="square">DA</span></div></div>
       </div>
-      <div class="view-bar"><div class="page-navigation"><button id="prevPage" type="button" class="icon-button" aria-label="Föregående ritningssida" title="Föregående sida"><svg><use href="#i-chevron-left"/></svg></button><label for="pageNumber" class="sr-only">Ritningssida</label><input id="pageNumber" type="number" min="1" value="1" aria-label="Ritningssida"><span>/ <output id="pageTotal">0</output></span><button id="nextPage" type="button" class="icon-button" aria-label="Nästa ritningssida" title="Nästa sida"><svg><use href="#i-chevron-right"/></svg></button></div><output id="toolHint" class="tool-hint">Välj en ritning för att börja.</output><div class="zoom-navigation"><button id="zoomOut" type="button" class="icon-button" aria-label="Zooma ut" title="Zooma ut">−</button><output id="zoomLevel">100 %</output><button id="zoomIn" type="button" class="icon-button" aria-label="Zooma in" title="Zooma in">+</button><button id="zoomFit" type="button" class="icon-button" aria-label="Anpassa ritningen" title="Anpassa ritningen"><svg><use href="#i-fit"/></svg></button><button id="fullscreen" type="button" class="icon-button" aria-label="Visa ritningen i helskärm" title="Helskärm"><svg><use href="#i-fullscreen"/></svg></button></div></div>
+      <div class="view-bar"><div class="page-navigation"><button id="prevPage" type="button" class="icon-button" aria-label="Föregående ritningssida" title="Föregående sida"><svg><use href="#i-chevron-left"/></svg></button><label for="pageNumber" class="sr-only">Ritningssida</label><input id="pageNumber" type="number" min="1" value="1" aria-label="Ritningssida"><span>/ <output id="pageTotal">0</output></span><button id="nextPage" type="button" class="icon-button" aria-label="Nästa ritningssida" title="Nästa sida"><svg><use href="#i-chevron-right"/></svg></button></div><output id="toolHint" class="tool-hint" hidden>Välj en ritning för att börja.</output><div class="zoom-navigation"><button id="zoomOut" type="button" class="icon-button" aria-label="Zooma ut" title="Zooma ut">−</button><output id="zoomLevel">100 %</output><button id="zoomIn" type="button" class="icon-button" aria-label="Zooma in" title="Zooma in">+</button><button id="zoomFit" type="button" class="icon-button" aria-label="Anpassa ritningen" title="Anpassa ritningen"><svg><use href="#i-fit"/></svg></button><button id="fullscreen" type="button" class="icon-button" aria-label="Visa ritningen i helskärm" title="Helskärm"><svg><use href="#i-fullscreen"/></svg></button></div></div>
       <details class="selection-inspector"><summary><span>Vald markering</span><output id="selectedInfo">Ingen markering vald</output><svg aria-hidden="true"><use href="#i-edit"/></svg></summary><div class="inspector-fields"><label>X · %<input id="selectionX" type="number" min="0" max="100" step="0.1" aria-label="Markering X procent"></label><label>Y · %<input id="selectionY" type="number" min="0" max="100" step="0.1" aria-label="Markering Y procent"></label><label>Bredd · pt<input id="selectionWidth" type="number" min="1" step="1" aria-label="Markering bredd"></label><label>Höjd · pt<input id="selectionHeight" type="number" min="1" step="1" aria-label="Markering höjd"></label><label>Rotation · °<input id="selectionRotation" type="number" min="-360" max="360" step="1" aria-label="Markering rotation"></label><label class="inspector-lock"><input id="selectionLocked" type="checkbox">Låst</label><button id="applySelection" type="button" class="button">Uppdatera</button><button id="editEquipment" type="button" class="button" hidden><svg><use href="#i-edit"/></svg>Produktuppgifter</button></div><div class="shared-size-control"><label for="sizeScope">Storlek gäller<select id="sizeScope"><option value="doors">Alla dörrstämplar</option><option value="code">Samma beteckning</option><option value="single">Bara denna</option></select></label><output id="sharedSizeHint">Dra i handtagen på en vald stämpel för att ändra storlek.</output></div></details>
       <details class="placements-index"><summary>Markeringar på ritningen</summary><label class="search-field compact"><svg aria-hidden="true"><use href="#i-search"/></svg><input id="placementSearch" type="search" placeholder="Sök beteckning" aria-label="Sök placerad markering"></label><div id="placementsList" class="placements-list"></div></details>
     </section>
 
+    <button id="resizeCardPane" type="button" class="pane-resizer" role="separator" aria-orientation="vertical" aria-label="Ändra dörrkortets bredd" aria-controls="cardPane" aria-valuemin="320" aria-valuemax="680" aria-valuenow="420" tabindex="0"><span aria-hidden="true"></span></button>
+
     <aside id="cardPane" class="pane card-pane" aria-labelledby="cardHeading">
       <div class="card-heading"><div><p class="eyebrow" id="cardHeading">Gemensamt dörrkort</p><h2 id="cardCode">Välj ett dörrkort</h2></div><div class="card-actions"><button id="newCard" type="button" class="icon-button" title="Nytt dörrkort" aria-label="Nytt dörrkort"><svg><use href="#i-plus"/></svg></button><button id="copyCard" type="button" class="icon-button" title="Kopiera dörrkort" aria-label="Kopiera dörrkort"><svg><use href="#i-copy"/></svg></button><button id="deleteCard" type="button" class="icon-button danger" title="Ta bort dörrkort" aria-label="Ta bort dörrkort"><svg><use href="#i-trash"/></svg></button></div></div>
+      <div class="card-fork-actions"><button id="forkCard" type="button" class="button" title="Skapa ett eget kort för den markerade dörren" disabled><svg aria-hidden="true"><use href="#i-edit"/></svg>Ändra bara denna dörr</button></div>
       <div class="shared-notice"><svg aria-hidden="true"><use href="#i-card"/></svg><output id="cardUsage">Välj en kortstämpel eller skapa ett nytt dörrkort.</output></div>
       <div class="card-scroll"><div id="cardMeta" class="card-meta"></div><div id="cardRows" class="card-rows"></div><div class="card-note"><label for="cardNote">Anteckning</label><textarea id="cardNote" rows="3" maxlength="2000" placeholder="Gemensam information för dörrtypen"></textarea></div><p class="product-disclaimer">Skriv egen produkttext eller välj ett förslag. Kontrollera projekterat val.</p></div>
       <div class="card-save"><output id="cardStatus" aria-live="polite">Inget dörrkort valt</output><button id="saveCard" type="button" class="button primary"><svg><use href="#i-check"/></svg>Spara dörrkort</button></div>
