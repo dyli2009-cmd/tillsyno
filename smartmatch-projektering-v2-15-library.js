@@ -61,9 +61,7 @@
   if(fold(labels.cards)===fold(labels.other))throw Error('Huvudgrupperna måste ha olika namn.');
   let groups=array(raw.groups,'Grupperna',LIMITS.groups).map(group);
   const legacyCombined=groups.find(value=>value.id==='WC-HWC'&&value.section==='cards');
-  const legacyDbl=groups.find(value=>value.id==='DBL'&&value.name==='DBL'&&value.section==='cards');
-  if(legacyDbl)groups=groups.map(value=>value===legacyDbl?{...value,section:'other'}:value);
-  if(legacyCombined){groups=groups.filter(value=>value!==legacyCombined);if(!groups.some(value=>value.id==='WC'&&value.section==='other'))groups.push({id:'WC',name:'WC',section:'other',prefixes:['WC'],fallback:false});if(!groups.some(value=>value.id==='HWC'&&value.section==='other'))groups.push({id:'HWC',name:'HWC',section:'other',prefixes:['HWC'],fallback:false});}
+  if(legacyCombined){groups=groups.filter(value=>value!==legacyCombined);if(!groups.some(value=>value.id==='WC'&&value.section==='cards'))groups.push({id:'WC',name:'WC',section:'cards',prefixes:['WC'],fallback:false});if(!groups.some(value=>value.id==='HWC'&&value.section==='cards'))groups.push({id:'HWC',name:'HWC',section:'cards',prefixes:['HWC'],fallback:false});}
   groups=groups.map(value=>value.id==='cards-other'&&value.section==='cards'?{...value,name:'Övriga dörrkort'}:value);
   unique(groups.map(value=>value.id),'Grupp-ID');unique(groups.map(value=>value.section+':'+fold(value.name)),'Gruppnamnen');
   unique(groups.flatMap(value=>value.prefixes.map(start=>value.section+':'+start)),'Gruppernas prefix');
@@ -82,10 +80,10 @@
  function read(lib){return object(lib)&&validatedRecords.has(lib)?lib:validate(lib);}
  function createDefault(){return validate({schema:1,revision:1,updatedAt:now(),labels:{cards:'Dörrkort',other:'Övrigt'},groups:[
   {id:'GS',name:'GS1–GS100',section:'cards',prefixes:['GS'],fallback:false},
+  {id:'DBL',name:'DBL',section:'cards',prefixes:['DBL'],fallback:false},
+  {id:'WC',name:'WC',section:'cards',prefixes:['WC'],fallback:false},
+  {id:'HWC',name:'HWC',section:'cards',prefixes:['HWC'],fallback:false},
   {id:'cards-other',name:'Övriga dörrkort',section:'cards',prefixes:[],fallback:true},
-  {id:'DBL',name:'DBL',section:'other',prefixes:['DBL'],fallback:false},
-  {id:'WC',name:'WC',section:'other',prefixes:['WC'],fallback:false},
-  {id:'HWC',name:'HWC',section:'other',prefixes:['HWC'],fallback:false},
   {id:'symbols-other',name:'Övrigt',section:'other',prefixes:[],fallback:true}
  ],assignments:{},hiddenCodes:['VC','HVC'],stencils:[],products:[],hiddenProductIds:[],categoryLabels:{}});}
  function changed(lib,mutate){const next=validate(lib);mutate(next);next.revision++;next.updatedAt=now();return validate(next);}
