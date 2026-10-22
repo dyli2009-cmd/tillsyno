@@ -13,28 +13,28 @@ const clone = value => JSON.parse(JSON.stringify(value));
 (async () => {
   const lib = L.createDefault(), initial = D.createEmpty();
   const groups = L.groupsFor(lib, 'cards');
-  assert.deepEqual(groups.filter(g => !g.fallback).map(g => g.name), ['GS1–GS100', 'DBL', 'WC / HWC']);
+  assert.deepEqual(groups.filter(g => !g.fallback).map(g => g.name), ['DBL / WC', 'GS1–GS100']);
   assert.equal(Object.values(initial.stencils).filter(s => L.groupFor(lib, s) === 'GS').length, 100);
   for (const code of ['WC:1', 'HWC:1']) {
     const s = initial.stencils[code];
-    assert.equal(s.kind, 'card'); assert.equal(L.groupFor(lib, s), 'WC-HWC');
+    assert.equal(s.kind, 'card'); assert.equal(L.groupFor(lib, s), 'DBL-WC');
     assert(s.width / s.height < 1.6, 'default yellow restroom stamp is rounder');
   }
-  assert.equal(L.groupFor(lib, initial.stencils['DBL:1']), 'DBL');
+  assert.equal(L.groupFor(lib, initial.stencils['DBL:1']), 'DBL-WC');
   assert.equal(L.groupFor(lib, initial.stencils.DA), 'symbols-other');
   assert.equal(L.groupFor(lib, D.defaultStencil('GS101')), 'cards-other');
   assert(!Object.values(initial.stencils).some(s => s.code.startsWith('DGS')));
   for (const code of ['DGS', 'DGS100', 'DGS100:1']) assert(L.isHidden(lib, code));
 
   const legacy = clone(lib);
-  legacy.groups = legacy.groups.filter(g => g.id !== 'WC-HWC');
-  legacy.groups.push({id:'WC',name:'WC',section:'cards',prefixes:['WC'],fallback:false}, {id:'HWC',name:'HWC',section:'cards',prefixes:['HWC'],fallback:false});
+  legacy.groups = legacy.groups.filter(g => g.id !== 'DBL-WC');
+  legacy.groups.push({id:'DBL',name:'DBL',section:'cards',prefixes:['DBL'],fallback:false}, {id:'WC',name:'WC',section:'cards',prefixes:['WC'],fallback:false}, {id:'HWC',name:'HWC',section:'cards',prefixes:['HWC'],fallback:false});
   legacy.assignments = {'WC:1':'WC', 'HWC:2':'HWC', 'DBL:1':'DBL'};
   const upgradedLibrary = L.validate(legacy);
-  assert.deepEqual(upgradedLibrary.assignments, {'WC:1':'WC-HWC','HWC:2':'WC-HWC','DBL:1':'DBL'});
-  assert.equal(upgradedLibrary.groups.filter(g => g.id === 'WC-HWC').length, 1);
+  assert.deepEqual(upgradedLibrary.assignments, {'WC:1':'DBL-WC','HWC:2':'DBL-WC','DBL:1':'DBL-WC'});
+  assert.equal(upgradedLibrary.groups.filter(g => g.id === 'DBL-WC').length, 1);
   assert.deepEqual(L.validate(upgradedLibrary), upgradedLibrary, 'group upgrade is idempotent');
-  assert.equal(L.groupFor(L.validate(oldLibrary.createDefault()), D.defaultStencil('HWC:2')), 'WC-HWC');
+  assert.equal(L.groupFor(L.validate(oldLibrary.createDefault()), D.defaultStencil('HWC:2')), 'DBL-WC');
 
   const {state, original} = await PDF.blank('WC och HWC');
   for (const code of ['WC:1', 'HWC:1']) {
@@ -72,7 +72,8 @@ const clone = value => JSON.parse(JSON.stringify(value));
   await document.destroy();
   for (const file of ['smartmatch-projektering.html','smartmatch-projektering-v2-14.html','smartmatch-projektering-v2-15.html']) {
     const html = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
-    for (const module of ['data.js','library.js','pdf.js']) assert(html.includes('v2-15-' + module + '?v=2.15.1'));
+    for (const module of ['data.js','pdf.js']) assert(html.includes('v2-15-' + module + '?v=2.15.1'));
+    assert(html.includes('v2-15-library.js?v=2.15.2'));
     assert(html.includes('v2-15.js?v=2.15.1'));
   }
   console.log('PASS: groups, 100 GS defaults, no default DGS, DA under Other, safe saved-data migrations, rounder stamps, native WC/HWC PDF text, editable PDF round trip and current entry points.');

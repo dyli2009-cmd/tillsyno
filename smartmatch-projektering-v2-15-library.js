@@ -60,21 +60,20 @@
   const labels={cards:text(raw.labels.cards,'Dörrkortens namn',60),other:text(raw.labels.other,'Symbolernas namn',60)};
   if(fold(labels.cards)===fold(labels.other))throw Error('Huvudgrupperna måste ha olika namn.');
   let groups=array(raw.groups,'Grupperna',LIMITS.groups).map(group);
-  // Consolidate the two previous built-in tabs; explicit assignments follow.
-  const restroomGroups=groups.filter(value=>value.section==='cards'&&!value.fallback&&['WC','HWC'].includes(value.id));
-  if(restroomGroups.length){
-   const combined=groups.find(value=>value.id==='WC-HWC'&&value.section==='cards');
-   const prefixes=[...new Set((combined?.prefixes||[]).concat(restroomGroups.flatMap(value=>value.prefixes)))];
-   const target=combined?{...combined,prefixes}:{id:'WC-HWC',name:'WC / HWC',section:'cards',prefixes,fallback:false};
-   const insertion=groups.findIndex(value=>restroomGroups.includes(value));
-   groups=groups.filter(value=>!restroomGroups.includes(value)&&value!==combined);groups.splice(Math.min(insertion,groups.length),0,target);
+  // Keep DBL and restroom door cards together at the top, including saved libraries.
+  const mergedGroups=groups.filter(value=>value.section==='cards'&&!value.fallback&&['DBL','WC','HWC','WC-HWC'].includes(value.id));
+  const combined=groups.find(value=>value.id==='DBL-WC'&&value.section==='cards');
+  if(mergedGroups.length||combined){
+   const prefixes=[...new Set((combined?.prefixes||[]).concat(mergedGroups.flatMap(value=>value.prefixes)))];
+   const target=combined?{...combined,prefixes}:{id:'DBL-WC',name:'DBL / WC',section:'cards',prefixes,fallback:false};
+   groups=groups.filter(value=>!mergedGroups.includes(value)&&value!==combined);groups.unshift(target);
   }
   groups=groups.map(value=>value.id==='cards-other'&&value.section==='cards'?{...value,name:'Övriga dörrkort'}:value);
   unique(groups.map(value=>value.id),'Grupp-ID');unique(groups.map(value=>value.section+':'+fold(value.name)),'Gruppnamnen');
   unique(groups.flatMap(value=>value.prefixes.map(start=>value.section+':'+start)),'Gruppernas prefix');
   for(const section of ['cards','other'])if(groups.filter(value=>value.section===section&&value.fallback).length!==1)throw Error('Varje huvudgrupp måste ha exakt en reservgrupp.');
   if(!object(raw.assignments)||Object.keys(raw.assignments).length>LIMITS.assignments)throw Error('Stencilernas grupper är ogiltiga.');
-  const assignments={};for(const [name,value]of Object.entries(raw.assignments)){const normalized=code(name);if(normalized!==name||Object.hasOwn(assignments,normalized))throw Error('En gruppkoppling har en ogiltig beteckning.');let target=value;if(restroomGroups.some(entry=>entry.id===value))target='WC-HWC';const groupId=id(target,'Grupp-ID');if(!groups.some(item=>item.id===groupId))throw Error('En stencils grupp saknas.');assignments[normalized]=groupId;}
+  const assignments={};for(const [name,value]of Object.entries(raw.assignments)){const normalized=code(name);if(normalized!==name||Object.hasOwn(assignments,normalized))throw Error('En gruppkoppling har en ogiltig beteckning.');let target=value;if(mergedGroups.some(entry=>entry.id===value))target='DBL-WC';const groupId=id(target,'Grupp-ID');if(!groups.some(item=>item.id===groupId))throw Error('En stencils grupp saknas.');assignments[normalized]=groupId;}
   const hiddenCodes=unique(array(raw.hiddenCodes,'Dolda stenciler',LIMITS.hiddenCodes).map(code),'Dolda stenciler');
   const stencils=array(raw.stencils,'Stencilmallarna',LIMITS.stencils).map(stencil);
   unique(stencils.map(value=>value.id),'Stencilmallarnas ID');unique(stencils.map(value=>data().matchKey(value.code)),'Stencilmallarnas beteckningar');
@@ -86,9 +85,8 @@
  }
  function read(lib){return object(lib)&&validatedRecords.has(lib)?lib:validate(lib);}
  function createDefault(){return validate({schema:1,revision:1,updatedAt:now(),labels:{cards:'Dörrkort',other:'Övrigt'},groups:[
+  {id:'DBL-WC',name:'DBL / WC',section:'cards',prefixes:['DBL','WC','HWC'],fallback:false},
   {id:'GS',name:'GS1–GS100',section:'cards',prefixes:['GS'],fallback:false},
-  {id:'DBL',name:'DBL',section:'cards',prefixes:['DBL'],fallback:false},
-  {id:'WC-HWC',name:'WC / HWC',section:'cards',prefixes:['WC','HWC'],fallback:false},
   {id:'cards-other',name:'Övriga dörrkort',section:'cards',prefixes:[],fallback:true},
   {id:'symbols-other',name:'Övrigt',section:'other',prefixes:[],fallback:true}
  ],assignments:{},hiddenCodes:['VC','HVC'],stencils:[],products:[],hiddenProductIds:[],categoryLabels:{}});}
