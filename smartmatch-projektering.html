@@ -5,26 +5,26 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#173e3a">
   <meta name="description" content="Projektera dörrar på egna PDF-ritningar med stenciler, gemensamma dörrkort och sökbar PDF-export.">
-  <title>Projektering 2.12 | Tillsyno</title>
+  <title>Projektering 2.13 | Tillsyno</title>
   <style>html[data-auth-pending] body{visibility:hidden!important}</style>
   <script src="vendor/supabase-2.49.10.min.js"></script>
   <script src="auth-config.js"></script>
   <script src="auth/client.js?v=2.4.270"></script>
   <script src="auth/guard.js?v=2.4.270" defer></script>
-  <link rel="stylesheet" href="smartmatch-projektering-v2-12.css?v=2.12">
+  <link rel="stylesheet" href="smartmatch-projektering-v2-13.css?v=2.13">
   <script src="vendor/pdf.min.js" defer></script>
   <script src="vendor/pdf-lib.min.js" defer></script>
-  <script src="smartmatch-projektering-v2-12-data.js?v=2.12" defer></script>
+  <script src="smartmatch-projektering-v2-13-data.js?v=2.13" defer></script>
   <script src="smartmatch-projektering-v2-store.js?v=2" defer></script>
   <script src="smartmatch-projektering-v2-10-canvas.js?v=2.10" defer></script>
-  <script src="smartmatch-projektering-v2-12-pdf.js?v=2.12" defer></script>
-  <script src="smartmatch-projektering-v2-11-materials.js?v=2.11" defer></script>
-  <script src="smartmatch-projektering-v2-12-library.js?v=2.12" defer></script>
+  <script src="smartmatch-projektering-v2-13-pdf.js?v=2.13" defer></script>
+  <script src="smartmatch-projektering-v2-13-materials.js?v=2.13" defer></script>
+  <script src="smartmatch-projektering-v2-13-library.js?v=2.13" defer></script>
   <script src="smartmatch-projektering-v2-8-suggest.js?v=2.8" defer></script>
   <script src="smartmatch-projektering-v2-9-library-ui.js?v=2.9" defer></script>
   <script src="smartmatch-projektering-v2-10-search.js?v=2.10" defer></script>
   <script src="smartmatch-projektering-v2-10-layout.js?v=2.10" defer></script>
-  <script src="smartmatch-projektering-v2-12.js?v=2.12" defer></script>
+  <script src="smartmatch-projektering-v2-13.js?v=2.13" defer></script>
 </head>
 <body data-view="drawing">
   <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -63,7 +63,7 @@
   </defs></svg>
 
   <header class="app-header">
-    <a class="brand" href="index.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small>Projektering 2.12</small></span></a>
+    <a class="brand" href="index.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small>Projektering 2.13</small></span></a>
     <div class="project-name"><label for="projectName">Projekt</label><input id="projectName" value="Nytt projekt" maxlength="120" aria-label="Projektnamn" autocomplete="off"></div>
     <div class="header-status"><span class="status-dot" aria-hidden="true"></span><output id="saveStatus" aria-live="polite">Öppna en ritning för att börja</output></div>
     <button id="help" class="icon-button" type="button" aria-label="Öppna guiden" title="Guide och kortkommandon"><svg><use href="#i-help"/></svg></button>
@@ -163,11 +163,11 @@
     </aside>
     <section id="materialsPane" class="pane materials-pane" aria-labelledby="materialsHeading">
       <div class="materials-heading"><div><p class="eyebrow">Beställningsunderlag</p><h1 id="materialsHeading">Material</h1><output id="materialSummary" aria-live="polite">Inga produkter att sammanställa ännu.</output></div><div class="material-actions"><button id="materialRefresh" type="button" class="button" title="Uppdatera från sparade uppgifter">Uppdatera</button><button id="materialCsv" type="button" class="button"><svg><use href="#i-download"/></svg>CSV</button><button id="materialPdf" type="button" class="button primary"><svg><use href="#i-download"/></svg>Skriv ut lista · PDF</button></div></div>
-      <div class="material-controls"><label class="search-field"><svg aria-hidden="true"><use href="#i-search"/></svg><input id="materialSearch" type="search" placeholder="Sök produkt eller grupp" aria-label="Sök i materiallistan" autocomplete="off"></label><p>Sparade produkter × placerade dörrar. Armbågskontakter räknas × 2.</p></div>
+      <div class="material-controls"><label class="search-field"><svg aria-hidden="true"><use href="#i-search"/></svg><input id="materialSearch" type="search" placeholder="Sök produkt eller grupp" aria-label="Sök i materiallistan" autocomplete="off"></label><p>GS-kort × placerade dörrar. Armbågskontakter räknas × 2.</p></div>
       <div class="material-time-summary" aria-label="Tidberäkning"><div><span>Total arbetstid</span><output id="materialTotalTime" aria-live="polite">0 h</output></div><output id="materialUntimed" aria-live="polite">Ange minuter per styck för produkterna.</output></div>
       <div id="materialWarnings" class="material-warnings" role="status" aria-live="polite"></div>
-      <div class="material-table-wrap"><table class="material-table"><thead><tr><th scope="col">Grupp</th><th scope="col">Komponent</th><th scope="col">Produkt</th><th scope="col" class="quantity-column">Antal</th><th scope="col" class="unit-time-column" title="Minuter per styck">Min/st</th><th scope="col" class="total-time-column">Tid</th><th scope="col">Underlag</th></tr></thead><tbody id="materialRows"></tbody></table><p id="materialEmpty" class="material-empty">Fyll i produkter på ett dörrkort och placera dess stämpel på ritningen.</p></div>
-      <p class="material-foot">Listan följer sparade uppgifter och aktuella placeringar. Hämta PDF-listan för att skriva ut beställningsunderlaget.</p>
+      <div class="material-table-wrap"><table class="material-table"><thead><tr><th scope="col">Grupp</th><th scope="col">Komponent</th><th scope="col">Produkt</th><th scope="col" class="quantity-column">Antal</th><th scope="col" class="unit-time-column" title="Minuter per styck">Min/st</th><th scope="col" class="total-time-column">Tid</th><th scope="col">Underlag</th></tr></thead><tbody id="materialRows"></tbody></table><p id="materialEmpty" class="material-empty">Fyll i produkter på ett GS-dörrkort och placera dess stämpel på ritningen.</p></div>
+      <p class="material-foot">Listan räknar endast produkter från placerade GS-dörrkort. Hämta PDF-listan för att skriva ut beställningsunderlaget.</p>
     </section>
   </main>
   <footer class="app-footer"><span>Sparas på den här enheten</span><span>Spara projekt för en flyttbar kopia</span></footer>
