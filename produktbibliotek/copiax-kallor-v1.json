@@ -366,12 +366,12 @@
       "checkedOn": "2026-10-22"
     },
     {
-      "name": "1212 rund 3ny – ASSA ABLOY cylinder",
+      "name": "1212 rund 3ny – ASSA ABLOY dubbelcylinder",
       "category": "cylinder",
-      "description": "Rund cylinder, levereras med tre nycklar.",
+      "description": "Rund dubbelcylinder med tre nycklar. Ange en gång per dörr, inte på båda cylinderraderna.",
       "sourceUrl": "https://www.copiax.se/produkt/cylinder-1212-rund-3ny-50090968",
       "sourceTitle": "Copiax: ASSA ABLOY Cylinder 1212 rund 3ny",
-      "id": "copiax-cylinder-1212-rund-3ny-assa-abloy--350d4d6c71",
+      "id": "copiax-cylinder-1212-rund-3ny-assa-abloy--4b0e6ea0d8",
       "categoryLabel": "Cylinder (gångjärns- och anslagssida)",
       "checkedOn": "2026-10-22"
     },
