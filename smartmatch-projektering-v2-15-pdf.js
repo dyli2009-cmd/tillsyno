@@ -1,4 +1,4 @@
-/* Projektering 2.15: preserve WC/HWC pictograms as PDF vectors. */
+/* Projektering 2.15: searchable WC/HWC text on vector door stamps. */
 (function(root,factory){
  'use strict';
  if(typeof module==='object'&&module.exports)module.exports=factory(()=>require('./vendor/pdf-lib.min.js'),()=>require('./smartmatch-projektering-v2-15-data.js'));
@@ -140,33 +140,20 @@
    if(w>1&&h>1)throw Error('Stämplarna '+items[i].code+' och '+items[j].code+' överlappar på sida '+items[i].page+'. Flytta isär dem före PDF-export.');
   }
  }
- function drawRestroom(page,font,item,definition,mark,lib){
-  const ink=hex(lib,definition.textColor),fill=hex(lib,definition.fill),cx=-item.width*.22,scale=Math.min(item.height*.76/24,item.width*.34/24),lineWidth=Math.max(.7,item.height*.06);
-  if(mark.type==='WC'){
-   page.drawRectangle({x:cx-5*scale,y:6*scale,width:10*scale,height:4.5*scale,color:ink,borderColor:ink,borderWidth:.3});page.drawCircle({x:cx,y:8.2*scale,radius:.7*scale,color:fill});
-   page.drawEllipse({x:cx-6.3*scale,y:-10.2*scale,xScale:6.3*scale,yScale:8.2*scale,color:ink});page.drawEllipse({x:cx-2.7*scale,y:-9.5*scale,xScale:2.7*scale,yScale:4.4*scale,color:fill});
-  }else{
-   page.drawEllipse({x:cx-7.5*scale,y:-11.8*scale,xScale:5.8*scale,yScale:5.8*scale,color:fill,borderColor:ink,borderWidth:lineWidth});page.drawCircle({x:cx+3*scale,y:8.5*scale,radius:2.1*scale,color:ink});
-   const line=(x1,y1,x2,y2,width=lineWidth)=>page.drawLine({start:{x:x1,y:y1},end:{x:x2,y:y2},thickness:width,color:ink});line(cx+1*scale,5.5*scale,cx-1*scale,0);line(cx-1*scale,0,cx+5.5*scale,0);line(cx+5.5*scale,0,cx+8.2*scale,-6.2*scale);line(cx+8.2*scale,-6.2*scale,cx+12*scale,-7.5*scale);line(cx+1.5*scale,0,cx-2*scale,-5*scale);line(cx-2*scale,-5*scale,cx-7*scale,-5*scale);
-  }
-  page.drawLine({start:{x:0,y:-item.height*.3},end:{x:0,y:item.height*.3},thickness:Math.max(.55,item.height*.035),color:ink});
-  if(mark.number){const size=Math.max(5,Math.min(definition.fontSize,item.height*.43,item.width*.2)),value=assertText(font,mark.number),w=font.widthOfTextAtSize(value,size);text(page,font,value,item.width*.2-w/2,-size*.34,size,ink);}
- }
  function drawPlacements(document,state,font,lib){
   for(const item of state.placements){
-   const page=document.getPage(item.page-1),definition=state.stencils[item.stencilId],matrix=stampMatrix(state.drawing.pages[item.page-1],item),mark=dataLibrary()?.restroomSymbol?.(item.code),label=assertText(font,item.code);
+   const page=document.getPage(item.page-1),definition=state.stencils[item.stencilId],matrix=stampMatrix(state.drawing.pages[item.page-1],item),label=assertText(font,item.code);
    let fontSize=Math.min(definition.fontSize,item.height*.5),labelWidth=font.widthOfTextAtSize(label,fontSize);
    if(labelWidth>item.width-8)fontSize*=Math.max(.05,(item.width-8)/labelWidth);
-   if(definition.kind==='card'&&!mark&&fontSize<5.2)throw Error('Stämpeln '+item.code+' är för liten för sin beteckning. Öka bredden eller textstorleken före PDF-export.');
+   if(definition.kind==='card'&&fontSize<5.2)throw Error('Stämpeln '+item.code+' är för liten för sin beteckning. Öka bredden eller textstorleken före PDF-export.');
    page.pushOperators(lib.pushGraphicsState(),lib.concatTransformationMatrix(...matrix));
    const style={color:hex(lib,definition.fill),borderColor:hex(lib,definition.stroke),borderWidth:Math.max(.45,Math.min(1.1,item.height*.035))};
    if(definition.shape==='oval')page.drawEllipse({x:0,y:0,xScale:item.width/2,yScale:item.height/2,...style});
    else page.drawRectangle({x:-item.width/2,y:-item.height/2,width:item.width,height:item.height,...style});
-   // Keep icon and number readable when the whole stamp is rotated.
+   // Keep the complete code readable when the whole stamp is rotated.
    const readableFlip=item.rotation>90&&item.rotation<=270;
    if(readableFlip)page.pushOperators(lib.pushGraphicsState(),lib.concatTransformationMatrix(-1,0,0,-1,0,0));
-   if(mark)drawRestroom(page,font,item,definition,mark,lib);
-   else{const width=font.widthOfTextAtSize(label,fontSize);text(page,font,label,-width/2,-fontSize*.34,fontSize,hex(lib,definition.textColor));}
+   {const width=font.widthOfTextAtSize(label,fontSize);text(page,font,label,-width/2,-fontSize*.34,fontSize,hex(lib,definition.textColor));}
    if(readableFlip)page.pushOperators(lib.popGraphicsState());
    page.pushOperators(lib.popGraphicsState());
    const corners=[[-item.width/2,-item.height/2],[item.width/2,-item.height/2],[item.width/2,item.height/2],[-item.width/2,item.height/2]].map(([x,y])=>point(matrix,x,y)),xs=corners.map(p=>p[0]),ys=corners.map(p=>p[1]);
@@ -272,3 +259,4 @@
  }
  return Object.freeze({build,buildCardPreview,inspect,blank,example,metadata,stampMatrix,codeRect,tableRect,DATA_KEY,SOURCE_KEY});
 });
+

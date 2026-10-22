@@ -222,14 +222,6 @@
       setZoom(Math.min(width / meta.width, height / meta.height), null, {x:.5, y:.5}, true);
       return zoomValue;
     }
-    function restroomMarkup(code,width,height,ink,fill,flip){
-      const mark=root.Proj2Data?.restroomSymbol?.(code);if(!mark)return null;
-      const scale=Math.min(height*.76/24,width*.34/24),cx=-width*.22,transform=`translate(${cx-12*scale} ${-height*.46}) scale(${scale})`;
-      const icon=mark.type==='WC'
-        ? `<rect x="7" y="1.5" width="10" height="4.5" rx="1" fill="${ink}"/><circle cx="12" cy="3.5" r=".7" fill="${fill}"/><path d="M7 7h10l1.3 2v5.2c0 4.5-2.8 8.3-6.3 8.3s-6.3-3.8-6.3-8.3V9z" fill="${ink}"/><ellipse cx="12" cy="14" rx="2.7" ry="4.3" fill="${fill}"/>`
-        : `<circle cx="15" cy="3.4" r="2.1" fill="${ink}"/><path d="M12.7 6.2c-1.1.3-1.8 1.2-2.1 2.6l-.9 4.8h6.1l-1.1-4.1 3.8 1.1 1.1-2.1-5-2.1c-.6-.3-1.2-.4-1.9-.2Z" fill="${ink}"/><circle cx="8.2" cy="16.3" r="5.6" fill="none" stroke="${ink}" stroke-width="1.8"/><path d="M11 12.8h5.2l2.7 4.6 3.4 1.2M10.2 13.5h5.3M15.2 11.3l2.1 2.4" fill="none" stroke="${ink}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`;
-      return `<g transform="${transform}"${flip}><g stroke-linejoin="round">${icon}</g></g><path d="M0 ${-height*.31}V${height*.31}" stroke="${ink}" stroke-width="${Math.max(.55,height*.035)}"/><text x="${width*.2}" y="${Math.min(height*.2,5)}" text-anchor="middle" font-size="${Math.max(5,Math.min(height*.43,width*.2))}" font-weight="700" fill="${ink}"${flip}>${escape(mark.number)}</text>`;
-    }
     function drawOverlay() {
       drawSearchMatch();
       // iOS retains the touched SVG node as the gesture target. Keep it alive
@@ -247,7 +239,7 @@
         const size = Math.min(stencil.fontSize || 10, Math.max(3, (width - 8) / Math.max(1, String(item.code).length * .68)));
         const angle = ((item.rotation || 0) % 360 + 360) % 360;
         const glyphTransform = angle > 90 && angle <= 270 ? ' transform="rotate(180)"' : '';
-        const glyph = restroomMarkup(item.code,width,height,ink,fill,glyphTransform) || `<text x="0" y="${size*.34}" text-anchor="middle" font-size="${size}" font-weight="700" fill="${ink}"${glyphTransform}>${escape(item.code)}</text>`;
+        const glyph = `<text x="0" y="${size*.34}" text-anchor="middle" font-size="${size}" font-weight="700" fill="${ink}"${glyphTransform}>${escape(item.code)}</text>`;
         const shape = stencil.shape === 'oval' ? `<ellipse cx="0" cy="0" rx="${width/2}" ry="${height/2}" fill="${fill}" stroke="${stroke}" stroke-width=".8"/>` : `<rect x="${-width/2}" y="${-height/2}" width="${width}" height="${height}" rx="${stencil.shape === 'square' ? 1 : 3}" fill="${fill}" stroke="${stroke}" stroke-width=".8"/>`;
         const outline = (className, gap, attributes = '') => stencil.shape === 'oval' ? `<ellipse class="${className}" cx="0" cy="0" rx="${width/2+gap}" ry="${height/2+gap}" ${attributes}/>` : `<rect class="${className}" x="${-width/2-gap}" y="${-height/2-gap}" width="${width+gap*2}" height="${height+gap*2}" rx="${stencil.shape === 'square' ? 1 : 3}" ${attributes}/>`;
         // Keep the body available for selection/double tap even when the PDF
