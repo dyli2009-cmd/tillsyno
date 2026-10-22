@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="sv" data-auth-pending>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#153d3c">
+  <meta name="description" content="Prova digital projektering av dörrar, stämplar och gemensamma dörrkort i Tillsyno.">
+  <title>Projektering · Demo 1 | Tillsyno</title>
+  <style>html[data-auth-pending] body{visibility:hidden!important}</style>
+  <script src="vendor/supabase-2.49.10.min.js"></script>
+  <script src="auth-config.js"></script>
+  <script src="auth/client.js?v=2.4.270"></script>
+  <script src="auth/guard.js?v=2.4.270" defer></script>
+  <link rel="stylesheet" href="smartmatch-projektering-demo-v1.css?v=1">
+  <script src="vendor/pdf-lib.min.js" defer></script>
+  <script src="smartmatch-projektering-demo-v1-data.js?v=1" defer></script>
+  <script src="smartmatch-projektering-demo-v1-pdf.js?v=1" defer></script>
+  <script src="smartmatch-projektering-demo-v1.js?v=1" defer></script>
+</head>
+<body data-view="drawing">
+  <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="i-plan" viewBox="0 0 24 24"><path d="M3 3h18v18H3zM3 11h8V3m0 8v10m0-6h10"/></symbol>
+    <symbol id="i-card" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+    <symbol id="i-stamp" viewBox="0 0 24 24"><path d="M5 13h14l2 5H3l2-5ZM8 21h8M9 13V7a3 3 0 1 1 6 0v6"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7V4h6l3 3h9v13H3V7Zm0 3h18"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 8.5a2.6 2.6 0 0 1 5 1c0 2-2.5 2-2.5 4M12 17h.01"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+  </defs></svg>
+
+  <header class="app-header">
+    <a class="brand" href="index.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<span class="brand-sub">Projektering · Demo 1</span></span></a>
+    <div class="project-name"><label for="projectName">Projekt</label><input id="projectName" value="Exempelprojekt · 50 dörrar" maxlength="120" autocomplete="off" aria-label="Projektnamn"></div>
+    <div class="header-status"><span class="status-dot" aria-hidden="true"></span><output id="saveStatus" aria-live="polite">Exempelprojekt</output></div>
+    <button id="help" class="icon-button" type="button" title="Så fungerar projekteringen" aria-label="Öppna stegvis guide"><svg><use href="#i-help"/></svg></button>
+  </header>
+
+  <div class="project-toolbar">
+    <div class="project-counts"><span><b id="doorCount">50</b> dörrar</span><span><b id="cardCount">—</b> dörrkort</span><span class="demo-label">Exempel</span></div>
+    <div class="file-actions">
+      <button id="openProject" class="button" type="button"><svg><use href="#i-folder"/></svg><span>Öppna</span></button>
+      <button id="saveProject" class="button" type="button"><svg><use href="#i-download"/></svg><span>Spara projekt</span></button>
+      <button id="exportPdf" class="button primary" type="button"><svg><use href="#i-download"/></svg><span>Ritning + dörrkort</span></button>
+      <details id="exportChoices" class="export-menu"><summary aria-label="Fler projektval" title="Fler projektval">···</summary><div><button id="exportDrawing" type="button">Bara ritning · PDF</button><button id="exportCards" type="button">Bara dörrkort · PDF</button><button id="newProject" type="button">Nytt exempel</button></div></details>
+    </div>
+    <input id="projectFile" type="file" accept=".json,.pdf,application/json,application/pdf" hidden>
+  </div>
+
+  <nav class="mobile-tabs" aria-label="Arbetsvy"><button type="button" data-view="drawing" aria-selected="true"><svg><use href="#i-plan"/></svg>Ritning</button><button type="button" data-view="card" aria-selected="false"><svg><use href="#i-card"/></svg>Dörrkort</button><button type="button" data-view="library" aria-selected="false"><svg><use href="#i-stamp"/></svg>Stämplar</button></nav>
+
+  <main class="workspace">
+    <aside id="libraryPane" class="pane library-pane" data-pane="library" aria-labelledby="stampHeading">
+      <div class="pane-heading"><div><p class="eyebrow">Beteckningar</p><h1 id="stampHeading">Stämplar</h1></div><span class="small-chip">GS 1–100</span></div>
+      <label class="search-field"><svg aria-hidden="true"><use href="#i-search"/></svg><input id="stampSearch" type="search" placeholder="Sök GS, WC, DA, DS…" aria-label="Sök stämpel" autocomplete="off"></label>
+      <p class="pane-hint">Välj en beteckning till dörren.</p>
+      <div id="stampList" class="stamp-list" aria-label="Sökbara stämplar"></div>
+      <div class="custom-stamp">
+        <h2>Egen stämpel</h2>
+        <label for="customCode">Beteckning</label><input id="customCode" type="text" maxlength="24" placeholder="T.ex. DADS12" autocomplete="off" autocapitalize="characters">
+        <div class="custom-stamp-controls"><label for="stampShape" class="sr-only">Form på ny stämpel</label><select id="stampShape"><option value="oval">Gul oval</option><option value="square">Liten fyrkant</option></select><button id="createStamp" class="button" type="button"><svg><use href="#i-plus"/></svg>Skapa</button></div>
+      </div>
+    </aside>
+
+    <section id="drawingPane" class="pane drawing-pane" data-pane="drawing" aria-labelledby="drawingHeading">
+      <div class="drawing-heading"><div><p class="eyebrow">Plan 01 · Exempelritning</p><h2 id="drawingHeading">Välj en dörr på ritningen</h2></div><div class="drawing-key"><span class="key-dot"></span>Gemensamt dörrkort</div></div>
+      <div class="drawing-stage"><div id="drawingHost" class="drawing-host" tabindex="0" aria-label="Exempelritning med valbara dörrar"></div><div class="drawing-tools" aria-label="Ritningsstorlek"><button id="zoomOut" type="button" title="Zooma ut" aria-label="Zooma ut">−</button><button id="zoomFit" type="button" title="Anpassa ritningen">Anpassa</button><button id="zoomIn" type="button" title="Zooma in" aria-label="Zooma in">+</button></div></div>
+      <div class="door-dock">
+        <div class="door-dock-title"><span class="door-indicator" aria-hidden="true"><svg><use href="#i-plan"/></svg></span><div><p class="eyebrow">Vald dörr</p><strong id="selectedDoorName">D001</strong><output id="drawingTitle" class="muted">Välj beteckning och placera</output></div></div>
+        <div class="door-fields"><label for="doorSelect">Dörr<select id="doorSelect" aria-label="Välj dörr"></select></label><label for="doorCode">Stämpel<input id="doorCode" type="text" list="stampCodes" maxlength="24" autocomplete="off" autocapitalize="characters" placeholder="GS1"><datalist id="stampCodes"></datalist></label><button id="applyStamp" class="button primary" type="button"><svg><use href="#i-stamp"/></svg>Placera</button></div>
+        <div class="dock-foot"><span>Vald stämpel: <output id="selectedStamp">GS1</output></span><button id="removeStamp" class="text-button" type="button">Ta bort från dörren</button></div>
+      </div>
+    </section>
+
+    <aside id="cardPane" class="pane card-pane" data-pane="card" aria-labelledby="cardHeading">
+      <div class="card-heading"><div><p class="eyebrow" id="cardHeading">Gemensamt dörrkort</p><h2 id="cardCode">GS1</h2></div><label class="card-shape-label" for="cardShape">Stämpelform<select id="cardShape"><option value="oval">Gul oval</option><option value="square">Liten fyrkant</option></select></label></div>
+      <div class="shared-notice"><svg aria-hidden="true"><use href="#i-card"/></svg><output id="cardUsage">Samma beteckning delar ett dörrkort.</output></div>
+      <div class="card-scroll"><div id="cardRows" class="card-rows"></div><div class="card-note"><label for="cardNote">Anteckning</label><textarea id="cardNote" rows="2" maxlength="2000" placeholder="Gemensam information för denna dörrtyp"></textarea></div><p class="product-disclaimer">Exempelprodukter. Kontrollera alltid projekterat val.</p></div>
+      <div class="card-save"><output id="cardStatus" aria-live="polite">Spara när kortet är klart.</output><button id="saveCard" class="button primary" type="button"><svg><use href="#i-check"/></svg>Spara dörrkort</button></div>
+    </aside>
+  </main>
+
+  <p class="local-save-note">Sparas på den här enheten. Spara projekt för en flyttbar kopia.</p>
+  <div id="appMessage" class="app-message" role="status" aria-live="polite"></div>
+
+  <dialog id="productDialog" class="product-dialog" aria-labelledby="productTitle"><div class="dialog-heading"><div><p class="eyebrow">Produktbibliotek</p><h2 id="productTitle">Välj produkt</h2></div><button id="closeProduct" type="button" class="icon-button" aria-label="Stäng produktval"><svg><use href="#i-close"/></svg></button></div><label class="search-field"><svg aria-hidden="true"><use href="#i-search"/></svg><input id="productSearch" type="search" placeholder="Sök modell eller benämning" aria-label="Sök produkt" autocomplete="off"></label><div id="productList" class="product-list"></div><div class="custom-product"><h3>Lägg till egen produkt</h3><label for="customProductName">Modell eller benämning</label><input id="customProductName" type="text" maxlength="160" placeholder="Produktens namn"><label for="customProductCategory">Produkttyp</label><select id="customProductCategory"></select><button id="addProduct" type="button" class="button"><svg><use href="#i-plus"/></svg>Lägg till produkt</button></div><p class="dialog-footnote">Biblioteket innehåller exempel, inte kontrollerade kombinationer.</p></dialog>
+
+  <dialog id="helpDialog" class="help-dialog" aria-labelledby="helpTitle"><div class="dialog-heading"><div><p class="eyebrow">Från ritning till avläsning</p><h2 id="helpTitle">Så har vi tänkt</h2></div><form method="dialog"><button type="submit" class="icon-button" aria-label="Stäng guiden"><svg><use href="#i-close"/></svg></button></form></div><p class="help-intro">En dörrtyp får ett dörrkort. Alla dörrar med samma stämpel använder det kortet.</p><ol class="guide-steps"><li><span>1</span><div><h3>Välj dörr och stämpel</h3><p>Prova den färdiga ritningen med 50 dörrar. Sök GS1–GS100 eller välj exempelvis WC, HWC, DBL, DA, DS eller DADS. Du kan skapa egna beteckningar och välja oval eller fyrkant.</p></div></li><li><span>2</span><div><h3>Fyll i dörrkortet en gång</h3><p>Välj produkter vid rätt punkt: daglåsning, nattlåsning, dörrstängning och larm/passer. Ange antal samt vem som levererar och monterar.</p></div></li><li><span>3</span><div><h3>Spara det gemensamma kortet</h3><p>Tryck Spara dörrkort. Ändringen gäller alla dörrar med samma beteckning. GS1 och GS10 är alltid två olika kort.</p></div></li><li><span>4</span><div><h3>Spara projektet</h3><p>Spara projekt hämtar en redigerbar projektfil. Ritning + dörrkort skapar en PDF med ritningen och aktuella dörrkort. Demo-PDF:en kan också öppnas här igen.</p></div></li><li><span>5</span><div><h3>Kontrollera i avläsaren</h3><p>Öppna PDF:en i Avläsning. Läs först dörrkortens beteckningar och matcha dem mot ritningen. Granska träffarna innan du godkänner.</p></div></li></ol><div class="help-standard"><h3>En ritning som går att läsa</h3><p>Identisk beteckning på stämpel och dörrkort. Riktig, sökbar text. Radera gamla märkningar i stället för att täcka över dem. Håll stämplarna åtskilda.</p></div><p class="dialog-footnote">Detta är en projekteringsdemo. Exempelprodukter ska kontrolleras före verklig projektering.</p><form method="dialog" class="dialog-actions"><button class="button primary" type="submit">Börja projektera<svg><use href="#i-arrow"/></svg></button></form></dialog>
+
+  <dialog id="confirmDialog" class="confirm-dialog" aria-labelledby="confirmTitle"><h2 id="confirmTitle">Fortsätta?</h2><p id="confirmText"></p><div class="dialog-actions"><button id="confirmCancel" class="button" type="button">Avbryt</button><button id="confirmDiscard" class="button" type="button" hidden>Lämna utan att spara</button><button id="confirmAccept" class="button primary" type="button">Fortsätt</button></div></dialog>
+  <noscript><p class="noscript">Aktivera JavaScript för att använda projekteringsdemon.</p></noscript>
+</body>
+</html>
