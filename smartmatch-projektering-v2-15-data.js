@@ -1350,7 +1350,7 @@
     return match?{type:match[1],number:match[2]||''}:null;
   }
   function defaultStencil(value){
-    const code=normalizeCode(value),restroom=restroomSymbol(code),specialSymbol=/^DBL(?::?[1-9][0-9]*)?$/.test(code),symbol=['DA','DS','DFS','DADS'].includes(code)||!!restroom||specialSymbol;
+    const code=normalizeCode(value),restroom=restroomSymbol(code),specialSymbol=/^DBL(?::?[1-9][0-9]*)?$/.test(code),symbol=['DA','DS','DFS','DADS'].includes(code);
     const productType=code==='DA'?'doorAutomation':code==='DS'?'doorCloser':code==='DFS'?'other':'none';
     const restroomMark=!!restroom||specialSymbol;
     const stencil={id:code,name:code==='DA'?'Dörrautomatik':code==='DS'?'Dörrstängare':code,code,kind:symbol?'symbol':'card',productType,shape:restroomMark?'oval':symbol?'square':'oval',fill:restroomMark?'#ffdb5c':symbol?(code==='DS'?'#f3b65d':'#db756c'):'#ffdb5c',stroke:restroomMark?'#97792c':symbol?'#815044':'#97792c',textColor:'#26323b',width:restroomMark?68:symbol?(code==='DADS'?38:28):Math.max(48,code.length*7+16),height:restroomMark?34:28,fontSize:11};
@@ -1362,7 +1362,7 @@
   }
   function normalizedStencil(input){
     if(!isObject(input))throw Error('Stencilen saknas.');
-    const code=normalizeCode(input.code),base=defaultStencil(code),forcedSymbol=!!restroomSymbol(code)||/^DBL(?::?[1-9][0-9]*)?$/.test(code),stencil={...base,...input,...(forcedSymbol?{kind:'symbol',productType:'none',category:'Övrigt'}:{})};
+    const code=normalizeCode(input.code),base=defaultStencil(code),stencil={...base,...input};
     if(!['card','symbol'].includes(stencil.kind))throw Error('Välj dörrkort eller symbol som stenciltyp.');
     const productType=Object.hasOwn(input,'productType')?input.productType:stencil.kind==='symbol'?base.productType:'none';
     if(!PRODUCT_TYPES.includes(productType))throw Error('Välj dörrautomatik, dörrstängare, övrig produkt eller ingen separat produkt.');
