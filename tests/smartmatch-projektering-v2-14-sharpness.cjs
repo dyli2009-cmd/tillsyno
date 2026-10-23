@@ -53,7 +53,7 @@ function harness(density = 2, width = 820, height = 620, options = {}) {
   document.createElement = tag => new Element(tag); document.createElementNS = (_, tag) => new Element(tag);
   document.getElementById = id => walk(document.head).find(n => n.id === id);
   const host = new Element(); host.style.width = width+'px'; host.style.height = height+'px';
-  const window = new EventTarget(); window.devicePixelRatio = density; window.navigator = {}; window.getSelection = () => null;
+  const window = new EventTarget(); window.Proj2Annotations=require('../smartmatch-projektering-v2-18-annotations.js'); window.devicePixelRatio = density; window.navigator = {}; window.getSelection = () => null;
   if(options.nativeTouch){window.TouchEvent=function(){};window.navigator.maxTouchPoints=5;}
   const errors = [], calls = [];
   window.pdfjsLib = {GlobalWorkerOptions:{}, getDocument(args) {
@@ -156,6 +156,6 @@ if(require.main===module)(async () => {
 
   const phone = harness(3,390,600);
   try { await phone.viewer.open(bytes); phone.viewer.zoomTo(16); await idle(phone); assertBudget(phone); const detail=phone.get('p2-canvas-detail'); assert(detail.width/detail.getBoundingClientRect().width>2.99,'phone keeps 3x screen density'); phone.viewer.zoomTo(8); phone.viewer.destroy(); await pause(150); assert.equal(phone.host.children.length,0,'destroy cancels queued work'); assert.equal(detail.width,1); } finally { phone.viewer.destroy(); }
-  for(const name of ['smartmatch-projektering.html','smartmatch-projektering-v2-14.html','smartmatch-projektering-v2-15.html']) assert(fs.readFileSync(path.join(root,name),'utf8').includes('smartmatch-projektering-v2-14-canvas.js?v=2.17'),name+' uses the fixed renderer');
+  for(const name of ['smartmatch-projektering.html','smartmatch-projektering-v2-14.html','smartmatch-projektering-v2-15.html']) assert(fs.readFileSync(path.join(root,name),'utf8').includes('smartmatch-projektering-v2-14-canvas.js?v=2.18'),name+' uses the fixed renderer');
   console.log('PASS: real PDF raster pixels at 1600%, Retina/phone density, pan, rotated CropBox, stale page/zoom races, memory bounds, cleanup, original bytes and stamp coordinates.');
 })().catch(error => { console.error(error); process.exitCode=1; });

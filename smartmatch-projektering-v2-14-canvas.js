@@ -36,6 +36,8 @@
     sheet.append(bitmap, overlay,findLayer,textLayer); stage.append(sheet); scroller.append(stage); host.replaceChildren(scroller, status);
     const abort = new AbortController(), touches = new Map();
     let pdf = null, metadata = [], state = null, pageNumber = 1, zoomValue = 1, autoFit = true;
+    let annotationId=null,annotationPreview=null;
+    const A=root.Proj2Annotations;
     let selected = [], tool = 'select', stencilId = null, shown = true, destroyed = false;
     let renderTask = null, renderToken = 0, openToken = 0, rendering = false, renderTimer;
     let bitmapScale = 0, bitmapPage = 0, bitmapSource = null, detail = null, detailInfo = null;
@@ -249,9 +251,19 @@
         const lock = item.locked ? `<g transform="translate(${width/2-3} ${-height/2-4})" fill="#46665e" stroke="#ffffff" stroke-width=".5" pointer-events="none"><rect x="-3" y="-1" width="6" height="5" rx="1"/><path d="M-2-1V-3a2 2 0 0 1 4 0v2" fill="none" stroke="#46665e" stroke-width="1.3"/></g>` : '';
         const activationHint = stencil.kind === 'card' ? (options.mouseClickOpens?'. Tryck två gånger på pekskärm, klicka med mus eller tryck Retur för att öppna dörrkort.':'. Tryck två gånger eller tryck Retur för att öppna dörrkort.') : '. Dra för att flytta symbolen.';
         return `<g class="stamp-item${isSelected ? ' is-selected' : ''}${linked ? ' is-linked' : ''}" data-placement-id="${escape(item.id)}" data-locked="${!!item.locked}" tabindex="0" role="button" aria-label="${escape(item.code)}${item.locked ? ', låst' : ''}${activationHint}" aria-pressed="${isSelected}" transform="translate(${item.x*meta.width} ${item.y*meta.height}) rotate(${item.rotation||0})"><title>${escape(item.code)}${item.note ? ' · '+escape(item.note) : ''}</title>${shape}${glyph}${outline('p2-stamp-selection',2/zoomValue,`style="display:${isSelected?'block':'none'}"`)}${linked ? outline('p2-stamp-linked',2/zoomValue) : ''}${lock}${handles}</g>`;
-      }).join('');
+      }).join('')+annotationMarkup();
+    }
+    function annotationMarkup(){const meta=currentMeta();return A&&meta?(state?.annotations||[]).filter(item=>item.page===pageNumber).map(original=>A.svg(annotationPreview?.id===original.id?annotationPreview:original,meta,original.id===annotationId,zoomValue)).join(''):'';}
+    function findAnnotation(id){return state?.annotations?.find(item=>item.id===id);}
+    function selectAnnotation(id,notify=true){annotationId=id&&findAnnotation(id)?id:null;if(annotationId){selected=[];if(notify){tool='select';scroller.dataset.tool=tool;}}drawOverlay();if(notify)safeCallback('onAnnotationSelect',annotationId);}
+    // Preserve the touched SVG nodes while their geometry changes on iOS.
+    function patchAnnotations(){
+      if(!A)return;const temp=document.createElementNS(SVG,'g');temp.innerHTML=annotationMarkup();
+      function sync(to,from){for(const attr of [...to.attributes])if(!from.hasAttribute(attr.name))to.removeAttribute(attr.name);for(const attr of [...from.attributes])to.setAttribute(attr.name,attr.value);for(let i=0;i<from.childNodes.length;i++){const a=to.childNodes[i],b=from.childNodes[i];if(!a)to.appendChild(b.cloneNode(true));else if(a.nodeType!==b.nodeType||a.nodeName!==b.nodeName)to.replaceChild(b.cloneNode(true),a);else if(b.nodeType===3)a.nodeValue=b.nodeValue;else sync(a,b);}while(to.childNodes.length>from.childNodes.length)to.lastChild.remove();}
+      for(const fresh of temp.children){const old=[...overlay.querySelectorAll('.p2-annotation')].find(node=>node.dataset.annotationId===fresh.dataset.annotationId);if(old)sync(old,fresh);else overlay.appendChild(fresh.cloneNode(true));}
     }
     function patchOverlay() {
+      patchAnnotations();
       const meta=currentMeta();if(!meta)return;
       overlay.style.visibility=shown?'visible':'hidden';
       for(const node of overlay.querySelectorAll('.stamp-item')){
@@ -279,7 +291,7 @@
     }
     function flushOverlay(){if(!touches.size&&overlayPending)drawOverlay();}
     function resetInteraction() {
-      interaction = null; pinch = null; sizePreview = null; lastTap = null; scroller.dataset.panning = 'false'; drawOverlay();
+      interaction = null; pinch = null; sizePreview = null; annotationPreview=null; lastTap = null; scroller.dataset.panning = 'false'; drawOverlay();
     }
     function capture(event) { if(event.__nativeTouch)return;try { scroller.setPointerCapture(event.pointerId); } catch (_) {} }
     function release(event) { if(event.__nativeTouch)return;try { scroller.releasePointerCapture(event.pointerId); } catch (_) {} }
@@ -339,7 +351,7 @@
         touches.set(event.pointerId, {x:event.clientX,y:event.clientY});
         if (touches.size >= 2) {
           const [a,b] = [...touches.values()], middle = {clientX:(a.x+b.x)/2,clientY:(a.y+b.y)/2};
-          interaction = null; sizePreview = null; lastTap = null; drawOverlay(); pinch = {distance:Math.hypot(b.x-a.x,b.y-a.y), zoom:zoomValue, anchor:point(middle.clientX,middle.clientY)};
+          interaction = null; sizePreview = null; annotationPreview=null; lastTap = null; drawOverlay(); pinch = {distance:Math.hypot(b.x-a.x,b.y-a.y), zoom:zoomValue, anchor:point(middle.clientX,middle.clientY)};
           scroller.dataset.panning = 'true'; return;
         }
       }
@@ -353,6 +365,16 @@
         lastTap = null;
         interaction = {...common,kind:'pan'}; scroller.dataset.panning = 'true'; return;
       }
+      if(tool==='text'||tool==='arrow'){
+        lastTap=null;interaction={...common,kind:'background',annotationAction:start.x>=0&&start.x<=1&&start.y>=0&&start.y<=1?tool:null};return;
+      }
+      const annotationNode=hitTarget?.closest('[data-annotation-id]'),annotation=annotationNode&&findAnnotation(annotationNode.dataset.annotationId);
+      if(annotation){
+        lastTap=null;selectAnnotation(annotation.id);
+        const arrowNode=hitTarget?.closest('[data-annotation-arrow]'),resizeNode=hitTarget?.closest('[data-annotation-resize]');
+        interaction={...common,kind:arrowNode?'annotationArrow':resizeNode?'annotationResize':'annotationMove',annotation:JSON.parse(JSON.stringify(annotation)),arrowId:arrowNode?.dataset.annotationArrow,corner:resizeNode?.dataset.annotationResize};return;
+      }
+      if(annotationId)selectAnnotation(null);
       if (placement) {
         const handle = hitTarget?.closest('[data-resize-handle]');
         if (handle && !placement.locked && tool !== 'erase') {
@@ -407,6 +429,13 @@
       if (interaction.kind === 'background') { scroller.dataset.panning='true';scroller.scrollLeft=interaction.scrollLeft-dx;scroller.scrollTop=interaction.scrollTop-dy;return; }
       if (interaction.kind === 'resize') { resizePreview(interaction,dx,dy); return; }
       const at=point(event.clientX,event.clientY,true);
+      if(interaction.kind.startsWith('annotation')){
+        const item=interaction.annotation,meta=currentMeta();let patch;
+        if(interaction.kind==='annotationMove')patch={x:clamp(item.x+(event.clientX-interaction.clientX)/zoomValue/meta.width,0,1),y:clamp(item.y+(event.clientY-interaction.clientY)/zoomValue/meta.height,0,1)};
+        else if(interaction.kind==='annotationArrow')patch={arrows:item.arrows.map(arrow=>arrow.id===interaction.arrowId?{...arrow,x:at.x,y:at.y}:arrow)};
+        else{const b=A.box(item,meta),east=interaction.corner.includes('e'),south=interaction.corner.includes('s'),fixedX=east?b.x:b.x+b.width,fixedY=south?b.y:b.y+b.height,width=clamp(east?at.x*meta.width-fixedX:fixedX-at.x*meta.width,48,Math.max(48,east?meta.width-fixedX:fixedX)),height=clamp(south?at.y*meta.height-fixedY:fixedY-at.y*meta.height,24,Math.max(24,south?meta.height-fixedY:fixedY));patch={width,height,x:clamp((fixedX+(east?1:-1)*width/2)/meta.width,0,1),y:clamp((fixedY+(south?1:-1)*height/2)/meta.height,0,1)};}
+        try{annotationPreview=A.update(item,patch,metadata);}catch(_){return;}drawOverlay();return;
+      }
       if (interaction.kind === 'move') interaction.updates=movePreview(interaction.items,at.x-interaction.start.x,at.y-interaction.start.y);
       if (interaction.kind === 'marquee') {
         const meta=currentMeta(),x=Math.min(at.x,interaction.start.x),y=Math.min(at.y,interaction.start.y),w=Math.abs(at.x-interaction.start.x),h=Math.abs(at.y-interaction.start.y);
@@ -423,10 +452,13 @@
       // The completed gesture is already detached from mutable interaction.
       release(event);
       const at=point(event.clientX,event.clientY);
+      if(done.kind.startsWith('annotation')){const changed=annotationPreview;annotationPreview=null;if(done.moved&&changed)safeCallback('onAnnotationChange',{id:changed.id,item:changed});drawOverlay();return;}
       if (done.kind==='move'&&done.moved&&done.updates?.length){drawOverlay();safeCallback('onMove',done.updates);}
       else if(done.kind==='resize'&&done.moved&&finite(done.width)&&finite(done.height)){drawOverlay();safeCallback('onResize',{id:done.placement.id,width:done.width,height:done.height,scope:done.scope});}
       else if(done.kind==='background'&&!done.moved&&performance.now()>suppressClickUntil){
-        if(done.place&&stencilId&&at.x>=0&&at.x<=1&&at.y>=0&&at.y<=1)safeCallback('onPlace',{page:pageNumber,stencilId,x:at.x,y:at.y});
+        if(done.annotationAction==='text')safeCallback('onAnnotationCreate',{page:pageNumber,x:clamp(at.x,0,1),y:clamp(at.y,0,1)});
+        else if(done.annotationAction==='arrow'&&annotationId)safeCallback('onAnnotationArrow',{id:annotationId,x:clamp(at.x,0,1),y:clamp(at.y,0,1)});
+        else if(done.place&&stencilId&&at.x>=0&&at.x<=1&&at.y>=0&&at.y<=1)safeCallback('onPlace',{page:pageNumber,stencilId,x:at.x,y:at.y});
         else if(tool==='select')select([]);
       }
       else if(done.kind==='erase'&&!done.moved)notifyErase(done.ids);
@@ -515,6 +547,15 @@
       if(textSelection&&!['Escape',' '].includes(event.key))return;
       if(event.code==='Space'){space=true;event.preventDefault();scroller.dataset.panning='true';}
       if(event.key==='Escape')cancelGesture();
+      const annotationNode=event.target.closest('[data-annotation-id]');
+      if(annotationNode&&A){
+        const item=findAnnotation(annotationNode.dataset.annotationId),targetArrow=event.target.closest('[data-annotation-arrow]')?.dataset.annotationArrow;
+        if(item&&targetArrow&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Delete','Backspace'].includes(event.key)){
+          event.preventDefault();event.stopPropagation();const meta=currentMeta(),step=event.shiftKey?10:1,dx=(event.key==='ArrowRight'?step:event.key==='ArrowLeft'?-step:0)/meta.width,dy=(event.key==='ArrowDown'?step:event.key==='ArrowUp'?-step:0)/meta.height;
+          const arrows=['Delete','Backspace'].includes(event.key)?item.arrows.filter(a=>a.id!==targetArrow):item.arrows.map(a=>a.id===targetArrow?{...a,x:clamp(a.x+dx,0,1),y:clamp(a.y+dy,0,1)}:a);safeCallback('onAnnotationChange',{id:item.id,item:A.update(item,{arrows},metadata)});return;
+        }
+        if(item&&event.key==='Enter'){event.preventDefault();selectAnnotation(item.id);return;}
+      }
       const target=event.target.closest('[data-placement-id]');
       const handle=event.target.closest('[data-resize-handle]');
       if(handle&&target&&['ArrowUp','ArrowRight','ArrowDown','ArrowLeft'].includes(event.key)){
@@ -551,7 +592,7 @@
       if(destroyed)throw Error('Ritningsytan är stängd.');
       searchNavigation++;
       const token=++openToken,input=bytes instanceof Uint8Array?bytes:new Uint8Array(bytes||0);
-      if(!input.byteLength){cancelRender();clearRaster();cancelText();cancelGesture();const previous=pdf;pdf=null;metadata=[];state=null;selected=[];searchMatch=null;textContents.clear();textLayer.replaceChildren();findLayer.replaceChildren();reportSelection();sheet.hidden=true;overlay.innerHTML='';stage.style.width='100%';stage.style.height='100%';say('Öppna en PDF-ritning för att börja.');if(previous)void previous.destroy();emitView();return{pages:[]};}
+      if(!input.byteLength){cancelRender();clearRaster();cancelText();cancelGesture();const previous=pdf;pdf=null;metadata=[];state=null;selected=[];annotationId=null;searchMatch=null;textContents.clear();textLayer.replaceChildren();findLayer.replaceChildren();reportSelection();sheet.hidden=true;overlay.innerHTML='';stage.style.width='100%';stage.style.height='100%';say('Öppna en PDF-ritning för att börja.');if(previous)void previous.destroy();emitView();return{pages:[]};}
       if(input.byteLength>50*1024*1024)throw Error('Ritningen får vara högst 50 MB.');
       const engine=root.pdfjsLib;if(!engine)throw Error('PDF-visningen kunde inte laddas. Öppna sidan igen.');
       engine.GlobalWorkerOptions.workerSrc=new URL('vendor/pdf.worker.min.js',document.baseURI).href;
@@ -567,7 +608,7 @@
           pages.push({width:viewport.width,height:viewport.height,rotation:page.rotate,view:[...page.view],transform:[...viewport.transform]});
           if(token!==openToken||destroyed)throw Error('PDF-öppningen avbröts.');
         }
-        cancelRender();cancelText();cancelGesture();const previous=pdf;pdf=candidate;candidate=null;metadata=pages;state=null;selected=[];searchMatch=null;textContents.clear();textLayer.replaceChildren();reportSelection();pageNumber=1;zoomValue=1;autoFit=true;lastSize=null;sheet.hidden=false;
+        cancelRender();cancelText();cancelGesture();const previous=pdf;pdf=candidate;candidate=null;metadata=pages;state=null;selected=[];annotationId=null;searchMatch=null;textContents.clear();textLayer.replaceChildren();reportSelection();pageNumber=1;zoomValue=1;autoFit=true;lastSize=null;sheet.hidden=false;
         clearRaster();drawOverlay();fit();await render();
         if(previous)void previous.destroy();
         if(token!==openToken||destroyed)throw Error('PDF-öppningen avbröts.');
@@ -585,7 +626,7 @@
       if(!settings.searchMatch)searchNavigation++;
       const next=Math.trunc(Number(number));if(!Number.isFinite(next)||next<1||next>metadata.length)throw Error('Välj ett sidnummer mellan 1 och '+metadata.length+'.');
       if(next===pageNumber){if(rendering)await render();return;}
-      cancelRender();clearRaster();cancelGesture();pageNumber=next;drawOverlay();say('Visar sida '+next+' …');
+      cancelRender();clearRaster();cancelGesture();annotationId=null;safeCallback('onAnnotationSelect',null);pageNumber=next;drawOverlay();say('Visar sida '+next+' …');
       if(autoFit)fit();else{layout();queueText();}safeCallback('onChangePage',next);emitView();await render();
     }
     async function focusPlacement(id) {
@@ -613,9 +654,10 @@
     }
     return Object.freeze({
       open,
-      setProject(next,settings={}){state=next;if(settings.selectedIds)selected=[...settings.selectedIds];selected=selected.filter(id=>!!findPlacement(id));drawOverlay();},
+      setProject(next,settings={}){state=next;if(annotationId&&!findAnnotation(annotationId))annotationId=null;if(settings.selectedIds)selected=[...settings.selectedIds];selected=selected.filter(id=>!!findPlacement(id));drawOverlay();},
       setSelection(ids){select(ids||[],false);},
-      setTool(value){if(!['select','pan','place','erase'].includes(value))throw Error('Välj ett giltigt ritningsverktyg.');cancelGesture();suppressClickUntil=0;tool=value;scroller.dataset.tool=value;},
+      setAnnotationSelection(id){selectAnnotation(id,false);},
+      setTool(value){if(!['select','pan','place','erase','text','arrow'].includes(value))throw Error('Välj ett giltigt ritningsverktyg.');cancelGesture();suppressClickUntil=0;tool=value;scroller.dataset.tool=value;},
       cancelInteraction(){cancelGesture();},
       cancelGesture(){cancelGesture();},
       setStencil(id){if(id!==stencilId)suppressClickUntil=0;stencilId=id;},
@@ -630,7 +672,7 @@
       getSearchDocument(){return pdf;},
       showSearchMatch,
       clearSearchMatch(){searchNavigation++;searchMatch=null;drawSearchMatch();},
-      snapshot(){return{page:metadata.length?pageNumber:0,total:metadata.length,zoom:zoomValue,tool,stencilId,selectedIds:[...selected],rendering,shown,textSelection,searchMatch:searchMatch?{page:searchMatch.page,rects:searchMatch.rects.map(rect=>({...rect}))}:null,board:{left:boardLeft,top:boardTop,width:currentMeta()?.width*zoomValue||0,height:currentMeta()?.height*zoomValue||0},scroll:{left:scroller.scrollLeft,top:scroller.scrollTop}};},
+      snapshot(){return{annotationId,annotationPreview:annotationPreview?JSON.parse(JSON.stringify(annotationPreview)):null,page:metadata.length?pageNumber:0,total:metadata.length,zoom:zoomValue,tool,stencilId,selectedIds:[...selected],rendering,shown,textSelection,searchMatch:searchMatch?{page:searchMatch.page,rects:searchMatch.rects.map(rect=>({...rect}))}:null,board:{left:boardLeft,top:boardTop,width:currentMeta()?.width*zoomValue||0,height:currentMeta()?.height*zoomValue||0},scroll:{left:scroller.scrollLeft,top:scroller.scrollTop}};},
       destroy(){destroyed=true;openToken++;searchNavigation++;cancelRender();clearRaster();cancelText();cancelAnimationFrame(resizeFrame);abort.abort();observer.disconnect();touches.clear();nativeTouchIds.clear();textContents.clear();if(pdf)void pdf.destroy();pdf=null;host.replaceChildren();}
     });
   }
