@@ -12,6 +12,7 @@
   let currentStencil = 'GS1', currentPage = 1, currentTool = 'select', busy = false, started = false, storageOk = true, damagedStore = false;
   let undoStack = [], redoStack = [], clipboard = [], productRow = null, editingStencil = null, messageTimer;
   let confirmResolve = null, textResolve = null, contextPoint = null, contextReturnFocus = null, suppressCardClickUntil = 0;
+  let selectedAnnotation=null;
   let currentCategory = 'cards', currentCardGroup = 'GS', materialReport = null;
   let materialCacheKey = '', operationSettled = Promise.resolve(), canvasQueue = Promise.resolve();
   let materialTimeQueue = Promise.resolve(), materialTimePending = 0, materialStructureKey = '';
@@ -104,8 +105,9 @@
   }
   function resolveText(accept) { const value=accept?$('textValue').value:null; $('textDialog').close(); const resolve=textResolve; textResolve=null; resolve?.(value); }
   function status() {
-    $('saveStatus').textContent=busy?'Arbetar …':dirty?'Dörrkortet har osparade ändringar':storageOk?'Sparat på enheten':'Lokal sparning är inte tillgänglig';
-    $('saveStatus').dataset.state=dirty?'pending':storageOk?'saved':'error';
+    const annotationDirty=!!annotationItem()&&$('annotationText').dataset.annotationId===selectedAnnotation&&$('annotationText').value!==annotationItem().text;
+    $('saveStatus').textContent=busy?'Arbetar …':annotationDirty?'Texten sparas när du lämnar fältet':dirty?'Dörrkortet har osparade ändringar':storageOk?'Sparat på enheten':'Lokal sparning är inte tillgänglig';
+    $('saveStatus').dataset.state=dirty||annotationDirty?'pending':storageOk?'saved':'error';
     const counts=D.placementCounts(state);
     $('placementCount').textContent=counts.markings;$('cardCount').textContent=counts.cards;
     $('automationCount').textContent=counts.doorAutomation;$('closerCount').textContent=counts.doorCloser;
@@ -113,7 +115,7 @@
     $('cardStatus').textContent=!draft?'Välj eller skapa ett dörrkort':dirty?'Osparade ändringar':state.cards[activeCode]?'Sparat dörrkort':'Nytt dörrkort';
     $('saveCard').disabled=busy||!draft||(!dirty&&!!state.cards[activeCode]);
     $('undo').disabled=busy||!undoStack.length; $('redo').disabled=busy||!redoStack.length;
-    for (const id of ['deleteSelection','duplicateSelection','lockSelection','rotateLeft','rotateRight']) $(id).disabled=busy||!selected.length;
+    for (const id of ['deleteSelection','duplicateSelection','lockSelection','rotateLeft','rotateRight']) $(id).disabled=busy||(!selected.length&&!(selectedAnnotation&&['deleteSelection','duplicateSelection'].includes(id)));
     $('selectAllTool').disabled=busy||!state.placements.some(p=>p.page===currentPage);
     $('applySelection').disabled=busy||!selectedPlacements().length;
     $('editEquipment').hidden=true;$('editEquipment').disabled=true;
@@ -155,6 +157,7 @@
     if(text)message(text); renderAll(); return true;
   }
   function setActive(code) {
+    if(code&&selectedAnnotation){selectedAnnotation=null;viewer?.setAnnotationSelection(null);}
     // A card chosen outside the drawing must not leave another card's stamp selected.
     if(selectedPlacements().some(p=>(state.stencils[p.stencilId]?.kind==='card'?p.code:null)!==code)){selected=[];viewer?.setSelection([]);}
     activeCode=code&&state.cards[code]?code:null; draft=activeCode?clone(state.cards[activeCode]):null; dirty=false;
@@ -183,6 +186,7 @@
   }
   async function selectIds(ids,{showCard=false}={}) {
     const valid=ids.filter(id=>state.placements.some(p=>p.id===id));
+    if(valid.length){selectedAnnotation=null;viewer?.setAnnotationSelection(null);renderAnnotationPanel();}
     const first=state.placements.find(p=>p.id===valid[0]), code=first&&state.stencils[first.stencilId]?.kind==='card'?first.code:null;
     if(code!==activeCode){if(!await leaveDraft()){viewer.setSelection(selected);return false;}setActive(code);}
     selected=valid;
@@ -195,14 +199,14 @@
     const stencil=state.stencils[id]; if(!stencil)throw Error('Stencilen finns inte.');
     const code=stencil.kind==='card'&&state.cards[stencil.code]?stencil.code:null;
     if(code!==activeCode){if(!await leaveDraft())return;setActive(code);}
-    currentStencil=id;revealStencil(stencil);viewer.setStencil(id); setTool('place'); renderAll();
+    selectedAnnotation=null;viewer.setAnnotationSelection(null);currentStencil=id;revealStencil(stencil);viewer.setStencil(id); setTool('place'); renderAll();
     if(matchMedia('(max-width:1100px)').matches)showView('drawing');
   }
-  function setTool(tool) {
+  function setTool(tool,{keepGesture=false}={}) {
     if(pdfSearchState.textSelection)setPDFTextSelection(false);
-    currentTool=tool; viewer.setTool(tool); viewer.setStencil(currentStencil);
+    currentTool=tool; if(!keepGesture)viewer.setTool(tool); viewer.setStencil(currentStencil);
     const names={select:'Dra en stämpel för att flytta. Dra tom yta för att panorera. Tryck två gånger för dörrkort på pekskärm, klicka en gång med mus.',pan:'Dra för att flytta ritningen. Mushjul eller två fingrar zoomar.',place:'Tryck för att placera. Dra en stämpel för att flytta, eller tom yta för att panorera.',erase:'Tryck på en olåst stämpel för att ta bort. Dra tom yta för att panorera.'};
-    $('toolHint').textContent=names[tool];
+    $('toolHint').textContent=names[tool]||'';renderAnnotationPanel();
     for(const [id,value]of [['toolSelect','select'],['toolPan','pan'],['toolPlace','place'],['toolErase','erase']]){$(id).classList.toggle('is-active',tool===value);$(id).setAttribute('aria-pressed',String(tool===value));}
   }
   function snap(point,page) {
@@ -238,6 +242,7 @@
     if(stencil?.kind==='card')openCardView({focus:true});
   }
   async function removePositions(ids=selected) {
+    if(selectedAnnotation)return removeAnnotation();
     if(!ids.length)return;
     await commit(next=>D.removePlacements(next,ids),'Stämpeln är borttagen. Du kan ångra ändringen.');selected=selected.filter(id=>!ids.includes(id));renderAll();
   }
@@ -377,7 +382,7 @@
       const request={ids:[...ids],result:null};selectionRequest=request;
       request.result=runCanvas(()=>selectIds(ids));
       void request.result.finally(()=>{if(selectionRequest===request)selectionRequest=null;});
-    },onPlace:input=>void runCanvas(()=>place(input)),onMove:updates=>void afterSelection(updates.map(item=>item.id),()=>move(updates)),onResize:input=>void afterSelection([input.id],()=>resize(input)),onActivate:input=>void afterSelection([input.id],()=>activate(input)),onContext:input=>void runCanvas(()=>openContext(input)),onErase:ids=>void runCanvas(()=>removePositions(ids)),onChangePage:page=>{closeContext();currentPage=page;selected=[];renderSelection();renderPositions();status();},onView:view=>{
+    },onAnnotationSelect:id=>void runCanvas(()=>selectAnnotation(id)),onAnnotationCreate:point=>void runCanvas(()=>createAnnotation(point)),onAnnotationChange:({id,item})=>void runCanvas(()=>changeAnnotation(id,item)),onAnnotationArrow:point=>void runCanvas(()=>addAnnotationArrow(point)),onPlace:input=>void runCanvas(()=>place(input)),onMove:updates=>void afterSelection(updates.map(item=>item.id),()=>move(updates)),onResize:input=>void afterSelection([input.id],()=>resize(input)),onActivate:input=>void afterSelection([input.id],()=>activate(input)),onContext:input=>void runCanvas(()=>openContext(input)),onErase:ids=>void runCanvas(()=>removePositions(ids)),onChangePage:page=>{closeContext();currentPage=page;selected=[];renderSelection();renderPositions();status();},onView:view=>{
       currentPage=view.page||1;$('pageNumber').value=currentPage;$('pageTotal').textContent=view.total||0;$('zoomLevel').textContent=Math.round((view.zoom||1)*100)+'%';
       $('prevPage').disabled=currentPage<=1;$('nextPage').disabled=currentPage>=(view.total||0);
     }});setTool(currentTool);viewer.setProject(state,{selectedIds:selected});
@@ -426,6 +431,82 @@
       return `<tr data-row-id="${esc(row.id)}"><th scope="row">${esc(row.label)}</th><td class="product-cell"><div class="product-entry"><input class="product-input" data-product-input data-row-id="${esc(row.id)}" value="${esc(row.product)}" maxlength="160" autocomplete="off" aria-label="${esc(section.title+' '+row.label)} produkt" placeholder="Skriv produkt…"><button type="button" class="product-library" data-action="choose-product" data-row-id="${esc(row.id)}" aria-label="Välj från biblioteket för ${esc(row.label)}" title="Produktbibliotek"><svg aria-hidden="true"><use href="#i-search"/></svg></button><button type="button" class="clear-product" data-action="clear-product" data-row-id="${esc(row.id)}" aria-label="Ta bort ${esc(row.label)}"${row.product?'':' disabled'}>×</button></div></td><td><input data-row-id="${esc(row.id)}" data-field="quantity" type="number" min="1" max="999" step="1" value="${row.quantity}" aria-label="${esc(section.title+' '+row.label)} antal"></td><td>${owners('delivery')}</td><td>${owners('installer')}</td></tr>`;
     }).join('')}</tbody></table></div></details>`).join('');
   }
+  const annotationItem = () => state?.annotations?.find(item=>item.id===selectedAnnotation);
+  function renderAnnotationPanel(){
+    const item=annotationItem();if(!item)selectedAnnotation=null;
+    $('annotationPanel').hidden=!item;
+    $('annotationTool').disabled=!state.drawing.pages.length;
+    $('annotationTool').setAttribute('aria-pressed',String(currentTool==='text'));
+    $('annotationTool').classList.toggle('is-active',currentTool==='text');
+    $('annotationHint').hidden=!['text','arrow'].includes(currentTool);
+    $('annotationHint').textContent=currentTool==='arrow'?'Tryck på dörren som pilen ska peka på.':'Tryck på ritningen för att lägga till text.';
+    if(!item)return;
+    const fields={annotationText:'text',annotationFontSize:'fontSize',annotationTextColor:'textColor',annotationBold:'bold',annotationFill:'fill',annotationBorderColor:'borderColor',annotationBorderWidth:'borderWidth',annotationRadius:'radius',annotationWidth:'width',annotationHeight:'height',annotationArrowColor:'arrowColor',annotationArrowWidth:'arrowWidth'};
+    for(const [id,key]of Object.entries(fields)){const el=$(id);if(document.activeElement===el&&el.dataset.annotationId===item.id)continue;if(el.type==='checkbox')el.checked=item[key];else el.value=typeof item[key]==='number'?Math.round(item[key]*100)/100:item[key]??'#ffffff';el.dataset.annotationId=item.id;}
+    $('annotationTransparent').checked=item.fill===null;
+    $('annotationAddArrow').disabled=item.arrows.length>=20;
+    $('annotationArrows').innerHTML=item.arrows.map((arrow,i)=>`<button type="button" data-remove-arrow="${esc(arrow.id)}" aria-label="Ta bort pil ${i+1}">Pil ${i+1} ×</button>`).join('');
+  }
+  async function selectAnnotation(id){
+    if(id&& !await leaveDraft()){viewer.setAnnotationSelection(selectedAnnotation);return false;}
+    selectedAnnotation=id&&state.annotations.some(item=>item.id===id)?id:null;
+    if(selectedAnnotation){selected=[];setActive(null);setTool('select',{keepGesture:true});}
+    if(!selectedAnnotation&&currentTool==='arrow')setTool('select');
+    viewer.setAnnotationSelection(selectedAnnotation);renderAnnotationPanel();return true;
+  }
+  async function createAnnotation(point){
+    if(!await leaveDraft())return;
+    const item=D.Annotations.create(point.page,point.x,point.y,state.drawing.pages);
+    await commit(next=>{next.annotations.push(item);next.project.revision++;next.project.updatedAt=new Date().toISOString();},'Texten är tillagd. Skriv i textrutan.');
+    setTool('select');await selectAnnotation(item.id);
+    if(focusFieldsAutomatically()){$('annotationText').focus();$('annotationText').select();}
+  }
+  async function changeAnnotation(id,patch){
+    if(!state.annotations.some(item=>item.id===id))return;
+    await commit(next=>{next.annotations=next.annotations.map(item=>item.id===id?D.Annotations.update(item,patch,next.drawing.pages):item);next.project.revision++;next.project.updatedAt=new Date().toISOString();},'Textmarkeringen är sparad.');
+  }
+  function queueAnnotationText(){
+    const item=annotationItem(),input=$('annotationText');
+    if(!item||input.dataset.annotationId!==item.id||input.value===item.text)return canvasQueue;
+    const id=item.id,text=input.value;
+    return runCanvas(()=>changeAnnotation(id,{text}));
+  }
+  async function addAnnotationArrow({id,x,y}){
+    const item=state.annotations.find(value=>value.id===id);if(!item)return;
+    await changeAnnotation(id,{arrows:item.arrows.concat({id:D.Annotations.uid(),x,y})});setTool('select');
+  }
+  async function removeAnnotation(){
+    const id=selectedAnnotation;if(!id)return;
+    await commit(next=>{next.annotations=next.annotations.filter(item=>item.id!==id);next.project.revision++;next.project.updatedAt=new Date().toISOString();},'Text och tillhörande pilar är borttagna. Du kan ångra ändringen.');
+    selectedAnnotation=null;viewer.setAnnotationSelection(null);setTool('select');renderAnnotationPanel();
+  }
+  async function duplicateAnnotation(){
+    const item=annotationItem();if(!item)return;
+    const page=state.drawing.pages[item.page-1],copy=D.Annotations.normalize({...clone(item),id:D.Annotations.uid(),x:Math.min(1,item.x+16/page.width),y:Math.min(1,item.y+16/page.height),arrows:item.arrows.map(arrow=>({...arrow,id:D.Annotations.uid()}))},state.drawing.pages);
+    await commit(next=>{next.annotations.push(copy);next.project.revision++;next.project.updatedAt=new Date().toISOString();},'Textmarkeringen är duplicerad.');await selectAnnotation(copy.id);
+  }
+  function bindAnnotations(){
+    $('annotationTool').addEventListener('click',()=>{if(!busy&&state.drawing.pages.length){setTool('text');showView('drawing');}});
+    $('annotationDone').addEventListener('click',()=>void runCanvas(async()=>{await selectAnnotation(null);setTool('select');}));
+    $('annotationText').addEventListener('change',()=>void queueAnnotationText());
+    $('annotationText').addEventListener('input',()=>status());
+    $('annotationPanel').addEventListener('change',event=>{
+      const el=event.target,key=el.dataset.annotationField,item=annotationItem();if(!key||!item)return;
+      const id=item.id,value=el.type==='checkbox'?el.checked:el.type==='number'?Number(el.value):el.value;
+      void runCanvas(()=>changeAnnotation(id,{[key]:value}));
+    });
+    $('annotationTransparent').addEventListener('change',()=>{const id=selectedAnnotation;if(id){const fill=$('annotationTransparent').checked?null:$('annotationFill').value;void runCanvas(()=>changeAnnotation(id,{fill}));}});
+    $('annotationPanel').addEventListener('click',event=>{
+      const preset=event.target.closest('[data-annotation-preset]')?.dataset.annotationPreset;
+      if(preset&&selectedAnnotation){const id=selectedAnnotation,styles={white:{fill:'#ffffff',textColor:'#20352e',borderColor:'#b6c8bf',borderWidth:1},black:{fill:'#202a25',textColor:'#ffffff',borderColor:'#202a25',borderWidth:0},red:{fill:'#ffffff',textColor:'#20352e',borderColor:'#d4443d',borderWidth:2}};void runCanvas(()=>changeAnnotation(id,styles[preset]));}
+      const arrowId=event.target.closest('[data-remove-arrow]')?.dataset.removeArrow;
+      if(arrowId&&selectedAnnotation){const id=selectedAnnotation;void runCanvas(()=>{const item=state.annotations.find(item=>item.id===id);if(item)return changeAnnotation(id,{arrows:item.arrows.filter(arrow=>arrow.id!==arrowId)});});}
+    });
+    $('annotationAddArrow').addEventListener('click',()=>{if(annotationItem()){setTool('arrow');message('Tryck på ritningen där pilspetsen ska vara. Dra sedan pilspetsen för att finjustera.');}});
+    $('annotationDelete').addEventListener('click',()=>void runCanvas(removeAnnotation));
+    $('annotationDuplicate').addEventListener('click',()=>void runCanvas(duplicateAnnotation));
+  }
+
   function renderSelection() {
     const items=selectedPlacements(), first=items[0];
     $('selectedInfo').textContent=!first?'Ingen stämpel vald':items.length>1?`${items.length} stämplar valda`:`${first.code} · sida ${first.page}${first.locked?' · Låst':''}`;
@@ -451,8 +532,8 @@
     $('placementsList').innerHTML=state.placements.filter(p=>!query||p.code.includes(query)||p.note.toUpperCase().includes(query)).map(p=>`<button type="button" data-focus-id="${esc(p.id)}" class="placement-list-item${selected.includes(p.id)?' is-active':''}"><strong>${esc(p.code)}</strong><small>Sida ${p.page}${p.locked?' · Låst':''}</small></button>`).join('')||'<p class="empty-note">Inga placeringar.</p>';
   }
   function renderAll() {
-    $('projectName').value=state.project.name;renderLibrary();renderCard();renderSelection();renderPositions();renderTools();renderMaterials();
-    viewer?.setStencil(currentStencil);viewer?.setProject(state,{selectedIds:selected});status();
+    $('projectName').value=state.project.name;renderAnnotationPanel();renderLibrary();renderCard();renderSelection();renderPositions();renderTools();renderMaterials();
+    viewer?.setStencil(currentStencil);viewer?.setProject(state,{selectedIds:selected});viewer?.setAnnotationSelection(selectedAnnotation);status();
   }
   async function inspectOriginal(bytes) {
     if(bytes.byteLength>50*1024*1024)throw Error('Originalritningen får vara högst 50 MB.');
@@ -479,7 +560,7 @@
     if(damagedStore){const answer=await ask({title:'Ersätt den oläsbara lokala kopian?',text:'Den tidigare kopian gick inte att öppna. Detta sparar det nya projektet i stället.',accept:'Öppna och spara'});if(answer!=='accept')return false;}
     await S.save(valid,bytes);
     materialTimeEpoch++;materialTimeDrafts.clear();pendingMaterialTimes.clear();materialStructureKey='';
-    state=valid;original=bytes.slice();selected=[];undoStack=[];redoStack=[];currentPage=1;storageOk=true;damagedStore=false;materialCacheKey='';
+    state=valid;original=bytes.slice();selected=[];selectedAnnotation=null;undoStack=[];redoStack=[];currentPage=1;storageOk=true;damagedStore=false;materialCacheKey='';
     currentStencil=firstLibraryStencil();setActive(state.cards.GS1?'GS1':Object.keys(state.cards).sort(natural)[0]||null);revealStencil(state.stencils[currentStencil]);
     makeViewer();if(original.length)await viewer.open(original);viewer.setProject(state,{selectedIds:selected});renderAll();showView('drawing');message(text);
   }
@@ -598,12 +679,13 @@
     });
   }
   function afterMaterialTimes(task){
+    queueAnnotationText();
     const epoch=materialTimeEpoch;
     // Capture even a field that is still focused when an export is requested.
     for(const edit of materialTimeDrafts.values()){
       if(edit.projectId===state.project.id&&!sameMaterialTime(pendingMaterialTimes.get(edit.key),edit))queueMaterialTime(edit.input);
     }
-    return materialTimeQueue.then(()=>run(async()=>{
+    return Promise.all([materialTimeQueue,canvasQueue]).then(()=>run(async()=>{
       if(epoch!==materialTimeEpoch)throw Error('Projektet har bytts. Exportera det öppnade projektet igen.');
       const keys=new Set(Proj2Materials.build(state).rows.map(row=>row.key));
       if([...materialTimeDrafts.values()].some(edit=>edit.projectId===state.project.id&&keys.has(edit.key)))throw Error('Rätta eller spara den markerade tiden före export.');
@@ -706,7 +788,7 @@
     setActive(activeCode&&state.cards[activeCode]?activeCode:Object.keys(state.cards).sort(natural)[0]||null);renderAll();message(backward?'Ändringen är ångrad.':'Ändringen är återställd.');
   }
   async function paste(point=null){if(!clipboard.length)return;const dx=point?point.x-clipboard[0].x:.015,dy=point?point.y-clipboard[0].y:.015;let added=[];await commit(next=>{for(const p of clipboard){if(!next.stencils[p.stencilId])throw Error('Kopians stencil har tagits bort. Välj en stencil igen.');const input={...p,id:undefined,page:point?.page||currentPage,x:p.x+dx,y:p.y+dy,locked:false};if(D.isProductStencil(next.stencils[p.stencilId]))input.equipment={...D.equipmentFor(p),objectNumber:''};added.push(D.addPlacement(next,input));}},'Kopiorna är placerade.');selected=added.map(p=>p.id);renderAll();}
-  async function duplicate(){if(!selected.length)return;let added;await commit(next=>{added=D.duplicatePlacements(next,selected);},'Valda stämplar är kopierade.');selected=added.map(p=>p.id);renderAll();}
+  async function duplicate(){if(selectedAnnotation)return duplicateAnnotation();if(!selected.length)return;let added;await commit(next=>{added=D.duplicatePlacements(next,selected);},'Valda stämplar är kopierade.');selected=added.map(p=>p.id);renderAll();}
   async function lockSelection(){const items=selectedPlacements();if(!items.length)return;const locked=!items.every(p=>p.locked);await commit(next=>{for(const p of items)D.updatePlacement(next,p.id,{locked});},locked?'Valda stämplar är låsta.':'Valda stämplar är upplåsta.');}
   async function rotateSelection(angle){
     if(!selected.length)return;
@@ -762,6 +844,7 @@
     if(answer!=='accept')return;await commit(next=>D.removeCard(next,code,{cascade:true}),`${code} är borttaget.`);setActive(Object.keys(state.cards).sort(natural)[0]||null);renderAll();
   }
   function bind(){
+    bindAnnotations();
     document.addEventListener('pointerdown',()=>{suppressCardClickUntil=0;},{capture:true});
     document.addEventListener('touchstart',()=>{suppressCardClickUntil=0;},{capture:true,passive:true});
     document.addEventListener('click',event=>{if(event.detail>0&&performance.now()<suppressCardClickUntil){suppressCardClickUntil=0;event.preventDefault();event.stopImmediatePropagation();}},{capture:true});
@@ -838,7 +921,7 @@
     $('saveStencil').addEventListener('click',()=>void run(async()=>{const values=stencilValues(),groupId=$('stencilCategory').value;await commit(next=>{if(editingStencil){const old=next.stencils[editingStencil],resized=old.width!==values.width||old.height!==values.height;D.updateStencil(next,editingStencil,values);if(resized)D.resizeStencilShared(next,editingStencil,values.width,values.height,{scope:next.preferences.sizeScope});}else D.addStencil(next,values);},'Stencilen är sparad i projektet.');currentStencil=values.id;editingStencil=values.id;$('stencilCode').disabled=true;await rememberStencil(state.stencils[currentStencil],groupId);revealStencil(state.stencils[currentStencil]);viewer.setStencil(currentStencil);$('stencilDialog').close();renderAll();message('Stencilen är sparad i projektet och biblioteket.');}));
     $('closeStencil').addEventListener('click',()=>$('stencilDialog').close());
     for(const [id,tool]of [['toolSelect','select'],['toolPan','pan'],['toolPlace','place'],['toolErase','erase']])$(id).addEventListener('click',()=>setTool(tool));
-    $('undo').addEventListener('click',()=>void run(()=>travelHistory(true)));$('redo').addEventListener('click',()=>void run(()=>travelHistory(false)));
+    $('undo').addEventListener('click',()=>void runCanvas(()=>travelHistory(true)));$('redo').addEventListener('click',()=>void runCanvas(()=>travelHistory(false)));
     $('duplicateSelection').addEventListener('click',()=>void run(duplicate));$('deleteSelection').addEventListener('click',()=>void run(()=>removePositions()));$('lockSelection').addEventListener('click',()=>void run(lockSelection));
     $('newStencilTool').addEventListener('click',()=>{if(!busy)stencilDialog();});$('newCardTool').addEventListener('click',()=>void run(()=>newCard()));
     $('rotateLeft').addEventListener('click',()=>void run(()=>rotateSelection(-15)));$('rotateRight').addEventListener('click',()=>void run(()=>rotateSelection(15)));
@@ -905,12 +988,13 @@
       if(document.body.dataset.view==='materials'&&!(command&&['z','y'].includes(key)))return;
       if(command&&['z','y','c','v','d','a'].includes(key)){e.preventDefault();if(key==='z')void run(()=>travelHistory(!e.shiftKey));else if(key==='y')void run(()=>travelHistory(false));else if(key==='c'){clipboard=clone(selectedPlacements());message(clipboard.length+' stämplar kopierade.');}else if(key==='v')void run(paste);else if(key==='d')void run(duplicate);else void run(()=>selectIds(state.placements.filter(p=>p.page===currentPage).map(p=>p.id)));return;}
       if(['Delete','Backspace'].includes(e.key)){e.preventDefault();void run(()=>removePositions());return;}
-      if(e.key==='Escape'){void run(()=>selectIds([]));setTool('select');return;}
+      if(e.key==='Escape'){selectedAnnotation=null;viewer.setAnnotationSelection(null);renderAnnotationPanel();void run(()=>selectIds([]));setTool('select');return;}
+      if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)&&selectedAnnotation){e.preventDefault();const item=annotationItem(),page=state.drawing.pages[item.page-1],step=e.shiftKey?10:1,dx=(e.key==='ArrowRight'?step:e.key==='ArrowLeft'?-step:0)/page.width,dy=(e.key==='ArrowDown'?step:e.key==='ArrowUp'?-step:0)/page.height;void runCanvas(()=>changeAnnotation(item.id,{x:Math.max(0,Math.min(1,item.x+dx)),y:Math.max(0,Math.min(1,item.y+dy))}));return;}
       if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)&&selected.length){e.preventDefault();const dx=e.key==='ArrowLeft'?-1:e.key==='ArrowRight'?1:0,dy=e.key==='ArrowUp'?-1:e.key==='ArrowDown'?1:0,step=e.shiftKey?10:1;void run(()=>move(selectedPlacements().map(p=>({id:p.id,x:p.x+dx*step/state.drawing.pages[p.page-1].width,y:p.y+dy*step/state.drawing.pages[p.page-1].height}))));return;}
-      if(!command&&{v:'select',h:'pan',s:'place',p:'place',e:'erase'}[key])setTool({v:'select',h:'pan',s:'place',p:'place',e:'erase'}[key]);
+      if(!command&&{v:'select',h:'pan',s:'place',p:'place',e:'erase',t:'text'}[key])setTool({v:'select',h:'pan',s:'place',p:'place',e:'erase',t:'text'}[key]);
       if(e.key==='PageDown'){e.preventDefault();void run(()=>viewer.page(currentPage+1));}if(e.key==='PageUp'){e.preventDefault();void run(()=>viewer.page(currentPage-1));}
     });
-    window.addEventListener('beforeunload',e=>{if(dirty||busy||libraryPending||materialTimePending||materialTimeDrafts.size){e.preventDefault();e.returnValue='';}});
+    window.addEventListener('beforeunload',e=>{if(($('annotationText')?.value!==annotationItem()?.text&&annotationItem())||dirty||busy||libraryPending||materialTimePending||materialTimeDrafts.size){e.preventDefault();e.returnValue='';}});
   }
   async function boot(){
     if(started||!window.TillsynoCurrentAccess)return;started=true;D=window.Proj2Data;S=window.Proj2Store;L=window.Proj2Library;
@@ -928,7 +1012,7 @@
       }
       state=libraryProject(state,{fresh:!restoredProject});
       setActive(state.cards.GS1?'GS1':Object.keys(state.cards).sort(natural)[0]||null);if(!libraryStencils().some(stencil=>stencil.id===currentStencil))currentStencil=firstLibraryStencil();revealStencil(state.stencils[currentStencil]);bind();makeViewer();if(original.length)await viewer.open(original);renderAll();showView('drawing');
-      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.17'});
+      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.18'});
     }catch(error){message(error?.message||'Projektet kunde inte öppnas.',true);}
   }
   window.addEventListener('tillsyno-authorized',()=>void boot());

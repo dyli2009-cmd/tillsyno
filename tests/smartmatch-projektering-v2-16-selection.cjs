@@ -5,7 +5,7 @@ const source=fs.readFileSync(require.resolve('../smartmatch-projektering-v2-15.j
 // Exercise the production selection/placement functions with UI and storage adapters.
 const fixture=source.slice(0,source.lastIndexOf("  window.addEventListener('tillsyno-authorized'"))+`
   globalThis.fixture={
-    init(project){D=globalThis.model;L=globalThis.library;state=project;library=L.createDefault();activeCode=null;draft=null;dirty=false;selected=[];currentStencil='GS1:1';viewer={setSelection(){},setStencil(){}};renderAll=()=>{};setTool=()=>{};openCardView=()=>{};snap=input=>({x:input.x,y:input.y});leaveDraft=async()=>globalThis.allowLeave;commit=async mutate=>mutate(state);},
+    init(project){D=globalThis.model;L=globalThis.library;state=project;library=L.createDefault();activeCode=null;draft=null;dirty=false;selected=[];currentStencil='GS1:1';viewer={setSelection(){},setStencil(){},setAnnotationSelection(){}};renderAll=()=>{};setTool=()=>{};openCardView=()=>{};snap=input=>({x:input.x,y:input.y});leaveDraft=async()=>globalThis.allowLeave;commit=async mutate=>mutate(state);},
     choose:chooseStencil,place,
     snapshot:()=>({state,activeCode,draft,currentStencil}),
     activate:setActive

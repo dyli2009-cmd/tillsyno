@@ -1,9 +1,9 @@
 /* Tillsyno Projektering 2.15. Text WC/HWC door cards with rounder standard stamps. */
 (function(root,factory){
- 'use strict'; const api=factory();
+ 'use strict'; const api=factory(typeof module==='object'&&module.exports?require('./smartmatch-projektering-v2-18-annotations.js'):root.Proj2Annotations);
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root)root.Proj2Data=api;
-})(typeof window==='object'?window:globalThis,function(){
+})(typeof window==='object'?window:globalThis,function(Annotations){
  'use strict';
  const LIMITS=Object.freeze({cards:500,placements:5000,pages:200,stencils:2000,customProducts:1000,materialTimes:20000});
  const META_KEYS=Object.freeze(['littera','hanging','doorType','fire','security','escape','reentry']);
@@ -1450,7 +1450,7 @@
     return {id:idValue(input.id,'Produkt-ID'),name:text(input.name,'Produktnamn',160,false),category,description:text(input.description??'','Produktbeskrivning',400)};
   }
   function validate(raw){
-    if(!isObject(raw)||raw.schema!==2)throw Error('Filen är inte ett projekteringsprojekt av version 2.');
+    if(!isObject(raw)||![2,3].includes(raw.schema))throw Error('Projektfilens version stöds inte av denna projekteringssida.');
     if(!isObject(raw.project))throw Error('Projektuppgifter saknas.');
     const project={id:idValue(raw.project.id,'Projekt-ID'),name:text(raw.project.name,'Projektnamn',120,false),revision:int(raw.project.revision,'Revision',1,1000000000),updatedAt:text(raw.project.updatedAt,'Sparad tid',40,false)};
     if(!/^\d{4}-\d{2}-\d{2}T/.test(project.updatedAt)||!Number.isFinite(Date.parse(project.updatedAt)))throw Error('Projektets sparade tid är ogiltig.');
@@ -1468,6 +1468,9 @@
     if(!Array.isArray(raw.placements)||raw.placements.length>LIMITS.placements)throw Error('Projektet får innehålla högst '+LIMITS.placements+' stämpelpositioner.');
     const result={schema:2,project,drawing,cards,stencils,placements:[],customProducts:[],preferences:normalizedPreferences(raw.preferences)},positions=new Set();
     for(const value of raw.placements){const place=normalizedPlacement(value,result);if(positions.has(place.id))throw Error('Ritningen innehåller dubblerade positions-ID.');positions.add(place.id);result.placements.push(place);}
+    result.annotations=Annotations.validate(raw.annotations,drawing.pages);
+    // Older archived readers reject schema 3 rather than silently dropping text.
+    if(raw.schema===3||result.annotations.length)result.schema=3;
     numberEquipment(result);
     if(!Array.isArray(raw.customProducts)||raw.customProducts.length>LIMITS.customProducts)throw Error('Projektets produktlista är ogiltig.');
     // Older projects may use an ID that has since become a built-in model.
@@ -1644,7 +1647,7 @@
     });
   }
 
-  return Object.freeze({LIMITS,META_KEYS,SPECIAL_CODES,SECTIONS,PRODUCTS,LEGACY_PRODUCTS,RETIRED_PRODUCTS,PRODUCT_ALIASES,isRetiredProduct,OWNER_VALUES,TOOLBAR_TOOLS,SIZE_SCOPES,PRODUCT_TYPES,PRODUCT_TYPE_LABELS,CATEGORY_DEFAULTS,defaultPreferences,normalizeCode,matchKey,clone,createEmpty,initialCardCode,createCard,validate,defaultStencil,defaultStencilFor,restroomSymbol,upgradeRestroomStencils,stencilLabel,stencilCategory,isProductStencil,productMultiplier,equipmentFor,placementCounts,listStencils,searchProducts,addProduct,ensureCard,updateCard,copyCard,suggestCardCode,suggestForkCode,suggestStencilCode,forkPlacementCard,removeCard,addStencil,updateStencil,removeStencil,addPlacement,updatePlacement,updateEquipment,removePlacements,duplicatePlacements,setPreferences,setMaterialTime,resizeTargets,resizeShared,resizeStencilShared,alignPlacements});
+  return Object.freeze({Annotations,LIMITS,META_KEYS,SPECIAL_CODES,SECTIONS,PRODUCTS,LEGACY_PRODUCTS,RETIRED_PRODUCTS,PRODUCT_ALIASES,isRetiredProduct,OWNER_VALUES,TOOLBAR_TOOLS,SIZE_SCOPES,PRODUCT_TYPES,PRODUCT_TYPE_LABELS,CATEGORY_DEFAULTS,defaultPreferences,normalizeCode,matchKey,clone,createEmpty,initialCardCode,createCard,validate,defaultStencil,defaultStencilFor,restroomSymbol,upgradeRestroomStencils,stencilLabel,stencilCategory,isProductStencil,productMultiplier,equipmentFor,placementCounts,listStencils,searchProducts,addProduct,ensureCard,updateCard,copyCard,suggestCardCode,suggestForkCode,suggestStencilCode,forkPlacementCard,removeCard,addStencil,updateStencil,removeStencil,addPlacement,updatePlacement,updateEquipment,removePlacements,duplicatePlacements,setPreferences,setMaterialTime,resizeTargets,resizeShared,resizeStencilShared,alignPlacements});
 });
 
 
