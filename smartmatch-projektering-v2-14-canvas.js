@@ -247,7 +247,7 @@
         const handleX = Math.max(width/2,9/zoomValue), handleY = Math.max(height/2,9/zoomValue);
         const handles = isSelected && !item.locked ? [['n',0,-handleY],['e',handleX,0],['s',0,handleY],['w',-handleX,0]].map(([direction,x,y]) => `<circle class="p2-resize-handle" data-resize-handle="${direction}" cx="${x}" cy="${y}" r="${4.5/zoomValue}" tabindex="0" role="button" aria-label="Ändra storlek på ${escape(item.code)}, ${({n:'överkant',e:'högerkant',s:'underkant',w:'vänsterkant'})[direction]}. Höger eller upp förstorar, vänster eller ned förminskar." aria-keyshortcuts="ArrowUp ArrowRight ArrowDown ArrowLeft"/>`).join('') : '';
         const lock = item.locked ? `<g transform="translate(${width/2-3} ${-height/2-4})" fill="#46665e" stroke="#ffffff" stroke-width=".5" pointer-events="none"><rect x="-3" y="-1" width="6" height="5" rx="1"/><path d="M-2-1V-3a2 2 0 0 1 4 0v2" fill="none" stroke="#46665e" stroke-width="1.3"/></g>` : '';
-        const activationHint = stencil.kind === 'card' ? '. Tryck på pekskärm, dubbelklicka eller tryck Retur för att öppna dörrkort.' : '. Dra för att flytta symbolen.';
+        const activationHint = stencil.kind === 'card' ? (options.mouseClickOpens?'. Tryck två gånger på pekskärm, klicka med mus eller tryck Retur för att öppna dörrkort.':'. Tryck två gånger eller tryck Retur för att öppna dörrkort.') : '. Dra för att flytta symbolen.';
         return `<g class="stamp-item${isSelected ? ' is-selected' : ''}${linked ? ' is-linked' : ''}" data-placement-id="${escape(item.id)}" data-locked="${!!item.locked}" tabindex="0" role="button" aria-label="${escape(item.code)}${item.locked ? ', låst' : ''}${activationHint}" aria-pressed="${isSelected}" transform="translate(${item.x*meta.width} ${item.y*meta.height}) rotate(${item.rotation||0})"><title>${escape(item.code)}${item.note ? ' · '+escape(item.note) : ''}</title>${shape}${glyph}${outline('p2-stamp-selection',2/zoomValue,`style="display:${isSelected?'block':'none'}"`)}${linked ? outline('p2-stamp-linked',2/zoomValue) : ''}${lock}${handles}</g>`;
       }).join('');
     }
@@ -322,9 +322,9 @@
       drawOverlay();
     }
     function activateTap(done, event) {
-      if (!done.id || state?.stencils?.[findPlacement(done.id)?.stencilId]?.kind !== 'card' || done.moved || performance.now() <= suppressClickUntil) { lastTap = null; return; }
+      if (!done.id || state?.stencils?.[findPlacement(done.id)?.stencilId]?.kind !== 'card' || done.moved || Math.hypot(event.clientX-done.clientX,event.clientY-done.clientY)>4 || event.shiftKey || performance.now() <= suppressClickUntil) { lastTap = null; return; }
       const now = performance.now(), type = event.pointerType || 'mouse';
-      if(type==='touch'&&options.touchTapOpens){lastTap=null;safeCallback('onActivate',{id:done.id});return;}
+      if((type==='mouse'&&options.mouseClickOpens)||(type==='touch'&&options.touchTapOpens)){lastTap=null;safeCallback('onActivate',{id:done.id});return;}
       if (lastTap && lastTap.id === done.id && lastTap.page === pageNumber && lastTap.type === type && now-lastTap.time < (type==='touch'?500:380) && Math.hypot(event.clientX-lastTap.x,event.clientY-lastTap.y) < 22) {
         lastTap = null; safeCallback('onActivate',{id:done.id});
       } else lastTap = {id:done.id,page:pageNumber,type,time:now,x:event.clientX,y:event.clientY};
