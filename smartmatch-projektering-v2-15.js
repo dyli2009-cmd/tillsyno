@@ -201,7 +201,7 @@
   function setTool(tool) {
     if(pdfSearchState.textSelection)setPDFTextSelection(false);
     currentTool=tool; viewer.setTool(tool); viewer.setStencil(currentStencil);
-    const names={select:'Dra en stämpel för att flytta. Dra tom yta för att panorera. Tryck för dörrkort på pekskärm, dubbelklicka med mus.',pan:'Dra för att flytta ritningen. Mushjul eller två fingrar zoomar.',place:'Tryck för att placera. Dra en stämpel för att flytta, eller tom yta för att panorera.',erase:'Tryck på en olåst stämpel för att ta bort. Dra tom yta för att panorera.'};
+    const names={select:'Dra en stämpel för att flytta. Dra tom yta för att panorera. Tryck två gånger för dörrkort på pekskärm, klicka en gång med mus.',pan:'Dra för att flytta ritningen. Mushjul eller två fingrar zoomar.',place:'Tryck för att placera. Dra en stämpel för att flytta, eller tom yta för att panorera.',erase:'Tryck på en olåst stämpel för att ta bort. Dra tom yta för att panorera.'};
     $('toolHint').textContent=names[tool];
     for(const [id,value]of [['toolSelect','select'],['toolPan','pan'],['toolPlace','place'],['toolErase','erase']]){$(id).classList.toggle('is-active',tool===value);$(id).setAttribute('aria-pressed',String(tool===value));}
   }
@@ -373,7 +373,7 @@
       const request=selectionRequest?.ids.some(id=>ids.includes(id))?selectionRequest:null;selectionRequest=null;
       return runCanvas(async()=>{if(request&&await request.result===false)return false;return task();});
     }
-    viewer=Proj2Canvas.create({host:$('drawingHost'),touchTapOpens:true,onTextSelection:rememberPDFText,onError:error=>message(error?.message||'Ritningen kunde inte visas.',true),onSelect:ids=>{
+    viewer=Proj2Canvas.create({host:$('drawingHost'),touchTapOpens:false,mouseClickOpens:true,onTextSelection:rememberPDFText,onError:error=>message(error?.message||'Ritningen kunde inte visas.',true),onSelect:ids=>{
       const request={ids:[...ids],result:null};selectionRequest=request;
       request.result=runCanvas(()=>selectIds(ids));
       void request.result.finally(()=>{if(selectionRequest===request)selectionRequest=null;});
@@ -928,7 +928,7 @@
       }
       state=libraryProject(state,{fresh:!restoredProject});
       setActive(state.cards.GS1?'GS1':Object.keys(state.cards).sort(natural)[0]||null);if(!libraryStencils().some(stencil=>stencil.id===currentStencil))currentStencil=firstLibraryStencil();revealStencil(state.stencils[currentStencil]);bind();makeViewer();if(original.length)await viewer.open(original);renderAll();showView('drawing');
-      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.16'});
+      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.17'});
     }catch(error){message(error?.message||'Projektet kunde inte öppnas.',true);}
   }
   window.addEventListener('tillsyno-authorized',()=>void boot());

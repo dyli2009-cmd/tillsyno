@@ -72,9 +72,9 @@ const clone = value => JSON.parse(JSON.stringify(value));
   await document.destroy();
   for (const file of ['smartmatch-projektering.html','smartmatch-projektering-v2-14.html','smartmatch-projektering-v2-15.html']) {
     const html = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
-    for (const module of ['data.js','pdf.js']) assert(html.includes('v2-15-' + module + '?v=2.16'));
-    assert(html.includes('v2-15-library.js?v=2.16'));
-    assert(html.includes('v2-15.js?v=2.16'));
+    for (const module of ['data.js','pdf.js']) assert(html.includes('v2-15-' + module + '?v=2.17'));
+    assert(html.includes('v2-15-library.js?v=2.17'));
+    assert(html.includes('v2-15.js?v=2.17'));
   }
   console.log('PASS: groups, 100 GS defaults, no default DGS, DA under Other, safe saved-data migrations, rounder stamps, native WC/HWC PDF text, editable PDF round trip and current entry points.');
 })().catch(error => {console.error(error);process.exitCode = 1;});

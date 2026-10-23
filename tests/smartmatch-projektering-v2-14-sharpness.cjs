@@ -48,12 +48,13 @@ class Element extends EventTarget {
   }
 }
 const walk = node => [node, ...node.children.flatMap(walk)];
-function harness(density = 2, width = 820, height = 620) {
+function harness(density = 2, width = 820, height = 620, options = {}) {
   const document = new Element('document'); document.head = new Element('head'); document.baseURI = 'file://' + root + '/';
   document.createElement = tag => new Element(tag); document.createElementNS = (_, tag) => new Element(tag);
   document.getElementById = id => walk(document.head).find(n => n.id === id);
   const host = new Element(); host.style.width = width+'px'; host.style.height = height+'px';
   const window = new EventTarget(); window.devicePixelRatio = density; window.navigator = {}; window.getSelection = () => null;
+  if(options.nativeTouch){window.TouchEvent=function(){};window.navigator.maxTouchPoints=5;}
   const errors = [], calls = [];
   window.pdfjsLib = {GlobalWorkerOptions:{}, getDocument(args) {
     pdfjs.GlobalWorkerOptions.workerSrc = path.join(root, 'vendor/pdf.worker.min.js');
@@ -73,9 +74,9 @@ function harness(density = 2, width = 820, height = 620) {
   }};
   const context = vm.createContext({window, document, HTMLElement:Element, AbortController, URL, Uint8Array, setTimeout, clearTimeout, performance, ResizeObserver:class {observe() {} disconnect() {}}, requestAnimationFrame:callback => setTimeout(callback, 0), cancelAnimationFrame:clearTimeout});
   vm.runInContext(fs.readFileSync(path.join(root,'smartmatch-projektering-v2-14-canvas.js'),'utf8'), context);
-  const viewer = window.Proj2Canvas.create({host, onError:error => errors.push(error.message)});
+  const viewer = window.Proj2Canvas.create({...options, host, onError:error => errors.push(error.message)});
   const get = cls => walk(host).find(node => node.className.split(' ').includes(cls));
-  return {host, window, viewer, calls, errors, get, limit:window.Proj2Canvas.MAX_PIXELS};
+  return {host, window, document, viewer, calls, errors, get, limit:window.Proj2Canvas.MAX_PIXELS};
 }
 async function idle(h) { await pause(0); for (let i=0;i<200;i++) { if (!h.viewer.snapshot().rendering) return; await pause(10); } throw Error('Viewer did not settle'); }
 function centerOn(h, x, y) {
@@ -92,7 +93,8 @@ function colorAt(h, x, y) {
 }
 function assertBudget(h) { for(const call of h.calls) { assert(call.width*call.height<=h.limit, 'bounded bitmap area'); assert(call.width<=8192&&call.height<=8192, 'bounded bitmap sides'); } }
 
-(async () => {
+module.exports={harness,idle,pause,Element};
+if(require.main===module)(async () => {
   const doc = await PDFDocument.create(), W = 3370, H = 2384;
   const first = doc.addPage([W,H]);
   // 0.25pt bars are below one overview pixel but become distinct at 1600%.
@@ -154,6 +156,6 @@ function assertBudget(h) { for(const call of h.calls) { assert(call.width*call.h
 
   const phone = harness(3,390,600);
   try { await phone.viewer.open(bytes); phone.viewer.zoomTo(16); await idle(phone); assertBudget(phone); const detail=phone.get('p2-canvas-detail'); assert(detail.width/detail.getBoundingClientRect().width>2.99,'phone keeps 3x screen density'); phone.viewer.zoomTo(8); phone.viewer.destroy(); await pause(150); assert.equal(phone.host.children.length,0,'destroy cancels queued work'); assert.equal(detail.width,1); } finally { phone.viewer.destroy(); }
-  for(const name of ['smartmatch-projektering.html','smartmatch-projektering-v2-14.html','smartmatch-projektering-v2-15.html']) assert(fs.readFileSync(path.join(root,name),'utf8').includes('smartmatch-projektering-v2-14-canvas.js?v=2.14.2'),name+' uses the fixed renderer');
+  for(const name of ['smartmatch-projektering.html','smartmatch-projektering-v2-14.html','smartmatch-projektering-v2-15.html']) assert(fs.readFileSync(path.join(root,name),'utf8').includes('smartmatch-projektering-v2-14-canvas.js?v=2.17'),name+' uses the fixed renderer');
   console.log('PASS: real PDF raster pixels at 1600%, Retina/phone density, pan, rotated CropBox, stale page/zoom races, memory bounds, cleanup, original bytes and stamp coordinates.');
 })().catch(error => { console.error(error); process.exitCode=1; });
