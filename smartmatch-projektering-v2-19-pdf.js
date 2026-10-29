@@ -8,7 +8,7 @@
  const DATA_KEY='TillsynoProjekteringV2',SOURCE_KEY='TillsynoProjekteringOriginalV2';
  const MAX_ORIGINAL=50*1024*1024,MAX_FILE=80*1024*1024,MAX_DATA=12*1024*1024;
  const codeRect=Object.freeze({x:30/595,y:44/842,w:155/595,h:36/842});
- const tableRect=Object.freeze({x:30/595,y:220/842,w:535/595,h:512/842});
+ const tableRect=Object.freeze({x:30/595,y:152/842,w:535/595,h:642/842});
  const STANDARD_ROW_IDS=new Set(['day-lock','day-cylinder-fittings','day-strike','day-handle','day-pull','day-escape','day-cable','day-cylinder-hinge','day-cylinder-strike','night-lock','night-strike','night-cylinder-fittings','night-cylinder-hinge','night-cylinder-strike','closing-closer','closing-arm','closing-operator','closing-sensor-hinge','closing-sensor-strike','closing-elbow','closing-coordinator','closing-bolt','access-magnet','access-reader','access-button','access-controller']);
  const natural=(a,b)=>a.localeCompare(b,'sv',{numeric:true,sensitivity:'base'});
  const clone=value=>JSON.parse(JSON.stringify(value));
@@ -162,7 +162,7 @@
   }
  }
  function drawPlacements(document,state,font,lib){
-  if(state.schema===5)return drawEditablePlacements(document,state,font,lib);
+  if(state.schema>=5)return drawEditablePlacements(document,state,font,lib);
   for(const item of state.placements){
    const page=document.getPage(item.page-1),definition=state.stencils[item.stencilId],matrix=stampMatrix(state.drawing.pages[item.page-1],item),label=assertText(font,item.code);
    let fontSize=Math.min(definition.fontSize,item.height*.5),labelWidth=font.widthOfTextAtSize(label,fontSize);
@@ -202,64 +202,59 @@
    output.node.addAnnot(document.context.register(document.context.obj({Type:'Annot',Subtype:'Stamp',Rect:rect,Subj:lib.PDFHexString.fromText(item.code),Contents:lib.PDFHexString.fromText(item.code),NM:lib.PDFHexString.fromText('projection-v2-'+item.id),F:4,AP:{N:appearance},TillsynoRect:rect,TillsynoCode:lib.PDFHexString.fromText(item.code)})));
   }
  }
+ function cardLines(font,value,width,size){
+  const result=[];
+  for(const paragraph of String(value||'').split('\n')){
+   let line='';for(const word of assertText(font,paragraph).split(/\s+/).filter(Boolean)){
+    const candidate=line?line+' '+word:word;
+    if(font.widthOfTextAtSize(candidate,size)<=width){line=candidate;continue;}
+    if(line){result.push(line);line='';}
+    for(const character of word){if(line&&font.widthOfTextAtSize(line+character,size)>width){result.push(line);line='';}line+=character;}
+   }result.push(line);
+  }
+  return result.length?result:[''];
+ }
+ function cardPageLayout(card,fonts){
+  const cols=[30,155,268,294,331,368,405,447,565],functions=dataLibrary().cardFunctions(card);
+  const meaningful=row=>!!(row.product.trim()&&!/^[-–—]+$/.test(row.product.trim())||row.note||row.connection||row.functionOwner);
+  for(const compact of [false,true])for(const size of [7.8,7.4,7]){
+   const lineHeight=size*1.18,groupHeight=size+5,groups=[];
+   for(const row of card.rows){
+    if(!meaningful(row)&&(compact||!STANDARD_ROW_IDS.has(row.id)))continue;
+    let group=groups.find(g=>g.title===row.section);if(!group){group={title:row.section,rows:[]};groups.push(group);}
+    const specified=meaningful(row),values=[row.label,row.product||'-',row.product?String(row.quantity):'',specified?row.delivery||'-':'',specified?row.installer||'-':'',row.connection||'',row.functionOwner||'',row.note||''];
+    const lines=values.map((value,i)=>cardLines(fonts.regular,value,cols[i+1]-cols[i]-8,size));
+    group.rows.push({lines,height:Math.max(...lines.map(lines=>lines.length))*lineHeight+2});
+   }
+   const notes=[['Dörrfunktion',functions.door||'-'],['Larmfunktion',functions.alarm||'-'],['Brandfunktion',functions.fire||'-'],...(card.note?[['Anteckning',card.note]]:[])].map(([label,value])=>({label,lines:cardLines(fonts.regular,value,519,size)}));
+   const tableHeight=groups.reduce((sum,g)=>sum+groupHeight+g.rows.reduce((n,row)=>n+row.height,0),0),notesHeight=notes.reduce((sum,n)=>sum+groupHeight+n.lines.length*lineHeight+6,0);
+   if(tableHeight+notesHeight+8<=620)return {cols,groups,notes,size,lineHeight,groupHeight,tableHeight};
+  }
+  throw Error('Dörrkortet '+card.code+' innehåller för mycket text för en läsbar A4-sida. Korta anmärkningarna eller dela upp dörrtypen innan du sparar. Ingen text har utelämnats.');
+ }
  function drawCard(document,state,code,fonts,lib,index,total){
-  const card=state.cards[code],page=document.addPage([595,842]),{regular,bold}=fonts,border=lib.rgb(.36,.42,.45),slate=lib.rgb(.13,.23,.25),pale=lib.rgb(.94,.96,.95),left=30;
-  const line=(x1,y1,x2,y2,width=.65)=>page.drawLine({start:{x:x1,y:y1},end:{x:x2,y:y2},thickness:width,color:border});
-  const cell=(x,y,w,h,fill)=>page.drawRectangle({x,y,width:w,height:h,borderColor:border,borderWidth:.65,...(fill?{color:fill}:{})});
+  const card=state.cards[code],layout=cardPageLayout(card,fonts),page=document.addPage([595,842]),{regular,bold}=fonts,border=lib.rgb(.36,.42,.45),slate=lib.rgb(.13,.23,.25),pale=lib.rgb(.94,.96,.95),left=30;
+  const line=(x1,y1,x2,y2,width=.55)=>page.drawLine({start:{x:x1,y:y1},end:{x:x2,y:y2},thickness:width,color:border});
+  const cell=(x,y,w,h,fill)=>page.drawRectangle({x,y,width:w,height:h,borderColor:border,borderWidth:.55,...(fill?{color:fill}:{})});
   fitted(page,regular,state.project.name,30,819,9,420,slate);text(page,regular,'Dörrkort · '+index+'/'+total,466,819,8,slate);
   cell(left,762,155,36,pale);cell(185,762,380,36,pale);fitted(page,bold,code,38,772,18,139,slate);text(page,bold,'BESLAGSKORT',196,779,10,slate);text(page,regular,'Gemensamt dörrkort för samma beteckning',196,766,8,slate);
   const count=state.placements.filter(item=>item.code===code&&state.stencils[item.stencilId].kind==='card').length,m=card.meta;
   const metadataRows=[['Littera',m.littera||code],['Antal',String(count)],['Hängning',m.hanging||'-'],['Dörrtyp',m.doorType||'-'],['Brandkrav',m.fire||'-'],['Skyddsklass',m.security||'-'],['Utrymningskrav',m.escape||'-'],['Återinrymning',m.reentry||'-']];
-  let top=762;for(const [label,value]of metadataRows){cell(left,top-17,155,17);cell(185,top-17,380,17);text(page,bold,label,38,top-12,8);fitted(page,regular,value,196,top-12,8,358);top-=17;}
-  const cols=[30,185,402,441,503,565],headY=600;cell(left,headY,535,22,pale);for(const x of cols.slice(1,-1))line(x,headY,x,headY+22);
-  for(const [label,x]of [['Komponent',38],['Produkt',196],['Antal',409],['Lev av',448],['Mont av',510]])text(page,bold,label,x,608,8);
-  const groups=[];for(const row of card.rows.filter(row=>STANDARD_ROW_IDS.has(row.id))){let group=groups.find(g=>g.title===row.section);if(!group){group={title:row.section,rows:[]};groups.push(group);}group.rows.push(row);}
-  let y=headY;for(const group of groups){y-=18;cell(left,y,535,18,pale);text(page,bold,group.title.toLocaleUpperCase('sv'),38,y+5.5,9);for(const row of group.rows){y-=16;cell(left,y,535,16);for(const x of cols.slice(1,-1))line(x,y,x,y+16);fitted(page,regular,row.label,38,y+5,8,139);fitted(page,regular,row.product||'-',196,y+5,8,196);if(row.product){text(page,regular,String(row.quantity),409,y+5,8);fitted(page,regular,row.delivery||'-',448,y+5,8,47);fitted(page,regular,row.installer||'-',510,y+5,8,47);}}}
-  if(y<100)throw Error('Dörrkortet '+code+' har för många utrustningsrader för en PDF-sida.');
-  if(card.note&&state.schema!==5){text(page,bold,'Anteckning',30,91,8);wrapped(page,regular,card.note,30,78,535,8,10,3);}
-  text(page,regular,'Tillsyno · Projektering · Kontrollera produktval och projekteringskrav före utförande.',30,27,7,lib.rgb(.40,.46,.47));fitted(page,regular,'Revision '+state.project.revision,465,27,7,100);
-  drawAdditionalCardRows(document,state,code,fonts,lib,index,total);
-  if(state.schema===5)drawCardDetails(document,state,code,fonts,lib);
+  metadataRows.forEach(([label,value],i)=>{const x=left+(i%2)*267.5,top=762-Math.floor(i/2)*17;cell(x,top-17,110,17);cell(x+110,top-17,157.5,17);text(page,bold,label,x+8,top-12,8);fitted(page,regular,value,x+118,top-12,8,141.5);});
+  const {cols,size,lineHeight,groupHeight}=layout,headY=668;cell(left,headY,535,22,pale);for(const x of cols.slice(1,-1))line(x,headY,x,headY+22);
+  ['Komponent','Produkt','Antal','Lev av','Mont av','Ansl av','Funk ansv','Anmärkning'].forEach((label,i)=>text(page,bold,label,cols[i]+4,headY+8,6.8,slate));
+  let y=headY;
+  for(const group of layout.groups){
+   y-=groupHeight;cell(left,y,535,groupHeight,pale);text(page,bold,group.title,38,y+5,size);
+   for(const row of group.rows){const top=y;y-=row.height;cell(left,y,535,row.height);for(const x of cols.slice(1,-1))line(x,y,x,top);row.lines.forEach((lines,i)=>lines.forEach((value,n)=>text(page,regular,value,cols[i]+4,top-1-size-n*lineHeight,size)));}
+  }
+  y-=8;
+  for(const note of layout.notes){y-=groupHeight;cell(left,y,535,groupHeight,pale);text(page,bold,note.label,38,y+5,size);const height=note.lines.length*lineHeight+6,top=y;y-=height;cell(left,y,535,height);note.lines.forEach((value,n)=>text(page,regular,value,38,top-3-size-n*lineHeight,size));}
+  text(page,regular,'Tillsyno · Projektering',30,27,7,slate);fitted(page,regular,'Revision '+state.project.revision,465,27,7,100);
  }
- function drawCardDetails(document,state,code,fonts,lib){
-  const card=state.cards[code],paragraphs=[];
-  for(const row of card.rows){
-   const details=[row.connection?'Ansluts av: '+row.connection:'',row.functionOwner?'Funktionsansvar: '+row.functionOwner:'',row.note||''].filter(Boolean);
-   if(details.length)paragraphs.push(row.section+' / '+row.label+(row.product?' / '+row.product:'')+' — '+details.join(' · '));
-  }
-  if(card.note)paragraphs.push(...card.note.split('\n').filter(Boolean));if(!paragraphs.length)return;
-  let page,y=0;const nextPage=()=>{page=document.addPage([595,842]);fitted(page,fonts.bold,code+' · Ansvar och anmärkningar',30,795,14,535);fitted(page,fonts.regular,state.project.name,30,816,9,535);y=770;text(page,fonts.regular,'Tillsyno · Samma dörrkort · kompletterande uppgifter',30,27,8);};
-  const emit=line=>{if(y<60)nextPage();text(page,fonts.regular,line,30,y,9);y-=13;};
-  for(const paragraph of paragraphs){let line='';for(const word of assertText(fonts.regular,paragraph).split(/\s+/)){
-    // Wrap even long model identifiers without discarding source characters.
-    for(const chunk of word.match(/.{1,75}/g)||['']){const candidate=line?line+' '+chunk:chunk;if(fonts.regular.widthOfTextAtSize(candidate,9)>535&&line){emit(line);line=chunk;}else line=candidate;}
-   }if(line)emit(line);y-=8;}
- }
- function drawAdditionalCardRows(document,state,code,fonts,lib,index,total){
-  const card=state.cards[code],rows=card.rows.filter(row=>!STANDARD_ROW_IDS.has(row.id)&&row.product.trim()&&!/^[-–—]+$/.test(row.product.trim()));
-  if(!rows.length)return;
-  const {regular,bold}=fonts,border=lib.rgb(.36,.42,.45),slate=lib.rgb(.13,.23,.25),pale=lib.rgb(.94,.96,.95),left=30,cols=[30,185,402,441,503,565];
-  let page,y,continuation=0,currentSection=null;
-  const line=(x1,y1,x2,y2,width=.65)=>page.drawLine({start:{x:x1,y:y1},end:{x:x2,y:y2},thickness:width,color:border});
-  const cell=(x,top,w,h,fill)=>page.drawRectangle({x,y:top,width:w,height:h,borderColor:border,borderWidth:.65,...(fill?{color:fill}:{})});
-  function nextPage(){
-   continuation++;page=document.addPage([595,842]);
-   fitted(page,regular,state.project.name,30,819,9,420,slate);text(page,regular,'Dörrkort · '+index+'/'+total,466,819,8,slate);
-   cell(left,762,155,36,pale);cell(185,762,380,36,pale);fitted(page,bold,code,38,772,18,139,slate);text(page,bold,'BESLAGSKORT · FORTSÄTTNING',196,779,10,slate);text(page,regular,'Samma dörrkort · fortsättningssida '+continuation,196,766,8,slate);
-   const count=state.placements.filter(item=>item.code===code&&state.stencils[item.stencilId].kind==='card').length,m=card.meta;
-   const metadataRows=[['Littera',m.littera||code],['Antal',String(count)],['Hängning',m.hanging||'-'],['Dörrtyp',m.doorType||'-'],['Brandkrav',m.fire||'-'],['Skyddsklass',m.security||'-'],['Utrymningskrav',m.escape||'-'],['Återinrymning',m.reentry||'-']];
-   let top=762;for(const [label,value]of metadataRows){cell(left,top-17,155,17);cell(185,top-17,380,17);text(page,bold,label,38,top-12,8);fitted(page,regular,value,196,top-12,8,358);top-=17;}
-   const headY=600;cell(left,headY,535,22,pale);for(const x of cols.slice(1,-1))line(x,headY,x,headY+22);
-   for(const [label,x]of [['Komponent',38],['Produkt',196],['Antal',409],['Lev av',448],['Mont av',510]])text(page,bold,label,x,608,8);
-   text(page,regular,'Tillsyno · Projektering · Fortsättning till samma sparade dörrkort.',30,27,7,lib.rgb(.40,.46,.47));fitted(page,regular,'Revision '+state.project.revision,465,27,7,100);
-   y=headY;currentSection=null;
-  }
-  for(const row of rows){
-   const headerNeeded=row.section!==currentSection;
-   if(!page||y-(headerNeeded?34:16)<110)nextPage();
-   if(row.section!==currentSection){y-=18;cell(left,y,535,18,pale);text(page,bold,row.section.toLocaleUpperCase('sv'),38,y+5.5,9);currentSection=row.section;}
-   y-=16;cell(left,y,535,16);for(const x of cols.slice(1,-1))line(x,y,x,y+16);fitted(page,regular,row.label,38,y+5,8,139);fitted(page,regular,row.product,196,y+5,8,196);text(page,regular,String(row.quantity),409,y+5,8);fitted(page,regular,row.delivery||'-',448,y+5,8,47);fitted(page,regular,row.installer||'-',510,y+5,8,47);
-  }
+ function exportCardCodes(state,mode='combined'){
+  const used=mode==='combined'&&state.drawing.pages.length?new Set(state.placements.filter(p=>state.stencils[p.stencilId]?.kind==='card').map(p=>p.code)):null;
+  return Object.keys(state.cards).filter(code=>!used||used.has(code)).sort(natural);
  }
  async function buildCardPreview(input,value,cardDraft){
   const lib=library(),data=dataLibrary();if(!lib||!data)throw Error('PDF-verktyget kunde inte laddas. Öppna sidan igen med internet.');
@@ -285,7 +280,7 @@
  async function build(input,originalBytes,options={}){
   const lib=library(),data=dataLibrary();if(!lib||!data)throw Error('PDF-verktyget kunde inte laddas. Öppna sidan igen med internet.');
   const state=data.validate(input),mode=options.mode||'combined';if(!['combined','drawing','cards'].includes(mode))throw Error('Välj ritning, dörrkort eller komplett PDF.');
-  const source=await sourceDocument(state,originalBytes),document=await lib.PDFDocument.create(),regular=await document.embedFont(lib.StandardFonts.Helvetica),bold=await document.embedFont(lib.StandardFonts.HelveticaBold),codes=Object.keys(state.cards).sort(natural);
+  const source=await sourceDocument(state,originalBytes),document=await lib.PDFDocument.create(),regular=await document.embedFont(lib.StandardFonts.Helvetica),bold=await document.embedFont(lib.StandardFonts.HelveticaBold),codes=exportCardCodes(state,mode);
   if(mode==='drawing'||mode==='combined'){
    if(!source.document&&mode==='drawing')throw Error('Importera en ritning innan du exporterar en ritnings-PDF.');
    if(source.document){const exportPages=await copyDrawing(document,source.document,state,lib);checkPlacements(state);drawPlacements(document,{...state,drawing:{...state.drawing,pages:exportPages}},bold,lib);drawTextAnnotations(document,{...state,drawing:{...state.drawing,pages:exportPages}},{regular,bold},lib);}
@@ -294,7 +289,7 @@
   // Standalone symbols stay visible on the drawing and in the embedded project;
   // only actual door cards append printable pages.
   if(!document.getPageCount())throw Error('Lägg till en ritning eller ett dörrkort före PDF-export.');
-  const payload=JSON.stringify({format:'TillsynoProjekteringV2',state,originalLength:source.original.length,...(state.schema===5?{editableStamps:true,drawingPages:mode==='cards'?0:state.drawing.pages.length}:{})});if(payload.length>MAX_DATA)throw Error('Projektuppgifterna är för stora för PDF-export.');
+  const payload=JSON.stringify({format:'TillsynoProjekteringV2',state,originalLength:source.original.length,...(state.schema>=5?{editableStamps:true,drawingPages:mode==='cards'?0:state.drawing.pages.length}:{})});if(payload.length>MAX_DATA)throw Error('Projektuppgifterna är för stora för PDF-export.');
   document.catalog.set(lib.PDFName.of(DATA_KEY),lib.PDFHexString.fromText(payload));
   document.catalog.set(lib.PDFName.of(SOURCE_KEY),document.context.register(document.context.flateStream(source.original,{Type:'EmbeddedFile',Subtype:'application/pdf'})));
   document.setTitle(state.project.name+' · Projektering');document.setAuthor('Tillsyno');document.setCreator('Tillsyno Projektering 2.19');document.setSubject('Ritning med stämplar och dörrkort');
@@ -375,6 +370,6 @@
   state.cards[data.initialCardCode('GS1')].note='Samma sparade GS1:1-kort används vid flera dörrar.';
   return {state:data.validate(state),original:await document.save()};
  }
- return Object.freeze({build,buildCardPreview,inspect,blank,example,metadata,stampMatrix,codeRect,tableRect,DATA_KEY,SOURCE_KEY});
+ return Object.freeze({build,buildCardPreview,exportCardCodes,inspect,blank,example,metadata,stampMatrix,codeRect,tableRect,DATA_KEY,SOURCE_KEY});
 });
 

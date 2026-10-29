@@ -2627,6 +2627,7 @@ function smartRowDoorCode(value){
   if(code)return code;
  }
  if(/^(?:SNIDAREN|ETAPP|PROJEKT|RITNING|PLANRITNING|UPPRÄTTAD|REVIDERAD|SIDAN?|PAGE|REV(?:ISION)?|DATUM|LÅSHANDLING|LASBESKRIVNING|LÅSBESKRIVNING|HANDLING|BESKRIVNING|KUND|BESTÄLLARE|ENTREPRENÖR|ARTIKEL|FABRIKAT|LÅSHUS|LASHUS|SLUTBLECK|CYLINDER|TRYCKE|BESLAG|ANMÄRKNING|ANSVAR|KONTROLLPUNKT|KOMPONENT|PRODUKT|STATUS|OBJEKT(?:NR|NUMMER)?|ANTAL)\b/.test(raw))return '';
+ const variant=smartNormalizeCardLabel(raw);if(variant.includes(':'))return variant;if(raw.includes(':')&&!variant)return '';
  const gs=[...raw.matchAll(/(?:^|[^A-ZÅÄÖ0-9]|(?:WC|VC|HWC|RWC)[\s/_-]*)G[\s/_-]*S[\s/_-]*(\d{1,6}[A-ZÅÄÖ]{0,3})(?=$|[^A-ZÅÄÖ0-9])/g)]
   .map(m=>'GS'+m[1]);
  const ids=[...new Set(gs)];

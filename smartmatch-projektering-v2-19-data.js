@@ -1383,7 +1383,14 @@
       const category=text(row.category,'Materialgrupp',40,false);if(category!=='other'&&!CATEGORIES.has(category))throw Error('Materialgruppen är ogiltig.');
       rows.push({...normalizedMaterialRow(row,{id:row.id,section:text(row.section,'Rubrik',80,false),label:text(row.label,'Komponent',100,false)}),category});
     }
-    return {code,meta,rows,note:text(input.note,'Anteckning',2000)};
+    let note=text(input.note,'Anteckning',2000);const functions=cardFunctions(input),remaining=[];
+    for(const line of note.split('\n')){const match=line.match(/^\s*(Dörrfunktion|Larmfunktion|Brandfunktion)\s*:\s*(.*)$/i);if(!match){remaining.push(line);continue;}const key={'dörrfunktion':'door','larmfunktion':'alarm','brandfunktion':'fire'}[match[1].toLowerCase()];if(match[2]&&!functions[key].split('\n').includes(match[2]))functions[key]=[functions[key],match[2]].filter(Boolean).join('\n');}
+    note=remaining.join('\n').trim();
+    const result={code,meta,rows,note};if(input.functions!==undefined||Object.values(functions).some(Boolean))result.functions=cardFunctions({functions});return result;
+  }
+  function cardFunctions(card){
+    const input=card?.functions??{};if(!isObject(input)||Object.keys(input).some(key=>!['door','alarm','fire'].includes(key)))throw Error('Dörrkortets funktionsbeskrivningar är ogiltiga.');
+    return Object.fromEntries([['door','Dörrfunktion'],['alarm','Larmfunktion'],['fire','Brandfunktion']].map(([key,label])=>[key,text(input[key]??'',label,2000)]));
   }
   function normalizedMaterialRow(row,def){
     const value={id:def.id,section:def.section,label:def.label,product:text(row.product,'Produkt',160),quantity:int(row.quantity,'Antal',1,999),delivery:text(row.delivery,'Levereras av',40),installer:text(row.installer,'Monteras av',40)};
@@ -1508,7 +1515,7 @@
     return {id:idValue(input.id,'Produkt-ID'),name:text(input.name,'Produktnamn',160,false),category,description:text(input.description??'','Produktbeskrivning',400)};
   }
   function validate(raw){
-    if(!isObject(raw)||![2,3,4,5].includes(raw.schema))throw Error('Projektfilens version stöds inte av denna projekteringssida.');
+    if(!isObject(raw)||![2,3,4,5,6].includes(raw.schema))throw Error('Projektfilens version stöds inte av denna projekteringssida.');
     if(!isObject(raw.project))throw Error('Projektuppgifter saknas.');
     const project={id:idValue(raw.project.id,'Projekt-ID'),name:text(raw.project.name,'Projektnamn',120,false),revision:int(raw.project.revision,'Revision',1,1000000000),updatedAt:text(raw.project.updatedAt,'Sparad tid',40,false)};
     if(!/^\d{4}-\d{2}-\d{2}T/.test(project.updatedAt)||!Number.isFinite(Date.parse(project.updatedAt)))throw Error('Projektets sparade tid är ogiltig.');
@@ -1527,11 +1534,13 @@
     const result={schema:4,project,drawing,cards,stencils,placements:[],customProducts:[],preferences:normalizedPreferences(raw.preferences)},positions=new Set();
     for(const value of raw.placements){const place=normalizedPlacement(value,result);if(positions.has(place.id))throw Error('Ritningen innehåller dubblerade positions-ID.');positions.add(place.id);result.placements.push(place);}
     result.annotations=Annotations.validate(raw.annotations,drawing.pages);
-    if(raw.schema===5||Object.values(cards).some(card=>card.rows.some(row=>row.imported||row.id.startsWith('import-')||['connection','functionOwner','note'].some(key=>Object.hasOwn(row,key)))))result.schema=5;
+    if(raw.schema>=5||Object.values(cards).some(card=>card.rows.some(row=>row.imported||row.id.startsWith('import-')||['connection','functionOwner','note'].some(key=>Object.hasOwn(row,key)))))result.schema=5;
     if(raw.conversion!==undefined){
       if(!isObject(raw.conversion)||raw.conversion.version!==1||!Array.isArray(raw.conversion.issues)||raw.conversion.issues.length>1000)throw Error('Importöversikten är ogiltig.');
       result.conversion={version:1,sourceName:text(raw.conversion.sourceName,'Källfil',240),issues:raw.conversion.issues.map(value=>text(value,'Importanmärkning',500,false))};result.schema=5;
     }
+    if(raw.schema===6||Object.values(cards).some(card=>card.functions))result.schema=6;
+    // Older readers must reject schema 6 rather than discard function fields.
     // Older archived readers reject schema 4 before saving away the extra rows
     // or annotations. Earlier schema 2/3 inputs remain readable above.
     numberEquipment(result);
@@ -1741,6 +1750,6 @@
     });
   }
 
-  return Object.freeze({Annotations,LIMITS,META_KEYS,SPECIAL_CODES,SECTIONS,sectionsForCard,PRODUCTS,productIdentity:productNameKey,LEGACY_PRODUCTS,RETIRED_PRODUCTS,PRODUCT_ALIASES,isRetiredProduct,OWNER_VALUES,TOOLBAR_TOOLS,SIZE_SCOPES,PRODUCT_TYPES,PRODUCT_TYPE_LABELS,CATEGORY_DEFAULTS,defaultPreferences,normalizeCode,matchKey,clone,createEmpty,initialCardCode,createCard,validate,defaultStencil,defaultStencilFor,restroomSymbol,upgradeRestroomStencils,stencilLabel,stencilCategory,isProductStencil,isReferenceStencil,renameReferencePlacement,productMultiplier,equipmentFor,placementCounts,listStencils,searchProducts,addProduct,ensureCard,updateCard,copyCard,renameCard,assignPlacementCard,suggestCardCode,suggestForkCode,suggestStencilCode,forkPlacementCard,removeCard,addStencil,updateStencil,removeStencil,addPlacement,updatePlacement,updateEquipment,removePlacements,duplicatePlacements,setPreferences,setMaterialTime,resizeTargets,resizeShared,resizeStencilShared,alignPlacements});
+  return Object.freeze({Annotations,LIMITS,META_KEYS,SPECIAL_CODES,SECTIONS,sectionsForCard,PRODUCTS,productIdentity:productNameKey,LEGACY_PRODUCTS,RETIRED_PRODUCTS,PRODUCT_ALIASES,isRetiredProduct,OWNER_VALUES,TOOLBAR_TOOLS,SIZE_SCOPES,PRODUCT_TYPES,PRODUCT_TYPE_LABELS,CATEGORY_DEFAULTS,defaultPreferences,normalizeCode,matchKey,clone,createEmpty,initialCardCode,createCard,cardFunctions,validate,defaultStencil,defaultStencilFor,restroomSymbol,upgradeRestroomStencils,stencilLabel,stencilCategory,isProductStencil,isReferenceStencil,renameReferencePlacement,productMultiplier,equipmentFor,placementCounts,listStencils,searchProducts,addProduct,ensureCard,updateCard,copyCard,renameCard,assignPlacementCard,suggestCardCode,suggestForkCode,suggestStencilCode,forkPlacementCard,removeCard,addStencil,updateStencil,removeStencil,addPlacement,updatePlacement,updateEquipment,removePlacements,duplicatePlacements,setPreferences,setMaterialTime,resizeTargets,resizeShared,resizeStencilShared,alignPlacements});
 });
 

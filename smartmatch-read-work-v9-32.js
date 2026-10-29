@@ -28,6 +28,7 @@
  const sectionNames=new Map([
   ['daglasning',['Daglåsning','daglasning']],['daglas',['Daglåsning','daglasning']],
   ['nattlasning',['Nattlåsning','nattlasning']],['nattlas',['Nattlåsning','nattlasning']],
+  ['dorrstangning',['Dörrstängning','dorrstangning']],['ovrigatillbehor',['Övriga tillbehör','ovriga-tillbehor']],
   ['ovrigutrustning',['Övrig utrustning','ovrig-utrustning']],
   ['larmpasser',['Larm/Passer','larm-passer']],['larmochpasser',['Larm/Passer','larm-passer']],
   ['larmpassage',['Larm/Passer','larm-passer']]
