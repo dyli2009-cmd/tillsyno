@@ -200,3 +200,13 @@ Samma beställning kompletterades med att Spara PDF föreslår den öppnade ritn
 Arbetsverktygen grupperas med enhetliga SVG-ikoner och 44 px tryckytor. Sidbyte/zoom har egen grupp; på telefon ligger textstorleksknapparna i ritverktygsmenyn. Filåtgärderna ligger tillsammans i rubriken och versionsnumret flyttas från överlappande kontroller till objektraden. Den nya layouten är avgränsad till Säkerhetsservices arbetsyta genom Stäng ritning-kontrollen och en egen stilmall. Testat: faktisk PDF-nedladdning med samma filnamn, 100 %/normal standard och valda alternativ, mushjulszoom, stäng/öppna med bevarat innehåll, rotation och protokoll i dator-, surfplatte- och telefonvyer (390/320 px).
 
 Återöppning av exakt den senast stängda PDF-filen hämtar de lokala ändringar som sparades vid stängningen, även när filens inbäddade arbetsdata är äldre. En annan PDF-version öppnas enligt sitt innehåll. Filinnehållets fingeravtryck skiljer fallen åt. Slutkontrollen omfattar filnamn med blanksteg/åäö, ändringar efter senaste PDF-export, stängning/återöppning, mörkt tema samt manuellt telefon-/surfplatteval.
+
+
+
+# 2026-10-29 · v2.4.501 · Gemensam UI-standard i Kontrollflödet
+
+Användaren beställde först gemensamma regler för text, ikoner och knappar, sedan uttryckligen att börja med Kontrollflödet. Den avgränsade upplåsningen gäller presentationen på de två ordinarie arbetsytorna: all-in-one.html och controlflow-revision/all-in-one.html. UI_RULES.md dokumenterar 16 px vanlig text på telefon/surfplatta, 18 px i rymlig datorvy, 24/20 px rubriker, minst 14 px etiketter, 20–24 px ikoner och 44 px tryckytor.
+
+En separat stilmall och textskala används endast på markerade Kontrollflödessidor. Viktiga knappar visar ikon och text. På telefon samlas objektknapparna under Lägg till objekt. Text kan förstoras till 200 % med rullbar layout; UI-förstoringen ändrar inte ritningsmarkörer, PDF-mått eller lagrade protokollvärden. Datormåtten ersätter äldre kompakta regler endast inom denna beställning.
+
+Verifiering och begränsningar dokumenteras i CONTROLFLOW_UI_501.md. PDF-/lagringslogiken och gemensamma stilmallar ändras inte. CE, SmartMatch och äldre testsidor omfattas inte. Ingen separat native-källa finns i detta repo; ingen TestFlight-publicering utförs. Kontrollflödet är åter LÅST efter den avgränsade beställningen.

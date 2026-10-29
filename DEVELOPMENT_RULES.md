@@ -2,6 +2,10 @@
 
 Det här dokumentet ska läsas innan någon ändring görs i Dörrservice.
 
+## Gränssnittsstandard, 29 oktober 2026
+
+Läs [UI_RULES.md](UI_RULES.md) före nya storleks- och layoutändringar. Användaren har beställt första utrullningen i Kontrollflödet. Övriga moduler anpassas först när de beställs; ändra en sida/modul i taget.
+
 ## 1. Grundregel: ändra bara rätt arbetsområde
 Varje arbetsområde behandlas som en egen modul.
 
@@ -399,3 +403,4 @@ Kompletterat användarbeslut samma arbetspass, TEST 9.6: skilj Avläsning av rit
 2026-10-18, Tillsyno v2.4.397, build 36.172: Separata Avläsning TEST 9.29 visar bara exakta fristående DS/DA-typer från det förberedda PDF-stämpelregistret. `/Subj` är auktoritativt när det finns; `/Contents` används endast om ämnet är tomt. WC dörrstängare, VCDS, DBL-DS, DS1 och Dörrstängare freeswing ger ingen extra symbol. Identiska poster dedupliceras. DS visas orange och DA mörkröd som passiva kvadrater på 14 × 14 CSS-pixlar med fast skärmstorlek och PDF-rektangelns mittpunkt vid all zoom. Ingen OCR, helsidestext, produktläsning eller matchning startas. TEST 9.28 och äldre snapshots lämnas byte-oförändrade; Kontrollflöde, standard-SmartMatch och Ritningsverktyget ändras inte funktionellt. Se SMARTMATCH_READ_TEST_9_29.md.
 
 2026-10-19, Tillsyno v2.4.398, build 36.173: Ritningsverktygets Digitalisera dörrkort TEST accepterar nu standardtabell, Tånga-formatets ansvarsmatris (`Övrigt`, `Lev av`, `Mont av`, `Ansl av`, `Funk ansv.`, `Anm`, `Montering klar`) och enkla tvåkolumnskort med uttrycklig `Dörrkort`-rubrik. Ansvarsfälten bevaras som redigerbara och exporterbara kolumner, en avlägsen tabellinje tas inte med i beteckningen och tomma avsnittsankare kan inte placera rader i fel avsnitt. OCR använder de första 90 procenten; tolkning och autosparning använder slutdelen. Endast ett lyckat sparat resultat når 100 procent. Fel och avbrott behåller verklig procent och visar exakt orsak. Kontrollflöde och SmartMatch-funktionerna är oförändrade. Se DRAWING_TOOLS_398.md.
+

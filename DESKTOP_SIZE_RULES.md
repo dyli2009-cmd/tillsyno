@@ -43,3 +43,8 @@ Denna startsida använder ovanstående datorskala i v2.4.355. CSS är avgränsad
 Läs denna fil före nya storleksändringar för dator. Utgå från tabellen, avgränsa till den beställda sidan och jämför datorvyn med telefon/iPad. Kontrollera även bred touchskärm samt manuellt telefon-/surfplatteval. Bevara valt tema och gemensamma texter. Denna guide innebär ingen generell ombyggnad av redan godkända sidor.
 
 Se även `DESKTOP_AREA_324.md`, `DESKTOP_CHECKLISTS_325.md` och `DESKTOP_DRAWING_HEADER_326.md` för områdesväljare, checklistval och ritningsstart.
+
+
+## Ny avgränsad standard 29 oktober 2026
+
+[UI_RULES.md](UI_RULES.md) gäller nu Kontrollflödets ordinarie arbetsytor i v2.4.501: 18 px vanlig text i rymlig datorvy och 16 px på telefon/iPad, med separat skala till 200 %. Äldre startsidesmått ovan fortsätter gälla sidor som ännu inte omfattas av den nya beställningen.
