@@ -59,12 +59,54 @@ const root=process.env.CONTROLFLOW_SCREENSHOTS||fs.mkdtempSync(path.join(os.tmpd
   await page.mouse.move(area.x+area.width*.2,area.y+area.height*.7);await page.mouse.down();await page.mouse.move(area.x+area.width*.4,area.y+area.height*.8,{steps:5});await page.mouse.up();
   const line=await page.evaluate(()=>drawingExtras.at(-1));assert.equal(line.type,'line');assert(Math.abs(line.x1-.8)<.01&&Math.abs(line.y1-.3)<.01&&Math.abs(line.x2-.6)<.01&&Math.abs(line.y2-.2)<.01,'new annotation stores original coordinates');
   const exported=await page.evaluate(async()=>{const original=Array.from(sourceBytes),previous=PDFLib.PDFPage.prototype.drawCircle;let pointCircles=0;PDFLib.PDFPage.prototype.drawCircle=function(options){if(options.size===2.7)pointCircles++;return previous.call(this,options)};let built;try{built=await buildSecurityDrawingPdf()}finally{PDFLib.PDFPage.prototype.drawCircle=previous}const {out,originalBytes}=built;const result=await PDFLib.PDFDocument.load(await out.save());return {pointCircles,angles:result.getPages().map(p=>p.getRotation().angle),same:JSON.stringify(original)===JSON.stringify(Array.from(originalBytes))}});
-  assert.equal(exported.pointCircles,0,'PDF arrows have no covering point circles');assert.deepEqual(exported.angles,[0,90]);assert(exported.same,'export preserves original drawing');
+  assert.equal(exported.pointCircles,0,'PDF arrows have no covering point circles');assert.deepEqual(exported.angles,[180,90]);assert(exported.same,'export preserves original drawing');
   await rotate();await rotate();await rotate();await page.evaluate(()=>renderQueue);
   await page.locator('#secNext').click();await page.evaluate(()=>renderQueue);assert.equal(await page.evaluate(()=>drawingRotation()),0,'rotation scoped per page');
   assert((await page.evaluate(()=>pageWidth/pageHeight))<1,'native PDF orientation preserved');
   await page.locator('#secPrev').click();await page.evaluate(()=>renderQueue);assert.equal(await page.evaluate(()=>drawingRotation()),90);
   await page.reload();await page.waitForTimeout(200);await page.evaluate(()=>document.querySelectorAll('dialog[open]').forEach(d=>d.close()));await page.locator('#securityFile').setInputFiles(root+'/drawing.pdf');await page.waitForFunction(()=>pdf&&drawingRotation()===90);await page.evaluate(()=>renderQueue);assert.equal(await page.locator('[data-rotation]').textContent(),'90°','view persisted');
+  // Customer preview uses the exported orientation and moves labels back into original coordinates.
+  await page.locator('#securityPreview').click();await page.waitForFunction(()=>previewMode==='drawing'&&previewPdf&&document.querySelector('#secPreviewDialog').open);await page.locator('#customerStampEdit').click();
+  const handle=page.locator('.customerStampHandle[data-uid="test-lock"]');await handle.waitFor();
+  const previewBefore=await page.evaluate(()=>({x:items[0].labelX,y:items[0].labelY,width:document.querySelector('#secPreviewCanvas').getBoundingClientRect().width,point:previewStampRects.find(r=>r.uid==='test-lock')}));
+  assert(Math.abs(previewBefore.point.x-(1-previewBefore.y))<1e-8&&Math.abs(previewBefore.point.y-previewBefore.x)<1e-8,'preview handle follows 90 degree rotation');
+  await handle.focus();await handle.press('ArrowRight');await page.waitForFunction(()=>!document.querySelector('#customerStampDone').disabled);
+  const previewAfter=await page.evaluate(()=>({x:items[0].labelX,y:items[0].labelY}));assert(Math.abs(previewAfter.x-previewBefore.x)<1e-8);assert(Math.abs(previewAfter.y-(previewBefore.y-1/previewBefore.width))<1e-7,'preview movement is stored in original coordinates');
+  await page.locator('#secPreviewClose').click();
+  await page.locator('#secNext').click();await page.evaluate(()=>renderQueue);await rotate();await page.evaluate(()=>renderQueue);await page.locator('#secPrev').click();await page.evaluate(()=>renderQueue);
+  const savedState=await page.evaluate(()=>({items:JSON.stringify(items),notes:JSON.stringify(textNotes),extras:JSON.stringify(drawingExtras)}));
+  async function downloadWork(name,asNew=false){
+   await page.locator('#securityExport').click();
+   if(asNew){await page.locator('#secSaveNew').click();await page.locator('#secNewFileName').fill(name);}
+   const pending=page.waitForEvent('download');
+   if(asNew)await page.locator('#secFileNameDialog button[type="submit"]').click();else await page.locator('#secSaveWork').click();
+   const download=await pending,file=path.join(root,device.name+'-'+name);await download.saveAs(file);
+   const parsed=await PDFDocument.load(fs.readFileSync(file));assert.deepEqual(parsed.getPages().slice(0,2).map(p=>p.getRotation().angle),[90,180],'saved PDF retains each chosen page rotation');assert(parsed.getPageCount()>2);assert(parsed.getPages().slice(2).every(p=>p.getRotation().angle===0),'protocol pages stay upright');return file;
+  }
+  const workFile=await downloadWork('rotated.pdf');
+  if(device.name==='desktop'){
+   const orientations=await page.evaluate(async()=>{
+    const results=[];
+    for(const angle of [0,90,180,270]){
+     const snapshot=structuredClone({items,textNotes,drawingExtras,project,logoData,drawingRotations:{1:angle,2:angle}});
+     snapshot.drawingExtras.push({uid:'page2-text',type:'text',page:2,x:.25,y:.35,text:'Second page'});
+     const {out}=await buildSecurityDrawingPdf(snapshot),scan=await pdfjsLib.getDocument({data:await out.save()}).promise,entry=[];
+     for(let number=1;number<=2;number++){
+      const p=await scan.getPage(number),viewport=p.getViewport({scale:1}),content=await p.getTextContent(),labels=content.items.filter(t=>['Updated','Test','Second page'].includes(t.str));
+      entry.push({rotation:p.rotate,labels:labels.map(t=>({text:t.str,matrix:pdfjsLib.Util.transform(viewport.transform,t.transform)}))});
+     }
+     await scan.destroy();results.push(entry);
+    }
+    return results;
+   });
+   for(let i=0;i<4;i++){assert.deepEqual(orientations[i].map(p=>p.rotation),[i*90,(90+i*90)%360]);for(const p of orientations[i]){assert(p.labels.length>0);for(const label of p.labels){assert(label.matrix[0]>0&&Math.abs(label.matrix[1])<1e-7,'annotation text remains upright at every rotation');}}}
+  }
+  // Clear local view preferences to simulate opening on a second device.
+  await page.evaluate(()=>localStorage.clear());await page.reload();await page.waitForTimeout(200);await page.evaluate(()=>{AllInOneProtocols.set(['lock','alarm','access','detector']);document.querySelectorAll('dialog[open]').forEach(d=>d.close())});
+  await page.locator('#securityFile').setInputFiles(workFile);await page.waitForFunction(()=>pdf&&document.querySelector('#secOpenWorkDialog').open);await page.locator('#secOpenContinue').click();await page.evaluate(()=>renderQueue);
+  const reopened=await page.evaluate(()=>({angle:drawingRotation(),second:drawingRotations[2],items:JSON.stringify(items),notes:JSON.stringify(textNotes),extras:JSON.stringify(drawingExtras)}));
+  assert.equal(reopened.angle,90);assert.equal(reopened.second,90);assert.equal(reopened.items,savedState.items);assert.equal(reopened.notes,savedState.notes);assert.equal(reopened.extras,savedState.extras);
+  await downloadWork('resaved.pdf',device.name==='desktop');
   assert.deepEqual(errors,[]);console.log(device.name+' passed');await context.close();
  }
  await browser.close();server.close();

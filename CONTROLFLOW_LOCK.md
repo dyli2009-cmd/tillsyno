@@ -184,3 +184,9 @@ Verifierat i Chromium på dator, surfplatta och telefonbredder 390/320 px: PDF-p
 # 2026-10-29 · v2.4.498 · Samma pil för Säkerhetsservice
 
 På användarens beställning används samma rena pil för Inbrottslarm, Lås & Dörrmiljö och Passer som för Detektorer. Den runda punkten över pilspetsen tas bort i arbetsritningen och PDF. Etiketter, statusfärger, dragning, protokoll och lagrade koordinater bevaras; markeringens osynliga tryckyta är 44 × 44 px. Övriga protokoll behåller sina markeringar. Kontrollflödet är åter LÅST efter denna avgränsade beställning.
+
+# 2026-10-29 · v2.4.499 · Behåll vridningen i sparad PDF
+
+På användarens beställning följer vald rotation per ritningssida med i både Spara PDF och Skapa ny PDF. Vridningen läggs till sidans ursprungliga PDF-orientering; protokollsidor hålls oförändrade. Arbetsfilen bäddar in rotationerna tillsammans med originalritning och befintliga koordinater så att öppning på en annan enhet och upprepad sparning inte återställer eller dubblerar vridningen. Texter, pilar och kundmallens stämpelhandtag anpassas till sidans visningsläge. Kundmallsredigerarens nya koordinatstöd är aktivt när byggaren lämnar en rotation, annars används befintliga koordinater.
+
+Verifierat med faktisk PDF-nedladdning, öppning utan lokal historik, omsparning, flera sidrotationer, PDF med inbyggd 90° rotation, oförändrade arbetsdata, kundmallsjustering och protokollsidor i Chromium på dator/surfplatta/telefon. Kontrollflödet är åter LÅST efter beställningen.
