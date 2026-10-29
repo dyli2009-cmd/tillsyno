@@ -60,6 +60,8 @@
     }
     function refresh(input){
       if(!usable(input)){close();return;}
+      const surface=input.closest('dialog[open]')||document.body;
+      if(portal.parentNode!==surface)surface.append(portal,live);
       pendingTouch=null;
       if(active!==input)close();active=input;prepare(input);
       let found;
@@ -159,3 +161,4 @@
   }
   return Object.freeze({create});
 });
+

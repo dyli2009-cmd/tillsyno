@@ -5,29 +5,29 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#173e3a">
   <meta name="description" content="Projektera dörrar på egna PDF-ritningar med stenciler, gemensamma dörrkort och sökbar PDF-export.">
-  <title>Projektering 2.19.9 | Tillsyno</title>
+  <title>Projektering 2.19.10 | Tillsyno</title>
   <style>html[data-auth-pending] body{visibility:hidden!important}</style>
   <script src="vendor/supabase-2.49.10.min.js"></script>
   <script src="auth-config.js"></script>
   <script src="auth/client.js?v=2.4.270"></script>
   <script src="auth/guard.js?v=2.4.270" defer></script>
-  <link rel="stylesheet" href="smartmatch-projektering-v2-19.css?v=2.19.9">
+  <link rel="stylesheet" href="smartmatch-projektering-v2-19.css?v=2.19.10">
   <script src="vendor/pdf.min.js" defer></script>
   <script src="vendor/pdf-lib.min.js" defer></script>
-  <script src="smartmatch-projektering-v2-19-annotations.js?v=2.19.9" defer></script>
-  <script src="smartmatch-projektering-v2-19-catalog.js?v=2.19.9" defer></script>
-  <script src="smartmatch-projektering-v2-19-data.js?v=2.19.9" defer></script>
-  <script src="smartmatch-projektering-v2-19-store.js?v=2.19.9" defer></script>
-  <script src="smartmatch-projektering-v2-19-canvas.js?v=2.19.9" defer></script>
-  <script src="smartmatch-projektering-v2-19-pdf.js?v=2.19.9" defer></script>
-  <script src="smartmatch-projektering-v2-19-import.js?v=2.19.9" defer></script>
-  <script src="smartmatch-projektering-v2-19-materials.js?v=2.19.9" defer></script>
-  <script src="smartmatch-projektering-v2-19-library.js?v=2.19.9" defer></script>
-  <script src="smartmatch-projektering-v2-8-suggest.js?v=2.8" defer></script>
+  <script src="smartmatch-projektering-v2-19-annotations.js?v=2.19.10" defer></script>
+  <script src="smartmatch-projektering-v2-19-catalog.js?v=2.19.10" defer></script>
+  <script src="smartmatch-projektering-v2-19-data.js?v=2.19.10" defer></script>
+  <script src="smartmatch-projektering-v2-19-store.js?v=2.19.10" defer></script>
+  <script src="smartmatch-projektering-v2-19-canvas.js?v=2.19.10" defer></script>
+  <script src="smartmatch-projektering-v2-19-pdf.js?v=2.19.10" defer></script>
+  <script src="smartmatch-projektering-v2-19-import.js?v=2.19.10" defer></script>
+  <script src="smartmatch-projektering-v2-19-materials.js?v=2.19.10" defer></script>
+  <script src="smartmatch-projektering-v2-19-library.js?v=2.19.10" defer></script>
+  <script src="smartmatch-projektering-v2-8-suggest.js?v=2.19.10" defer></script>
   <script src="smartmatch-projektering-v2-9-library-ui.js?v=2.9" defer></script>
   <script src="smartmatch-projektering-v2-10-search.js?v=2.10" defer></script>
   <script src="smartmatch-projektering-v2-10-layout.js?v=2.10" defer></script>
-  <script src="smartmatch-projektering-v2-19.js?v=2.19.9" defer></script>
+  <script src="smartmatch-projektering-v2-19.js?v=2.19.10" defer></script>
 </head>
 <body data-view="drawing">
   <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -66,7 +66,7 @@
   </defs></svg>
 
   <header class="app-header">
-    <a class="brand" href="index.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small>Projektering 2.19.9</small></span></a>
+    <a class="brand" href="index.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small>Projektering 2.19.10</small></span></a>
     <div class="project-name"><label for="projectName">Projekt</label><input id="projectName" value="Nytt projekt" maxlength="120" aria-label="Projektnamn" autocomplete="off"><button id="projectDetails" type="button" class="icon-button" title="Projektuppgifter och logga" aria-label="Projektuppgifter och logga"><svg aria-hidden="true"><use href="#i-edit"/></svg></button></div>
     <div class="header-status"><span class="status-dot" aria-hidden="true"></span><output id="saveStatus" aria-live="polite">Öppna en ritning för att börja</output></div>
     <button id="help" class="icon-button" type="button" aria-label="Öppna guiden" title="Guide och kortkommandon"><svg><use href="#i-help"/></svg></button>
@@ -171,11 +171,11 @@
     <button id="resizeCardPane" type="button" class="pane-resizer" role="separator" aria-orientation="vertical" aria-label="Ändra dörrkortets bredd" aria-controls="cardPane" aria-valuemin="320" aria-valuemax="680" aria-valuenow="420" tabindex="0"><span aria-hidden="true"></span></button>
 
     <aside id="cardPane" class="pane card-pane" aria-labelledby="cardHeading">
-      <div class="card-heading"><div><p class="eyebrow" id="cardHeading">Gemensamt dörrkort</p><h2 id="cardCode">Välj ett dörrkort</h2></div><div class="card-actions"><button id="renameCard" type="button" class="icon-button" title="Byt beteckning på kortet och alla dess stämplar" aria-label="Byt beteckning"><svg><use href="#i-edit"/></svg></button><button id="previewCard" type="button" class="icon-button" title="Förhandsvisa dörrkort" aria-label="Förhandsvisa dörrkort" disabled><svg><use href="#i-preview"/></svg></button><button id="newCard" type="button" class="icon-button" title="Nytt dörrkort" aria-label="Nytt dörrkort"><svg><use href="#i-plus"/></svg></button><button id="copyCard" type="button" class="icon-button" title="Kopiera dörrkort" aria-label="Kopiera dörrkort"><svg><use href="#i-copy"/></svg></button><button id="deleteCard" type="button" class="icon-button danger" title="Ta bort dörrkort" aria-label="Ta bort dörrkort"><svg><use href="#i-trash"/></svg></button></div></div>
+      <div class="card-heading"><div><p class="eyebrow" id="cardHeading">Gemensamt dörrkort</p><h2 id="cardCode" tabindex="-1">Välj ett dörrkort</h2></div><div class="card-actions"><button id="openCardEditor" type="button" class="icon-button" title="Öppna dörrkort i popup" aria-label="Öppna dörrkort i popup"><svg><use href="#i-fullscreen"/></svg></button><button id="renameCard" type="button" class="icon-button" title="Byt beteckning på kortet och alla dess stämplar" aria-label="Byt beteckning"><svg><use href="#i-edit"/></svg></button><button id="previewCard" type="button" class="icon-button" title="Förhandsvisa dörrkort" aria-label="Förhandsvisa dörrkort" disabled><svg><use href="#i-preview"/></svg></button><button id="newCard" type="button" class="icon-button" title="Nytt dörrkort" aria-label="Nytt dörrkort"><svg><use href="#i-plus"/></svg></button><button id="copyCard" type="button" class="icon-button" title="Kopiera dörrkort" aria-label="Kopiera dörrkort"><svg><use href="#i-copy"/></svg></button><button id="deleteCard" type="button" class="icon-button danger" title="Ta bort dörrkort" aria-label="Ta bort dörrkort"><svg><use href="#i-trash"/></svg></button><button id="closeCardEditor" type="button" class="icon-button" title="Stäng dörrkort" aria-label="Stäng dörrkort">×</button></div></div>
       <div class="card-fork-actions"><button id="forkCard" type="button" class="button" title="Skapa ett eget kort för den markerade dörren" disabled><svg aria-hidden="true"><use href="#i-edit"/></svg><span id="forkCardLabel">Ändra bara denna dörr</span></button></div>
       <div class="shared-notice"><svg aria-hidden="true"><use href="#i-card"/></svg><output id="cardUsage">Välj en kortstämpel eller skapa ett nytt dörrkort.</output></div>
-      <div class="card-scroll"><div id="cardMeta" class="card-meta"></div><div id="cardRows" class="card-rows"></div><div class="card-functions"><div class="card-note"><h3><label for="cardDoorFunction">Dörrfunktion</label></h3><textarea id="cardDoorFunction" rows="3" maxlength="2000"></textarea></div><div class="card-note"><h3><label for="cardAlarmFunction">Larmfunktion</label></h3><textarea id="cardAlarmFunction" rows="3" maxlength="2000"></textarea></div><div class="card-note"><h3><label for="cardFireFunction">Brandfunktion</label></h3><textarea id="cardFireFunction" rows="3" maxlength="2000"></textarea></div></div><div class="card-note"><label for="cardNote">Anteckning</label><textarea id="cardNote" rows="3" maxlength="2000" placeholder="Gemensam information för dörrtypen"></textarea></div><p class="product-disclaimer">Skriv egen produkttext eller välj ett förslag. Kontrollera projekterat val.</p></div>
-      <div class="card-save"><output id="cardStatus" aria-live="polite">Inget dörrkort valt</output><button id="saveCard" type="button" class="button primary"><svg><use href="#i-check"/></svg>Spara dörrkort</button></div>
+      <div class="card-scroll"><details id="cardMetaSection" class="card-section card-meta-section"><summary>Dörruppgifter <small>Littera, hängning, dörrtyp och krav</small></summary><div id="cardMeta" class="card-meta"></div></details><div id="cardRows" class="card-rows"></div><div class="card-functions"><div class="card-note"><h3><label for="cardDoorFunction">Dörrfunktion</label></h3><textarea id="cardDoorFunction" rows="3" maxlength="2000"></textarea></div><div class="card-note"><h3><label for="cardAlarmFunction">Larmfunktion</label></h3><textarea id="cardAlarmFunction" rows="3" maxlength="2000"></textarea></div><div class="card-note"><h3><label for="cardFireFunction">Brandfunktion</label></h3><textarea id="cardFireFunction" rows="3" maxlength="2000"></textarea></div></div><details id="cardNoteSection" class="card-section card-note-section"><summary id="cardNoteToggle">Lägg till anteckning</summary><div class="card-note"><label for="cardNote">Anteckning för dörrkortet</label><textarea id="cardNote" rows="3" maxlength="2000" placeholder="Gemensam information för dörrtypen"></textarea></div></details><p class="product-disclaimer">Skriv egen produkttext eller välj ett förslag. Kontrollera projekterat val.</p></div>
+      <p id="cardEditorMessage" class="card-editor-message" role="status" aria-live="polite"></p><div class="card-save"><output id="cardStatus" aria-live="polite">Inget dörrkort valt</output><button id="saveCard" type="button" class="button primary"><svg><use href="#i-check"/></svg>Spara</button><div class="card-editor-navigation"><button id="previousCard" type="button" class="button" title="Spara och gå till föregående dörrkort" aria-label="Spara och gå till föregående dörrkort"><span aria-hidden="true">‹</span><span class="previous-label">Föregående</span></button><output id="cardOrder" aria-label="Dörrkort i ordningen"></output><button id="nextCard" type="button" class="button">Spara &amp; nästa ›</button><button id="finishCard" type="button" class="button primary" title="Spara och stäng dörrkortet">Klar</button></div></div>
     </aside>
     <section id="materialsPane" class="pane materials-pane" aria-labelledby="materialsHeading">
       <div class="materials-heading"><div><p class="eyebrow">Beställningsunderlag</p><h1 id="materialsHeading">Material</h1><output id="materialSummary" aria-live="polite">Inga produkter att sammanställa ännu.</output></div><div class="material-actions"><button id="materialRefresh" type="button" class="button" title="Uppdatera från sparade uppgifter">Uppdatera</button><button id="materialCsv" type="button" class="button"><svg><use href="#i-download"/></svg>CSV</button><button id="materialPdf" type="button" class="button primary"><svg><use href="#i-download"/></svg>Skriv ut lista · PDF</button></div></div>
@@ -186,6 +186,7 @@
       <p class="material-foot">Listan räknar endast produkter från placerade GS-dörrkort. Arbetsmoment räknas separat från beställningsmaterial. Töm en egen tid eller tryck ↺ för att återställa registerförslaget.</p>
     </section>
   </main>
+  <dialog id="cardEditorDialog" class="card-editor-dialog" aria-labelledby="cardCode"></dialog>
   <footer class="app-footer"><span>Sparas på den här enheten</span><span>Spara projekt för en flyttbar kopia</span></footer>
   <div id="appMessage" class="app-message" role="status" aria-live="polite"></div>
 
@@ -256,7 +257,7 @@
     <div class="dialog-actions"><button id="cancelImport" type="button" class="button">Avbryt</button><button id="acceptImport" type="button" class="button primary">Öppna konverterat projekt</button></div>
   </dialog>
   <noscript><p class="noscript">Aktivera JavaScript för att använda projekteringsappen.</p></noscript>
-<span class="projektering-version" aria-label="Version 2.19.9">v2.19.9</span>
+<span class="projektering-version" aria-label="Version 2.19.10">v2.19.10</span>
 </body>
 </html>
 

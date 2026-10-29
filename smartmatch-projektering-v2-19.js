@@ -13,6 +13,7 @@
   let undoStack = [], redoStack = [], clipboard = [], productRow = null, editingStencil = null, messageTimer;
   let confirmResolve = null, textResolve = null, contextPoint = null, contextReturnFocus = null, suppressCardClickUntil = 0;
   let selectedAnnotation=null, projectLogoDraft=null;
+  let cardPaneHome=null,cardReturnFocus=null,cardDisclosureCode=null;
   let currentCategory = 'cards', currentCardGroup = 'GS', materialReport = null;
   let materialCacheKey = '', operationSettled = Promise.resolve(), canvasQueue = Promise.resolve();
   let materialTimeQueue = Promise.resolve(), materialTimePending = 0, materialStructureKey = '';
@@ -86,7 +87,7 @@
   function message(text, error = false) {
     $('appMessage').textContent = text; $('appMessage').dataset.level = error ? 'error' : 'success';
     clearTimeout(messageTimer); if (!error) messageTimer = setTimeout(() => { $('appMessage').textContent = ''; }, 6500);
-    for (const [dialog, output] of [['productDialog','productMessage'],['stencilDialog','stencilMessage'],['equipmentDialog','equipmentMessage'],['projectDetailsDialog','projectDetailsMessage']]) {
+    for (const [dialog, output] of [['cardEditorDialog','cardEditorMessage'],['productDialog','productMessage'],['stencilDialog','stencilMessage'],['equipmentDialog','equipmentMessage'],['projectDetailsDialog','projectDetailsMessage']]) {
       if ($(dialog)?.open && $(output)) { $(output).textContent = text; $(output).dataset.level = error ? 'error' : 'success'; }
     }
   }
@@ -153,6 +154,11 @@
     $('otherProductCount').textContent=counts.otherProducts;
     $('cardStatus').textContent=!draft?'Välj eller skapa ett dörrkort':dirty?'Osparade ändringar':state.cards[activeCode]?'Sparat dörrkort':'Nytt dörrkort';
     $('saveCard').disabled=busy||!draft||(!dirty&&!!state.cards[activeCode]);
+    const cardOrder=Object.keys(state.cards).sort(natural),cardIndex=cardOrder.indexOf(activeCode);
+    $('previousCard').disabled=busy||cardIndex<=0;
+    $('nextCard').disabled=busy||cardIndex<0||cardIndex>=cardOrder.length-1;
+    $('finishCard').disabled=busy||!draft;$('closeCardEditor').disabled=busy;$('openCardEditor').disabled=busy||!draft;
+    $('cardOrder').textContent=cardIndex<0?'':`${cardIndex+1} / ${cardOrder.length}`;
     $('undo').disabled=busy||!undoStack.length; $('redo').disabled=busy||!redoStack.length;
     for (const id of ['deleteSelection','duplicateSelection','lockSelection','rotateLeft','rotateRight']) $(id).disabled=busy||(!selected.length&&!(selectedAnnotation&&['deleteSelection','duplicateSelection'].includes(id)));
     $('selectAllTool').disabled=busy||!state.placements.some(p=>p.page===currentPage);
@@ -206,7 +212,7 @@
     activeCode=code&&state.cards[code]?code:null; draft=activeCode?clone(state.cards[activeCode]):null; dirty=false;
     const stencil=code&&stencilForCode(code);if(stencil){currentStencil=stencil.id;revealStencil(stencil);}
   }
-  function draftChanged() { dirty=!!draft&&(JSON.stringify(draft)!==JSON.stringify(state.cards[activeCode]||D.createCard(activeCode))); status(); }
+  function draftChanged() { dirty=!!draft&&(JSON.stringify(draft)!==JSON.stringify(state.cards[activeCode]||D.createCard(activeCode))); updateCardOverview(); status(); }
   function updateTypedProduct(rowId,value){
     if(!draft||busy)return;const row=draft.rows.find(row=>row.id===rowId);if(!row)return;
     row.product=String(value).slice(0,160);draftChanged();
@@ -272,12 +278,35 @@
   }
   function openCardView({focus=false}={}) {
     if(!activeCode)return;
-    if(matchMedia('(max-width:1100px)').matches&&document.body.dataset.view!=='cards'){
-      // A touch pointer-up can reveal the card before its compatibility click.
-      // Consume that click; a fresh pointer-down always starts a new action.
-      suppressCardClickUntil=performance.now()+500;showView('cards');
+    viewer?.cancelGesture?.();productSuggest?.close();closeContext();
+    const dialog=$('cardEditorDialog');
+    if(!dialog.open){
+      cardReturnFocus=document.activeElement;
+      cardPaneHome=document.createComment('Dörrkortets plats');$('cardPane').before(cardPaneHome);
+      dialog.append($('cardPane'));
+      cardDisclosureCode=null;$('cardEditorMessage').textContent='';renderCard();
+      $('cardPane').querySelector('.card-scroll').scrollTop=0;
+      suppressCardClickUntil=performance.now()+500;
+      dialog.showModal();document.body.classList.add('card-editor-open');
+      $('cardCode').focus({preventScroll:true});
     }
-    if(focus&&focusFieldsAutomatically())$('cardMeta').querySelector('input')?.focus({preventScroll:true});
+  }
+  function closeCardEditor(){
+    productSuggest?.close();
+    $('cardEditorDialog').close();
+    if(cardPaneHome){cardPaneHome.before($('cardPane'));cardPaneHome.remove();cardPaneHome=null;}
+    document.body.classList.remove('card-editor-open');
+    if(cardReturnFocus?.isConnected)cardReturnFocus.focus({preventScroll:true});else $('openCardEditor').focus({preventScroll:true});cardReturnFocus=null;
+  }
+  async function finishCardEditor({save=false}={}){
+    if(save){if(!await saveCard())return;}else if(!await leaveDraft())return;
+    closeCardEditor();
+  }
+  async function stepCard(delta){
+    const codes=Object.keys(state.cards).sort(natural),next=codes[codes.indexOf(activeCode)+delta];
+    if(!next||!await saveCard())return;
+    setActive(next);$('cardEditorMessage').textContent='';renderAll();$('cardPane').querySelector('.card-scroll').scrollTop=0;
+    $('cardCode').focus({preventScroll:true});
   }
   async function activate({id}) {
     if(!await selectIds([id])||!selected.includes(id))return;
@@ -465,20 +494,42 @@
     }).join('')||'<p class="empty-note">Inga dörrkort. Skapa ett kort eller placera en GS-stämpel.</p>';
     $('selectedStamp').textContent=state.stencils[currentStencil]?.code||'Välj stencil';
   }
+  function updateCardOverview(){
+    if(!draft)return;
+    for(const section of D.sectionsForCard(draft)){
+      const rows=section.rows.map(def=>draft.rows.find(row=>row.id===def.id)),filled=rows.filter(row=>row.product.trim()&&!/^[-–—]+$/.test(row.product.trim())).length;
+      const output=[...$('cardRows').querySelectorAll('[data-section-count]')].find(node=>node.dataset.sectionCount===section.title);
+      if(output)output.textContent=`${filled} ${filled===1?'produkt':'produkter'}`+(rows.some(row=>row.note?.trim())?' · anmärkning':'');
+    }
+    for(const button of $('cardRows').querySelectorAll('[data-action="toggle-note"]')){
+      const row=draft.rows.find(row=>row.id===button.dataset.rowId),hasNote=!!row?.note?.trim();
+      button.classList.toggle('has-note',hasNote);button.title=hasNote?'Visa anmärkning: '+row.note:'Lägg till anmärkning';
+      button.setAttribute('aria-label',(hasNote?'Visa anmärkning för ':'Lägg till anmärkning för ')+(row?.section||'')+' '+(row?.label||''));
+      button.querySelector('.note-indicator').hidden=!hasNote;
+    }
+    $('cardNoteToggle').textContent=draft.note?.trim()?'Anteckning · finns':'Lägg till anteckning';
+  }
   function renderCard() {
     productSuggest?.close();
+    const same=cardDisclosureCode===activeCode;
+    const expanded=new Set(same?[...$('cardRows').querySelectorAll('details[open]')].map(node=>node.dataset.section):[]);
+    const notes=new Set(same?[...$('cardRows').querySelectorAll('[data-note-row]:not([hidden])')].map(node=>node.dataset.noteRow):[]);
+    if(!same){$('cardMetaSection').open=false;$('cardNoteSection').open=false;}
+    cardDisclosureCode=activeCode;
     $('cardCode').textContent=activeCode||'Dörrkort';
-    $('cardUsage').textContent=activeCode?`Används av ${state.placements.filter(p=>p.code===activeCode&&state.stencils[p.stencilId].kind==='card').length} dörrar`:'Välj en dörrstämpel eller skapa ett dörrkort.';
+    $('cardUsage').textContent=activeCode?`Gemensamt för ${state.placements.filter(p=>p.code===activeCode&&state.stencils[p.stencilId].kind==='card').length} dörrar med beteckningen ${activeCode}`:'Välj en dörrstämpel eller skapa ett dörrkort.';
     $('cardNote').disabled=!draft;$('cardNote').value=draft?.note||'';
     for(const [key,id]of [['door','cardDoorFunction'],['alarm','cardAlarmFunction'],['fire','cardFireFunction']]){$(id).disabled=!draft;$(id).value=D.cardFunctions(draft)[key];}
     if(!draft){$('cardMeta').innerHTML='';$('cardRows').innerHTML='<div class="card-empty"><p>Placera en stencil på ritningen för att skapa dörrkortet. Du kan också välja Nytt dörrkort.</p><p>Symbolerna under Övrigt har inget dörrkort.</p></div>';return;}
     const metaLabels={littera:'Littera',hanging:'Hängning',doorType:'Dörrtyp',fire:'Brandkrav',security:'Skyddsklass',escape:'Utrymningskrav',reentry:'Återinrymning'};
     $('cardMeta').innerHTML=Object.entries(metaLabels).map(([key,label])=>`<label><span>${label}</span><input data-meta="${key}" value="${esc(draft.meta[key])}" maxlength="120" aria-label="${label}"></label>`).join('');
-    $('cardRows').innerHTML=D.sectionsForCard(draft).map(section=>`<details class="card-section" ${section.rows.some(row=>!row.id.startsWith('extra-'))||draft.rows.some(row=>row.id.startsWith('extra-')&&row.product.trim()&&!/^[-–—]+$/.test(row.product.trim()))?'open':''}><summary>${esc(section.title)}</summary><div class="card-table-wrap"><table><thead><tr><th>Komponent</th><th>Produkt</th><th>Antal</th><th>Lev av</th><th>Mont av</th></tr></thead><tbody>${section.rows.map(def=>{
-      const row=draft.rows.find(r=>r.id===def.id);
-      const owners=field=>`<select data-row-id="${esc(row.id)}" data-field="${field}" aria-label="${esc(section.title+' '+row.label+' '+(field==='delivery'?'levereras av':'monteras av'))}">${[...new Set(['',...D.OWNER_VALUES,row[field]])].map(value=>`<option value="${esc(value)}"${row[field]===value?' selected':''}>${esc(value||'–')}</option>`).join('')}</select>`;
-      return `<tr data-row-id="${esc(row.id)}"><th scope="row">${esc(row.label)}</th><td class="product-cell"><div class="product-entry"><input class="product-input" data-product-input data-row-id="${esc(row.id)}" value="${esc(row.product)}" maxlength="160" autocomplete="off" aria-label="${esc(section.title+' '+row.label)} produkt" placeholder="Skriv produkt…"><button type="button" class="product-library" data-action="choose-product" ${def.category==='other'?'hidden':''} data-row-id="${esc(row.id)}" aria-label="Välj från biblioteket för ${esc(row.label)}" title="Produktbibliotek"><svg aria-hidden="true"><use href="#i-search"/></svg></button><button type="button" class="clear-product" data-action="clear-product" data-row-id="${esc(row.id)}" aria-label="Ta bort ${esc(row.label)}"${row.product?'':' disabled'}>×</button></div></td><td><input data-row-id="${esc(row.id)}" data-field="quantity" type="number" min="1" max="999" step="1" value="${row.quantity}" aria-label="${esc(section.title+' '+row.label)} antal"></td><td>${owners('delivery')}</td><td>${owners('installer')}</td></tr><tr class="card-row-details"><td colspan="5"><div class="row-responsibility">${[['connection','Ansl av'],['functionOwner','Funktionsansvarig av']].map(([field,label])=>`<label><span>${label}</span><input data-row-id="${esc(row.id)}" data-field="${field}" maxlength="40" value="${esc(row[field]||'')}" aria-label="${esc(section.title+' '+row.label+' '+label)}"></label>`).join('')}<label class="row-note"><span>Anmärkning</span><textarea data-row-id="${esc(row.id)}" data-field="note" rows="2" maxlength="1000" aria-label="${esc(section.title+' '+row.label+' anmärkning')}">${esc(row.note||'')}</textarea></label></div></td></tr>`;
-    }).join('')}</tbody></table></div></details>`).join('');
+    const fields=[['delivery','Lev av','levereras av'],['installer','Mont av','monteras av'],['connection','Ansl av','ansluts av'],['functionOwner','Funk av','funktionsansvarig av']];
+    $('cardRows').innerHTML=D.sectionsForCard(draft).map(section=>`<details class="card-section" data-section="${esc(section.title)}" ${expanded.has(section.title)?'open':''}><summary><span>${esc(section.title)}</span><small data-section-count="${esc(section.title)}"></small></summary><div class="card-table-wrap"><table><thead><tr><th>Komponent</th><th>Produkt</th><th>Antal</th>${fields.map(([,label,full])=>`<th title="${full}">${label}</th>`).join('')}<th><span class="sr-only">Anmärkning</span></th></tr></thead>${section.rows.map(def=>{
+      const row=draft.rows.find(r=>r.id===def.id),label=section.title+' '+row.label;
+      const owners=(field,full)=>`<select data-row-id="${esc(row.id)}" data-field="${field}" title="${esc(full)}" aria-label="${esc(label+' '+full)}">${[...new Set(['',...D.OWNER_VALUES,row[field]||''])].map(value=>`<option value="${esc(value)}"${(row[field]||'')===value?' selected':''}>${esc(value||'–')}</option>`).join('')}</select>`;
+      return `<tbody class="component-group"><tr class="component-row" data-row-id="${esc(row.id)}"><th scope="row">${esc(row.label)}</th><td class="product-cell" data-label="Produkt"><div class="product-entry"><input class="product-input" data-product-input data-row-id="${esc(row.id)}" value="${esc(row.product)}" maxlength="160" autocomplete="off" aria-label="${esc(label)} produkt" placeholder="Skriv produkt…"><button type="button" class="product-library" data-action="choose-product" ${def.category==='other'?'hidden':''} data-row-id="${esc(row.id)}" aria-label="Välj från biblioteket för ${esc(row.label)}" title="Produktbibliotek"><svg aria-hidden="true"><use href="#i-search"/></svg></button><button type="button" class="clear-product" data-action="clear-product" data-row-id="${esc(row.id)}" aria-label="Ta bort ${esc(row.label)}"${row.product?'':' disabled'}>×</button></div></td><td class="quantity-cell" data-label="Antal"><input data-row-id="${esc(row.id)}" data-field="quantity" type="number" min="1" max="999" step="1" value="${row.quantity}" aria-label="${esc(label)} antal"></td>${fields.map(([field,short,full])=>`<td class="owner-cell" data-label="${short}">${owners(field,full)}</td>`).join('')}<td class="note-cell"><button type="button" class="row-note-toggle" data-action="toggle-note" data-row-id="${esc(row.id)}" aria-controls="note-${esc(row.id)}" aria-expanded="${notes.has(row.id)}"><svg aria-hidden="true"><use href="#i-edit"/></svg><span class="note-indicator" hidden aria-hidden="true">●</span><span class="note-button-label">Anmärkning</span></button></td></tr><tr class="card-row-note" data-note-row="${esc(row.id)}" ${notes.has(row.id)?'':'hidden'}><td colspan="8"><label for="note-${esc(row.id)}">Anmärkning · ${esc(row.label)}</label><textarea id="note-${esc(row.id)}" data-row-id="${esc(row.id)}" data-field="note" rows="2" maxlength="1000" aria-label="${esc(label+' anmärkning')}">${esc(row.note||'')}</textarea></td></tr></tbody>`;
+    }).join('')}</table></div></details>`).join('');
+    updateCardOverview();
   }
   const annotationItem = () => state?.annotations?.find(item=>item.id===selectedAnnotation);
   function renderAnnotationPanel(){
@@ -958,7 +1009,7 @@
     if(!await leaveDraft())return;const value=await askText(copyFrom?'Kopiera dörrkort':'Nytt dörrkort','Ny beteckning',copyFrom?D.suggestForkCode(state,copyFrom):D.suggestCardCode(state,activeCode||'GS1'));if(value===null)return;
     const code=D.normalizeCode(value),stencil=stencilForCode(code);if(stencil?.kind==='symbol')throw Error('Den beteckningen används av en symbol. Välj en annan beteckning för dörrkortet.');
     await commit(next=>{if(copyFrom)D.copyCard(next,copyFrom,code);else D.ensureCard(next,code);if(!Object.values(next.stencils).some(s=>s.code===code))D.addStencil(next,{...D.defaultStencilFor(next,code),id:code,code,kind:'card'});},`${code} är skapat.`);
-    setActive(code);currentStencil=stencilForCode(code).id;renderAll();showView('cards');
+    setActive(code);currentStencil=stencilForCode(code).id;renderAll();openCardView();
   }
   async function deleteCard(){
     if(!activeCode||!state.cards[activeCode])return;if(!await leaveDraft())return;
@@ -1023,9 +1074,14 @@
     $('sizeScope').addEventListener('change',()=>void run(()=>commit(next=>D.setPreferences(next,{sizeScope:$('sizeScope').value}),'Valet för gemensam storlek är sparat.',{history:false})));
     $('stampList').addEventListener('click',e=>{const b=e.target.closest('[data-stencil-id]');if(b)void run(()=>chooseStencil(b.dataset.stencilId));});
     $('stampList').addEventListener('dragstart',e=>{const b=e.target.closest('[data-stencil-id]');if(!b||busy){e.preventDefault();return;}currentStencil=b.dataset.stencilId;viewer.setStencil(currentStencil);e.dataTransfer.setData('application/x-tillsyno-stencil',currentStencil);e.dataTransfer.setData('text/plain',currentStencil);e.dataTransfer.effectAllowed='copy';});
-    $('cardList').addEventListener('click',e=>{const b=e.target.closest('[data-card-code]');if(b)void run(async()=>{const code=b.dataset.cardCode;if(code!==activeCode&&!await leaveDraft())return;setActive(code);const st=stencilForCode(code);if(st)currentStencil=st.id;renderAll();showView('cards');});});
+    $('cardList').addEventListener('click',e=>{const b=e.target.closest('[data-card-code]');if(b)void run(async()=>{const code=b.dataset.cardCode;if(code!==activeCode){if(!await leaveDraft())return;setActive(code);}const st=stencilForCode(code);if(st)currentStencil=st.id;renderAll();openCardView();});});
     $('forkCard').addEventListener('click',()=>void run(forkSelectedCard));
     $('renameCard').addEventListener('click',()=>void run(async()=>{if(!activeCode||!await leaveDraft())return;const from=activeCode,to=await askText('Byt beteckning för hela dörrkortet','Alla kopplade stämplar får samma beteckning',from);if(to===null)return;let renamed;await commit(next=>{renamed=D.renameCard(next,from,to);},'Dörrkortet och dess stämplar har fått den nya beteckningen.');setActive(renamed.code);renderAll();}));
+    $('openCardEditor').addEventListener('click',()=>{if(!busy)openCardView();});
+    $('closeCardEditor').addEventListener('click',()=>void run(()=>finishCardEditor()));
+    $('finishCard').addEventListener('click',()=>void run(()=>finishCardEditor({save:true})));
+    $('cardEditorDialog').addEventListener('cancel',event=>{event.preventDefault();if(!busy)void run(()=>finishCardEditor());});
+    for(const [id,delta]of [['previousCard',-1],['nextCard',1]])$(id).addEventListener('click',()=>void run(()=>stepCard(delta)));
     $('previewCard').addEventListener('click',()=>void run(openCardPreview));
     $('closeCardPreview').addEventListener('click',closeCardPreview);
     $('cardPreviewDialog').addEventListener('cancel',event=>{event.preventDefault();closeCardPreview();});
@@ -1097,7 +1153,10 @@
     $('placementsList')?.addEventListener('click',e=>{const b=e.target.closest('[data-focus-id]');if(b)void run(async()=>{await viewer.focusPlacement(b.dataset.focusId);await selectIds([b.dataset.focusId]);showView('drawing');});});
     $('cardMeta').addEventListener('input',e=>{if(draft&&!busy&&e.target.dataset.meta){draft.meta[e.target.dataset.meta]=e.target.value;draftChanged();}});
     $('cardRows').addEventListener('input',e=>{if(!draft||busy)return;const target=e.target,row=draft.rows.find(r=>r.id===target.dataset.rowId);if(row&&['quantity','delivery','installer','connection','functionOwner','note'].includes(target.dataset.field)){row[target.dataset.field]=target.dataset.field==='quantity'?Number(target.value):target.value;draftChanged();}});
-    $('cardRows').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||busy||!draft)return;if(b.dataset.action==='choose-product')openProducts(b.dataset.rowId);else{updateTypedProduct(b.dataset.rowId,'');const input=[...$('cardRows').querySelectorAll('[data-product-input]')].find(input=>input.dataset.rowId===b.dataset.rowId);if(input)input.value='';productSuggest?.close();}});
+    $('cardRows').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||busy||!draft)return;if(b.dataset.action==='choose-product')openProducts(b.dataset.rowId);else if(b.dataset.action==='toggle-note'){
+      const row=[...$('cardRows').querySelectorAll('[data-note-row]')].find(node=>node.dataset.noteRow===b.dataset.rowId);if(!row)return;
+      row.hidden=!row.hidden;b.setAttribute('aria-expanded',String(!row.hidden));if(!row.hidden)row.querySelector('textarea').focus({preventScroll:true});
+    }else if(b.dataset.action==='clear-product'){updateTypedProduct(b.dataset.rowId,'');const input=[...$('cardRows').querySelectorAll('[data-product-input]')].find(input=>input.dataset.rowId===b.dataset.rowId);if(input)input.value='';productSuggest?.close();}});
     $('cardNote').addEventListener('input',e=>{if(draft&&!busy){draft.note=e.target.value;draftChanged();}});$('saveCard').addEventListener('click',()=>void run(saveCard));
     for(const [key,id]of [['door','cardDoorFunction'],['alarm','cardAlarmFunction'],['fire','cardFireFunction']])$(id).addEventListener('input',e=>{if(draft&&!busy){draft.functions={...D.cardFunctions(draft),[key]:e.target.value};draftChanged();}});
     $('productSearch').addEventListener('input',renderProducts);$('productList').addEventListener('click',e=>{const b=e.target.closest('[data-product-id]');if(!b||busy)return;const p=L.listProducts(library,state,productDefinition().category).find(p=>p.id===b.dataset.productId);if(p)chooseProduct(p.name);});
@@ -1119,7 +1178,7 @@
     $('projectLogoFile').addEventListener('change',event=>{const file=event.target.files[0];event.target.value='';void run(()=>readProjectLogo(file));});
     $('removeProjectLogo').addEventListener('click',()=>{if(!busy){projectLogoDraft=null;renderProjectLogo();}});
     $('projectName').addEventListener('change',()=>void run(async()=>{const value=$('projectName').value.trim();await commit(next=>{next.project.name=value;next.project.revision++;next.project.updatedAt=new Date().toISOString();},'Projektnamnet är sparat.');}));
-    document.querySelectorAll('button[data-view]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.view==='materials')void run(async()=>{if(!await leaveDraft())return;renderMaterials();showView('materials');});else showView(b.dataset.view);}));
+    document.querySelectorAll('button[data-view]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.view==='materials')void run(async()=>{if(!await leaveDraft())return;renderMaterials();showView('materials');});else if(b.dataset.view==='cards'&&activeCode)openCardView();else showView(b.dataset.view);}));
     $('help').addEventListener('click',()=>$('helpDialog').showModal());
     $('confirmAccept').addEventListener('click',()=>resolveAsk('accept'));$('confirmDiscard').addEventListener('click',()=>resolveAsk('discard'));$('confirmCancel').addEventListener('click',()=>resolveAsk('cancel'));$('confirmDialog').addEventListener('cancel',e=>{e.preventDefault();resolveAsk('cancel');});
     $('textAccept').addEventListener('click',()=>resolveText(true));$('textCancel').addEventListener('click',()=>resolveText(false));$('textDialog').addEventListener('cancel',e=>{e.preventDefault();resolveText(false);});$('textValue').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();resolveText(true);}});
@@ -1156,7 +1215,7 @@
       }
       state=libraryProject(state,{fresh:!restoredProject});
       setActive(state.cards.GS1?'GS1':Object.keys(state.cards).sort(natural)[0]||null);if(!libraryStencils().some(stencil=>stencil.id===currentStencil))currentStencil=firstLibraryStencil();revealStencil(state.stencils[currentStencil]);bind();makeViewer();if(original.length)await viewer.open(original);renderAll();showView('drawing');
-      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.19.9'});
+      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.19.10'});
     }catch(error){message(error?.message||'Projektet kunde inte öppnas.',true);}
   }
   window.addEventListener('tillsyno-authorized',()=>void boot());

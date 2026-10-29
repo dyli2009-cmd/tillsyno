@@ -28,13 +28,13 @@ async function storageChecks(state){
 }
 function uiChecks(state){
  const source=fs.readFileSync(path.resolve(__dirname,'../smartmatch-projektering-v2-19.js'),'utf8');
- const elements=new Map(),el=id=>{if(!elements.has(id))elements.set(id,{value:'',textContent:'',innerHTML:'',hidden:false,open:false,dataset:{},handlers:{},addEventListener(type,fn){this.handlers[type]=fn;},removeAttribute(name){delete this[name];},showModal(){this.open=true;},close(){this.open=false;}});return elements.get(id);};
+ const elements=new Map(),el=id=>{if(!elements.has(id))elements.set(id,{value:'',textContent:'',innerHTML:'',hidden:false,open:false,dataset:{},handlers:{},querySelectorAll(){return [];},addEventListener(type,fn){this.handlers[type]=fn;},removeAttribute(name){delete this[name];},showModal(){this.open=true;},close(){this.open=false;}});return elements.get(id);};
  const draft=D.clone(state.cards.GS1);draft.note='Unsaved door-card draft';
  let storageFailure=false,saved;
- const context=vm.createContext({D,$:el,state:D.clone(state),draft,activeCode:'GS1',productSuggest:null,viewer:{cancelGesture(){}},busy:false,clone:D.clone,esc:value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),draftChanged(){context.dirty=true;},dirty:true,projectLogoDraft:null,Date,Uint8Array,original:new Uint8Array(),undoStack:[],redoStack:[],selected:[],damagedStore:false,storageOk:true,message(){},renderAll(){},S:{async save(value){if(storageFailure)throw Error('Simulated disk failure');saved=D.clone(value);}}});
+ const context=vm.createContext({D,$:el,state:D.clone(state),draft,activeCode:'GS1',cardDisclosureCode:null,productSuggest:null,viewer:{cancelGesture(){}},busy:false,clone:D.clone,esc:value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),draftChanged(){context.dirty=true;},dirty:true,projectLogoDraft:null,Date,Uint8Array,original:new Uint8Array(),undoStack:[],redoStack:[],selected:[],damagedStore:false,storageOk:true,message(){},renderAll(){},S:{async save(value){if(storageFailure)throw Error('Simulated disk failure');saved=D.clone(value);}}});
  vm.runInContext(source.slice(source.indexOf('  function renderProjectLogo()'),source.indexOf('  function ask({')),context);
  vm.runInContext(source.slice(source.indexOf('  async function commit('),source.indexOf('  function setActive(')),context);
- vm.runInContext(source.slice(source.indexOf('  function renderCard()'),source.indexOf('  const annotationItem =')),context);
+ vm.runInContext(source.slice(source.indexOf('  function updateCardOverview()'),source.indexOf('  const annotationItem =')),context);
  vm.runInContext(source.split('\n').find(line=>line.includes("$('cardRows').addEventListener('input'")),context);
  vm.runInContext('renderCard();openProjectDetails();',context);
  assert.equal(el('projectDetailsDialog').open,true);
