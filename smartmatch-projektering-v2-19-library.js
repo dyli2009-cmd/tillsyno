@@ -110,7 +110,7 @@
   // import IDs: the short v2 file deliberately hides those while keeping its models.
   for(const [previous,current]of Object.entries(data().PRODUCT_ALIASES||{}))if(hidden.has(previous)&&!entries.has(previous))hidden.add(current);
   for(const {value} of [...entries.values()].sort((a,b)=>b.priority-a.priority)){
-   if(hidden.has(value.id)||(categoryId&&categoryId!=='all'&&value.category!==categoryId))continue;
+   if(!data().isAllowedProduct(value)||hidden.has(value.id)||(categoryId&&categoryId!=='all'&&value.category!==categoryId))continue;
    const key=typeof data().productIdentity==='function'?data().productIdentity(value):value.category+':'+fold(value.name);if(names.has(key))continue;names.add(key);result.push(clone(value));
   }
   return result.sort((a,b)=>natural.compare(a.name,b.name)||natural.compare(a.id,b.id));
@@ -137,7 +137,7 @@
  });}
  function assignGroup(lib,name,groupId){return changed(lib,next=>{if(!next.groups.some(value=>value.id===groupId))throw Error('Gruppen finns inte.');next.assignments[code(name)]=groupId;});}
  function saveProduct(lib,input){return changed(lib,next=>{
-  if(!object(input))throw Error('Produkten saknas.');const existing=next.products.find(value=>value.id===input.id)||data().PRODUCTS.find(value=>value.id===input.id)||data().LEGACY_PRODUCTS?.find(value=>value.id===input.id),entry=product({...existing,...input,id:input.id||uid('produkt')});const index=next.products.findIndex(value=>value.id===entry.id);if(index<0)next.products.push(entry);else next.products[index]=entry;next.hiddenProductIds=next.hiddenProductIds.filter(value=>value!==entry.id);
+  if(!object(input))throw Error('Produkten saknas.');const existing=next.products.find(value=>value.id===input.id)||data().PRODUCTS.find(value=>value.id===input.id)||data().LEGACY_PRODUCTS?.find(value=>value.id===input.id),entry=product({...existing,...input,id:input.id||uid('produkt')});if(!data().isAllowedProduct(entry)&&(!existing||existing.name!==entry.name||existing.category!==entry.category))throw Error('Välj en ASSA- eller Dorma-modell som finns i produktregistret.');const index=next.products.findIndex(value=>value.id===entry.id);if(index<0)next.products.push(entry);else next.products[index]=entry;next.hiddenProductIds=next.hiddenProductIds.filter(value=>value!==entry.id);
  });}
  function removeProduct(lib,productId,source=null){return changed(lib,next=>{
   id(productId,'Produkt-ID');
@@ -225,3 +225,4 @@
  }
  return Object.freeze({DB_NAME,STORE_NAME,FORMAT,LIMITS,createDefault,validate,groupsFor,groupFor,categories,listProducts,searchProducts,saveGroup,removeGroup,assignGroup,saveProduct,removeProduct,saveStencil,isHidden,setHidden,setLabels,setCategoryLabel,merge,load,save,close,pack,unpack});
 });
+

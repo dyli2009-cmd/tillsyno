@@ -66,18 +66,20 @@ function unchanged(state,action,pattern){const before=clone(state);assert.throws
  let importedSpelling=L.saveProduct(L.createDefault(),C.products.find(value=>value.category==='coordinator'&&value.name==='SR390'));
  assert.equal(L.listProducts(importedSpelling,fresh,'coordinator').filter(value=>D.productIdentity(value)==='coordinator:sr390').length,1,'explicit SR390 alias also deduplicates imported personal products');
  const wrong=fixture.previousProducts.find(value=>value.id==='copiax-modell-closer-arm-adc5be10bd60a2f0');
- assert(!D.searchProducts(fresh,'closer-arm','ECline').length);assert(L.listProducts(L.createDefault(),fresh,'closer').some(value=>value.name==='TS5000 ECline'));
+ assert(!D.searchProducts(fresh,'closer-arm','ECline').length);assert(!L.listProducts(L.createDefault(),fresh,'closer').some(value=>value.name==='TS5000 ECline'));
  const wrongState=clone(fresh);wrongState.customProducts=[clone(wrong)];assert(!D.searchProducts(wrongState,'closer-arm','ECline').length,'exact old snapshot is retired from project suggestions');
- let editedWrong=L.saveProduct(L.createDefault(),{...wrong,description:'Min personliga ändring'});
- assert(L.listProducts(editedWrong,fresh,'closer-arm').some(value=>value.id===wrong.id),'user-edited variant retains its saved category');
- lib=L.saveProduct(lib,{id:'own-battery-model',name:'Eget batteri',category:'battery',description:''});
+ let editedWrong=L.validate({...L.createDefault(),products:[{...wrong,description:'Min personliga ändring'}]});
+ assert(editedWrong.products.some(value=>value.id===wrong.id),'user-edited variant remains stored');
+ assert(!L.listProducts(editedWrong,fresh,'closer-arm').some(value=>value.id===wrong.id),'other manufacturers are hidden from future choices');
+ lib=L.validate({...lib,products:lib.products.concat({id:'own-battery-model',name:'Eget batteri',category:'battery',description:''})}); // An older imported custom product remains in backups.
  lib=L.setLabels(lib,{cards:'Mina kort',other:'Mina symboler'});lib=L.setCategoryLabel(lib,'battery','Mina batterier');
  const libraryRoundtrip=L.unpack(L.pack(lib));assert.deepEqual(libraryRoundtrip,lib);assert.equal(L.categories(libraryRoundtrip).find(value=>value.id==='battery').label,'Mina batterier');
  assert.throws(()=>OlderLibrary.unpack(L.pack(lib)),/känd produktkategori|produktgrupp/,'old library versions reject unknown extra category safely');
  const oldLib=fixture.legacyLibrary;assert.deepEqual(L.validate(clone(oldLib)),clone(oldLib),'old personal library records remain readable without imported settings');
- assert(L.searchProducts(L.createDefault(),fresh,'lock','S').some(value=>value.name==='SL620'));
- assert(L.searchProducts(L.createDefault(),fresh,'battery','B').some(value=>value.name==='Batteribackup'));
+ assert(!L.searchProducts(L.createDefault(),fresh,'lock','S').some(value=>value.name==='SL620'));
+ assert(!L.searchProducts(L.createDefault(),fresh,'battery','B').some(value=>value.name==='Batteribackup'));
  assert.equal(L.listProducts(L.createDefault(),fresh,'lock').filter(value=>value.name==='310-50').length,1);
  assert.throws(()=>L.saveProduct(lib,{name:'Inte dold metadata',category:'lock',standardMinutes:12}),/okänt fält/);
  console.log('PASS Projektering 2.19 data/library/store: preserved and new models, 31 categories, 39-row cards, strict schema4 migration, annotations and extras roundtrip, old hides/overrides and personal settings, search and safe older-reader rejection.');
 })().catch(error=>{console.error(error);process.exitCode=1;});
+

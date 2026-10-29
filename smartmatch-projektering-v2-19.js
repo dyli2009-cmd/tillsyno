@@ -590,7 +590,7 @@
     await replaceProject(next,bytes,'Ritningen är öppnad. Välj en stencil och klicka eller dra den till en dörr.');
   }
   function productDefinition(){return definitions().find(r=>r.id===productRow);}
-  function renderProducts(){const def=productDefinition();$('productList').innerHTML=L.searchProducts(library,state,def.category,$('productSearch').value).map(p=>`<button type="button" class="product-choice" data-product-id="${esc(p.id)}"><strong>${esc(p.name)}</strong><span>${esc(p.description)}</span></button>`).join('')||'<p class="empty-note">Ingen produkt hittades. Lägg till en egen nedan.</p>';}
+  function renderProducts(){const def=productDefinition();$('productList').innerHTML=L.searchProducts(library,state,def.category,$('productSearch').value).map(p=>`<button type="button" class="product-choice" data-product-id="${esc(p.id)}"><strong>${esc(p.name)}</strong><span>${esc(p.description)}</span></button>`).join('')||'<p class="empty-note">Ingen ASSA- eller Dorma-produkt hittades i denna kategori.</p>';}
   function openProducts(rowId){productSuggest?.close();productRow=rowId;const def=productDefinition();$('productTitle').textContent=def.section+' · '+def.label;$('productSearch').value='';$('customProductName').value=draft?.rows.find(row=>row.id===rowId)?.product||'';$('customProductCategory').innerHTML=`<option value="${esc(def.category)}">${esc(L.categories(library).find(category=>category.id===def.category)?.label||def.label)}</option>`;$('customProductCategory').disabled=true;$('productMessage').textContent='';renderProducts();$('productDialog').showModal();if(focusFieldsAutomatically())$('productSearch').focus();}
   function chooseProduct(name){draft.rows.find(r=>r.id===productRow).product=name;draftChanged();renderCard();$('productDialog').close();}
   function stencilDialog(id=null){
@@ -772,8 +772,8 @@
     }).catch(error=>message(error?.message||'Tiden kunde inte återställas.',true)).finally(()=>{materialTimePending--;});
   }
   function renderCatalog(){
-    const C=window.Proj2Catalog,category=$('catalogCategory').value||null,entries=C.list({category:category==='reference'?null:category,query:$('catalogSearch').value,includeReference:true}).filter(entry=>category!=='reference'||!entry.selectable);
-    $('catalogSummary').textContent=`${entries.length} träffar · ${C.stats.entries} poster · ${C.stats.reference} modeller att kontrollera`;
+    const C=window.Proj2Catalog,category=$('catalogCategory').value||null,entries=C.selectionList({category:category==='reference'?null:category,query:$('catalogSearch').value,includeReference:true}).filter(entry=>category!=='reference'||!entry.selectable);
+    $('catalogSummary').textContent=`${entries.length} träffar · ASSA / Dorma`;
     $('catalogRows').innerHTML=entries.map(entry=>{
       const label=C.categories.find(item=>item.id===entry.category)?.label||entry.category,source=entry.origin==='provided'?'Din tidsfil':'Uppskattning';
       const links=entry.sources.filter(url=>/^https:\/\//.test(url)).map((url,index)=>`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Källa ${index+1}</a>`).join(' · ');
@@ -783,7 +783,7 @@
   }
   function openCatalog(){
     viewer?.cancelGesture?.();productSuggest?.close();closeContext();
-    $('catalogSearch').value='';$('catalogCategory').innerHTML='<option value="">Alla kategorier</option>'+Proj2Catalog.categories.map(item=>`<option value="${esc(item.id)}">${esc(item.label)}</option>`).join('');
+    $('catalogSearch').value='';$('catalogCategory').innerHTML='<option value="">Alla kategorier</option>'+Proj2Catalog.categories.filter(item=>Proj2Catalog.selectionList({category:item.id,includeReference:true}).length).map(item=>`<option value="${esc(item.id)}">${esc(item.label)}</option>`).join('');
     renderCatalog();$('catalogDialog').showModal();if(focusFieldsAutomatically())$('catalogSearch').focus();
   }
   async function exportMaterialPDF(){
@@ -1071,10 +1071,11 @@
       }
       state=libraryProject(state,{fresh:!restoredProject});
       setActive(state.cards.GS1?'GS1':Object.keys(state.cards).sort(natural)[0]||null);if(!libraryStencils().some(stencil=>stencil.id===currentStencil))currentStencil=firstLibraryStencil();revealStencil(state.stencils[currentStencil]);bind();makeViewer();if(original.length)await viewer.open(original);renderAll();showView('drawing');
-      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.19'});
+      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.19.1'});
     }catch(error){message(error?.message||'Projektet kunde inte öppnas.',true);}
   }
   window.addEventListener('tillsyno-authorized',()=>void boot());
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>void boot(),{once:true});else void boot();
 })();
+
 
