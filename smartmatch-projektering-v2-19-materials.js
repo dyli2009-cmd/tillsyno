@@ -85,13 +85,14 @@
    if(stencil.kind==='card')placedCards.set(placement.code,(placedCards.get(placement.code)||0)+1);
   }
   for(const [code,count]of placedCards){
-   if(!isGSCardCode(code)){excludedCards.push(code);continue;}
+   if(!isGSCardCode(code)&&!state.conversion){excludedCards.push(code);continue;}
    for(const row of state.cards[code].rows){
     if(!present(row.product))continue;
-    const definition=byDefinition.get(row.id);
+    const definition=byDefinition.get(row.id)||(row.id.startsWith('import-')?{id:'import-'+row.category+'-'+row.label,component:row.label,catalogCategory:row.category,kind:'material',multiplier:1}:null);
     if(!definition)throw Error('Produktraden '+row.id+' saknar en materialgrupp.');
-    const quantity=count*row.quantity*definition.multiplier;
-    add(definition,row.product,quantity,{kind:'card',code,rowId:row.id,quantity,placements:count,perPlacement:row.quantity,multiplier:definition.multiplier});
+    const multiplier=row.imported?1:definition.multiplier;
+    const quantity=count*row.quantity*multiplier;
+    add(definition,row.product,quantity,{kind:'card',code,rowId:row.id,quantity,placements:count,perPlacement:row.quantity,multiplier});
    }
   }
   const rows=[...groups.values()].sort((a,b)=>natural.compare(a.category,b.category)||natural.compare(a.component,b.component)||natural.compare(a.product,b.product));
@@ -224,3 +225,4 @@
  }
  return Object.freeze({build,csv,pdf,sourceText,materialKey,summarize,isGSCardCode,formatDuration,timeSourceText,reviewSummary});
 });
+

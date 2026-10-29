@@ -23,7 +23,7 @@
   let pdfSearchState = {query:'',matches:[],index:-1,busy:false,message:'',textSelection:false,selectedText:''};
   const selectedPlacements = () => state.placements.filter(p => selected.includes(p.id));
   const stencilForCode = code => Object.values(state.stencils).find(s => s.code === code);
-  const definitions = () => D.SECTIONS.flatMap(section => section.rows.map(row => ({...row,section:section.title})));
+  const definitions = () => D.sectionsForCard(draft).flatMap(section => section.rows.map(row => ({...row,section:section.title})));
   function stencilGroup(stencil){return L.groupFor(library,stencil);}
   function revealStencil(stencil){
     if(!stencil)return;currentCategory=stencil.kind==='card'?'cards':'other';
@@ -123,7 +123,10 @@
     $('copyCard').disabled=busy||!state.cards[activeCode]; $('deleteCard').disabled=busy||!state.cards[activeCode];
     $('previewCard').disabled=busy||!draft;
     const forkTarget=selectedPlacements();
-    $('forkCard').disabled=busy||forkTarget.length!==1||state.stencils[forkTarget[0]?.stencilId]?.kind!=='card'||forkTarget[0]?.code!==activeCode;
+    $('renameCard').disabled=busy||!activeCode;
+    const unlinked=forkTarget.length===1&&state.stencils[forkTarget[0]?.stencilId]?.kind==='symbol'&&!D.isProductStencil(state.stencils[forkTarget[0]?.stencilId]);
+    $('forkCardLabel').textContent=unlinked?'Koppla till dörrkort':'Ändra bara denna dörr';
+    $('forkCard').disabled=busy||forkTarget.length!==1||(!unlinked&&(state.stencils[forkTarget[0]?.stencilId]?.kind!=='card'||forkTarget[0]?.code!==activeCode));
     $('editStencil').disabled=busy||!state.stencils[currentStencil]; $('deleteStencil').disabled=busy||!state.stencils[currentStencil];
     $('drawingEmpty').hidden=!!state.drawing.pages.length;
     $('drawingHost').setAttribute('aria-busy', String(busy));
@@ -248,13 +251,17 @@
   }
   async function forkSelectedCard(){
     const items=selectedPlacements(),target=items[0];
+    if(items.length===1&&state.stencils[target.stencilId]?.kind==='symbol'&&!D.isProductStencil(state.stencils[target.stencilId])){
+      const code=await askText('Koppla stämpeln till dörrkort','Beteckning på befintligt dörrkort','');if(code===null)return;let linked;await commit(next=>{linked=D.assignPlacementCard(next,target.id,code);},'Stämpeln använder nu det valda dörrkortet.');setActive(linked.code);renderAll();return;
+    }
     if(items.length!==1||state.stencils[target?.stencilId]?.kind!=='card'||target.code!==activeCode)throw Error('Välj en enda dörrstämpel på ritningen först.');
     const placementId=target.id,sourceCode=target.code,card=clone(draft||state.cards[sourceCode]||D.createCard(sourceCode));
     const code=await askText('Eget kort för denna dörr','Egen beteckning',D.suggestForkCode(state,sourceCode));
     if(code===null)return;
     const current=state.placements.find(item=>item.id===placementId);
     if(!current||current.code!==sourceCode||activeCode!==sourceCode||selected.length!==1||selected[0]!==placementId)throw Error('Välj dörren igen innan du skapar ett eget kort.');
-    let created;await commit(next=>{created=D.forkPlacementCard(next,placementId,code,card);},'Dörren har fått ett eget kort. De andra dörrarna behåller sitt kort.');
+    const reuse=!!state.cards[D.normalizeCode(code)]&&D.normalizeCode(code)!==sourceCode;if(reuse&&!await leaveDraft())return;
+    let created;await commit(next=>{created=D.forkPlacementCard(next,placementId,code,card,{reuse});},'Dörren har fått ett eget kort. De andra dörrarna behåller sitt kort.');
     selected=[placementId];setActive(created.code);currentStencil=state.placements.find(item=>item.id===placementId).stencilId;revealStencil(state.stencils[currentStencil]);renderAll();openCardView();
   }
   async function createBlankDrawing(){
@@ -425,10 +432,10 @@
     if(!draft){$('cardMeta').innerHTML='';$('cardRows').innerHTML='<div class="card-empty"><p>Placera en stencil på ritningen för att skapa dörrkortet. Du kan också välja Nytt dörrkort.</p><p>Symbolerna under Övrigt har inget dörrkort.</p></div>';return;}
     const metaLabels={littera:'Littera',hanging:'Hängning',doorType:'Dörrtyp',fire:'Brandkrav',security:'Skyddsklass',escape:'Utrymningskrav',reentry:'Återinrymning'};
     $('cardMeta').innerHTML=Object.entries(metaLabels).map(([key,label])=>`<label><span>${label}</span><input data-meta="${key}" value="${esc(draft.meta[key])}" maxlength="120" aria-label="${label}"></label>`).join('');
-    $('cardRows').innerHTML=D.SECTIONS.map(section=>`<details class="card-section" ${section.rows.some(row=>!row.id.startsWith('extra-'))||draft.rows.some(row=>row.id.startsWith('extra-')&&row.product.trim()&&!/^[-–—]+$/.test(row.product.trim()))?'open':''}><summary>${esc(section.title)}</summary><div class="card-table-wrap"><table><thead><tr><th>Komponent</th><th>Produkt</th><th>Antal</th><th>Lev av</th><th>Mont av</th></tr></thead><tbody>${section.rows.map(def=>{
+    $('cardRows').innerHTML=D.sectionsForCard(draft).map(section=>`<details class="card-section" ${section.rows.some(row=>!row.id.startsWith('extra-'))||draft.rows.some(row=>row.id.startsWith('extra-')&&row.product.trim()&&!/^[-–—]+$/.test(row.product.trim()))?'open':''}><summary>${esc(section.title)}</summary><div class="card-table-wrap"><table><thead><tr><th>Komponent</th><th>Produkt</th><th>Antal</th><th>Lev av</th><th>Mont av</th></tr></thead><tbody>${section.rows.map(def=>{
       const row=draft.rows.find(r=>r.id===def.id);
       const owners=field=>`<select data-row-id="${esc(row.id)}" data-field="${field}" aria-label="${esc(section.title+' '+row.label+' '+(field==='delivery'?'levereras av':'monteras av'))}">${[...new Set(['',...D.OWNER_VALUES,row[field]])].map(value=>`<option value="${esc(value)}"${row[field]===value?' selected':''}>${esc(value||'–')}</option>`).join('')}</select>`;
-      return `<tr data-row-id="${esc(row.id)}"><th scope="row">${esc(row.label)}</th><td class="product-cell"><div class="product-entry"><input class="product-input" data-product-input data-row-id="${esc(row.id)}" value="${esc(row.product)}" maxlength="160" autocomplete="off" aria-label="${esc(section.title+' '+row.label)} produkt" placeholder="Skriv produkt…"><button type="button" class="product-library" data-action="choose-product" data-row-id="${esc(row.id)}" aria-label="Välj från biblioteket för ${esc(row.label)}" title="Produktbibliotek"><svg aria-hidden="true"><use href="#i-search"/></svg></button><button type="button" class="clear-product" data-action="clear-product" data-row-id="${esc(row.id)}" aria-label="Ta bort ${esc(row.label)}"${row.product?'':' disabled'}>×</button></div></td><td><input data-row-id="${esc(row.id)}" data-field="quantity" type="number" min="1" max="999" step="1" value="${row.quantity}" aria-label="${esc(section.title+' '+row.label)} antal"></td><td>${owners('delivery')}</td><td>${owners('installer')}</td></tr>`;
+      return `<tr data-row-id="${esc(row.id)}"><th scope="row">${esc(row.label)}</th><td class="product-cell"><div class="product-entry"><input class="product-input" data-product-input data-row-id="${esc(row.id)}" value="${esc(row.product)}" maxlength="160" autocomplete="off" aria-label="${esc(section.title+' '+row.label)} produkt" placeholder="Skriv produkt…"><button type="button" class="product-library" data-action="choose-product" ${def.category==='other'?'hidden':''} data-row-id="${esc(row.id)}" aria-label="Välj från biblioteket för ${esc(row.label)}" title="Produktbibliotek"><svg aria-hidden="true"><use href="#i-search"/></svg></button><button type="button" class="clear-product" data-action="clear-product" data-row-id="${esc(row.id)}" aria-label="Ta bort ${esc(row.label)}"${row.product?'':' disabled'}>×</button></div></td><td><input data-row-id="${esc(row.id)}" data-field="quantity" type="number" min="1" max="999" step="1" value="${row.quantity}" aria-label="${esc(section.title+' '+row.label)} antal"></td><td>${owners('delivery')}</td><td>${owners('installer')}</td></tr>${row.imported||row.note?`<tr><td colspan="5"><details><summary>Ansvar och anmärkning${row.note?' · '+esc(row.note):''}</summary><div class="card-meta">${[['connection','Ansluts av',40],['functionOwner','Funktionsansvar',40],['note','Anmärkning',1000]].map(([field,label,max])=>`<label><span>${label}</span><input data-row-id="${esc(row.id)}" data-field="${field}" maxlength="${max}" value="${esc(row[field]||'')}"></label>`).join('')}</div></details></td></tr>`:''}`;
     }).join('')}</tbody></table></div></details>`).join('');
   }
   const annotationItem = () => state?.annotations?.find(item=>item.id===selectedAnnotation);
@@ -532,7 +539,7 @@
     $('placementsList').innerHTML=state.placements.filter(p=>!query||p.code.includes(query)||p.note.toUpperCase().includes(query)).map(p=>`<button type="button" data-focus-id="${esc(p.id)}" class="placement-list-item${selected.includes(p.id)?' is-active':''}"><strong>${esc(p.code)}</strong><small>Sida ${p.page}${p.locked?' · Låst':''}</small></button>`).join('')||'<p class="empty-note">Inga placeringar.</p>';
   }
   function renderAll() {
-    $('projectName').value=state.project.name;renderAnnotationPanel();renderLibrary();renderCard();renderSelection();renderPositions();renderTools();renderMaterials();
+    $('projectName').value=state.project.name;if($('savedImportIssues')){$('savedImportIssues').hidden=!state.conversion?.issues.length;$('savedImportIssueList').innerHTML=(state.conversion?.issues||[]).map(text=>`<li>${esc(text)}</li>`).join('');}renderAnnotationPanel();renderLibrary();renderCard();renderSelection();renderPositions();renderTools();renderMaterials();
     viewer?.setStencil(currentStencil);viewer?.setProject(state,{selectedIds:selected});viewer?.setAnnotationSelection(selectedAnnotation);status();
   }
   async function inspectOriginal(bytes) {
@@ -579,13 +586,29 @@
       if(answer!=='accept')return;
       await replaceProject(packed.state,packed.original,'Projektet är öppnat med sin originalritning, sina stämplar och sparade dörrkort.');return;
     }
+    const importChoice=await ask({title:'Öppna ny ritning',text:'Läs in befintliga stämplar och dörrkort som redigerbar projektering. Vanlig ritningstext ligger kvar i bakgrunden. Testet stöder textbaserade dörrkort med ansvarskolumner.',accept:'Konvertera projekt · test',discard:'Öppna som underlag'});
+    if(importChoice==='cancel')return;
+    if(importChoice==='accept'){
+      if(!await leaveDraft())return;
+      pdfjsLib.GlobalWorkerOptions.workerSrc='vendor/pdf.worker.min.js';
+      const imported=await Proj2Import.scan(bytes,file.name,text=>message(text));
+      $('importSummary').textContent=`${imported.stats.cards} dörrkort · ${imported.state.placements.length} flyttbara stämplar · ${imported.stats.matched} kopplade till dörrkort · ${imported.stats.rows} materialrader.`;
+      $('importReviewRows').innerHTML=Object.values(imported.state.cards).map(card=>`<tr><td>${esc(card.code)}</td><td>${imported.state.placements.filter(p=>p.code===card.code).length}</td><td>${card.rows.filter(r=>r.product).length}</td></tr>`).join('');
+      $('importIssues').innerHTML=imported.issues.length?imported.issues.map(text=>`<li>${esc(text)}</li>`).join(''):'<li>Alla identifierade stämplar och kort är inlästa.</li>';
+      const accepted=await new Promise(resolve=>{
+        const dialog=$('importDialog'),finish=value=>{dialog.close();$('acceptImport').onclick=null;$('cancelImport').onclick=null;dialog.oncancel=null;resolve(value);};
+        $('acceptImport').onclick=()=>finish(true);$('cancelImport').onclick=()=>finish(false);dialog.oncancel=e=>{e.preventDefault();finish(false);};dialog.showModal();
+      });
+      if(!accepted)return;
+      await replaceProject(imported.state,imported.original,'Projektet är konverterat. Stämplar, dörrkort och material kan nu redigeras.');return;
+    }
     const metadata=await inspectOriginal(bytes);
     if(!await leaveDraft())return;
     if(state.drawing.pages.length||state.placements.length||dirty){
       const answer=await ask({title:'Byt ritningsunderlag?',text:'Nuvarande placeringar ersätts. Dina sparade dörrkort, produkter och stenciler behålls. Spara en projektfil först om du vill behålla hela det tidigare projektet.',accept:'Använd denna ritning'});
       if(answer!=='accept')return;
     }
-    const next=clone(state);next.drawing={name:file.name,pages:metadata.pages};next.placements=[];next.project.revision++;next.project.updatedAt=new Date().toISOString();
+    const next=clone(state);next.drawing={name:file.name,pages:metadata.pages};next.placements=[];next.annotations=[];delete next.conversion;next.project.revision++;next.project.updatedAt=new Date().toISOString();
     if(!state.drawing.pages.length&&state.project.name==='Nytt projekt')next.project.name=file.name.replace(/\.pdf$/i,'').slice(0,120)||'Nytt projekt';
     await replaceProject(next,bytes,'Ritningen är öppnad. Välj en stencil och klicka eller dra den till en dörr.');
   }
@@ -953,6 +976,7 @@
     $('stampList').addEventListener('dragstart',e=>{const b=e.target.closest('[data-stencil-id]');if(!b||busy){e.preventDefault();return;}currentStencil=b.dataset.stencilId;viewer.setStencil(currentStencil);e.dataTransfer.setData('application/x-tillsyno-stencil',currentStencil);e.dataTransfer.setData('text/plain',currentStencil);e.dataTransfer.effectAllowed='copy';});
     $('cardList').addEventListener('click',e=>{const b=e.target.closest('[data-card-code]');if(b)void run(async()=>{const code=b.dataset.cardCode;if(code!==activeCode&&!await leaveDraft())return;setActive(code);const st=stencilForCode(code);if(st)currentStencil=st.id;renderAll();showView('cards');});});
     $('forkCard').addEventListener('click',()=>void run(forkSelectedCard));
+    $('renameCard').addEventListener('click',()=>void run(async()=>{if(!activeCode||!await leaveDraft())return;const from=activeCode,to=await askText('Byt beteckning för hela dörrkortet','Alla kopplade stämplar får samma beteckning',from);if(to===null)return;let renamed;await commit(next=>{renamed=D.renameCard(next,from,to);},'Dörrkortet och dess stämplar har fått den nya beteckningen.');setActive(renamed.code);renderAll();}));
     $('previewCard').addEventListener('click',()=>void run(openCardPreview));
     $('closeCardPreview').addEventListener('click',closeCardPreview);
     $('cardPreviewDialog').addEventListener('cancel',event=>{event.preventDefault();closeCardPreview();});
@@ -1020,7 +1044,7 @@
     $('placementSearch')?.addEventListener('input',renderPositions);
     $('placementsList')?.addEventListener('click',e=>{const b=e.target.closest('[data-focus-id]');if(b)void run(async()=>{await viewer.focusPlacement(b.dataset.focusId);await selectIds([b.dataset.focusId]);showView('drawing');});});
     $('cardMeta').addEventListener('input',e=>{if(draft&&!busy&&e.target.dataset.meta){draft.meta[e.target.dataset.meta]=e.target.value;draftChanged();}});
-    $('cardRows').addEventListener('input',e=>{if(!draft||busy)return;const target=e.target,row=draft.rows.find(r=>r.id===target.dataset.rowId);if(row&&['quantity','delivery','installer'].includes(target.dataset.field)){row[target.dataset.field]=target.dataset.field==='quantity'?Number(target.value):target.value;if(target.dataset.field==='delivery'){row.installer=target.value;const installer=$('cardRows').querySelector('select[data-row-id="'+row.id+'"][data-field="installer"]');if(installer){if(![...installer.options].some(option=>option.value===target.value))installer.add(new Option(target.value,target.value));installer.value=target.value;}}draftChanged();}});
+    $('cardRows').addEventListener('input',e=>{if(!draft||busy)return;const target=e.target,row=draft.rows.find(r=>r.id===target.dataset.rowId);if(row&&['quantity','delivery','installer','connection','functionOwner','note'].includes(target.dataset.field)){row[target.dataset.field]=target.dataset.field==='quantity'?Number(target.value):target.value;if(target.dataset.field==='delivery'&&!row.imported){row.installer=target.value;const installer=$('cardRows').querySelector('select[data-row-id="'+row.id+'"][data-field="installer"]');if(installer){if(![...installer.options].some(option=>option.value===target.value))installer.add(new Option(target.value,target.value));installer.value=target.value;}}draftChanged();}});
     $('cardRows').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||busy||!draft)return;if(b.dataset.action==='choose-product')openProducts(b.dataset.rowId);else{updateTypedProduct(b.dataset.rowId,'');const input=[...$('cardRows').querySelectorAll('[data-product-input]')].find(input=>input.dataset.rowId===b.dataset.rowId);if(input)input.value='';productSuggest?.close();}});
     $('cardNote').addEventListener('input',e=>{if(draft&&!busy){draft.note=e.target.value;draftChanged();}});$('saveCard').addEventListener('click',()=>void run(saveCard));
     $('productSearch').addEventListener('input',renderProducts);$('productList').addEventListener('click',e=>{const b=e.target.closest('[data-product-id]');if(!b||busy)return;const p=L.listProducts(library,state,productDefinition().category).find(p=>p.id===b.dataset.productId);if(p)chooseProduct(p.name);});
@@ -1071,10 +1095,11 @@
       }
       state=libraryProject(state,{fresh:!restoredProject});
       setActive(state.cards.GS1?'GS1':Object.keys(state.cards).sort(natural)[0]||null);if(!libraryStencils().some(stencil=>stencil.id===currentStencil))currentStencil=firstLibraryStencil();revealStencil(state.stencils[currentStencil]);bind();makeViewer();if(original.length)await viewer.open(original);renderAll();showView('drawing');
-      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.19.2'});
+      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.19.3'});
     }catch(error){message(error?.message||'Projektet kunde inte öppnas.',true);}
   }
   window.addEventListener('tillsyno-authorized',()=>void boot());
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>void boot(),{once:true});else void boot();
 })();
+
 

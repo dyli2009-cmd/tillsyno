@@ -1369,7 +1369,7 @@
     const code=normalizeCode(input.code);if(code!==expectedCode)throw Error('Dörrkortets beteckning stämmer inte.');
     if(!isObject(input.meta))throw Error('Dörrkortets grunduppgifter saknas.');
     const meta=Object.fromEntries(META_KEYS.map(key=>[key,text(input.meta[key]??'', 'Kortets '+key,120)]));
-    if(!Array.isArray(input.rows)||(input.rows.length!==ROWS.length&&!(allowLegacy&&input.rows.length===LEGACY_ROWS.length)))throw Error('Dörrkortet måste innehålla alla '+ROWS.length+' utrustningsrader.');
+    if(!Array.isArray(input.rows)||input.rows.length>139||(input.rows.length<ROWS.length&&!(allowLegacy&&input.rows.length===LEGACY_ROWS.length)))throw Error('Dörrkortet måste innehålla alla '+ROWS.length+' utrustningsrader.');
     const byId=new Map();for(const row of input.rows){if(!isObject(row)||typeof row.id!=='string'||byId.has(row.id))throw Error('Dörrkortet innehåller en ogiltig eller dubblerad rad.');byId.set(row.id,row);}
     // Migrate only a complete, exact older card template. Missing or unknown
     // older rows stay errors; the new optional section starts entirely empty.
@@ -1377,8 +1377,24 @@
       for(const def of LEGACY_ROWS){const row=byId.get(def.id);if(!row||row.section!==def.section||row.label!==def.label)throw Error('Dörrkortets äldre utrustningsrader stämmer inte med mallen.');}
       for(const def of ROWS)if(!byId.has(def.id))byId.set(def.id,{id:def.id,section:def.section,label:def.label,product:'',quantity:1,delivery:'GS',installer:'GS'});
     }
-    const rows=ROWS.map(def=>{const row=byId.get(def.id);if(!row||row.section!==def.section||row.label!==def.label)throw Error('Dörrkortets utrustningsrader stämmer inte med mallen.');return {id:def.id,section:def.section,label:def.label,product:text(row.product,'Produkt',160),quantity:int(row.quantity,'Antal',1,999),delivery:text(row.delivery,'Levereras av',40),installer:text(row.installer,'Monteras av',40)};});
+    const rows=ROWS.map(def=>{const row=byId.get(def.id);if(!row||row.section!==def.section||row.label!==def.label)throw Error('Dörrkortets utrustningsrader stämmer inte med mallen.');return normalizedMaterialRow(row,def);});
+    for(const row of input.rows.filter(row=>!ROWS.some(def=>def.id===row.id))){
+      if(!/^import-[a-z0-9-]{1,70}$/.test(row.id))throw Error('Dörrkortets extra utrustningsrader har ett ogiltigt ID.');
+      const category=text(row.category,'Materialgrupp',40,false);if(category!=='other'&&!CATEGORIES.has(category))throw Error('Materialgruppen är ogiltig.');
+      rows.push({...normalizedMaterialRow(row,{id:row.id,section:text(row.section,'Rubrik',80,false),label:text(row.label,'Komponent',100,false)}),category});
+    }
     return {code,meta,rows,note:text(input.note,'Anteckning',2000)};
+  }
+  function normalizedMaterialRow(row,def){
+    const value={id:def.id,section:def.section,label:def.label,product:text(row.product,'Produkt',160),quantity:int(row.quantity,'Antal',1,999),delivery:text(row.delivery,'Levereras av',40),installer:text(row.installer,'Monteras av',40)};
+    for(const [key,label,max]of [['connection','Ansluts av',40],['functionOwner','Funktionsansvar',40],['note','Materialanmärkning',1000]])if(Object.hasOwn(row,key))value[key]=text(row[key],label,max);
+    if(Object.hasOwn(row,'imported')){if(row.imported!==true)throw Error('Materialradens importmarkering är ogiltig.');value.imported=true;}
+    return value;
+  }
+  function sectionsForCard(card){
+    const sections=SECTIONS.map(section=>({title:section.title,rows:section.rows.slice()}));
+    for(const row of card?.rows||[]){if(!row.id.startsWith('import-'))continue;let section=sections.find(section=>section.title===row.section);if(!section){section={title:row.section,rows:[]};sections.push(section);}section.rows.push({id:row.id,label:row.label,category:row.category});}
+    return sections;
   }
   function restroomSymbol(value){
     const code=normalizeCode(value),match=/^(HWC|WC)(?::?([1-9][0-9]*))?$/.exec(code);
@@ -1463,7 +1479,7 @@
     if(!Array.isArray(input.view)||input.view.length!==4||input.view.some(v=>typeof v!=='number'||!Number.isFinite(v)))throw Error('PDF-sidans utsnitt är ogiltigt.');
     const view=input.view.slice();if(view[2]<=view[0]||view[3]<=view[1])throw Error('PDF-sidans utsnitt måste ha en positiv storlek.');
     if(!Array.isArray(input.transform)||input.transform.length!==6||input.transform.some(v=>typeof v!=='number'||!Number.isFinite(v)))throw Error('PDF-sidans koordinatmatris är ogiltig.');
-    const transform=input.transform.slice();if(Math.abs(transform[0]*transform[3]-transform[1]*transform[2])<1e-12)throw Error('PDF-sidans koordinatmatris kan inte användas.');
+    const transform=input.transform.map(n=>Object.is(n,-0)?0:n);if(Math.abs(transform[0]*transform[3]-transform[1]*transform[2])<1e-12)throw Error('PDF-sidans koordinatmatris kan inte användas.');
     return {width,height,rotation,view,transform};
   }
   function normalizedPlacement(input,state){
@@ -1485,7 +1501,7 @@
     return {id:idValue(input.id,'Produkt-ID'),name:text(input.name,'Produktnamn',160,false),category,description:text(input.description??'','Produktbeskrivning',400)};
   }
   function validate(raw){
-    if(!isObject(raw)||![2,3,4].includes(raw.schema))throw Error('Projektfilens version stöds inte av denna projekteringssida.');
+    if(!isObject(raw)||![2,3,4,5].includes(raw.schema))throw Error('Projektfilens version stöds inte av denna projekteringssida.');
     if(!isObject(raw.project))throw Error('Projektuppgifter saknas.');
     const project={id:idValue(raw.project.id,'Projekt-ID'),name:text(raw.project.name,'Projektnamn',120,false),revision:int(raw.project.revision,'Revision',1,1000000000),updatedAt:text(raw.project.updatedAt,'Sparad tid',40,false)};
     if(!/^\d{4}-\d{2}-\d{2}T/.test(project.updatedAt)||!Number.isFinite(Date.parse(project.updatedAt)))throw Error('Projektets sparade tid är ogiltig.');
@@ -1493,7 +1509,7 @@
     const drawing={name:text(raw.drawing.name,'Ritningsnamn',240),pages:raw.drawing.pages.map(normalizedPage)};
     if(!isObject(raw.cards)||Object.keys(raw.cards).length>LIMITS.cards)throw Error('Projektet får innehålla högst '+LIMITS.cards+' dörrkort.');
     const cards={},identity=new Map();
-    for(const [key,value] of Object.entries(raw.cards)){const code=normalizeCode(key);if(key!==code||Object.hasOwn(cards,code))throw Error('Ett dörrkort har en ogiltig eller dubblerad beteckning.');const match=matchKey(code);if(identity.has(match)&&identity.get(match)!==code)throw Error('Två dörrkort får samma beteckning vid avläsning.');identity.set(match,code);cards[code]=normalizedCard(value,code,raw.schema!==4);}
+    for(const [key,value] of Object.entries(raw.cards)){const code=normalizeCode(key);if(key!==code||Object.hasOwn(cards,code))throw Error('Ett dörrkort har en ogiltig eller dubblerad beteckning.');const match=matchKey(code);if(identity.has(match)&&identity.get(match)!==code)throw Error('Två dörrkort får samma beteckning vid avläsning.');identity.set(match,code);cards[code]=normalizedCard(value,code,raw.schema<4);}
     if(!isObject(raw.stencils)||Object.keys(raw.stencils).length>LIMITS.stencils)throw Error('Projektet får innehålla högst '+LIMITS.stencils+' stenciler.');
     const stencils={},stencilCodes=new Set();
     for(const [key,value] of Object.entries(raw.stencils)){const stencil=normalizedStencil(value);if(key!==stencil.id||Object.hasOwn(stencils,key))throw Error('En stencil har ett ogiltigt eller dubblerat ID.');if(stencilCodes.has(stencil.code))throw Error('En stencil med beteckningen '+stencil.code+' finns redan.');const match=matchKey(stencil.code);if(identity.has(match)&&identity.get(match)!==stencil.code)throw Error(stencil.code+' kan förväxlas med '+identity.get(match)+' vid avläsning.');identity.set(match,stencil.code);if(stencil.kind==='symbol'&&Object.hasOwn(cards,stencil.code))throw Error(stencil.code+' är en symbol och kan inte samtidigt vara ett dörrkort.');stencilCodes.add(stencil.code);stencils[key]=stencil;}
@@ -1504,6 +1520,11 @@
     const result={schema:4,project,drawing,cards,stencils,placements:[],customProducts:[],preferences:normalizedPreferences(raw.preferences)},positions=new Set();
     for(const value of raw.placements){const place=normalizedPlacement(value,result);if(positions.has(place.id))throw Error('Ritningen innehåller dubblerade positions-ID.');positions.add(place.id);result.placements.push(place);}
     result.annotations=Annotations.validate(raw.annotations,drawing.pages);
+    if(raw.schema===5||Object.values(cards).some(card=>card.rows.some(row=>row.imported||row.id.startsWith('import-')||['connection','functionOwner','note'].some(key=>Object.hasOwn(row,key)))))result.schema=5;
+    if(raw.conversion!==undefined){
+      if(!isObject(raw.conversion)||raw.conversion.version!==1||!Array.isArray(raw.conversion.issues)||raw.conversion.issues.length>1000)throw Error('Importöversikten är ogiltig.');
+      result.conversion={version:1,sourceName:text(raw.conversion.sourceName,'Källfil',240),issues:raw.conversion.issues.map(value=>text(value,'Importanmärkning',500,false))};result.schema=5;
+    }
     // Older archived readers reject schema 4 before saving away the extra rows
     // or annotations. Earlier schema 2/3 inputs remain readable above.
     numberEquipment(result);
@@ -1559,12 +1580,15 @@
     if(!code.includes(':')&&!Object.hasOwn(state.cards,code)&&!conflict&&!symbol)return code;
     return suggestForkCode(state,code);
   }
-  function forkPlacementCard(state,placementId,newValue,cardDraft){
+  function forkPlacementCard(state,placementId,newValue,cardDraft,options={}){
     const positionId=idValue(placementId,'Positions-ID'),newCode=normalizeCode(newValue);
     const position=state.placements.find(placement=>placement.id===positionId),sourceStencil=position&&state.stencils[position.stencilId];
     if(!position||!sourceStencil)throw Error('Markera en dörr på ritningen.');
     if(sourceStencil.kind!=='card'||!Object.hasOwn(state.cards,position.code))throw Error('Markera en dörr med dörrkort.');
     const reusedStencil=Object.values(state.stencils).find(stencil=>stencil.code===newCode);
+    if(options.reuse===true&&Object.hasOwn(state.cards,newCode)&&newCode!==position.code){
+      return transact(state,next=>{const stencil=reusedStencil||{...clone(sourceStencil),id:Object.hasOwn(next.stencils,newCode)?uid('linked'):newCode,code:newCode,name:newCode};if(stencil.kind!=='card')throw Error('Beteckningen används av en symbol.');next.stencils[stencil.id]=stencil;const target=next.placements.find(p=>p.id===positionId);target.code=newCode;target.stencilId=stencil.id;},next=>next.cards[newCode]);
+    }
     if(Object.hasOwn(state.cards,newCode)||reusedStencil?.kind==='symbol'||state.placements.some(place=>matchKey(place.code)===matchKey(newCode)))throw Error('Beteckningen '+newCode+' finns redan. Välj en ny beteckning.');
     assertCardIdentity(state,newCode);
     const sourceCard=normalizedCard(cardDraft===undefined?state.cards[position.code]:cardDraft,position.code);
@@ -1577,6 +1601,22 @@
       const placement=next.placements.find(item=>item.id===positionId);
       placement.code=newCode;placement.stencilId=stencilId;
     },next=>next.cards[newCode]);
+  }
+  function renameCard(state,value,newValue){
+    const code=normalizeCode(value),to=normalizeCode(newValue);if(code===to)return state.cards[code];if(!Object.hasOwn(state.cards,code))throw Error('Dörrkortet finns inte.');
+    if(Object.hasOwn(state.cards,to)||Object.values(state.stencils).some(s=>s.code===to))throw Error('Beteckningen '+to+' används redan.');
+    return transact(state,next=>{assertCardIdentity(next,to);const card=next.cards[code];delete next.cards[code];card.code=to;if(card.meta.littera===code)card.meta.littera=to;next.cards[to]=card;
+      for(const stencil of Object.values(next.stencils))if(stencil.code===code){stencil.code=to;if(stencil.name===code)stencil.name=to;}
+      for(const placement of next.placements)if(placement.code===code)placement.code=to;
+    },next=>next.cards[to]);
+  }
+  function assignPlacementCard(state,placementId,value){
+    const code=normalizeCode(value);if(!state.cards[code])throw Error('Dörrkortet '+code+' saknas. Skapa eller läs in kortet först.');
+    return transact(state,next=>{const position=next.placements.find(p=>p.id===placementId);if(!position)throw Error('Markera en stämpel först.');const previous=position.code;
+      let stencil=Object.values(next.stencils).find(s=>s.code===code);if(!stencil){stencil={...defaultStencil(code),id:Object.hasOwn(next.stencils,code)?uid('linked'):code};next.stencils[stencil.id]=stencil;}if(stencil.kind!=='card')throw Error('Beteckningen hör till en symbol.');
+      position.code=code;position.stencilId=stencil.id;delete position.equipment;
+      if(next.conversion){const count=next.placements.filter(p=>p.code===previous).length;next.conversion.issues=next.conversion.issues.flatMap(issue=>issue.startsWith(previous+': ')&&issue.includes('stämplar saknar ett matchande dörrkort')?(count?[issue.replace(/: \d+ stämplar/,': '+count+' stämplar')]:[]):[issue]);}
+    },next=>next.cards[code]);
   }
   function removeCard(state,value,options={}){const code=normalizeCode(value);if(!Object.hasOwn(state.cards,code))throw Error('Dörrkortet finns inte.');return transact(state,next=>{const used=next.placements.filter(p=>p.code===code);if(used.length&&!options.cascade)throw Error('Dörrkortet används av '+used.length+' positioner. Ta bort positionerna först eller bekräfta att de också ska tas bort.');if(used.some(p=>p.locked))throw Error('Lås upp positionerna före borttagning.');next.placements=next.placements.filter(p=>p.code!==code);delete next.cards[code];});}
   function addStencil(state,input){const stencil=normalizedStencil(input);if(Object.hasOwn(state.stencils,stencil.id))throw Error('Stencilens ID används redan.');return transact(state,next=>{next.stencils[stencil.id]=stencil;},next=>next.stencils[stencil.id]);}
@@ -1682,5 +1722,6 @@
     });
   }
 
-  return Object.freeze({Annotations,LIMITS,META_KEYS,SPECIAL_CODES,SECTIONS,PRODUCTS,productIdentity:productNameKey,LEGACY_PRODUCTS,RETIRED_PRODUCTS,PRODUCT_ALIASES,isRetiredProduct,OWNER_VALUES,TOOLBAR_TOOLS,SIZE_SCOPES,PRODUCT_TYPES,PRODUCT_TYPE_LABELS,CATEGORY_DEFAULTS,defaultPreferences,normalizeCode,matchKey,clone,createEmpty,initialCardCode,createCard,validate,defaultStencil,defaultStencilFor,restroomSymbol,upgradeRestroomStencils,stencilLabel,stencilCategory,isProductStencil,productMultiplier,equipmentFor,placementCounts,listStencils,searchProducts,addProduct,ensureCard,updateCard,copyCard,suggestCardCode,suggestForkCode,suggestStencilCode,forkPlacementCard,removeCard,addStencil,updateStencil,removeStencil,addPlacement,updatePlacement,updateEquipment,removePlacements,duplicatePlacements,setPreferences,setMaterialTime,resizeTargets,resizeShared,resizeStencilShared,alignPlacements});
+  return Object.freeze({Annotations,LIMITS,META_KEYS,SPECIAL_CODES,SECTIONS,sectionsForCard,PRODUCTS,productIdentity:productNameKey,LEGACY_PRODUCTS,RETIRED_PRODUCTS,PRODUCT_ALIASES,isRetiredProduct,OWNER_VALUES,TOOLBAR_TOOLS,SIZE_SCOPES,PRODUCT_TYPES,PRODUCT_TYPE_LABELS,CATEGORY_DEFAULTS,defaultPreferences,normalizeCode,matchKey,clone,createEmpty,initialCardCode,createCard,validate,defaultStencil,defaultStencilFor,restroomSymbol,upgradeRestroomStencils,stencilLabel,stencilCategory,isProductStencil,productMultiplier,equipmentFor,placementCounts,listStencils,searchProducts,addProduct,ensureCard,updateCard,copyCard,renameCard,assignPlacementCard,suggestCardCode,suggestForkCode,suggestStencilCode,forkPlacementCard,removeCard,addStencil,updateStencil,removeStencil,addPlacement,updatePlacement,updateEquipment,removePlacements,duplicatePlacements,setPreferences,setMaterialTime,resizeTargets,resizeShared,resizeStencilShared,alignPlacements});
 });
+

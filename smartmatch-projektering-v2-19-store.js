@@ -10,9 +10,10 @@
   'use strict';
   const DB_NAME = 'tillsyno-projektering-v2';
   const STORE_NAME = 'projects';
-  // Schema 4 has extra card rows. An already-open older tab must never replace
+  // Imported cards have extra fields. An already-open older tab must never replace
   // this copy with its older schema; keep its original record as a backup.
-  const RECORD_KEY = 'current-v4';
+  const RECORD_KEY = 'current-v5';
+  const PREVIOUS_RECORD_KEY = 'current-v4';
   const LEGACY_RECORD_KEY = 'current';
   const FORMAT = 'TillsynoProjekteringV2';
   const MAX_DRAWING_BYTES = 50 * 1024 * 1024;
@@ -125,6 +126,7 @@
 
   async function load() {
     let record = await transaction('readonly', store => store.get(RECORD_KEY));
+    if(record===undefined)record=await transaction('readonly',store=>store.get(PREVIOUS_RECORD_KEY));
     if (record === undefined) {
       // Read the old slot only when the new slot has never been written. This
       // migrates on access without deleting or rewriting the previous version.
@@ -205,3 +207,4 @@
 
   return Object.freeze({DB_NAME, STORE_NAME, RECORD_KEY, LEGACY_RECORD_KEY, FORMAT, MAX_DRAWING_BYTES, MAX_PROJECT_BYTES, save, load, clear, pack, unpack, close});
 });
+

@@ -26,6 +26,11 @@
   return result;
  }
  function lookup(document,value){return value?document.context.lookup(value):undefined;}
+ function decodedText(value){
+  // pdf-lib's decodeText uses a spread for UTF-16 and overflows on large projects.
+  const data=value?.asBytes?.();if(data?.[0]===254&&data?.[1]===255)return new TextDecoder('utf-16be',{fatal:true}).decode(data.subarray(2));
+  return value?.decodeText?.();
+ }
  function metadata(document){
   const lib=library();
   return document.getPages().map(page=>{
@@ -135,6 +140,7 @@
    return {x:placement.x*page.width-w/2,y:placement.y*page.height-h/2,w,h};
   };
   for(const item of state.placements){const r=rect(item),page=state.drawing.pages[item.page-1];if(r.x<-.01||r.y<-.01||r.x+r.w>page.width+.01||r.y+r.h>page.height+.01)throw Error('Stämpeln '+item.code+' ligger delvis utanför sida '+item.page+'. Flytta in den före PDF-export.');}
+  if(state.conversion)return; // Existing projected symbols may legitimately overlap.
   const byPage=new Map();for(const item of state.placements){if(!byPage.has(item.page))byPage.set(item.page,[]);byPage.get(item.page).push(item);}
   for(const items of byPage.values())for(let i=0;i<items.length;i++)for(let j=i+1;j<items.length;j++){
    const a=rect(items[i]),b=rect(items[j]),w=Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x),h=Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y);
@@ -156,6 +162,7 @@
   }
  }
  function drawPlacements(document,state,font,lib){
+  if(state.schema===5)return drawEditablePlacements(document,state,font,lib);
   for(const item of state.placements){
    const page=document.getPage(item.page-1),definition=state.stencils[item.stencilId],matrix=stampMatrix(state.drawing.pages[item.page-1],item),label=assertText(font,item.code);
    let fontSize=Math.min(definition.fontSize,item.height*.5),labelWidth=font.widthOfTextAtSize(label,fontSize);
@@ -178,6 +185,23 @@
    page.node.addAnnot(document.context.register(document.context.obj({Type:'Annot',Subtype:'Stamp',Rect:rect,Subj:lib.PDFHexString.fromText(item.code),Contents:lib.PDFHexString.fromText(item.code),NM:lib.PDFHexString.fromText('projection-v2-'+item.id),F:4,AP:{N:appearance}})));
   }
  }
+ function drawEditablePlacements(document,state,font,lib){
+  for(const item of state.placements){
+   const output=document.getPage(item.page-1),definition=state.stencils[item.stencilId],m=stampMatrix(state.drawing.pages[item.page-1],item);
+   const corners=[[-item.width/2,-item.height/2],[item.width/2,-item.height/2],[item.width/2,item.height/2],[-item.width/2,item.height/2]].map(([x,y])=>point(m,x,y));
+   const xs=corners.map(p=>p[0]),ys=corners.map(p=>p[1]),rect=[Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys)],w=rect[2]-rect[0],h=rect[3]-rect[1];
+   const page=lib.PDFPage.create(document),matrix=[...m.slice(0,4),m[4]-rect[0],m[5]-rect[1]],label=assertText(font,item.code);
+   let fontSize=Math.min(definition.fontSize,item.height*.5);const labelWidth=font.widthOfTextAtSize(label,fontSize);if(labelWidth>item.width-4)fontSize*=Math.max(.05,(item.width-4)/labelWidth);
+   page.pushOperators(lib.pushGraphicsState(),lib.concatTransformationMatrix(...matrix));
+   const style={color:hex(lib,definition.fill),borderColor:hex(lib,definition.stroke),borderWidth:Math.max(.45,Math.min(1.1,item.height*.035))};
+   if(definition.shape==='oval')page.drawEllipse({x:0,y:0,xScale:item.width/2,yScale:item.height/2,...style});else page.drawRectangle({x:-item.width/2,y:-item.height/2,width:item.width,height:item.height,...style});
+   const flip=item.rotation>90&&item.rotation<=270;if(flip)page.pushOperators(lib.pushGraphicsState(),lib.concatTransformationMatrix(-1,0,0,-1,0,0));
+   text(page,font,label,-font.widthOfTextAtSize(label,fontSize)/2,-fontSize*.34,fontSize,hex(lib,definition.textColor));
+   if(flip)page.pushOperators(lib.popGraphicsState());page.pushOperators(lib.popGraphicsState());
+   const appearance=document.context.register(document.context.flateStream(page.getContentStream().getUnencodedContents(),{Type:'XObject',Subtype:'Form',BBox:[0,0,w,h],Resources:page.node.Resources()}));
+   output.node.addAnnot(document.context.register(document.context.obj({Type:'Annot',Subtype:'Stamp',Rect:rect,Subj:lib.PDFHexString.fromText(item.code),Contents:lib.PDFHexString.fromText(item.code),NM:lib.PDFHexString.fromText('projection-v2-'+item.id),F:4,AP:{N:appearance},TillsynoRect:rect,TillsynoCode:lib.PDFHexString.fromText(item.code)})));
+  }
+ }
  function drawCard(document,state,code,fonts,lib,index,total){
   const card=state.cards[code],page=document.addPage([595,842]),{regular,bold}=fonts,border=lib.rgb(.36,.42,.45),slate=lib.rgb(.13,.23,.25),pale=lib.rgb(.94,.96,.95),left=30;
   const line=(x1,y1,x2,y2,width=.65)=>page.drawLine({start:{x:x1,y:y1},end:{x:x2,y:y2},thickness:width,color:border});
@@ -192,9 +216,24 @@
   const groups=[];for(const row of card.rows.filter(row=>STANDARD_ROW_IDS.has(row.id))){let group=groups.find(g=>g.title===row.section);if(!group){group={title:row.section,rows:[]};groups.push(group);}group.rows.push(row);}
   let y=headY;for(const group of groups){y-=18;cell(left,y,535,18,pale);text(page,bold,group.title.toLocaleUpperCase('sv'),38,y+5.5,9);for(const row of group.rows){y-=16;cell(left,y,535,16);for(const x of cols.slice(1,-1))line(x,y,x,y+16);fitted(page,regular,row.label,38,y+5,8,139);fitted(page,regular,row.product||'-',196,y+5,8,196);if(row.product){text(page,regular,String(row.quantity),409,y+5,8);fitted(page,regular,row.delivery||'-',448,y+5,8,47);fitted(page,regular,row.installer||'-',510,y+5,8,47);}}}
   if(y<100)throw Error('Dörrkortet '+code+' har för många utrustningsrader för en PDF-sida.');
-  if(card.note){text(page,bold,'Anteckning',30,91,8);wrapped(page,regular,card.note,30,78,535,8,10,3);}
+  if(card.note&&state.schema!==5){text(page,bold,'Anteckning',30,91,8);wrapped(page,regular,card.note,30,78,535,8,10,3);}
   text(page,regular,'Tillsyno · Projektering · Kontrollera produktval och projekteringskrav före utförande.',30,27,7,lib.rgb(.40,.46,.47));fitted(page,regular,'Revision '+state.project.revision,465,27,7,100);
   drawAdditionalCardRows(document,state,code,fonts,lib,index,total);
+  if(state.schema===5)drawCardDetails(document,state,code,fonts,lib);
+ }
+ function drawCardDetails(document,state,code,fonts,lib){
+  const card=state.cards[code],paragraphs=[];
+  for(const row of card.rows){
+   const details=[row.connection?'Ansluts av: '+row.connection:'',row.functionOwner?'Funktionsansvar: '+row.functionOwner:'',row.note||''].filter(Boolean);
+   if(details.length)paragraphs.push(row.section+' / '+row.label+(row.product?' / '+row.product:'')+' — '+details.join(' · '));
+  }
+  if(card.note)paragraphs.push(...card.note.split('\n').filter(Boolean));if(!paragraphs.length)return;
+  let page,y=0;const nextPage=()=>{page=document.addPage([595,842]);fitted(page,fonts.bold,code+' · Ansvar och anmärkningar',30,795,14,535);fitted(page,fonts.regular,state.project.name,30,816,9,535);y=770;text(page,fonts.regular,'Tillsyno · Samma dörrkort · kompletterande uppgifter',30,27,8);};
+  const emit=line=>{if(y<60)nextPage();text(page,fonts.regular,line,30,y,9);y-=13;};
+  for(const paragraph of paragraphs){let line='';for(const word of assertText(fonts.regular,paragraph).split(/\s+/)){
+    // Wrap even long model identifiers without discarding source characters.
+    for(const chunk of word.match(/.{1,75}/g)||['']){const candidate=line?line+' '+chunk:chunk;if(fonts.regular.widthOfTextAtSize(candidate,9)>535&&line){emit(line);line=chunk;}else line=candidate;}
+   }if(line)emit(line);y-=8;}
  }
  function drawAdditionalCardRows(document,state,code,fonts,lib,index,total){
   const card=state.cards[code],rows=card.rows.filter(row=>!STANDARD_ROW_IDS.has(row.id)&&row.product.trim()&&!/^[-–—]+$/.test(row.product.trim()));
@@ -255,7 +294,7 @@
   // Standalone symbols stay visible on the drawing and in the embedded project;
   // only actual door cards append printable pages.
   if(!document.getPageCount())throw Error('Lägg till en ritning eller ett dörrkort före PDF-export.');
-  const payload=JSON.stringify({format:'TillsynoProjekteringV2',state,originalLength:source.original.length});if(payload.length>MAX_DATA)throw Error('Projektuppgifterna är för stora för PDF-export.');
+  const payload=JSON.stringify({format:'TillsynoProjekteringV2',state,originalLength:source.original.length,...(state.schema===5?{editableStamps:true,drawingPages:mode==='cards'?0:state.drawing.pages.length}:{})});if(payload.length>MAX_DATA)throw Error('Projektuppgifterna är för stora för PDF-export.');
   document.catalog.set(lib.PDFName.of(DATA_KEY),lib.PDFHexString.fromText(payload));
   document.catalog.set(lib.PDFName.of(SOURCE_KEY),document.context.register(document.context.flateStream(source.original,{Type:'EmbeddedFile',Subtype:'application/pdf'})));
   document.setTitle(state.project.name+' · Projektering');document.setAuthor('Tillsyno');document.setCreator('Tillsyno Projektering 2.19');document.setSubject('Ritning med stämplar och dörrkort');
@@ -265,12 +304,49 @@
   const lib=library(),data=dataLibrary();if(!lib||!data)throw Error('PDF-verktyget kunde inte laddas.');const buffer=bytes(input);if(buffer.length>MAX_FILE)throw Error('Projektfilen får vara högst 80 MB.');
   const document=await lib.PDFDocument.load(buffer),saved=lookup(document,document.catalog.get(lib.PDFName.of(DATA_KEY)));
   if(!saved)return null;if(typeof saved.decodeText!=='function')throw Error('Projektuppgifterna i PDF:en kunde inte läsas.');
-  const json=saved.decodeText();if(json.length>MAX_DATA)throw Error('Projektuppgifterna i PDF:en är för stora.');let payload;try{payload=JSON.parse(json);}catch(_){throw Error('Projektuppgifterna i PDF:en kunde inte läsas.');}
+  const json=decodedText(saved);if(json.length>MAX_DATA)throw Error('Projektuppgifterna i PDF:en är för stora.');let payload;try{payload=JSON.parse(json);}catch(_){throw Error('Projektuppgifterna i PDF:en kunde inte läsas.');}
   if(payload?.format!=='TillsynoProjekteringV2'||!Number.isInteger(payload.originalLength)||payload.originalLength<0||payload.originalLength>MAX_ORIGINAL)throw Error('PDF:en innehåller ett ogiltigt projekteringsprojekt.');
   const state=data.validate(payload.state),stream=lookup(document,document.catalog.get(lib.PDFName.of(SOURCE_KEY)));if(!(stream instanceof lib.PDFRawStream))throw Error('Ritningsoriginalet saknas i projekt-PDF:en. Öppna en komplett sparad projektfil.');
   let original;try{original=new Uint8Array(lib.decodePDFRawStream(stream).decode());}catch(_){throw Error('Ritningsoriginalet i projekt-PDF:en kunde inte läsas.');}
   if(original.length!==payload.originalLength||original.length>MAX_ORIGINAL)throw Error('Ritningsoriginalets storlek stämmer inte med projekt-PDF:en.');
-  await sourceDocument(state,original);return {state,original};
+  await sourceDocument(state,original);return {state:payload.editableStamps?readStampEdits(document,state,payload.drawingPages):state,original};
+ }
+ function readStampEdits(document,state,drawingPages){
+  const lib=library(),D=dataLibrary();
+  if(!Number.isInteger(drawingPages)||drawingPages<0||drawingPages>document.getPageCount()||(drawingPages&&drawingPages!==state.drawing.pages.length))throw Error('Projektets ritningssidor har ändrats utanför Tillsyno. Importera ritningen på nytt.');
+  if(!drawingPages||!state.placements.length)return state;
+  const found=new Map(),byId=new Map(state.placements.map(p=>['projection-v2-'+p.id,p])),pages=metadata(document);
+  for(let i=0;i<drawingPages;i++){
+   const annotations=lookup(document,document.getPage(i).node.get(lib.PDFName.of('Annots')));if(!annotations?.asArray)continue;
+   for(const ref of annotations.asArray()){
+    const a=lookup(document,ref);if(!a?.get||String(lookup(document,a.get(lib.PDFName.of('Subtype'))))!=='/Stamp')continue;
+    const id=decodedText(lookup(document,a.get(lib.PDFName.of('NM'))));if(!byId.has(id))continue;
+    if(found.has(id))throw Error('En stämpel har dubblerats med samma ID i PDF:en. Ge kopian ett eget ID före återöppning.');
+    const old=byId.get(id),rect=numericArray(document,a.get(lib.PDFName.of('Rect')),4),base=numericArray(document,a.get(lib.PDFName.of('TillsynoRect')),4);
+    if(!rect||!base||rect[2]<=rect[0]||rect[3]<=rect[1])throw Error('En ändrad stämpel saknar giltiga koordinater.');
+    const subject=decodedText(lookup(document,a.get(lib.PDFName.of('Subj'))))||old.code,contents=decodedText(lookup(document,a.get(lib.PDFName.of('Contents'))))||old.code;
+    const code=D.normalizeCode(subject!==old.code?subject:contents),t=pages[i].transform;
+    const [cx,cy]=point(t,(rect[0]+rect[2])/2,(rect[1]+rect[3])/2),sx=(rect[2]-rect[0])/(base[2]-base[0]),sy=(rect[3]-rect[1])/(base[3]-base[1]);
+    if(old.rotation%90!==0&&Math.abs(sx-sy)>.001)throw Error('En roterad stämpel har ändrats i olika skalor. Återställ proportionerna före återöppning.');
+    const turned=old.rotation%180===90;
+    found.set(id,{...old,page:i+1,code,x:cx/pages[i].width,y:cy/pages[i].height,width:old.width*(turned?sy:sx),height:old.height*(turned?sx:sy)});
+   }
+  }
+  if(!found.size)throw Error('Projektets redigerbara stämplar saknas. PDF:en kan ha tillplattats. Öppna en projektkopia med bevarade markeringar.');
+  const next=clone(state);let changed=found.size!==state.placements.length;
+  next.placements=state.placements.flatMap(old=>{
+   const item=found.get('projection-v2-'+old.id);if(!item)return [];
+   if(item.code!==old.code){
+    const source=state.stencils[old.stencilId];let stencil=Object.values(next.stencils).find(s=>s.code===item.code);
+    if(stencil&&stencil.kind!==source.kind)throw Error('Den nya beteckningen används av en annan typ av stämpel.');
+    if(!stencil){let id=item.code;while(next.stencils[id])id='pdf-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);stencil={...clone(source),id,code:item.code,name:item.code};next.stencils[id]=stencil;}
+    if(source.kind==='card'&&!next.cards[item.code])next.cards[item.code]={...clone(state.cards[old.code]),code:item.code,meta:{...state.cards[old.code].meta,littera:item.code}};
+    item.stencilId=stencil.id;changed=true;
+   }
+   for(const key of ['x','y','width','height'])if(Math.abs(item[key]-old[key])<1e-8)item[key]=old[key];
+   if(JSON.stringify(item)!==JSON.stringify(old))changed=true;return [item];
+  });
+  if(!changed)return state;next.project.revision++;next.project.updatedAt=new Date().toISOString();return D.validate(next);
  }
  async function blank(name='Nya dörrkort'){
   const lib=library(),data=dataLibrary();if(!lib||!data)throw Error('PDF-verktyget kunde inte laddas.');
@@ -301,3 +377,4 @@
  }
  return Object.freeze({build,buildCardPreview,inspect,blank,example,metadata,stampMatrix,codeRect,tableRect,DATA_KEY,SOURCE_KEY});
 });
+

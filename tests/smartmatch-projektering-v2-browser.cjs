@@ -33,7 +33,10 @@ async function download(page,click){const promise=page.waitForEvent('download');
 async function settleImport(page,fileInput,bytes,name,expectedPages){
  await page.locator(fileInput).setInputFiles(upload(bytes,name));
  await page.waitForFunction(expected=>document.getElementById('confirmDialog')?.open||Proj2App.snapshot().state.drawing.pages.length===expected,expectedPages);
- if(await page.locator('#confirmDialog[open]').count())await confirm(page);
+ if(await page.locator('#confirmDialog[open]').count()){
+  if((await page.locator('#confirmTitle').textContent())==='Öppna ny ritning'){await page.locator('#confirmDiscard').click();await page.waitForFunction(expected=>document.getElementById('confirmDialog').open||Proj2App.snapshot().state.drawing.pages.length===expected,expectedPages);}
+  if(await page.locator('#confirmDialog[open]').count())await confirm(page);
+ }
  await page.waitForFunction(expected=>Proj2App.snapshot().state.drawing.pages.length===expected,expectedPages);
  await idle(page);
 }
@@ -112,3 +115,4 @@ async function run(browser,device,source){
 }
 async function denied(browser){const ctx=await context(browser,{width:1000,height:800},['control']);try{const page=await ctx.newPage();await page.goto(url());await page.waitForSelector('#tillsynoAccessDenied');assert.equal(await page.evaluate(()=>!!window.TillsynoCurrentAccess),false);assert.equal(await page.evaluate(()=>!!window.Proj2App),false);console.log('control-only account: unchanged SmartMatch guard denies projection');}finally{await ctx.close();}}
 (async()=>{const source=await fixture();await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});try{for(const device of devices)await run(browser,device,source);await denied(browser);}finally{await browser.close();await new Promise(resolve=>server.close(resolve));}})().catch(error=>{console.error(error);process.exitCode=1;});
+
