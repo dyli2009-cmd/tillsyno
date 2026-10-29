@@ -404,3 +404,5 @@ Kompletterat användarbeslut samma arbetspass, TEST 9.6: skilj Avläsning av rit
 
 2026-10-19, Tillsyno v2.4.398, build 36.173: Ritningsverktygets Digitalisera dörrkort TEST accepterar nu standardtabell, Tånga-formatets ansvarsmatris (`Övrigt`, `Lev av`, `Mont av`, `Ansl av`, `Funk ansv.`, `Anm`, `Montering klar`) och enkla tvåkolumnskort med uttrycklig `Dörrkort`-rubrik. Ansvarsfälten bevaras som redigerbara och exporterbara kolumner, en avlägsen tabellinje tas inte med i beteckningen och tomma avsnittsankare kan inte placera rader i fel avsnitt. OCR använder de första 90 procenten; tolkning och autosparning använder slutdelen. Endast ett lyckat sparat resultat når 100 procent. Fel och avbrott behåller verklig procent och visar exakt orsak. Kontrollflöde och SmartMatch-funktionerna är oförändrade. Se DRAWING_TOOLS_398.md.
 
+
+2026-10-29, v2.4.507 / Avläsning 9.100.3: Användaren begär borttagning av det extra DS/DA-lagret på iPad/iPhone. Aktuell Avläsning laddar inte längre smartmatch-read-equipment-symbols-v9-85.js. Original-PDF, dörrkort, GS-markeringar och sparade data ändras inte. Äldre testsidor behåller sin implementation.

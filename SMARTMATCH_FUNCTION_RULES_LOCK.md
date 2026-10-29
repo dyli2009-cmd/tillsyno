@@ -16,7 +16,7 @@ Det här är ingången när vi återupptar utvecklingen eller användaren fråga
 | Dörrkort, standardprofil | Identifiera tabellen → läs ID i översta vänstra cellen → matcha samma hela ID på ritningen → koppla kortet till positionen | [Tabellavläsning och dörrkort](SMARTMATCH_TABLE_RULE_LOCK.md) | LÅST; generell tolkning av alla tabellupplägg är ännu inte färdig |
 | Dörrkort, separat känt tillägg | Uttrycklig korttitel → verifierad Objekt-rad och Komponent/Produkt-tabell → samma hela ID på ritningen | [Tabellavläsning, avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md) | Tillägg enligt användarbeslut; v36.95 |
 | Avläsning TEST 9.28, GS-produkter | Liten markerad läsyta med Övrigt/Produkt + Monteras av/Mont av + berörda GS-rader → granskad GS-lista; originalkortet visas separat i sin helhet | [TEST 9.28](SMARTMATCH_READ_TEST_9_28.md) | Beslutad; Lev av räcker inte för GS och manuell accept får endast häva tabelltolkningsfelet |
-| Avläsning TEST 9.29, DS/DA-symboler | Exakt fristående `/Subj` för DS/DA eller fullständigt namn → en passiv symbol i PDF-rektangelns mitt; `/Contents` endast när `/Subj` saknas | [TEST 9.29](SMARTMATCH_READ_TEST_9_29.md) | Beslutad; WC/VCDS/sammansatta namn avvisas och identiska poster dedupliceras |
+| Avläsning, DS/DA-symboler | Visa endast originalsymbolerna i PDF; inget extra utrustningslager | Beslut 2026-10-29, Avläsning 9.100.3 | LÅST; ersätter 9.29-visningsregeln för aktuell Avläsning |
 | Protokollexport | Spara → Protokoll → endast valda protokollsidor; godkända är förvalda; inga ritningssidor eller GS-länkmenyer | [TEST v36.96](SMARTMATCH_TEST_V36_96.md) | Beslutad enligt användarens instruktion |
 
 ## Två kopplingar som bygger på varandra
@@ -119,3 +119,7 @@ Om råtexten och de föreslagna GS-raderna finns men tabellstrukturen inte blev 
 Användarbeslut 18 oktober 2026, avgränsat till **SmartMatch Avläsning TEST 9.29**: fristående DS och DA ska vara synliga utan att samma bokstäver plockas ur en redan kopplad VCDS-, WC- eller annan sammansatt stämpel. En synlig `/Stamp` accepteras endast när `/Subj` exakt är `DS`, `DA`, `Dörrstängare` eller `Dörrautomatik`. Endast ett tomt `/Subj` tillåter samma exakta klassning från `/Contents`. Bland annat `WC dörrstängare`, `VCDS`, `DBL-DS`, `DS1` och `Dörrstängare freeswing` avvisas. Identiska poster för samma sida och typ visas en gång.
 
 DS är en orange kvadrat och DA en mörkröd kvadrat. Båda behåller 14 × 14 CSS-pixlar och 8-pixelstext vid all zoom, medan deras mittpunkt följer PDF-rektangeln. Lagret är passivt och får inte starta OCR, helsidestext, produktläsning eller matchningssökning.
+
+## Originalsymboler utan extra DS/DA-lager – 2026-10-29
+
+Uttryckligt användarbeslut: ta bort orange DS och mörkröda DA som appen lagt ovanpå originalritningen för läsbarhet på iPad/iPhone. Avläsning 9.100.3 laddar inte längre den separata utrustningsmodulen. Original-PDF och dess annoteringar, GS-kopplingar, dörrkort och projektdata behålls. Detta ersätter ovanstående historiska 9.29-regel i aktuell Avläsning; äldre testsidor ändras inte. Verifierat att endast modulens scriptimport avlägsnas och att ingen annan aktiv kod refererar till dess API. Ingen fysisk iOS-verifiering utförd.
