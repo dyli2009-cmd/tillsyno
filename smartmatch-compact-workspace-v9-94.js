@@ -1,13 +1,15 @@
 /* Scoped to the isolated SmartMatch test document. Existing dialog lifecycle
- * and forms are preserved; views occupy the workspace, never the modal layer. */
+ * and forms are preserved; opted-in floating tools keep the drawing usable. */
 (function(){
  'use strict';
  const show=HTMLDialogElement.prototype.show,close=HTMLDialogElement.prototype.close;
- const stack=[],focusBefore=new WeakMap();
+ const stack=[],floating=[],focusBefore=new WeakMap();
  function sync(){
   for(let i=stack.length-1;i>=0;i--)if(!stack[i].isConnected||!stack[i].open)stack.splice(i,1);
+  for(let i=floating.length-1;i>=0;i--)if(!floating[i].isConnected||!floating[i].open)floating.splice(i,1);
   const active=stack.at(-1);document.body.classList.toggle('smHasWorkspaceView',!!active);
   for(const panel of stack){panel.classList.toggle('smInactiveView',panel!==active);panel.inert=panel!==active;}
+  for(const panel of floating){panel.classList.toggle('smInactiveFloating',!!active);panel.inert=!!active;}
   for(const el of document.body.children)if(el.matches('header,main,section,aside'))el.inert=!!active;
   if(active&&!active.contains(document.activeElement)){
    const target=active.querySelector('button:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex="0"]');target?.focus({preventScroll:true});
@@ -15,17 +17,22 @@
  }
  HTMLDialogElement.prototype.showModal=function(){
   if(this.open){sync();return;}
+  if(this.dataset.smFloating==='true'){
+   focusBefore.set(this,document.activeElement);this.classList.remove('smWorkspaceView','smInactiveView');this.setAttribute('aria-modal','false');
+   show.call(this);floating.push(this);sync();return;
+  }
   focusBefore.set(this,document.activeElement);this.classList.add('smWorkspaceView');this.setAttribute('aria-modal','false');
   show.call(this);stack.push(this);sync();
  };
  HTMLDialogElement.prototype.close=function(value){
-  const wasTop=stack.at(-1)===this;if(value===undefined)close.call(this);else close.call(this,value);sync();
+  const wasTop=stack.at(-1)===this||(!stack.length&&floating.at(-1)===this);if(value===undefined)close.call(this);else close.call(this,value);sync();
   if(wasTop){const target=focusBefore.get(this);if(target?.isConnected&&!target.closest('[inert]'))target.focus({preventScroll:true});}
  };
  document.addEventListener('close',sync,true);
  document.addEventListener('keydown',event=>{
-  if(event.key!=='Escape'||event.defaultPrevented||!stack.length)return;
-  event.preventDefault();const active=stack.at(-1),cancel=new Event('cancel',{cancelable:true});if(active.dispatchEvent(cancel))active.close();
+  if(event.key!=='Escape'||event.defaultPrevented)return;
+  const active=stack.at(-1)||floating.at(-1);if(!active)return;
+  event.preventDefault();const cancel=new Event('cancel',{cancelable:true});if(active.dispatchEvent(cancel))active.close();
  });
  async function confirm(message){
   const panel=document.createElement('dialog');panel.className='smInlineConfirmation';

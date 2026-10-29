@@ -445,7 +445,7 @@ html[data-read-locked] body>:not(#smReadCodeGate):not(script):not(style){visibil
 <section id="smReadCodeGate" aria-label="Lås upp Avläsning"><form><h1>Avläsning</h1><label>Kod<input type="password" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" autocomplete="off" required aria-label="Kod till Avläsning"></label><button type="submit" disabled>Öppna</button><p role="status" aria-live="polite">Kontrollerar inloggning…</p><a href="index.html">Till startsidan</a></form></section>
 <script src="smartmatch-read-access-v9-85.js"></script>
 <footer class="smStartVersion" aria-label="SmartMatch-testets version"><span>SmartMatch · </span><span id="pwBuildVersion" class="pwTitleVersion" data-build="36.235" title="SmartMatch avläsning 9.100">Avläsning 9.100</span></footer>
-<script src="smartmatch-compact-workspace-v9-94.js"></script>
+<script src="smartmatch-compact-workspace-v9-94.js?v=9.100-da-popup1"></script>
 <header class="pwHeader">
   <a class="pwHome" href="./" aria-label="Hem"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg>Hem</a>
   <div class="pwTitle">
@@ -744,8 +744,8 @@ html[data-read-locked] body>:not(#smReadCodeGate):not(script):not(style){visibil
  <p id="pwSmartActionMessage"></p><label id="pwSmartActionField"><span id="pwSmartActionLabel">Märkning</span><input id="pwSmartActionInput" autocomplete="off"><select id="pwSmartActionSelect" hidden></select></label>
  <p id="pwSmartActionError" role="alert" hidden></p><footer><button id="pwSmartActionCancel" type="button">Avbryt</button><button id="pwSmartActionSave" type="submit">Spara</button></footer></form>
 </dialog>
-<dialog id="pwDALinkDialog" class="pwDADialog" aria-label="Placera dörrautomatikens ID">
- <header class="pwDAHead pwDAHeadCloseOnly"><button type="button" id="pwDALinkClose" aria-label="Stäng">×</button></header>
+<dialog id="pwDALinkDialog" class="pwDADialog" data-sm-floating="true" aria-labelledby="pwDALinkTitle">
+ <header class="pwDAHead"><div><strong id="pwDALinkTitle">Koppla DA</strong><small>Dra här för att flytta</small></div><button type="button" id="pwDALinkClose" aria-label="Stäng">×</button></header>
  <div class="pwDABody pwDACompactBody">
   <label for="pwDAExample">Märkning<input id="pwDAExample" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" inputmode="text" placeholder="20-83-92-3-24-10"></label>
   <button type="button" id="pwDAManual" class="pwDAPlacePrimary">＋ Placera och hitta alla</button>
@@ -1154,7 +1154,7 @@ html[data-read-locked] body>:not(#smReadCodeGate):not(script):not(style){visibil
 <script src="smartmatch-read-v9-100.js?v=9.100"></script>
 <script src="smartmatch-read-export-progress-v9-51.js?v=9.100"></script>
 <script src="smartmatch-card-view-v9-38.js"></script>
-<script src="smartmatch-read-main-v9-94.js?v=2.19.6"></script>
+<script src="smartmatch-read-main-v9-94.js?v=9.100-da-popup1"></script>
 <script src="smartmatch-read-equipment-symbols-v9-85.js?v=9.100"></script>
 <script src="smartmatch-read-extra-v9-96.js?v=9.100"></script>
 <script src="smartmatch-protocol-export-v36-96.js?v=36-106"></script>
@@ -1168,6 +1168,18 @@ html[data-read-locked] body>:not(#smReadCodeGate):not(script):not(style){visibil
 <link rel="stylesheet" href="smartmatch-read-v9-94.css?v=9.100">
 <link rel="stylesheet" href="smartmatch-read-extra-v9-94.css?v=9.100">
 <link rel="stylesheet" href="smartmatch-read-bottom-v9-97.css?v=9.100">
+<style id="sm-da-floating-popup">
+/* Only Koppla DA in Avläsning 9.100 opts out of the full-page workspace. */
+#pwDALinkDialog[data-sm-floating="true"]{position:fixed;inset:76px 16px auto auto;margin:0;width:min(360px,calc(100vw - 24px));height:auto;max-height:calc(100dvh - 24px);padding:0;box-sizing:border-box;overflow:hidden;border:1px solid var(--ta-border,#b2c9d4);border-radius:12px;background:var(--ta-panel,#fff);color:var(--ta-text,#213f4d);box-shadow:0 10px 35px #102b3d40;z-index:11010;transform:none}
+#pwDALinkDialog[data-sm-floating="true"][open]{display:flex;flex-direction:column}
+#pwDALinkDialog[data-sm-floating="true"].smInactiveFloating{visibility:hidden;pointer-events:none}
+#pwDALinkDialog[data-sm-floating="true"] .pwDAHead{flex:0 0 auto;justify-content:space-between;min-height:46px;padding:8px 12px;cursor:move;touch-action:none;user-select:none;-webkit-user-select:none}
+#pwDALinkDialog[data-sm-floating="true"] .pwDAHead small{display:block;font-size:11px}
+#pwDALinkDialog[data-sm-floating="true"] .pwDAHead button{min-width:38px;min-height:38px}
+#pwDALinkDialog[data-sm-floating="true"] .pwDACompactBody{min-height:0;max-height:none;overflow:auto;overscroll-behavior:contain;gap:10px;padding:12px}
+#pwDALinkDialog[data-sm-floating="true"] #pwDAExample{font-size:16px;min-height:42px}
+#pwDALinkDialog[data-sm-floating="true"] .pwDACompactBody p{margin:0;font-size:12px;line-height:1.4}
+</style>
 <script>
 (function(){const menu=document.getElementById('pwPositionToolsMenu'),query=matchMedia('(max-width:1100px), (pointer:coarse)');function sync(){menu.open=!query.matches}sync();query.addEventListener('change',sync)})();
 </script>

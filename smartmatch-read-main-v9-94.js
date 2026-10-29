@@ -8604,9 +8604,12 @@ function requestSmartAction(options={}){
 }
 
 function clampFloatingPanel(panel,left,top){
- const rect=panel.getBoundingClientRect(),pad=8;
- const x=Math.max(pad,Math.min(left,Math.max(pad,window.innerWidth-rect.width-pad)));
- const y=Math.max(pad,Math.min(top,Math.max(pad,window.innerHeight-rect.height-pad)));
+ const viewport=panel.dataset.smFloating==='true'?window.visualViewport:null,pad=8;
+ const width=viewport?.width||window.innerWidth,height=viewport?.height||window.innerHeight,offsetX=viewport?.offsetLeft||0,offsetY=viewport?.offsetTop||0;
+ if(panel.dataset.smFloating==='true'){panel.style.maxWidth=Math.max(0,width-2*pad)+'px';panel.style.maxHeight=Math.max(0,height-2*pad)+'px';}
+ const rect=panel.getBoundingClientRect();
+ const x=Math.max(offsetX+pad,Math.min(left,Math.max(offsetX+pad,offsetX+width-rect.width-pad)));
+ const y=Math.max(offsetY+pad,Math.min(top,Math.max(offsetY+pad,offsetY+height-rect.height-pad)));
  Object.assign(panel.style,{position:'fixed',left:x+'px',top:y+'px',right:'auto',bottom:'auto',margin:'0',transform:'none'});
 }
 function makeDesktopPanelDraggable(panel,handle){
@@ -8626,6 +8629,13 @@ function makeDesktopPanelDraggable(panel,handle){
   if(handle.hasPointerCapture(event.pointerId))handle.releasePointerCapture(event.pointerId);
  });
  window.addEventListener('resize',()=>{if(panel.style.left){const rect=panel.getBoundingClientRect();clampFloatingPanel(panel,rect.left,rect.top)}});
+ if(panel.dataset.smFloating==='true'){
+  const keepVisible=()=>{if(!panel.open)return;const rect=panel.getBoundingClientRect();clampFloatingPanel(panel,rect.left,rect.top);};
+  // Keep the popup reachable above the phone/tablet keyboard and after rotation.
+  window.visualViewport?.addEventListener('resize',keepVisible);
+  window.visualViewport?.addEventListener('scroll',keepVisible);
+  new MutationObserver(keepVisible).observe(panel,{attributes:true,attributeFilter:['open']});
+ }
  handle.classList.add('pwFloatingDragHandle');handle.title='Dra för att flytta';
 }
 if(!DRAWING_IS_MOBILE){
