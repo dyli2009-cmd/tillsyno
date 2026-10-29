@@ -46,7 +46,7 @@ const server = http.createServer((req, res) => {
       const legacyPDF=await PDFLib.PDFDocument.create();legacyPDF.addPage([1200,800]);
       const legacyBytes=new Uint8Array(await legacyPDF.save());
       const oldRecord={version:2,state:fixture.legacyState,original:legacyBytes.buffer};
-      if(S.RECORD_KEY!=='current-v6'||S.LEGACY_RECORD_KEY!=='current')throw Error('structured card functions must use an isolated key');
+      if(S.RECORD_KEY!=='current-v7'||S.LEGACY_RECORD_KEY!=='current')throw Error('structured card functions must use an isolated key');
       await S.save(D.createEmpty('Initialize new store'),new Uint8Array());
       await raw('readwrite',store=>{store.delete(S.RECORD_KEY);return store.put(oldRecord,S.LEGACY_RECORD_KEY);});
       const migrated=await S.load();

@@ -1514,10 +1514,28 @@
     const category=text(input.category,'Produktgrupp',40,false);if(!CATEGORIES.has(category))throw Error('Välj en känd produktgrupp.');
     return {id:idValue(input.id,'Produkt-ID'),name:text(input.name,'Produktnamn',160,false),category,description:text(input.description??'','Produktbeskrivning',400)};
   }
+  function projectDetails(input){
+    if(input===undefined)return {designer:'',date:'',logo:null};
+    if(!isObject(input))throw Error('Projektuppgifterna är ogiltiga.');
+    const designer=text(input.designer??'','Projektör',120),date=text(input.date??'','Projektdatum',10);
+    if(date&&(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(Date.parse(date+'T12:00:00Z'))||new Date(date+'T12:00:00Z').toISOString().slice(0,10)!==date))throw Error('Ange ett giltigt projektdatum.');
+    let logo=null;
+    if(input.logo!==undefined&&input.logo!==null){
+      if(!isObject(input.logo)||typeof input.logo.dataUrl!=='string'||input.logo.dataUrl.length>1400000||!/^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$/.test(input.logo.dataUrl))throw Error('Loggan måste vara en PNG-bild på högst 1 MB.');
+      const data=input.logo.dataUrl.slice(22);if(data.length%4)throw Error('Loggan kunde inte läsas.');
+      const head=Uint8Array.from(atob(data.slice(0,44)),c=>c.charCodeAt(0)),signature=[137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82];
+      if(!signature.every((n,i)=>head[i]===n)||head.length<24)throw Error('Loggan saknar ett giltigt PNG-huvud.');
+      const number=i=>head[i]*16777216+head[i+1]*65536+head[i+2]*256+head[i+3],width=number(16),height=number(20);
+      if(width<1||height<1||width>1600||height>600||width*height>960000)throw Error('Loggan är för stor. Välj bilden igen via Projektuppgifter.');
+      logo={name:text(input.logo.name??'Logga','Loggans namn',160),dataUrl:input.logo.dataUrl};
+    }
+    return {designer,date,logo};
+  }
   function validate(raw){
-    if(!isObject(raw)||![2,3,4,5,6].includes(raw.schema))throw Error('Projektfilens version stöds inte av denna projekteringssida.');
+    if(!isObject(raw)||![2,3,4,5,6,7].includes(raw.schema))throw Error('Projektfilens version stöds inte av denna projekteringssida.');
     if(!isObject(raw.project))throw Error('Projektuppgifter saknas.');
     const project={id:idValue(raw.project.id,'Projekt-ID'),name:text(raw.project.name,'Projektnamn',120,false),revision:int(raw.project.revision,'Revision',1,1000000000),updatedAt:text(raw.project.updatedAt,'Sparad tid',40,false)};
+    if(raw.project.details!==undefined||raw.schema===7)project.details=projectDetails(raw.project.details);
     if(!/^\d{4}-\d{2}-\d{2}T/.test(project.updatedAt)||!Number.isFinite(Date.parse(project.updatedAt)))throw Error('Projektets sparade tid är ogiltig.');
     if(!isObject(raw.drawing)||!Array.isArray(raw.drawing.pages)||raw.drawing.pages.length>LIMITS.pages)throw Error('Ritningen får innehålla högst '+LIMITS.pages+' sidor.');
     const drawing={name:text(raw.drawing.name,'Ritningsnamn',240),pages:raw.drawing.pages.map(normalizedPage)};
@@ -1539,7 +1557,9 @@
       if(!isObject(raw.conversion)||raw.conversion.version!==1||!Array.isArray(raw.conversion.issues)||raw.conversion.issues.length>1000)throw Error('Importöversikten är ogiltig.');
       result.conversion={version:1,sourceName:text(raw.conversion.sourceName,'Källfil',240),issues:raw.conversion.issues.map(value=>text(value,'Importanmärkning',500,false))};result.schema=5;
     }
-    if(raw.schema===6||Object.values(cards).some(card=>card.functions))result.schema=6;
+    if(raw.schema>=6||Object.values(cards).some(card=>card.functions))result.schema=6;
+    // A previous version must reject shared headers/logos instead of dropping them.
+    if(raw.schema===7||project.details)result.schema=7;
     // Older readers must reject schema 6 rather than discard function fields.
     // Older archived readers reject schema 4 before saving away the extra rows
     // or annotations. Earlier schema 2/3 inputs remain readable above.
@@ -1750,6 +1770,6 @@
     });
   }
 
-  return Object.freeze({Annotations,LIMITS,META_KEYS,SPECIAL_CODES,SECTIONS,sectionsForCard,PRODUCTS,productIdentity:productNameKey,LEGACY_PRODUCTS,RETIRED_PRODUCTS,PRODUCT_ALIASES,isRetiredProduct,OWNER_VALUES,TOOLBAR_TOOLS,SIZE_SCOPES,PRODUCT_TYPES,PRODUCT_TYPE_LABELS,CATEGORY_DEFAULTS,defaultPreferences,normalizeCode,matchKey,clone,createEmpty,initialCardCode,createCard,cardFunctions,validate,defaultStencil,defaultStencilFor,restroomSymbol,upgradeRestroomStencils,stencilLabel,stencilCategory,isProductStencil,isReferenceStencil,renameReferencePlacement,productMultiplier,equipmentFor,placementCounts,listStencils,searchProducts,addProduct,ensureCard,updateCard,copyCard,renameCard,assignPlacementCard,suggestCardCode,suggestForkCode,suggestStencilCode,forkPlacementCard,removeCard,addStencil,updateStencil,removeStencil,addPlacement,updatePlacement,updateEquipment,removePlacements,duplicatePlacements,setPreferences,setMaterialTime,resizeTargets,resizeShared,resizeStencilShared,alignPlacements});
+  return Object.freeze({Annotations,LIMITS,META_KEYS,SPECIAL_CODES,SECTIONS,sectionsForCard,PRODUCTS,productIdentity:productNameKey,LEGACY_PRODUCTS,RETIRED_PRODUCTS,PRODUCT_ALIASES,isRetiredProduct,OWNER_VALUES,TOOLBAR_TOOLS,SIZE_SCOPES,PRODUCT_TYPES,PRODUCT_TYPE_LABELS,CATEGORY_DEFAULTS,defaultPreferences,normalizeCode,matchKey,clone,createEmpty,initialCardCode,createCard,cardFunctions,projectDetails,validate,defaultStencil,defaultStencilFor,restroomSymbol,upgradeRestroomStencils,stencilLabel,stencilCategory,isProductStencil,isReferenceStencil,renameReferencePlacement,productMultiplier,equipmentFor,placementCounts,listStencils,searchProducts,addProduct,ensureCard,updateCard,copyCard,renameCard,assignPlacementCard,suggestCardCode,suggestForkCode,suggestStencilCode,forkPlacementCard,removeCard,addStencil,updateStencil,removeStencil,addPlacement,updatePlacement,updateEquipment,removePlacements,duplicatePlacements,setPreferences,setMaterialTime,resizeTargets,resizeShared,resizeStencilShared,alignPlacements});
 });
 

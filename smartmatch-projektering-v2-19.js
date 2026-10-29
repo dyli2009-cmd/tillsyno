@@ -12,7 +12,7 @@
   let currentStencil = 'GS1', currentPage = 1, currentTool = 'select', busy = false, started = false, storageOk = true, damagedStore = false;
   let undoStack = [], redoStack = [], clipboard = [], productRow = null, editingStencil = null, messageTimer;
   let confirmResolve = null, textResolve = null, contextPoint = null, contextReturnFocus = null, suppressCardClickUntil = 0;
-  let selectedAnnotation=null;
+  let selectedAnnotation=null, projectLogoDraft=null;
   let currentCategory = 'cards', currentCardGroup = 'GS', materialReport = null;
   let materialCacheKey = '', operationSettled = Promise.resolve(), canvasQueue = Promise.resolve();
   let materialTimeQueue = Promise.resolve(), materialTimePending = 0, materialStructureKey = '';
@@ -86,9 +86,47 @@
   function message(text, error = false) {
     $('appMessage').textContent = text; $('appMessage').dataset.level = error ? 'error' : 'success';
     clearTimeout(messageTimer); if (!error) messageTimer = setTimeout(() => { $('appMessage').textContent = ''; }, 6500);
-    for (const [dialog, output] of [['productDialog','productMessage'],['stencilDialog','stencilMessage'],['equipmentDialog','equipmentMessage']]) {
+    for (const [dialog, output] of [['productDialog','productMessage'],['stencilDialog','stencilMessage'],['equipmentDialog','equipmentMessage'],['projectDetailsDialog','projectDetailsMessage']]) {
       if ($(dialog)?.open && $(output)) { $(output).textContent = text; $(output).dataset.level = error ? 'error' : 'success'; }
     }
+  }
+  function renderProjectLogo() {
+    $('projectLogoPreview').hidden=!projectLogoDraft;
+    if(projectLogoDraft)$('projectLogoImage').src=projectLogoDraft.dataUrl;
+    else $('projectLogoImage').removeAttribute('src');
+    $('projectLogoName').textContent=projectLogoDraft?.name||'';
+  }
+  function openProjectDetails() {
+    viewer?.cancelGesture?.();
+    const details=D.projectDetails(state.project.details),now=new Date();
+    $('projectDetailsName').value=state.project.name;
+    $('projectDesigner').value=details.designer;
+    $('projectDate').value=details.date||(!state.project.details?`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`:'');
+    projectLogoDraft=details.logo?clone(details.logo):null;
+    $('projectLogoFile').value='';$('projectDetailsMessage').textContent='';renderProjectLogo();
+    if(!$('projectDetailsDialog').open)$('projectDetailsDialog').showModal();
+  }
+  async function readProjectLogo(file) {
+    if(!file)return;
+    if(!['image/png','image/jpeg','image/webp'].includes(file.type))throw Error('Välj en logga i PNG-, JPEG- eller WebP-format.');
+    if(file.size>10*1024*1024)throw Error('Loggan får vara högst 10 MB.');
+    const url=URL.createObjectURL(file),img=new Image();
+    try {
+      await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(Error('Loggan kunde inte läsas. Välj en annan bild.'));img.src=url;});
+      if(!img.naturalWidth||!img.naturalHeight)throw Error('Loggan saknar bildstorlek.');
+      const scale=Math.min(1,1600/img.naturalWidth,600/img.naturalHeight),canvas=document.createElement('canvas');
+      canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));
+      const context=canvas.getContext('2d');if(!context)throw Error('Loggan kunde inte bearbetas.');
+      context.drawImage(img,0,0,canvas.width,canvas.height);
+      projectLogoDraft=D.projectDetails({logo:{name:file.name.slice(0,160),dataUrl:canvas.toDataURL('image/png')}}).logo;
+      renderProjectLogo();$('projectDetailsMessage').dataset.level='success';$('projectDetailsMessage').textContent='Loggan är vald. Spara projektuppgifterna för att använda den på dörrkorten.';
+    } finally { URL.revokeObjectURL(url); }
+  }
+  async function saveProjectDetails() {
+    const name=$('projectDetailsName').value.trim(),details=D.projectDetails({designer:$('projectDesigner').value.trim(),date:$('projectDate').value,logo:projectLogoDraft});
+    if(!name)throw Error('Skriv ett projektnamn.');
+    await commit(next=>{next.project.name=name;next.project.details=details;next.project.revision++;next.project.updatedAt=new Date().toISOString();},'Projektuppgifterna är sparade och följer med på alla dörrkort.');
+    $('projectDetailsDialog').close();
   }
   function ask({title,text,accept='Fortsätt',discard=''}) {
     if (confirmResolve) return Promise.resolve('cancel');
@@ -123,6 +161,7 @@
     $('materialPdf').disabled=(busy&&!materialTimePending)||!materialReport?.rows.length;$('materialCsv').disabled=(busy&&!materialTimePending)||!materialReport?.rows.length;
     $('copyCard').disabled=busy||!state.cards[activeCode]; $('deleteCard').disabled=busy||!state.cards[activeCode];
     $('previewCard').disabled=busy||!draft;
+    for(const id of ['saveProjectDetails','projectLogoFile','removeProjectLogo'])$(id).disabled=busy;
     const forkTarget=selectedPlacements();
     $('renameCard').disabled=busy||!activeCode;
     const unlinked=forkTarget.length===1&&state.stencils[forkTarget[0]?.stencilId]?.kind==='symbol'&&!D.isProductStencil(state.stencils[forkTarget[0]?.stencilId])&&!D.isReferenceStencil(state.stencils[forkTarget[0]?.stencilId]);
@@ -273,7 +312,7 @@
       if(answer!=='accept')return;
     }
     const blank=await Proj2PDF.blank();
-    await replaceProject(libraryProject(blank.state,{fresh:true}),blank.original,'En tom sida är klar. Placera stämplar och fyll i dina dörrkort.');
+    if(await replaceProject(libraryProject(blank.state,{fresh:true}),blank.original,'En tom sida är klar. Placera stämplar och fyll i dina dörrkort.'))openProjectDetails();
   }
   function refreshPDFTextTools(){
     const available=!!original.length&&!!state?.drawing.pages.length&&!busy,hasText=!!pdfSearchState.selectedText;
@@ -438,7 +477,7 @@
     $('cardRows').innerHTML=D.sectionsForCard(draft).map(section=>`<details class="card-section" ${section.rows.some(row=>!row.id.startsWith('extra-'))||draft.rows.some(row=>row.id.startsWith('extra-')&&row.product.trim()&&!/^[-–—]+$/.test(row.product.trim()))?'open':''}><summary>${esc(section.title)}</summary><div class="card-table-wrap"><table><thead><tr><th>Komponent</th><th>Produkt</th><th>Antal</th><th>Lev av</th><th>Mont av</th></tr></thead><tbody>${section.rows.map(def=>{
       const row=draft.rows.find(r=>r.id===def.id);
       const owners=field=>`<select data-row-id="${esc(row.id)}" data-field="${field}" aria-label="${esc(section.title+' '+row.label+' '+(field==='delivery'?'levereras av':'monteras av'))}">${[...new Set(['',...D.OWNER_VALUES,row[field]])].map(value=>`<option value="${esc(value)}"${row[field]===value?' selected':''}>${esc(value||'–')}</option>`).join('')}</select>`;
-      return `<tr data-row-id="${esc(row.id)}"><th scope="row">${esc(row.label)}</th><td class="product-cell"><div class="product-entry"><input class="product-input" data-product-input data-row-id="${esc(row.id)}" value="${esc(row.product)}" maxlength="160" autocomplete="off" aria-label="${esc(section.title+' '+row.label)} produkt" placeholder="Skriv produkt…"><button type="button" class="product-library" data-action="choose-product" ${def.category==='other'?'hidden':''} data-row-id="${esc(row.id)}" aria-label="Välj från biblioteket för ${esc(row.label)}" title="Produktbibliotek"><svg aria-hidden="true"><use href="#i-search"/></svg></button><button type="button" class="clear-product" data-action="clear-product" data-row-id="${esc(row.id)}" aria-label="Ta bort ${esc(row.label)}"${row.product?'':' disabled'}>×</button></div></td><td><input data-row-id="${esc(row.id)}" data-field="quantity" type="number" min="1" max="999" step="1" value="${row.quantity}" aria-label="${esc(section.title+' '+row.label)} antal"></td><td>${owners('delivery')}</td><td>${owners('installer')}</td></tr>${row.imported||row.note?`<tr><td colspan="5"><details><summary>Ansvar och anmärkning${row.note?' · '+esc(row.note):''}</summary><div class="card-meta">${[['connection','Ansluts av',40],['functionOwner','Funktionsansvar',40],['note','Anmärkning',1000]].map(([field,label,max])=>`<label><span>${label}</span><input data-row-id="${esc(row.id)}" data-field="${field}" maxlength="${max}" value="${esc(row[field]||'')}"></label>`).join('')}</div></details></td></tr>`:''}`;
+      return `<tr data-row-id="${esc(row.id)}"><th scope="row">${esc(row.label)}</th><td class="product-cell"><div class="product-entry"><input class="product-input" data-product-input data-row-id="${esc(row.id)}" value="${esc(row.product)}" maxlength="160" autocomplete="off" aria-label="${esc(section.title+' '+row.label)} produkt" placeholder="Skriv produkt…"><button type="button" class="product-library" data-action="choose-product" ${def.category==='other'?'hidden':''} data-row-id="${esc(row.id)}" aria-label="Välj från biblioteket för ${esc(row.label)}" title="Produktbibliotek"><svg aria-hidden="true"><use href="#i-search"/></svg></button><button type="button" class="clear-product" data-action="clear-product" data-row-id="${esc(row.id)}" aria-label="Ta bort ${esc(row.label)}"${row.product?'':' disabled'}>×</button></div></td><td><input data-row-id="${esc(row.id)}" data-field="quantity" type="number" min="1" max="999" step="1" value="${row.quantity}" aria-label="${esc(section.title+' '+row.label)} antal"></td><td>${owners('delivery')}</td><td>${owners('installer')}</td></tr><tr class="card-row-details"><td colspan="5"><div class="row-responsibility">${[['connection','Ansl av'],['functionOwner','Funktionsansvarig av']].map(([field,label])=>`<label><span>${label}</span><input data-row-id="${esc(row.id)}" data-field="${field}" maxlength="40" value="${esc(row[field]||'')}" aria-label="${esc(section.title+' '+row.label+' '+label)}"></label>`).join('')}<label class="row-note"><span>Anmärkning</span><textarea data-row-id="${esc(row.id)}" data-field="note" rows="2" maxlength="1000" aria-label="${esc(section.title+' '+row.label+' anmärkning')}">${esc(row.note||'')}</textarea></label></div></td></tr>`;
     }).join('')}</tbody></table></div></details>`).join('');
   }
   const annotationItem = () => state?.annotations?.find(item=>item.id===selectedAnnotation);
@@ -578,7 +617,7 @@
     materialTimeEpoch++;materialTimeDrafts.clear();pendingMaterialTimes.clear();materialStructureKey='';
     state=valid;original=bytes.slice();selected=[];selectedAnnotation=null;undoStack=[];redoStack=[];currentPage=1;storageOk=true;damagedStore=false;materialCacheKey='';
     currentStencil=firstLibraryStencil();setActive(state.cards.GS1?'GS1':Object.keys(state.cards).sort(natural)[0]||null);revealStencil(state.stencils[currentStencil]);
-    makeViewer();if(original.length)await viewer.open(original);viewer.setProject(state,{selectedIds:selected});renderAll();showView('drawing');message(text);
+    makeViewer();if(original.length)await viewer.open(original);viewer.setProject(state,{selectedIds:selected});renderAll();showView('drawing');message(text);return true;
   }
   async function openFile(file) {
     if(!file)return;
@@ -609,7 +648,8 @@
         $('acceptImport').onclick=()=>finish(true);$('cancelImport').onclick=()=>finish(false);dialog.oncancel=e=>{e.preventDefault();finish(false);};dialog.showModal();
       });
       if(!accepted)return;
-      await replaceProject(imported.state,imported.original,'Projektet är konverterat. Stämplar, dörrkort och material kan nu redigeras.');return;
+      if(!state.drawing.pages.length&&state.project.details){imported.state.project.name=state.project.name;imported.state.project.details=clone(state.project.details);}
+      if(await replaceProject(imported.state,imported.original,'Projektet är konverterat. Stämplar, dörrkort och material kan nu redigeras.'))openProjectDetails();return;
     }
     const metadata=await inspectOriginal(bytes);
     if(!await leaveDraft())return;
@@ -619,7 +659,7 @@
     }
     const next=clone(state);next.drawing={name:file.name,pages:metadata.pages};next.placements=[];next.annotations=[];delete next.conversion;next.project.revision++;next.project.updatedAt=new Date().toISOString();
     if(!state.drawing.pages.length&&state.project.name==='Nytt projekt')next.project.name=file.name.replace(/\.pdf$/i,'').slice(0,120)||'Nytt projekt';
-    await replaceProject(next,bytes,'Ritningen är öppnad. Välj en stencil och klicka eller dra den till en dörr.');
+    if(await replaceProject(next,bytes,'Ritningen är öppnad. Välj en stencil och klicka eller dra den till en dörr.'))openProjectDetails();
   }
   function productDefinition(){return definitions().find(r=>r.id===productRow);}
   function renderProducts(){const def=productDefinition();$('productList').innerHTML=L.searchProducts(library,state,def.category,$('productSearch').value).map(p=>`<button type="button" class="product-choice" data-product-id="${esc(p.id)}"><strong>${esc(p.name)}</strong><span>${esc(p.description)}</span></button>`).join('')||'<p class="empty-note">Ingen produkt hittades. Lägg till en egen nedan.</p>';}
@@ -1056,7 +1096,7 @@
     $('placementSearch')?.addEventListener('input',renderPositions);
     $('placementsList')?.addEventListener('click',e=>{const b=e.target.closest('[data-focus-id]');if(b)void run(async()=>{await viewer.focusPlacement(b.dataset.focusId);await selectIds([b.dataset.focusId]);showView('drawing');});});
     $('cardMeta').addEventListener('input',e=>{if(draft&&!busy&&e.target.dataset.meta){draft.meta[e.target.dataset.meta]=e.target.value;draftChanged();}});
-    $('cardRows').addEventListener('input',e=>{if(!draft||busy)return;const target=e.target,row=draft.rows.find(r=>r.id===target.dataset.rowId);if(row&&['quantity','delivery','installer','connection','functionOwner','note'].includes(target.dataset.field)){row[target.dataset.field]=target.dataset.field==='quantity'?Number(target.value):target.value;if(target.dataset.field==='delivery'&&!row.imported){row.installer=target.value;const installer=$('cardRows').querySelector('select[data-row-id="'+row.id+'"][data-field="installer"]');if(installer){if(![...installer.options].some(option=>option.value===target.value))installer.add(new Option(target.value,target.value));installer.value=target.value;}}draftChanged();}});
+    $('cardRows').addEventListener('input',e=>{if(!draft||busy)return;const target=e.target,row=draft.rows.find(r=>r.id===target.dataset.rowId);if(row&&['quantity','delivery','installer','connection','functionOwner','note'].includes(target.dataset.field)){row[target.dataset.field]=target.dataset.field==='quantity'?Number(target.value):target.value;draftChanged();}});
     $('cardRows').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||busy||!draft)return;if(b.dataset.action==='choose-product')openProducts(b.dataset.rowId);else{updateTypedProduct(b.dataset.rowId,'');const input=[...$('cardRows').querySelectorAll('[data-product-input]')].find(input=>input.dataset.rowId===b.dataset.rowId);if(input)input.value='';productSuggest?.close();}});
     $('cardNote').addEventListener('input',e=>{if(draft&&!busy){draft.note=e.target.value;draftChanged();}});$('saveCard').addEventListener('click',()=>void run(saveCard));
     for(const [key,id]of [['door','cardDoorFunction'],['alarm','cardAlarmFunction'],['fire','cardFireFunction']])$(id).addEventListener('input',e=>{if(draft&&!busy){draft.functions={...D.cardFunctions(draft),[key]:e.target.value};draftChanged();}});
@@ -1068,9 +1108,16 @@
     for(const id of ['drawingFile','projectFile'])$(id).addEventListener('change',e=>{const file=e.target.files[0];e.target.value='';void run(()=>openFile(file));});
     $('saveProject').addEventListener('click',()=>void afterMaterialTimes(async()=>{if(!await leaveDraft())return;download(await S.pack(state,original),filename()+'.tillsyno-projektering.json','application/json');message('Projektfilen är skapad med originalritning, stämplar och sparade dörrkort.');}));
     $('exportPdf').addEventListener('click',()=>void afterMaterialTimes(()=>exportPDF('combined')));$('exportDrawing').addEventListener('click',()=>void afterMaterialTimes(()=>exportPDF('drawing')));$('exportCards').addEventListener('click',()=>void afterMaterialTimes(()=>exportPDF('cards')));$('exportSchedule').addEventListener('click',()=>void afterMaterialTimes(exportSchedule));
-    $('newProject').addEventListener('click',()=>void run(async()=>{if(state.drawing.pages.length||Object.keys(state.cards).length||dirty){const answer=await ask({title:'Starta ett nytt projekt?',text:'Spara en projektfil först om du vill behålla det nuvarande projektet.',accept:'Nytt projekt'});if(answer!=='accept')return;}await replaceProject(libraryProject(D.createEmpty(),{fresh:true}),new Uint8Array(),'Ett nytt projekt är klart. Ditt bibliotek finns kvar. Öppna en PDF-ritning för att börja.');}));
+    $('newProject').addEventListener('click',()=>void run(async()=>{if(state.drawing.pages.length||Object.keys(state.cards).length||dirty){const answer=await ask({title:'Starta ett nytt projekt?',text:'Spara en projektfil först om du vill behålla det nuvarande projektet.',accept:'Nytt projekt'});if(answer!=='accept')return;}if(await replaceProject(libraryProject(D.createEmpty(),{fresh:true}),new Uint8Array(),'Ett nytt projekt är klart. Ditt bibliotek finns kvar. Öppna en PDF-ritning för att börja.'))openProjectDetails();}));
     const example=()=>void run(async()=>{if(state.drawing.pages.length||Object.keys(state.cards).length||dirty){const answer=await ask({title:'Öppna exempelprojektet?',text:'Det ersätter det projekt som visas. Spara en projektfil först om du vill behålla ditt arbete.',accept:'Öppna exemplet'});if(answer!=='accept')return;}const sample=await Proj2PDF.example();await replaceProject(sample.state,sample.original,'Exempelprojektet är öppnat. Alla stämplar går att flytta, ändra och ta bort.');});
     $('exampleProject').addEventListener('click',example);document.querySelectorAll('[data-open-example],[data-example]').forEach(b=>b.addEventListener('click',example));
+    $('projectDetails').addEventListener('click',()=>{if(!busy)openProjectDetails();});
+    document.querySelectorAll('[data-project-details]').forEach(button=>button.addEventListener('click',()=>{if(!busy)openProjectDetails();}));
+    for(const id of ['closeProjectDetails','cancelProjectDetails'])$(id).addEventListener('click',()=>{if(!busy)$('projectDetailsDialog').close();});
+    $('projectDetailsDialog').addEventListener('cancel',event=>{if(busy)event.preventDefault();});
+    $('projectDetailsForm').addEventListener('submit',event=>{event.preventDefault();void run(saveProjectDetails);});
+    $('projectLogoFile').addEventListener('change',event=>{const file=event.target.files[0];event.target.value='';void run(()=>readProjectLogo(file));});
+    $('removeProjectLogo').addEventListener('click',()=>{if(!busy){projectLogoDraft=null;renderProjectLogo();}});
     $('projectName').addEventListener('change',()=>void run(async()=>{const value=$('projectName').value.trim();await commit(next=>{next.project.name=value;next.project.revision++;next.project.updatedAt=new Date().toISOString();},'Projektnamnet är sparat.');}));
     document.querySelectorAll('button[data-view]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.view==='materials')void run(async()=>{if(!await leaveDraft())return;renderMaterials();showView('materials');});else showView(b.dataset.view);}));
     $('help').addEventListener('click',()=>$('helpDialog').showModal());
@@ -1109,7 +1156,7 @@
       }
       state=libraryProject(state,{fresh:!restoredProject});
       setActive(state.cards.GS1?'GS1':Object.keys(state.cards).sort(natural)[0]||null);if(!libraryStencils().some(stencil=>stencil.id===currentStencil))currentStencil=firstLibraryStencil();revealStencil(state.stencils[currentStencil]);bind();makeViewer();if(original.length)await viewer.open(original);renderAll();showView('drawing');
-      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.19.8'});
+      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.19.9'});
     }catch(error){message(error?.message||'Projektet kunde inte öppnas.',true);}
   }
   window.addEventListener('tillsyno-authorized',()=>void boot());

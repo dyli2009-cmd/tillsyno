@@ -951,3 +951,29 @@ body[data-pane-resizing] .drawing-host { pointer-events: none; }
 
 .pdf-text-option { display: flex; align-items: center; gap: 7px; padding: 9px 10px 4px; font-size: 12px; cursor: pointer; }
 .pdf-text-hint { margin: 0; padding: 3px 10px 8px; max-width: 280px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+
+/* Shared project heading and independent responsibility fields on every row. */
+.project-name input { min-width: 0; }
+.project-name .icon-button { flex: none; }
+.card-rows .card-row-details > td { padding: 0 8px 12px; border-bottom: 1px solid var(--line); }
+.row-responsibility { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; text-align: left; }
+.row-responsibility label { display: grid; gap: 4px; min-width: 0; font-size: 11px; color: var(--muted); }
+.row-responsibility input, .row-responsibility textarea { width: 100%; min-width: 0; font-size: 12px; padding: 7px; }
+.row-responsibility .row-note { grid-column: 1 / -1; }
+.row-responsibility textarea { resize: vertical; min-height: 48px; }
+.card-functions h3 { margin: 10px 0 7px; font-size: 15px; }
+.card-functions h3 label { font: inherit; color: var(--ink); }
+.project-details-dialog { width: min(560px, calc(100vw - 30px)); }
+.project-details-fields { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; }
+.project-details-fields label, .project-logo-field > label { display: grid; gap: 7px; font-size: 12px; }
+.project-details-fields input { width: 100%; min-width: 0; font-size: 16px; }
+.project-details-wide { grid-column: 1 / -1; }
+.project-logo-field { display: grid; gap: 10px; margin-top: 20px; }
+.project-logo-field input { max-width: 100%; font-size: 14px; }
+.project-logo-preview { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px; border: 1px solid var(--line); border-radius: 8px; }
+.project-logo-preview[hidden] { display: none; }
+.project-logo-preview img { max-width: 150px; max-height: 70px; object-fit: contain; }
+.project-logo-preview span { flex: 1; min-width: 80px; overflow-wrap: anywhere; font-size: 12px; }
+.project-details-hint { color: var(--muted); font-size: 12px; line-height: 1.6; margin-top: 16px; }
+@media (max-width: 480px) { .project-details-fields { grid-template-columns: 1fr; } }
+@media (pointer: coarse) { .row-responsibility input, .row-responsibility textarea { font-size: 16px; } }

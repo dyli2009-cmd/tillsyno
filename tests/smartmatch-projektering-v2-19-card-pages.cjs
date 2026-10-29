@@ -35,7 +35,7 @@ function assertRead(card,page){
  assert.equal(valid.cards.GS1.rows.length,40,'all editable choices remain');assert.equal(valid.cards.GS1.rows.find(r=>r.id==='access-reader').note,'Keep this unfinished draft digitally.');
  const previewText=normalize((await textPages(await P.buildCardPreview(valid,'GS1')))[0].items.map(t=>t.str).join(' '));assert.equal(previewText,cardText.replace('Dörrkort · 1/3','Dörrkort · 1/1'),'preview uses the same populated rows as combined export');
  assert(!pages.slice(2).some(p=>p.items.some(t=>/fortsättning|kompletterande uppgifter/i.test(t.str))));assert.deepEqual((await P.inspect(bytes)).state,valid,'unprinted cards remain editable without extra printed pages');
- const S=require('../smartmatch-projektering-v2-19-store.js');assert.equal(S.RECORD_KEY,'current-v6');assert.deepEqual((await S.unpack(await S.pack(valid,original))).state,valid);
+ const S=require('../smartmatch-projektering-v2-19-store.js');assert.equal(S.RECORD_KEY,'current-v7');assert.deepEqual((await S.unpack(await S.pack(valid,original))).state,valid);
  assert.equal((await L.PDFDocument.load(await P.build(valid,original,{mode:'cards'}))).getPageCount(),4);
  const draft=D.clone(valid.cards.GS1);draft.functions.fire='Updated fire function';assert.equal((await L.PDFDocument.load(await P.buildCardPreview(valid,'GS1',draft))).getPageCount(),1);assert.equal(valid.cards.GS1.functions.fire,'Fire description.');
  const dense=D.clone(valid);dense.cards.GS1.rows.forEach((r,i)=>Object.assign(r,{product:'MODEL-'+i,note:'Extra detail '+i,delivery:'GS',installer:'DT'}));assert.equal((await L.PDFDocument.load(await P.buildCardPreview(dense,'GS1'))).getPageCount(),1,'all 39 standard rows plus an imported row fit on one page');
