@@ -5,31 +5,32 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#173e3a">
   <meta name="description" content="Projektera dörrar på egna PDF-ritningar med stenciler, gemensamma dörrkort och sökbar PDF-export.">
-  <title>Projektering 2.19.13 | Tillsyno</title>
+  <title>Projektering 2.19.14 | Tillsyno</title>
   <style>html[data-auth-pending] body{visibility:hidden!important}</style>
   <script src="vendor/supabase-2.49.10.min.js"></script>
   <script src="auth-config.js"></script>
   <script src="auth/client.js?v=2.4.270"></script>
   <script src="auth/guard.js?v=2.4.270" defer></script>
-  <link rel="stylesheet" href="smartmatch-projektering-v2-19.css?v=2.19.13">
+  <link rel="stylesheet" href="smartmatch-projektering-v2-19.css?v=2.19.14">
   <script src="vendor/pdf.min.js" defer></script>
   <script src="vendor/pdf-lib.min.js" defer></script>
-  <script src="smartmatch-projektering-v2-19-annotations.js?v=2.19.13" defer></script>
-  <script src="smartmatch-projektering-v2-19-catalog.js?v=2.19.13" defer></script>
-  <script src="smartmatch-projektering-v510-data.js?v=2.19.13" defer></script>
-  <script src="smartmatch-projektering-v510-store.js?v=2.19.13" defer></script>
-  <script src="smartmatch-projektering-v2-19-canvas.js?v=2.19.13" defer></script>
+  <script src="smartmatch-projektering-v2-19-annotations.js?v=2.19.14" defer></script>
+  <script src="smartmatch-projektering-v2-19-catalog.js?v=2.19.14" defer></script>
+  <script src="smartmatch-projektering-v511-data.js?v=2.19.14" defer></script>
+  <script src="smartmatch-product-times-v511.js" defer></script>
+  <script src="smartmatch-projektering-v511-store.js?v=2.19.14" defer></script>
+  <script src="smartmatch-projektering-v2-19-canvas.js?v=2.19.14" defer></script>
   <script src="tillsyno-project-info-v509.js" defer></script>
-  <script src="smartmatch-projektering-v510-pdf.js?v=2.19.13" defer></script>
-  <script src="smartmatch-projektering-v2-19-import.js?v=2.19.13" defer></script>
-  <script src="smartmatch-projektering-v2-19-materials.js?v=2.19.13" defer></script>
-  <script src="smartmatch-projektering-v2-19-library.js?v=2.19.13" defer></script>
-  <script src="smartmatch-projektering-v2-8-suggest.js?v=2.19.13" defer></script>
-  <script src="smartmatch-projektering-v2-9-library-ui.js?v=2.9" defer></script>
+  <script src="smartmatch-projektering-v511-pdf.js?v=2.19.14" defer></script>
+  <script src="smartmatch-projektering-v2-19-import.js?v=2.19.14" defer></script>
+  <script src="smartmatch-projektering-v511-materials.js?v=2.19.14" defer></script>
+  <script src="smartmatch-projektering-v511-library.js?v=2.19.14" defer></script>
+  <script src="smartmatch-projektering-v2-8-suggest.js?v=2.19.14" defer></script>
+  <script src="smartmatch-projektering-v511-library-ui.js?v=2.9" defer></script>
   <script src="smartmatch-projektering-v2-10-search.js?v=2.10" defer></script>
   <script src="smartmatch-projektering-v2-10-layout.js?v=2.10" defer></script>
-  <script src="smartmatch-projektering-v2-19-window.js?v=2.19.13" defer></script>
-  <script src="smartmatch-projektering-v510.js?v=2.19.13" defer></script>
+  <script src="smartmatch-projektering-v2-19-window.js?v=2.19.14" defer></script>
+  <script src="smartmatch-projektering-v511.js?v=2.19.14" defer></script>
 <link rel="stylesheet" href="tillsyno-project-info-v509.css">
 <link rel="stylesheet" href="smartmatch-projektering-v510.css"></head>
 <body data-view="drawing">
@@ -69,7 +70,7 @@
   </defs></svg>
 
   <header class="app-header">
-    <a class="brand" href="index.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small>Projektering 2.19.13</small></span></a>
+    <a class="brand" href="index.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small>Projektering 2.19.14</small></span></a>
     <div class="project-name"><label for="projectName">Projekt</label><input id="projectName" value="Nytt projekt" maxlength="120" aria-label="Projektnamn" autocomplete="off"><button id="projectDetails" type="button" class="icon-button" title="Projektuppgifter och logga" aria-label="Projektuppgifter och logga"><svg aria-hidden="true"><use href="#i-edit"/></svg></button></div>
     <div class="header-status"><span class="status-dot" aria-hidden="true"></span><output id="saveStatus" aria-live="polite">Öppna en ritning för att börja</output></div>
     <button id="help" class="icon-button" type="button" aria-label="Öppna guiden" title="Guide och kortkommandon"><svg><use href="#i-help"/></svg></button>
@@ -265,7 +266,7 @@
     <div class="dialog-actions"><button id="cancelImport" type="button" class="button">Avbryt</button><button id="acceptImport" type="button" class="button primary">Öppna konverterat projekt</button></div>
   </dialog>
   <noscript><p class="noscript">Aktivera JavaScript för att använda projekteringsappen.</p></noscript>
-<span class="projektering-version" aria-label="Version 2.19.13">v2.19.13</span>
+<span class="projektering-version" aria-label="Version 2.19.14">v2.19.14</span>
 </body>
 </html>
 
