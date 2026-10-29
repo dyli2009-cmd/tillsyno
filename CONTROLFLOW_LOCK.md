@@ -236,3 +236,11 @@ Befintlig webbläsarmatris godkänd: 23 fall, 1916 kontrollpåståenden, båda i
 Användaren beställde att ta bort versionsnumret som hamnade framför ögonknappen på telefon. Kontrollflödets versionsmärke döljs därför vid högst 800 px bredd och vid manuellt enhetsval Telefon. Startsidan behåller appversionen. Ändringen är en avgränsad CSS-regel för de två ordinarie Kontrollflödesytorna. Ögonknapp, projektdata och PDF ändras inte. Kontrollflödet är åter LÅST efter denna beställning.
 
 Verifierat i Chromium: versionsmärket dolt i Säkerhetsservice vid 320 px och i Dörrautomatik/Lås vid 390 px; synligt i datorvy 1440 px. Ögonknappen öppnade Visa på ritningen utan hinder. Fysisk iPhone/iPad och TestFlight har inte provats.
+
+# 2026-10-29 · v2.4.506 · Kompakt telefonprotokoll och verktyg endast på ritningen
+
+Användaren beställde mindre protokolltext och en kompaktare telefonvy, samt att ritverktygsfältet inte ska synas i Översikt, Protokoll eller Projekt. UI-lagret använder 14 px kontrolltext, 13 px etiketter, mindre rubriker och mellanrum. Inmatning behåller 16 px, svarsknappar minst 44 px och vald textförstoring bevaras. Revisionsrader går i två kolumner från 360 px vid normal skala; liten skärm/stor text får mer utrymme genom radbrytning. Textstorleken på dator/iPad och i övriga paneler ändras inte.
+
+Ritverktygsfältet döljs utifrån både data-view, öppen översikt och revisionsmodulens inlinepanel. Det återkommer i ritningsvyn. Protokollinnehåll, datalagring och PDF-logik är oförändrade. Kontrollflödet är åter LÅST efter denna beställning.
+
+Verifierat i Chromium: 23 fall och 2031 kontrollpåståenden godkända på båda ingångarna, telefon 320/390, surfplatta 834 och dator 1440 px samt teman och manuella enhetsval. Verkliga navigeringsknappar testas för Översikt → Protokoll → Projekt → Ritning; verktygsfältet döljs/återkommer. Kontrollsvar, 200 % text, objektplacering, PDF-export och återöppning är godkända. Visuell kontroll av 14 px kontrolltext, 13 px etiketter, 16 px inmatning och kontrollrader på telefon. Fysisk iOS/Safari och TestFlight har inte provats.

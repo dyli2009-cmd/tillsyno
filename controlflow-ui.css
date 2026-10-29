@@ -163,5 +163,29 @@ html[data-controlflow-ui="1"] body.allInOneApp.secHasPdf[data-view="drawing"] .o
  html[data-controlflow-ui="1"] body.allInOneApp .ta-page-version{display:none!important}
 }
 html[data-controlflow-ui="1"][data-tillsyno-device="phone"] body.allInOneApp .ta-page-version{display:none!important}
+
+/* Drawing tools belong only to the drawing, including the inline overview. */
+html[data-controlflow-ui="1"] body.allInOneApp:not([data-view="drawing"]) .sessionHistoryBar,
+html[data-controlflow-ui="1"] body.allInOneApp.revisionInlineActive .sessionHistoryBar,
+html[data-controlflow-ui="1"] body.allInOneApp:has(#securityOverview[open]) .sessionHistoryBar{display:none!important}
+
+/* Phone protocols: compact reading text, full-size input and touch targets. */
+html[data-controlflow-ui="1"][data-cf-phone-ui][data-tillsyno-theme] body.allInOneApp #securityProtocol{--cf-body:calc(.875rem * var(--cf-text-scale));--cf-label:calc(.8125rem * var(--cf-text-scale));--cf-title:calc(1.125rem * var(--cf-text-scale));--cf-heading:calc(1rem * var(--cf-text-scale));padding:8px!important}
+html[data-controlflow-ui="1"][data-cf-phone-ui][data-tillsyno-theme] body.allInOneApp #securityProtocol :is(input,textarea,select){font-size:calc(1rem * var(--cf-text-scale))!important;padding:6px 8px!important}
+html[data-controlflow-ui="1"][data-cf-phone-ui][data-tillsyno-theme] body.allInOneApp #securityProtocol :is(p,label,.secCheckText,.secCheckHead,.protocolMetaHint){line-height:1.3!important}
+html[data-controlflow-ui="1"][data-cf-phone-ui][data-tillsyno-theme] body.allInOneApp #securityProtocol .secCheck{padding:6px!important;gap:4px!important;margin-bottom:4px!important}
+html[data-controlflow-ui="1"][data-cf-phone-ui][data-tillsyno-theme] body.allInOneApp #securityProtocol .secCheckHead .checkNumber{min-width:24px!important}
+html[data-controlflow-ui="1"][data-cf-phone-ui][data-tillsyno-theme] body.allInOneApp #securityProtocol .secChoices{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:4px!important;margin-top:4px!important}
+html[data-controlflow-ui="1"][data-cf-phone-ui][data-tillsyno-theme] body.allInOneApp #securityProtocol .secChoices button{padding:6px 4px!important}
+html[data-controlflow-ui="1"][data-cf-phone-ui][data-tillsyno-theme] body.allInOneApp #securityProtocol .revisionCheckTable .secChoices{grid-template-columns:repeat(3,44px)!important}
+html[data-controlflow-ui="1"][data-cf-phone-ui][data-tillsyno-theme] body.allInOneApp #securityProtocol .revisionCheckTable .secChoices button{font-size:calc(1.25rem * var(--cf-text-scale))!important}
+html[data-controlflow-ui="1"][data-cf-phone-ui][data-tillsyno-theme] body.allInOneApp #securityProtocol :is(.protocolMetaPanel>summary,.secCheckGroup>summary){padding:8px!important}
+@media(min-width:360px){
+ html[data-controlflow-ui="1"][data-cf-phone-ui][data-tillsyno-theme]:not([data-cf-large-text]) body.allInOneApp #securityProtocol .revisionCheckTable .secCheck{grid-template-columns:minmax(0,1fr) auto!important}
+ html[data-controlflow-ui="1"][data-cf-phone-ui][data-tillsyno-theme]:not([data-cf-large-text]) body.allInOneApp #securityProtocol .revisionCheckTable .secChoices{grid-column:2!important;grid-row:1!important;margin-top:0!important}
+ html[data-controlflow-ui="1"][data-cf-phone-ui][data-tillsyno-theme]:not([data-cf-large-text]) body.allInOneApp #securityProtocol .revisionCheckTable .secFault{grid-row:2!important}
+}
+html[data-controlflow-ui="1"][data-cf-phone-ui][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol .secChoices{grid-template-columns:1fr!important}
+html[data-controlflow-ui="1"][data-cf-phone-ui][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol .revisionCheckTable .secChoices{grid-template-columns:repeat(3,44px)!important}
 }
 

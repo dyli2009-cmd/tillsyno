@@ -47,3 +47,9 @@ Gamla testversioner, CE, SmartMatch, startsidans layout och fristående säkerhe
 ## Ritningsyta v2.4.504
 
 När en PDF är öppen och ritningsvyn visas döljs den gula instruktionen, områdesrubriken, protokollnamnsraden och projektrubriken (t.ex. Allt-i-ett). Objekträknaren behålls i en smal rad. Filnamn och arbetsknappar behålls. Rubriker i protokoll-/projektvyer och innan ritningen öppnats följer tidigare regler.
+
+## Kompakta telefonprotokoll v2.4.506
+
+På användarens beställning gäller 14 px kontrolltext, 13 px etiketter och 18/16 px rubriker inom telefonens protokoll. Inmatning behåller 16 px och svarsknappar minst 44 px tryckyta. Avstånd minskas. Revisionsrader visar text och svar bredvid varandra från 360 px vid normal textskala; mindre skärm eller större text får radbrytning. Samma telefonläge används vid högst 800 px eller manuellt val Telefon. Textförstoring bevaras. Dator/iPad och övriga panelers textskala ändras inte.
+
+Ritverktygsfältet (sessionHistoryBar) visas endast i ritningsvyn. Det döljs även när Översikt ligger över en fortfarande aktiv ritningsvy eller när en separat inlinepanel är öppen. Det återkommer när man återgår till ritningen.

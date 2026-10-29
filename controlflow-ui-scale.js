@@ -44,7 +44,7 @@
    menu.addEventListener('toggle',fitMenu);
    fitMenu();
    const query=matchMedia('(max-width:800px)');
-   function layout(){const compact=query.matches||root.dataset.tillsynoDevice==='phone';menu.dataset.compact=String(compact);menu.open=!compact;}
+   function layout(){const compact=query.matches||root.dataset.tillsynoDevice==='phone';root.toggleAttribute('data-cf-phone-ui',compact);menu.dataset.compact=String(compact);menu.open=!compact;}
    query.addEventListener('change',layout);new MutationObserver(layout).observe(root,{attributes:true,attributeFilter:['data-tillsyno-device']});layout();
    tools.addEventListener('click',e=>{if(e.target.closest('[data-add]')&&menu.dataset.compact==='true')menu.open=false});
    menu.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu.dataset.compact==='true'){menu.open=false;summary.focus();}});

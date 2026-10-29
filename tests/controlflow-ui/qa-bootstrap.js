@@ -22,6 +22,7 @@
  if(mode==='visual'){AppTextScale.set(Number(params.get('scale'))||0);if(params.get('view')==='protocol'){selected=items[0].uid;showSelected();go('protocol');}return;}
  const size=sel=>{const el=document.querySelector(sel);return el?parseFloat(getComputedStyle(el).fontSize):null};
  const visible=el=>!!(el.offsetWidth||el.offsetHeight||el.getClientRects().length)&&getComputedStyle(el).visibility!=='hidden';
+ const phone=innerWidth<=800||params.get('device')==='phone';
  const bodyExpected=innerWidth>=1100&&!['phone','tablet'].includes(params.get('device'))?18:16;
  assert(size('.secAppHeader .brand strong')>=24,'Header title >=24',size('.secAppHeader .brand strong'));
  for(const sel of ['#securityExport','#securityPreview','#secZoomIn','#secZoomOut','#secPrev','#secNext']){const el=document.querySelector(sel),r=el.getBoundingClientRect();assert(r.width>=43.5&&r.height>=43.5,'Target >=44 '+sel,{width:r.width,height:r.height})}
@@ -50,10 +51,18 @@
  for(const selector of ['.headerSubtitle','#securityExport','#securityMessage','#secPage','#secZoom']){const el=document.querySelector(selector);if(el&&visible(el))assert(contrast(el)>=4.5,'Text contrast '+selector,contrast(el));}
  assert(document.querySelector('#secViewer').clientHeight>=(revision?100:180),'Drawing usable height',document.querySelector('#secViewer').clientHeight);
  assert(document.documentElement.scrollWidth<=innerWidth+2,'No page horizontal overflow',{scroll:document.documentElement.scrollWidth,width:innerWidth});
+ const toolbar=document.querySelector('.sessionHistoryBar');
+ assert(visible(toolbar),'Drawing toolbar initially visible');
+ for(const id of ['secNavOverview','secNavProtocol','secNavProject']){
+  document.getElementById(id).click();await pause(80);
+  assert(!visible(toolbar),'Drawing toolbar hidden in '+id);
+ }
+ document.getElementById('secNavDrawing').click();await pause(80);
+ assert(visible(toolbar),'Drawing toolbar restored after navigation');
  const baselineMarkers=[...document.querySelectorAll('.secMarker')].map(el=>({font:getComputedStyle(el).fontSize,width:el.getBoundingClientRect().width}));
- for(const o of items){selected=o.uid;showSelected();go('protocol');await pause(80);assert(size('.secCheckText')>=bodyExpected,'Checklist body '+o.type,{size:size('.secCheckText'),expected:bodyExpected});const choice=document.querySelector('.secChoices button[data-v="ok"]');if(choice){const rect=choice.getBoundingClientRect();assert(rect.width>=43.5&&rect.height>=43.5,'Result target >=44 '+o.type,{width:rect.width,height:rect.height});if(!choice.closest('.revisionCheckTable'))assert(rect.width>=100&&rect.height<=100,'Text result button fits '+o.type,{width:rect.width,height:rect.height});choice.click();assert(!!document.querySelector('.secChoices button.active[data-v="ok"]'),'Check result '+o.type)} }
+ for(const o of items){selected=o.uid;showSelected();go('protocol');await pause(80);assert(size('.secCheckText')>=(phone?14:bodyExpected),'Checklist body '+o.type,{size:size('.secCheckText'),expected:phone?14:bodyExpected});const choice=document.querySelector('.secChoices button[data-v="ok"]');if(choice){const rect=choice.getBoundingClientRect();assert(rect.width>=43.5&&rect.height>=43.5,'Result target >=44 '+o.type,{width:rect.width,height:rect.height});if(!choice.closest('.revisionCheckTable'))assert(rect.width>=44&&rect.height<=100,'Text result button fits '+o.type,{width:rect.width,height:rect.height});choice.click();assert(!!document.querySelector('.secChoices button.active[data-v="ok"]'),'Check result '+o.type)} }
  selected=items[0].uid;showSelected();go('protocol');
- assert(size('#secProgress')>=14,'Progress readable');assert(document.querySelector('#secCloseProtocol').getBoundingClientRect().width>=44,'Close protocol target >=44');
+ assert(size('#secProgress')>=(phone?13:14),'Progress readable');assert(document.querySelector('#secCloseProtocol').getBoundingClientRect().width>=44,'Close protocol target >=44');
  const normal=size('#secLocation');assert(normal>=bodyExpected,'Input readable',{normal,bodyExpected});
  const origData=JSON.stringify(items);AppTextScale.set(6);await pause(80);assert(size('#secLocation')>=normal*1.99,'Text doubles',{normal,big:size('#secLocation')});
  assert(JSON.stringify(items)===origData,'Text scaling preserves project data');
