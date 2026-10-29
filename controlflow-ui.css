@@ -153,5 +153,9 @@ html[data-controlflow-ui="1"]:not([data-cf-large-text]) body.securityWorkspace[d
 html[data-controlflow-ui="1"]:not([data-cf-large-text]) body.securityWorkspace[data-view="drawing"] #secViewer{flex:1 0 180px!important;min-height:180px!important}
 html[data-controlflow-ui="1"]:not([data-cf-large-text]) body.securityWorkspace[data-view="drawing"] .objectBar{flex:none!important}
 html[data-controlflow-ui="1"]:not([data-cf-large-text]) body.securityWorkspace[data-view="drawing"] #mobileBar{position:static!important;flex:none!important}
+
+/* Drawing-first workspace: no repeated folder/protocol titles or yellow instructions. */
+html[data-controlflow-ui="1"] body.allInOneApp.secHasPdf[data-view="drawing"] :is(#secHint,.secAppHeader .brand,.secAppHeader .headerSubtitle,.objectBar .objectTitle){display:none!important}
+html[data-controlflow-ui="1"] body.allInOneApp.secHasPdf[data-view="drawing"] .objectBar{min-height:0!important;padding:2px 12px!important;justify-content:flex-end!important}
 }
 

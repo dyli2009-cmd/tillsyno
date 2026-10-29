@@ -222,3 +222,11 @@ Verifierat i Chromium med dator 1440×900 samt emulerad pekskärm 834×1194, 390
 Användaren rapporterade att Lägg till objekt inte fungerade efter den beställda mobilanpassningen. Den nya details-behållaren hade inte ärvt objektverktygsradens flexordning. Menyn hamnade därför före ritningen och öppnade valen uppåt bakom sidhuvud/andra kontroller. Behållaren ligger nu efter ritningen (order:2), och listans maximala höjd följer den synliga ritningsytans höjd. Långa listor går att rulla. Befintliga knappar, objekttyper, placering, protokoll och sparlogik bevaras.
 
 Verifierat: 23 Chromium-fall och 1939 kontrollpåståenden på Kontrollflödets båda ingångar, 320/390/834/1440 px, teman och manuella enhetsval. Utökade tester kontrollerar faktisk träffyta via elementFromPoint för varje objekttyp vid 100/200 % text, val av typ, stängning av menyn och skapande via ritningens klickhanterare. Befintliga PDF-export-/återöppningskontroller godkända. Separat pekarklick i 320 px-vyn bekräftade att Branddörr kunde väljas och placeras (7 → 8 objekt). Fysisk iPhone/iPad, Safari och TestFlight har inte testats. Ingen native-källa finns i detta repo. Kontrollflödet är åter LÅST efter den avgränsade felrättningen.
+
+# 2026-10-29 · v2.4.504 · Mer plats för ritningen
+
+Användaren beställde att ta bort den gula hjälprutan efter placering (”D5 är tillagd. På telefon: dra …”) och de upprepade protokoll-/mapp-/Allt-i-ett-rubrikerna för att ge ritningen mer plats. På båda ordinarie Kontrollflödesytorna döljs secHint, brand, headerSubtitle och objectTitle när en PDF är öppen i ritningsläget. Objekträknarens rad görs smalare. Filnamn, knappar, status/felmeddelanden och övriga vyer bevaras. Endast det avgränsade CSS-lagret ändras funktionellt; projektdata, protokoll och PDF-logik berörs inte.
+
+Manuellt verifierat i telefonvy 390×844 för Dörrautomatik/Lås: ritytan ökade från cirka 281 till 380 px före placering, och ett nytt objekt kunde väljas och placeras (3 → 4 objekt) utan gul ruta. Ingen fysisk iOS/TestFlight-verifiering. Kontrollflödet är åter LÅST efter beställningen.
+
+Befintlig webbläsarmatris godkänd: 23 fall, 1916 kontrollpåståenden, båda ingångarna i 320/390/834/1440 px, teman och manuella enhetsval. Objektmeny, placering, 200 % text, PDF-export och återöppning ingår.

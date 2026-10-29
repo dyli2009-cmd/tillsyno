@@ -43,3 +43,7 @@ Viktiga åtgärder som Spara PDF och Kundmall visar ikon och text. Kompakt filha
 Textinställningen lagras i `tillsyno-controlflow-text-level-v1`, med nivåerna 100/112/124/136/160/180/200 %. Ett tidigare mindre textval normaliseras till standardens läsbara bas. Äldre större nivåer 1–3 behåller samma faktor. Inga inställningar för andra moduler skrivs över.
 
 Gamla testversioner, CE, SmartMatch, startsidans layout och fristående säkerhetssidor omfattas inte av denna första utrullning.
+
+## Ritningsyta v2.4.504
+
+När en PDF är öppen och ritningsvyn visas döljs den gula instruktionen, områdesrubriken, protokollnamnsraden och projektrubriken (t.ex. Allt-i-ett). Objekträknaren behålls i en smal rad. Filnamn och arbetsknappar behålls. Rubriker i protokoll-/projektvyer och innan ritningen öppnats följer tidigare regler.
