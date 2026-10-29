@@ -1,0 +1,8 @@
+#pwProjectMaterialButton,#pwTimeAddType{display:none!important}
+.pwTimeSummary>div:has(#pwTimeDone),.pwTimeSummary>div:has(#pwTimeLeft),.pwTimeSummary>div:has(#pwTimeProgress){display:none}
+.smPdfMaterialRows{display:block!important}
+.smPdfMaterialRows details{margin:12px 0;border:1px solid var(--line,#cbd8d0);border-radius:8px;overflow:auto}
+.smPdfMaterialRows summary{padding:12px;font-weight:700;cursor:pointer}
+.smPdfMaterialRows table{border-collapse:collapse;width:100%;font-size:14px}
+.smPdfMaterialRows th,.smPdfMaterialRows td{padding:8px;text-align:left;border-bottom:1px solid var(--line,#cbd8d0)}
+.smPdfMaterialRows th:not(:first-child),.smPdfMaterialRows td:not(:first-child){text-align:right;white-space:nowrap}

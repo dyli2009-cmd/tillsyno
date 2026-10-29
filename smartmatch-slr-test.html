@@ -425,7 +425,7 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
 
 }
 </style>
-</head>
+<link rel="stylesheet" href="smartmatch-project-material-v521.css"></head>
 <body class="pwStartMode">
 <header class="pwHeader">
   <a class="pwHome" href="./" aria-label="Hem"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg>Hem</a>
@@ -881,8 +881,8 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
       <div><span>Utan tidsestimat</span><strong id="pwTimeUnknown">0</strong></div>
     </div>
     <div class="pwTimeSubhead">
-      <p class="pwTimeIntro">Uppskattad tid för hittade arbetsmoment. Ändrade standardtider sparas på den här enheten och följer med projekt-PDF:en.</p>
-      <button id="pwTimeAddType" type="button">＋ Ny tidstyp</button>
+      <p class="pwTimeIntro">Projektets GS-material och arbetstid från PDF-underlaget.</p>
+      <button id="pwTimeAddType" type="button" hidden>＋ Ny tidstyp</button>
     </div>
     <p id="pwTimeSummaryText" class="pwTimeSummaryText">0 arbetsmoment</p>
     <div id="pwTimeRows" class="pwTimeRows"></div>
@@ -1037,11 +1037,18 @@ html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{border-radius:10px!i
 <script src="smartmatch-table-layouts-v36-94.js?v=36-106"></script>
 <script src="smartmatch-beslagskod-v36-133.js?v=36.133"></script>
 <link rel="stylesheet" href="smartmatch-stamp-tools-v508.css">
+<script src="smartmatch-projektering-v2-19-annotations.js"></script>
+<script src="smartmatch-projektering-v2-19-catalog.js"></script>
+<script src="smartmatch-automation-models-v512.js"></script>
+<script src="smartmatch-projektering-v519-data.js"></script>
+<script src="smartmatch-product-times-v513.js"></script>
+<script src="smartmatch-projektering-v519-materials.js"></script>
+<script src="smartmatch-project-material-v521.js"></script>
 <script src="tillsyno-projection-times-v513.js"></script>
 <script src="tillsyno-project-info-v513.js"></script>
 <link rel="stylesheet" href="tillsyno-project-info-v509.css">
 <script src="smartmatch-stamp-tools-v508.js"></script>
-<script src="smartmatch-main-v513.js"></script>
+<script src="smartmatch-main-v521.js"></script>
 <script src="smartmatch-protocol-export-v36-96.js?v=36-106"></script>
 <script src="smartmatch-session-v36-77.js?v=36-77"></script>
 <script id="smartmatch-visual-release-v1-3">(function(){var label=document.getElementById('pwBuildVersion');if(!label)return;label.textContent='Version 1.3';label.title='SmartMatch version 1.4';label.setAttribute('aria-label','SmartMatch version 1.4');/* data-build and data-loaded-build remain 36.133 for internal updater. */})();</script>
