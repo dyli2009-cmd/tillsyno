@@ -10,7 +10,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>SmartMatch – Avläsning 9.100.1</title>
+<title>SmartMatch – Avläsning 9.100.2</title>
 
 
 <script src="smartmatch-protocol-templates.js"></script>
@@ -440,12 +440,12 @@ html[data-read-locked] body>:not(#smReadCodeGate):not(script):not(style){visibil
 </style>
 <style>.rtManualLinkBar{padding:12px;background:#e9f5fb;border:2px solid #19769b;border-radius:8px}.rtManualLinkBar p{margin:0 0 8px;font-weight:600}.rtManualLinkBar button{margin:3px;padding:9px}.rtManualLinkBar[hidden]{display:none}</style>
 <style>.rtManualLinkBar>label{display:block;margin:8px 0}.rtManualLinkBar input[type=search]{display:block;width:100%;box-sizing:border-box;padding:10px;font-size:16px}.rtManualSearchList{max-height:220px;overflow:auto}.rtManualSearchList>div{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #ccdce5}.rtManualSearchList label{display:flex;align-items:center;gap:7px}.rtManualSearchList input{min-width:20px;min-height:20px}.rtManualSearchResults p{font-weight:400;font-size:13px}</style>
-<link rel="stylesheet" href="smartmatch-position-changes-v9-100.css?v=9.100.1">
+<link rel="stylesheet" href="smartmatch-position-changes-v9-100.css?v=9.100.2">
 </head>
 <body class="pwStartMode smCompactWorkspace">
 <section id="smReadCodeGate" aria-label="Lås upp Avläsning"><form><h1>Avläsning</h1><label>Kod<input type="password" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" autocomplete="off" required aria-label="Kod till Avläsning"></label><button type="submit" disabled>Öppna</button><p role="status" aria-live="polite">Kontrollerar inloggning…</p><a href="index.html">Till startsidan</a></form></section>
 <script src="smartmatch-read-access-v9-85.js"></script>
-<footer class="smStartVersion" aria-label="SmartMatch-testets version"><span>SmartMatch · </span><span id="pwBuildVersion" class="pwTitleVersion" data-build="36.235" title="SmartMatch avläsning 9.100.1">Avläsning 9.100.1</span></footer>
+<footer class="smStartVersion" aria-label="SmartMatch-testets version"><span>SmartMatch · </span><span id="pwBuildVersion" class="pwTitleVersion" data-build="36.235" title="SmartMatch avläsning 9.100.2">Avläsning 9.100.2</span></footer>
 <script src="smartmatch-compact-workspace-v9-94.js?v=9.100-da-popup1"></script>
 <header class="pwHeader">
   <a class="pwHome" href="./" aria-label="Hem"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg>Hem</a>
@@ -707,8 +707,9 @@ html[data-read-locked] body>:not(#smReadCodeGate):not(script):not(style){visibil
           <button id="pwProtocolMax" type="button" title="Zooma direkt till 300%">300%</button><button id="pwProtocolShowCard" type="button">Dörrkort</button><button id="pwProtocolShowGS" type="button">Kontrollpunkter</button>
         </div>
       </div>
+      <div id="pwProtocolChangeNotice" class="pwProtocolChangeNotice" role="status" hidden></div>
       <div id="pwProtocolCanvasWrap" class="pwProtocolCanvasWrap">
-        <div id="pwProtocolStage" class="pwProtocolStage"><canvas id="pwProtocolCanvas"></canvas><div id="pwProtocolGSLayer" class="pwProtocolGSLayer" hidden></div></div>
+        <div id="pwProtocolStage" class="pwProtocolStage"><canvas id="pwProtocolCanvas"></canvas><div id="pwProtocolChangeLayer" class="pwProtocolChangeLayer" hidden></div><div id="pwProtocolGSLayer" class="pwProtocolGSLayer" hidden></div></div>
         <div id="pwProtocolMissing" class="pwProtocolMissing" hidden>
           <strong>Protokoll hittades inte automatiskt</strong>
           <p>Positionen är sparad, men ingen säker protokollsida kunde matchas för märkningen.</p>
@@ -1153,11 +1154,12 @@ html[data-read-locked] body>:not(#smReadCodeGate):not(script):not(style){visibil
 <script src="smartmatch-read-review-v9-97.js?v=9.100"></script>
 <script src="smartmatch-read-workflow-v9-94.js?v=9.100"></script>
 <script src="smartmatch-read-table-ocr-v9-33.js"></script>
-<script src="smartmatch-read-v9-100.js?v=9.100-position1"></script>
+<script src="smartmatch-read-v9-100.js?v=9.100-position2"></script>
 <script src="smartmatch-read-export-progress-v9-51.js?v=9.100"></script>
 <script src="smartmatch-card-view-v9-38.js"></script>
-<script src="smartmatch-position-changes-v9-100.js?v=9.100.1"></script>
-<script src="smartmatch-read-main-v9-94.js?v=9.100-position1"></script>
+<script src="smartmatch-card-changes-v9-100.js?v=9.100.2"></script>
+<script src="smartmatch-position-changes-v9-100.js?v=9.100.2"></script>
+<script src="smartmatch-read-main-v9-94.js?v=9.100-position2"></script>
 <script src="smartmatch-read-equipment-symbols-v9-85.js?v=9.100"></script>
 <script src="smartmatch-read-extra-v9-96.js?v=9.100"></script>
 <script src="smartmatch-protocol-export-v36-96.js?v=36-106"></script>

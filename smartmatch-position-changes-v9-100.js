@@ -51,6 +51,10 @@
  }
  function element(tag,className,text){const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)node.textContent=text;return node;}
  function button(text,handler){const node=element('button','',text);node.type='button';node.onclick=handler;return node;}
+ function iconButton(label,icon,handler){
+  const node=button('',handler);node.className='pwChangeIconButton';node.title=label;node.setAttribute('aria-label',label);
+  const glyph=element('span','pwChangeIcon',icon);glyph.setAttribute('aria-hidden','true');node.append(glyph,element('span','pwChangeActionLabel',label));return node;
+ }
  function itemTitle(item){return [item.label,item.value].filter(Boolean).join(' · ')||'Produkt';}
  function showEditor(o,item,host,exclude=true){
   if(host.querySelector('.pwPositionChangeEditor'))return;
@@ -58,11 +62,11 @@
   form.setAttribute('aria-label','Ändring för denna position');
   form.append(element('strong','',itemTitle(item)),element('small','','Gäller bara '+(o.drawingLabel||o.code)+' · position '+o.position+'.'));
   const excludedLabel=element('label','pwPositionChangeToggle'),excluded=element('input');excluded.type='checkbox';excluded.checked=current&&!current.restoredAt?!!current.excluded:exclude;
-  excludedLabel.append(excluded,document.createTextNode('Utgår – ingen kontrollpunkt, mängd eller tid'));
+  excludedLabel.append(excluded,document.createTextNode('Utgår för denna dörr'));
   const noteLabel=element('label','','Ändring / beställarens besked'),note=element('textarea');note.rows=3;note.maxLength=2000;note.required=true;note.value=current?.note||'';note.placeholder='Exempel: Dörrautomatik utgår enligt beställaren.';noteLabel.append(note);
   const colorLabel=element('label','','Flaggans färg'),color=element('select');
   for(const [key,label] of [['amber','Orange'],['red','Röd'],['blue','Blå']]){const option=element('option','',label);option.value=key;color.append(option);}
-  color.value=current?.color||'amber';colorLabel.append(color);
+  color.value=current?.color||'red';colorLabel.append(color);
   const error=element('p','pwPositionChangeError');error.setAttribute('role','alert');
   const actions=element('div','pwPositionChangeActions'),cancel=button('Avbryt',()=>form.remove()),save=element('button','','Spara ändring');save.type='submit';actions.append(cancel,save);
   form.append(excludedLabel,noteLabel,colorLabel,error,actions);
@@ -80,17 +84,18 @@
  function render(o){
   const rootNode=document.getElementById('pwPositionChanges');if(!rootNode)return;
   rootNode.replaceChildren();const changes=entries(o);rootNode.hidden=!changes.length;if(!changes.length)return;
-  rootNode.append(element('strong','','Ändringar · bara denna position'));
+  rootNode.append(element('strong','pwPositionChangesHeading','Ändringar · pos. '+o.position));
   for(const change of changes){
    const row=element('article','pwPositionChange'+(change.restoredAt?' restored':change.excluded?' excluded':''));
    row.dataset.changeKey=change.key;row.style.setProperty('--change-color',COLORS[change.color]||COLORS.amber);
-   row.append(element('strong','pwPositionChangeTitle',(change.restoredAt?'Återställd: ':change.excluded?'× Utgår: ':'⚑ Ändring: ')+itemTitle(change)),element('p','',change.note));
-   row.append(element('small','',change.restoredAt?'Ändringen har återställts.':change.excluded?'Räknas inte i kontrollpunkter, materialmängd eller tid.':'Produkten är kvar i kontrollpunkter, materialmängd och tid.'));
-   const actions=element('div','pwPositionChangeActions');actions.append(button('Ändra',()=>showEditor(o,change,row,change.excluded)));
-   if(!change.restoredAt)actions.append(button(change.excluded?'Återställ produkt':'Avsluta flagga',async()=>{
+   const head=element('div','pwPositionChangeHead');head.append(element('strong','pwPositionChangeTitle',(change.restoredAt?'Återställd: ':change.excluded?'× Utgår: ':'⚑ Ändring: ')+itemTitle(change)));
+   const actions=element('div','pwPositionChangeActions');actions.append(iconButton('Ändra','✎',()=>showEditor(o,change,row,change.excluded)));
+   if(!change.restoredAt)actions.append(iconButton(change.excluded?'Återställ produkt':'Avsluta flagga',change.excluded?'↶':'✓',async()=>{
     try{await root.SmartMatchAppBridge.restorePositionChange(o,change);}catch(err){root.SmartMatchAppBridge.setStatus(err.message||String(err));}
    }));
-   row.append(actions);rootNode.append(row);
+   head.append(actions);row.append(head,element('p','pwPositionChangeNote',change.note));
+   row.append(element('small','pwPositionChangeMeaning',change.restoredAt?'Återställd.':change.excluded?'Ingen kontroll, mängd eller tid.':'Kontroll, mängd och tid är kvar.'));
+   rootNode.append(row);
   }
  }
  function decorateMarker(marker,o){

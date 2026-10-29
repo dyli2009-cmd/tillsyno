@@ -33,7 +33,7 @@ const el={
  prev:$('pwPrev'),next:$('pwNext'),pageInfo:$('pwPageInfo'),zoomOut:$('pwZoomOut'),zoomIn:$('pwZoomIn'),zoomInfo:$('pwZoomInfo'),fit:$('pwFit'),bulkSelect:$('pwBulkSelect'),timeReport:$('pwTimeReport'),toolMenuButton:$('pwToolMenuButton'),toolMenu:$('pwToolMenu'),toolText:$('pwToolText'),toolCallout:$('pwToolCallout'),toolArrow:$('pwToolArrow'),toolImage:$('pwToolImage'),toolLegend:$('pwToolLegend'),toolDelete:$('pwToolDelete'),toolUndo:$('pwToolUndo'),toolRedo:$('pwToolRedo'),imageFile:$('pwImageFile'),
  viewer:$('pwViewer'),stage:$('pwStage'),canvas:$('pwCanvas'),drawingNotes:$('pwDrawingNotes'),selectionRect:$('pwSelectionRect'),markers:$('pwMarkers'),automationMarkers:$('pwAutomationMarkers'),empty:$('pwEmpty'),side:$('pwSide'),showPositions:$('pwShowPositions'),hidePositions:$('pwHidePositions'),groups:$('pwGroups'),currentPageOnly:$('pwCurrentPageOnly'),
  protocol:$('pwProtocol'),back:$('pwBack'),protocolClose:$('pwProtocolClose'),protocolCode:$('pwProtocolCode'),protocolPosition:$('pwProtocolPosition'),protocolPercent:$('pwProtocolPercent'),protocolBar:$('pwProtocolBar'),
- protocolCanvas:$('pwProtocolCanvas'),protocolCanvasWrap:$('pwProtocolCanvasWrap'),protocolStage:$('pwProtocolStage'),protocolGSLayer:$('pwProtocolGSLayer'),protocolShowCard:$('pwProtocolShowCard'),protocolShowGS:$('pwProtocolShowGS'),protocolDetailsToggle:$('pwProtocolDetailsToggle'),protocolMissing:$('pwProtocolMissing'),protocolFit:$('pwProtocolFit'),protocolZoomOut:$('pwProtocolZoomOut'),protocolZoomIn:$('pwProtocolZoomIn'),protocolZoomInfo:$('pwProtocolZoomInfo'),protocolMax:$('pwProtocolMax'),protocolActionMenuButton:$('pwProtocolActionMenuButton'),protocolActionMenu:$('pwProtocolActionMenu'),
+ protocolCanvas:$('pwProtocolCanvas'),protocolCanvasWrap:$('pwProtocolCanvasWrap'),protocolStage:$('pwProtocolStage'),protocolGSLayer:$('pwProtocolGSLayer'),protocolChangeLayer:$('pwProtocolChangeLayer'),protocolChangeNotice:$('pwProtocolChangeNotice'),protocolShowCard:$('pwProtocolShowCard'),protocolShowGS:$('pwProtocolShowGS'),protocolDetailsToggle:$('pwProtocolDetailsToggle'),protocolMissing:$('pwProtocolMissing'),protocolFit:$('pwProtocolFit'),protocolZoomOut:$('pwProtocolZoomOut'),protocolZoomIn:$('pwProtocolZoomIn'),protocolZoomInfo:$('pwProtocolZoomInfo'),protocolMax:$('pwProtocolMax'),protocolActionMenuButton:$('pwProtocolActionMenuButton'),protocolActionMenu:$('pwProtocolActionMenu'),
  checklist:$('pwChecklist'),checklistMeta:$('pwChecklistMeta'),addChecklistItem:$('pwAddChecklistItem'),addExtraTime:$('pwAddExtraTime'),addOrder:$('pwAddOrder'),addRemark:$('pwAddRemark'),doorAttention:$('pwDoorAttention'),rereadCard:$('pwRereadCard'),doorTimeSummary:$('pwDoorTimeSummary'),doorTimeTotal:$('pwDoorTimeTotal'),doorTimeDone:$('pwDoorTimeDone'),doorTimeLeft:$('pwDoorTimeLeft'),doorTimeUnknown:$('pwDoorTimeUnknown'),
  bulkBar:$('pwBulkBar'),bulkCount:$('pwBulkCount'),bulkPage:$('pwBulkPage'),bulkDone:$('pwBulkDone'),bulkClear:$('pwBulkClear'),
  timeDialog:$('pwTimeDialog'),timeClose:$('pwTimeClose'),timeTotal:$('pwTimeTotal'),timeDone:$('pwTimeDone'),timeLeft:$('pwTimeLeft'),timeProgress:$('pwTimeProgress'),timeUnknown:$('pwTimeUnknown'),timeRows:$('pwTimeRows'),timeAddType:$('pwTimeAddType'),timeSummaryText:$('pwTimeSummaryText'),timeProductsTab:$('pwTimeProductsTab'),attentionTab:$('pwAttentionTab'),timeProductsPanel:$('pwTimeProductsPanel'),attentionPanel:$('pwAttentionPanel'),attentionSummaryText:$('pwAttentionSummaryText'),attentionRows:$('pwAttentionRows'),timeTypeEditor:$('pwTimeTypeEditor'),timeTypeTitle:$('pwTimeTypeTitle'),timeTypeClose:$('pwTimeTypeClose'),timeTypeName:$('pwTimeTypeName'),timeTypeMinutes:$('pwTimeTypeMinutes'),timeTypeTerms:$('pwTimeTypeTerms'),timeTypeCancel:$('pwTimeTypeCancel'),timeTypeSave:$('pwTimeTypeSave'),
@@ -6428,6 +6428,10 @@ async function focusInstance(o){
  renderMarkers();
  el.viewer.scrollTo({left:Math.max(0,cx-el.viewer.clientWidth/2),top:Math.max(0,cy-el.viewer.clientHeight/2),behavior:'smooth'});
 }
+function setProtocolPreviewTransform(value){
+ el.protocolCanvas.style.transform=value;
+ if(el.protocolChangeLayer)el.protocolChangeLayer.style.transform=value;
+}
 function clampProtocolScale(value){
  // Narrow side-by-side phone layout needs a smaller fit scale than desktop.
  const minimum=window.matchMedia('(max-width:699px)').matches ? 0.20 : 0.4;
@@ -6470,7 +6474,7 @@ async function setProtocolScale(nextScale,clientX,clientY){
  const pageNo=currentProtocolPage();if(!pageNo)return;
  const focus=protocolFocusRatios(clientX,clientY);
  protocolScale=clampProtocolScale(nextScale);
- el.protocolCanvas.style.transform='';
+ setProtocolPreviewTransform('');
  await renderProtocolPage(pageNo);
  requestAnimationFrame(()=>restoreProtocolFocus(focus));
 }
@@ -6480,7 +6484,7 @@ async function fitProtocolPage(){
  const pg=await pdf.getPage(pageNo),vp=pg.getViewport({scale:1});
  const region=protocolDisplayRegion(selectedInstance()?.code,pageNo);
  protocolScale=protocolFitScaleFor(vp,region);
- el.protocolCanvas.style.transform='';
+ setProtocolPreviewTransform('');
  await renderProtocolPage(pageNo);
  el.protocolCanvasWrap.scrollTo({left:0,top:0});
 }
@@ -6494,7 +6498,7 @@ let protocolWheelBaseWidth=0,protocolWheelBaseHeight=0,protocolWheelAnchor=null;
 function cancelProtocolWheelZoom(){
  if(!protocolWheelTimer)return;
  clearTimeout(protocolWheelTimer);protocolWheelTimer=null;
- el.protocolCanvas.style.transform='';
+ setProtocolPreviewTransform('');
  el.protocolStage.style.width=protocolWheelBaseWidth+'px';
  el.protocolStage.style.height=protocolWheelBaseHeight+'px';
  el.protocolZoomInfo.textContent=Math.round(protocolScale*100)+'%';
@@ -6541,7 +6545,7 @@ function wheelProtocolZoom(e){
  protocolWheelTargetScale=clampProtocolScale(protocolWheelTargetScale*factor);
  const zoom=protocolWheelTargetScale/protocolWheelBaseScale;
  el.protocolCanvas.style.transformOrigin='0 0';
- el.protocolCanvas.style.transform='scale('+zoom+')';
+ setProtocolPreviewTransform('scale('+zoom+')');
  el.protocolStage.style.width=(protocolWheelBaseWidth*zoom)+'px';
  el.protocolStage.style.height=(protocolWheelBaseHeight*zoom)+'px';
  restoreProtocolFocus(anchor);
@@ -6611,7 +6615,7 @@ function moveProtocolTouch(e){
   const target=clampProtocolScale(protocolGesture.startScale*(protocolTouchDistance(e.touches)/protocolGesture.startDistance));
   protocolGesture.targetScale=target;protocolGesture.center=center;
   const factor=target/protocolGesture.startScale;
-  el.protocolCanvas.style.transform='scale('+factor+')';
+  setProtocolPreviewTransform('scale('+factor+')');
   el.protocolStage.style.width=(protocolGesture.baseWidth*factor)+'px';
   el.protocolStage.style.height=(protocolGesture.baseHeight*factor)+'px';
   el.protocolZoomInfo.textContent=Math.round(target*100)+'%';
@@ -6625,7 +6629,7 @@ async function endProtocolTouch(e){
  if(protocolGesture.mode==='pinch'&&e.touches.length<2){
   const g=protocolGesture;protocolGesture=null;
   el.protocolCanvasWrap.classList.remove('isPinching');
-  el.protocolCanvas.style.transform='';
+  setProtocolPreviewTransform('');
   protocolScale=clampProtocolScale(g.targetScale);
   const pageNo=currentProtocolPage();
   if(pageNo){
@@ -6645,6 +6649,8 @@ function releaseProtocolActivePdfPage(){
  if(active)try{active.cleanup()}catch(error){console.warn('Dörrkortssidans PDF-cache kunde inte frigöras',error)}
 }
 async function renderProtocolPage(pageNo){
+ window.SmartMatchCardChanges?.clear(el.protocolChangeLayer,el.protocolChangeNotice);
+ const position=selectedInstance(),sourceDocument=pdf;
  if(smartExportMemoryPaused){smartExportNeedsProtocol=true;return;}
  const version=++protocolRenderVersion;
  if(protocolRenderTask)try{protocolRenderTask.cancel()}catch(_){}
@@ -6654,7 +6660,7 @@ async function renderProtocolPage(pageNo){
  if(version!==protocolRenderVersion){if(pg!==protocolActivePdfPage)try{pg.cleanup()}catch(_){}return}
  if(protocolActivePdfPage!==pg){releaseProtocolActivePdfPage();protocolActivePdfPage=pg}
  const vp=pg.getViewport({scale:protocolScale});
- const card=window.SmartMatchReadTest?.cardFor(selectedInstance()?.code,pageNo),region=protocolDisplayRegion(selectedInstance()?.code,pageNo);
+ const card=window.SmartMatchReadTest?.cardFor(position?.code,pageNo),region=protocolDisplayRegion(position?.code,pageNo);
  const width=vp.width*region.w,height=vp.height*region.h;
  // Keep even unusually large PDF page boxes inside the same hard raster budget.
  // A fixed lower bound here could otherwise force Safari to allocate a canvas
@@ -6677,7 +6683,14 @@ async function renderProtocolPage(pageNo){
  finally{if(protocolRenderTask===task)protocolRenderTask=null}
  if(version!==protocolRenderVersion)return;
  el.protocolZoomInfo.textContent=Math.round(protocolScale*100)+'%';
- // Ingen separat GS-överläggskolumn i v35 – endast en kompakt kontrollista.
+ // The overlay belongs to this physical position, never to the shared PDF page.
+ const changes=window.SmartMatchPositionChanges?.active(position)||[];
+ if(changes.length&&window.SmartMatchCardChanges&&el.protocolChangeLayer&&el.protocolChangeNotice){
+  const result=await window.SmartMatchCardChanges.resolve(pg,card,changes);
+  if(version!==protocolRenderVersion||pdf!==sourceDocument||selectedId!==position.id||!el.protocol.open)return;
+  window.SmartMatchCardChanges.render(el.protocolChangeLayer,el.protocolChangeNotice,result,{region,width,height,position});
+  el.protocolChangeLayer.style.transform=el.protocolCanvas.style.transform;
+ }
 }
 // v35: tidigare trestegs-kontroller borttagna. En checkruta per originalpunkt används.
 
@@ -6841,7 +6854,7 @@ function tidyGsText(value){
 async function refreshPositionChange(o){
  syncReadWorkChecks(o);await recalc(o);save();
  updateStats();renderGroups();renderMarkers();
- if(selectedId===o.id&&el.protocol.open){syncProtocolProgress(o);await renderChecklist(o);}
+ if(selectedId===o.id&&el.protocol.open){syncProtocolProgress(o);await Promise.all([renderChecklist(o),renderProtocolPage(currentProtocolPage())]);}
  if(el.timeDialog.open)await renderTimeReport();
 }
 async function setPositionChange(o,item,values){
@@ -7008,6 +7021,7 @@ async function closeProtocol(){
  closeProtocolActionMenu();
  cancelProtocolWheelZoom();endProtocolMousePan();cancelDrawingWheelZoom();
  const closingRender=protocolRenderTask;protocolRenderVersion++;
+ window.SmartMatchCardChanges?.clear(el.protocolChangeLayer,el.protocolChangeNotice);
  if(closingRender)try{closingRender.cancel()}catch(_){}
  if(el.protocol.open)el.protocol.close();
  el.protocol.classList.remove('pwCardCompareMode');

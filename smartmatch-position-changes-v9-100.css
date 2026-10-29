@@ -16,3 +16,34 @@
 .pwPositionChangeToggle input{flex:none;width:20px;height:20px}
 .pwPositionChangeError{color:#b42336;margin:0}
 .pwPositionChangeBadge{position:absolute;right:-11px;top:-13px;z-index:4;display:grid;place-items:center;min-width:19px;height:21px;border-radius:4px;border:1px solid #fff;background:var(--change-color,#a65b00);color:#fff;font-size:15px;line-height:1;pointer-events:none;box-shadow:0 1px 3px #0004}
+.pwPositionChangeHead{display:flex;align-items:flex-start;gap:6px;min-width:0}
+.pwPositionChangeHead .pwPositionChangeTitle{flex:1;min-width:0;line-height:1.35}
+.pwPositionChangeHead .pwPositionChangeActions{flex:none;margin:0;gap:4px}
+.pwChangeIconButton{display:inline-flex;align-items:center;justify-content:center;gap:4px}
+.pwChangeIcon{font-size:19px;line-height:1}
+#pwProtocolStage{position:relative}
+.pwProtocolChangeLayer{position:absolute;left:0;top:0;z-index:3;pointer-events:none;transform-origin:0 0}
+.pwProtocolChangeLayer[hidden],.pwProtocolChangeNotice[hidden]{display:none}
+.pwCardChangeRow{position:absolute;box-sizing:border-box;border:2px solid var(--change-color);border-radius:2px;pointer-events:none}
+.pwCardChangeRow:before{content:"";position:absolute;inset:0;background:var(--change-color);opacity:.13}
+.pwCardChangeRow.excluded:after{content:"";position:absolute;top:50%;left:0;right:0;border-top:1.5px solid var(--change-color);opacity:.9}
+.pwCardChangeFlag{position:absolute;top:50%;transform:translateY(-50%);color:var(--change-color);font-weight:900;line-height:1;text-shadow:0 1px #fff,1px 0 #fff,-1px 0 #fff}
+.pwProtocolChangeNotice{display:grid;gap:3px;padding:4px 6px;flex:none;font-size:11px;line-height:1.3;max-height:90px;overflow:auto}
+.pwCardChangeUnplaced{border-left:3px solid var(--change-color);padding:3px 6px;color:var(--change-color);overflow-wrap:anywhere}
+#pwProtocol .pwPositionChangeEditor textarea,#pwProtocol .pwPositionChangeEditor select{font-size:16px!important}
+@media(max-width:699px){
+ .pwProtocol .pwPositionChanges{gap:5px;margin:5px 0;padding:5px;font-size:11px;border-radius:6px}
+ .pwPositionChangesHeading{font-size:10px;line-height:1.25}
+ .pwProtocol .pwPositionChange{padding:5px;border-left-width:3px}
+ .pwPositionChangeHead{display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+ .pwPositionChangeHead .pwPositionChangeActions{justify-content:flex-end;gap:5px;grid-row:2}
+ .pwPositionChangeHead .pwChangeIconButton{width:34px;height:34px;min-height:34px!important;min-width:34px!important;padding:4px!important}
+ .pwPositionChangeHead .pwChangeActionLabel{display:none}
+ .pwPositionChangeTitle{font-size:11px!important}
+ .pwPositionChange p{font-size:11px;line-height:1.35;margin:4px 0}
+ .pwPositionChange .pwPositionChangeMeaning{font-size:9px;line-height:1.3}
+ .pwPositionChangeEditor{padding:6px;gap:6px;min-width:0}
+ .pwPositionChangeEditor label{font-size:11px}
+ .pwPositionChangeEditor .pwPositionChangeActions{gap:4px}
+ .pwPositionChangeEditor .pwPositionChangeActions button{flex:1;min-width:0;font-size:11px!important;padding:5px!important}
+}

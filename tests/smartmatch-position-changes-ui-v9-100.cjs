@@ -20,7 +20,7 @@ const item={key:'da',source:'base',label:'Dörrautomatik',value:'ED100',responsi
 let changes=0;
 window.SmartMatchAppBridge={setPositionChange:async(o,item,values)=>{C.set(o,item,values);changes++;C.render(o);},restorePositionChange:async(o,item)=>{C.restore(o,item);C.render(o);},setStatus(){}};
 const host=new Element('div'),actions=new Element('div');host.append(actions);
-const findButton=(root,text)=>root.all().find(node=>node.tagName==='button'&&node.textContent===text);
+const findButton=(root,text)=>root.all().find(node=>node.tagName==='button'&&(node.textContent===text||node.attributes['aria-label']===text));
 async function run(){
  C.appendAction(o,item,actions,host);assert.equal(actions.children.length,1);assert.match(actions.children[0].attributes['aria-label'],/Dörrautomatik/);
  actions.children[0].onclick();let form=host.querySelector('form');assert(form);assert.equal(changes,0);assert(form.querySelector('textarea').focused);

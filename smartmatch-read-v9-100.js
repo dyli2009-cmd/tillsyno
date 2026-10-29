@@ -571,7 +571,7 @@
  function makeUI(){
   if(ui)return;
   ui=document.createElement('dialog');ui.id='rtDialog';ui.className='rtDialog';ui.setAttribute('aria-labelledby','rtTitle');
-  ui.innerHTML=`<header class="rtHead"><div><small>SmartMatch · Avläsning TEST 9.100.1</small><h2 id="rtTitle">Läs dörrkort</h2></div><button id="rtCancel" type="button">Avbryt</button></header>
+  ui.innerHTML=`<header class="rtHead"><div><small>SmartMatch · Avläsning TEST 9.100.2</small><h2 id="rtTitle">Läs dörrkort</h2></div><button id="rtCancel" type="button">Avbryt</button></header>
    <ol id="rtGuide" class="rtGuide" aria-label="Så går du vidare"><li data-step="1"><b>1</b> Visa ett exempel</li><li data-step="2"><b>2</b> Hitta dörrkorten</li><li data-step="3"><b>3</b> Läs och sök</li><li data-step="4"><b>4</b> Granska och starta</li></ol>
    <span id="rtReadPhaseLabel" hidden><input id="rtReadPhase" type="hidden" value="codes"></span><p id="rtNextHint" class="rtNextHint"></p>
    <p id="rtIntro" class="rtIntro">Markera ett enda dörrkort som exempel – även om sidan innehåller flera kort. Appen läser varje korts egen beteckning och söker hela beteckningen på ritningen. Spara sedan med Spara PDF. Kopplingar och arbetsstatus följer med i projekt-PDF:en, som kan öppnas direkt nästa gång.</p>
