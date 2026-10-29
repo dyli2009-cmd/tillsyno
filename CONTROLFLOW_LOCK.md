@@ -230,3 +230,9 @@ Användaren beställde att ta bort den gula hjälprutan efter placering (”D5 �
 Manuellt verifierat i telefonvy 390×844 för Dörrautomatik/Lås: ritytan ökade från cirka 281 till 380 px före placering, och ett nytt objekt kunde väljas och placeras (3 → 4 objekt) utan gul ruta. Ingen fysisk iOS/TestFlight-verifiering. Kontrollflödet är åter LÅST efter beställningen.
 
 Befintlig webbläsarmatris godkänd: 23 fall, 1916 kontrollpåståenden, båda ingångarna i 320/390/834/1440 px, teman och manuella enhetsval. Objektmeny, placering, 200 % text, PDF-export och återöppning ingår.
+
+# 2026-10-29 · v2.4.505 · Dölj versionsmärket på telefon
+
+Användaren beställde att ta bort versionsnumret som hamnade framför ögonknappen på telefon. Kontrollflödets versionsmärke döljs därför vid högst 800 px bredd och vid manuellt enhetsval Telefon. Startsidan behåller appversionen. Ändringen är en avgränsad CSS-regel för de två ordinarie Kontrollflödesytorna. Ögonknapp, projektdata och PDF ändras inte. Kontrollflödet är åter LÅST efter denna beställning.
+
+Verifierat i Chromium: versionsmärket dolt i Säkerhetsservice vid 320 px och i Dörrautomatik/Lås vid 390 px; synligt i datorvy 1440 px. Ögonknappen öppnade Visa på ritningen utan hinder. Fysisk iPhone/iPad och TestFlight har inte provats.

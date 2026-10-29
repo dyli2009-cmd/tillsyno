@@ -157,5 +157,11 @@ html[data-controlflow-ui="1"]:not([data-cf-large-text]) body.securityWorkspace[d
 /* Drawing-first workspace: no repeated folder/protocol titles or yellow instructions. */
 html[data-controlflow-ui="1"] body.allInOneApp.secHasPdf[data-view="drawing"] :is(#secHint,.secAppHeader .brand,.secAppHeader .headerSubtitle,.objectBar .objectTitle){display:none!important}
 html[data-controlflow-ui="1"] body.allInOneApp.secHasPdf[data-view="drawing"] .objectBar{min-height:0!important;padding:2px 12px!important;justify-content:flex-end!important}
+
+/* Phone workspace: the version badge must not overlap the visibility control. */
+@media(max-width:800px){
+ html[data-controlflow-ui="1"] body.allInOneApp .ta-page-version{display:none!important}
+}
+html[data-controlflow-ui="1"][data-tillsyno-device="phone"] body.allInOneApp .ta-page-version{display:none!important}
 }
 
