@@ -1449,6 +1449,7 @@
     return stencil.productType??(stencil.code==='DA'?'doorAutomation':stencil.code==='DS'?'doorCloser':stencil.code==='KL'?'cardReader':stencil.code==='DFS'?'other':'none');
   }
   function isProductStencil(stencil){return ['doorAutomation','doorCloser','cardReader','elbowContact','other'].includes(stencilProductType(stencil));}
+  function isReferenceStencil(stencil){return stencil?.kind==='symbol'&&stencil.productType==='none'&&stencil.category==='Beteckningar';}
   function productMultiplier(stencil){return stencilProductType(stencil)==='elbowContact'?2:1;}
   function defaultCategory(stencil){
     if(stencil?.kind==='card')return 'Dörrkort';
@@ -1457,6 +1458,7 @@
   }
   function stencilCategory(stencil){return typeof stencil?.category==='string'&&stencil.category.trim()?stencil.category.trim().replace(/\s+/g,' '):defaultCategory(stencil);}
   function stencilLabel(stencil){
+    if(isReferenceStencil(stencil))return 'Beteckning';
     const productType=stencilProductType(stencil);
     return productType==='doorAutomation'?'Dörrautomatik':productType==='doorCloser'?'Dörrstängare':productType==='cardReader'?'Kortläsare':productType==='elbowContact'?'Armbågskontakt':productType==='other'?(stencilCategory(stencil)==='Övrigt'?'Produkt':stencilCategory(stencil)):stencil?.kind==='card'?'Dörrstämpel med dörrkort':'Dörrstämpel utan dörrkort';
   }
@@ -1615,6 +1617,18 @@
       for(const placement of next.placements)if(placement.code===code)placement.code=to;
     },next=>next.cards[to]);
   }
+  function renameReferencePlacement(state,placementId,value){
+    const code=normalizeCode(value),position=state.placements.find(p=>p.id===placementId),source=state.stencils[position?.stencilId];
+    if(!position||!isReferenceStencil(source))throw Error('Välj en sifferbeteckning på ritningen.');
+    if(position.code===code)return position;
+    if(position.locked)throw Error('Markeringen är låst. Lås upp den före ändring.');
+    const matches=Object.values(state.stencils).filter(s=>s.code===code);
+    if(state.cards[code]||matches.some(s=>!isReferenceStencil(s))||(!matches.length&&['DA','DS','KL','DFS','AK'].includes(code)))throw Error('Beteckningen används av en annan typ av stämpel.');
+    return transact(state,next=>{
+      const stencil=matches[0]||{...clone(source),id:Object.hasOwn(next.stencils,code)?uid('reference'):code,code,name:code};next.stencils[stencil.id]=stencil;
+      const target=next.placements.find(p=>p.id===placementId);target.code=code;target.stencilId=stencil.id;
+    },next=>next.placements.find(p=>p.id===placementId));
+  }
   function assignPlacementCard(state,placementId,value){
     const code=normalizeCode(value);if(!state.cards[code])throw Error('Dörrkortet '+code+' saknas. Skapa eller läs in kortet först.');
     return transact(state,next=>{const position=next.placements.find(p=>p.id===placementId);if(!position)throw Error('Markera en stämpel först.');const previous=position.code;
@@ -1727,6 +1741,6 @@
     });
   }
 
-  return Object.freeze({Annotations,LIMITS,META_KEYS,SPECIAL_CODES,SECTIONS,sectionsForCard,PRODUCTS,productIdentity:productNameKey,LEGACY_PRODUCTS,RETIRED_PRODUCTS,PRODUCT_ALIASES,isRetiredProduct,OWNER_VALUES,TOOLBAR_TOOLS,SIZE_SCOPES,PRODUCT_TYPES,PRODUCT_TYPE_LABELS,CATEGORY_DEFAULTS,defaultPreferences,normalizeCode,matchKey,clone,createEmpty,initialCardCode,createCard,validate,defaultStencil,defaultStencilFor,restroomSymbol,upgradeRestroomStencils,stencilLabel,stencilCategory,isProductStencil,productMultiplier,equipmentFor,placementCounts,listStencils,searchProducts,addProduct,ensureCard,updateCard,copyCard,renameCard,assignPlacementCard,suggestCardCode,suggestForkCode,suggestStencilCode,forkPlacementCard,removeCard,addStencil,updateStencil,removeStencil,addPlacement,updatePlacement,updateEquipment,removePlacements,duplicatePlacements,setPreferences,setMaterialTime,resizeTargets,resizeShared,resizeStencilShared,alignPlacements});
+  return Object.freeze({Annotations,LIMITS,META_KEYS,SPECIAL_CODES,SECTIONS,sectionsForCard,PRODUCTS,productIdentity:productNameKey,LEGACY_PRODUCTS,RETIRED_PRODUCTS,PRODUCT_ALIASES,isRetiredProduct,OWNER_VALUES,TOOLBAR_TOOLS,SIZE_SCOPES,PRODUCT_TYPES,PRODUCT_TYPE_LABELS,CATEGORY_DEFAULTS,defaultPreferences,normalizeCode,matchKey,clone,createEmpty,initialCardCode,createCard,validate,defaultStencil,defaultStencilFor,restroomSymbol,upgradeRestroomStencils,stencilLabel,stencilCategory,isProductStencil,isReferenceStencil,renameReferencePlacement,productMultiplier,equipmentFor,placementCounts,listStencils,searchProducts,addProduct,ensureCard,updateCard,copyCard,renameCard,assignPlacementCard,suggestCardCode,suggestForkCode,suggestStencilCode,forkPlacementCard,removeCard,addStencil,updateStencil,removeStencil,addPlacement,updatePlacement,updateEquipment,removePlacements,duplicatePlacements,setPreferences,setMaterialTime,resizeTargets,resizeShared,resizeStencilShared,alignPlacements});
 });
 

@@ -1,4 +1,4 @@
-/* First-import test: PDF Stamp annotations and structured door schedules only.
+/* First-import test: PDF stamps, orange reference labels and structured door schedules.
    No OCR/text search on drawing pages is used to invent placements. */
 (function(root,factory){
  'use strict';
@@ -85,6 +85,47 @@
   for(const value of [subject,contents]){const f=fold(value);if(aliases[f])return aliases[f];if(f.startsWith('lasaremedknappsats')||f==='kortlasaremedknappsats'||f==='kortlasaremknappsats')return 'KL';}
   const direct=codeOf(subject);return direct||codeOf(contents);
  }
+ function referenceCode(doc,annotation){
+  if(String(get(doc,annotation,'Subtype'))!=='/FreeText'||((get(doc,annotation,'F')?.asNumber?.()||0)&35)||annotation.has(L.PDFName.of('CL')))return null;
+  const color=nums(doc,annotation.get(L.PDFName.of('C'))),value=clean(str(doc,annotation,'Contents')).replace(/[–—]/g,'-').replace(/\s*-\s*/g,'-');
+  // Require both the orange label colour and a segmented reference code. Never
+  // scan the drawing text layer or turn ordinary comments/dates into stamps.
+  if(!color||color.length!==3||!color.every(Number.isFinite)||color[0]<.85||color[0]>1||color[1]<.35||color[1]>.85||color[2]<0||color[2]>.65||color[0]<=color[1]||color[1]<=color[2]||!/^\d{4,8}(?:-\d{1,6}){3,5}$/.test(value))return null;
+  return codeOf(value);
+ }
+ function convertReferences(state,doc){
+  const pages=P.metadata(doc),ids=new Set(state.placements.map(p=>p.id));let count=0;
+  for(let index=0;index<pages.length;index++){
+   const page=doc.getPage(index),sheet=pages[index],arr=get(doc,page.node,'Annots');if(!arr?.asArray)continue;
+   const removed=new Set();
+   for(const [offset,ref]of arr.asArray().entries()){
+    const a=lookup(doc,ref);if(!a?.get)continue;const code=referenceCode(doc,a);if(!code)continue;
+    const rect=nums(doc,a.get(L.PDFName.of('Rect'))),angle=get(doc,a,'Rotate')?.asNumber?.()||0;
+    if(!rect||rect.length!==4||!rect.every(Number.isFinite)||![0,90,180,270].includes(((angle%360)+360)%360))continue;
+    const corners=[[rect[0],rect[1]],[rect[2],rect[3]]].map(p=>point(sheet.transform,...p)),x0=Math.min(...corners.map(p=>p[0])),y0=Math.min(...corners.map(p=>p[1])),w=Math.abs(corners[1][0]-corners[0][0]),h=Math.abs(corners[1][1]-corners[0][1]);
+    if(w<6||h<6||w>500||h>500||x0<0||y0<0||x0+w>sheet.width||y0+h>sheet.height)continue;
+    const existing=Object.values(state.stencils).filter(s=>s.code===code);
+    if(state.cards[code]||existing.some(s=>!D.isReferenceStencil(s))||state.placements.length>=D.LIMITS.placements||(!existing.length&&Object.keys(state.stencils).length>=D.LIMITS.stencils))continue;
+    const rotation=((sheet.rotation-angle)%360+360)%360,width=rotation%180?h:w,height=rotation%180?w:h;
+    let id='reference-'+(index+1)+'-'+offset;while(ids.has(id))id+='-r';ids.add(id);
+    let stencil=existing[0];
+    if(!stencil){let stencilId=code;while(Object.hasOwn(state.stencils,stencilId))stencilId+='-r';const fill='#'+nums(doc,a.get(L.PDFName.of('C'))).map(c=>Math.round(c*255).toString(16).padStart(2,'0')).join('');stencil={...D.defaultStencil(code),id:stencilId,kind:'symbol',productType:'none',category:'Beteckningar',shape:'rectangle',fill,stroke:fill,textColor:'#000000',width,height,fontSize:Math.max(4,Math.min(12,height*.5))};state.stencils[stencilId]=stencil;}
+    state.placements.push({id,page:index+1,code,stencilId:stencil.id,x:(x0+w/2)/sheet.width,y:(y0+h/2)/sheet.height,width,height,rotation,locked:false,note:''});removed.add(ref);count++;
+   }
+   if(removed.size)page.node.set(L.PDFName.of('Annots'),doc.context.obj(arr.asArray().filter(ref=>!removed.has(ref))));
+  }
+  return count;
+ }
+ async function upgradeReferences(input,bytes){
+  const state=D.validate(input);if(!state.conversion||!bytes.length)return {state,original:bytes,count:0};
+  const doc=await L.PDFDocument.load(bytes),pages=P.metadata(doc);
+  if(JSON.stringify(pages)!==JSON.stringify(state.drawing.pages))throw Error('Sifferbeteckningarna kunde inte kopplas till rätt ritningssidor.');
+  const count=convertReferences(state,doc);if(!count)return {state,original:bytes,count};
+  state.project.revision++;state.project.updatedAt=new Date().toISOString();
+  const valid=D.validate(state),original=new Uint8Array(await doc.save());
+  if(original.length>50*1024*1024)throw Error('Den konverterade ritningen är större än 50 MB.');
+  return {state:valid,original,count};
+ }
  async function scan(input,name,onProgress=()=>{}){
   const bytes=new Uint8Array(input);if(bytes.length>50*1024*1024)throw Error('Ritningen får vara högst 50 MB i importtestet.');
   const source=await L.PDFDocument.load(bytes);
@@ -126,10 +167,11 @@
    const background=await L.PDFDocument.create();for(const page of await background.copyPages(source,retained))background.addPage(page);
    const mapping=new Map(retained.map((old,index)=>[old+1,index+1]));state.placements=pending.map(p=>({...p,page:mapping.get(p.page)}));
    state.drawing={name,pages:P.metadata(background)};state.conversion={version:1,sourceName:name,issues:[...new Set(issues)].slice(0,1000)};
+   stats.references=convertReferences(state,background);
    stats.cards=Object.keys(state.cards).length;const valid=D.validate(state),original=new Uint8Array(await background.save());
    if(original.length>50*1024*1024)throw Error('Den konverterade ritningen är större än 50 MB.');
    onProgress('Importen är läst.');return {state:valid,original,stats,cardPages:[...cardPages],issues:valid.conversion.issues};
   }finally{await reader.destroy();}
  }
- return Object.freeze({scan,readCard,stampCode,linesOf});
+ return Object.freeze({scan,readCard,stampCode,linesOf,upgradeReferences});
 });

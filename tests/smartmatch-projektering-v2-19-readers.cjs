@@ -26,9 +26,9 @@ const clone=value=>JSON.parse(JSON.stringify(value));
  if(process.argv[2]){
   const J=require('../vendor/pdf.min.js');J.GlobalWorkerOptions.workerSrc=path.resolve(__dirname,'../vendor/pdf.worker.min.js');
   const imported=await require('../smartmatch-projektering-v2-19-import.js').scan(fs.readFileSync(process.argv[2]),'Acceptance.pdf');
-  assert.deepEqual(D.placementCounts(imported.state),{markings:571,cards:15,doorAutomation:17,doorCloser:13,cardReader:16,otherProducts:0});
+  assert.deepEqual(D.placementCounts(imported.state),{markings:588,cards:15,doorAutomation:17,doorCloser:13,cardReader:16,otherProducts:0});
   assert.equal(Object.values(imported.state.stencils).filter(s=>s.code==='KL'&&s.productType==='cardReader').length,1);
-  console.log('PASS acceptance: 571 markings, 15 cards, 17 operators, 13 closers, 16 readers, zero other products');
+  console.log('PASS acceptance: 588 markings, 15 cards, 17 operators, 13 closers, 16 readers, zero other products');
  }
  console.log('PASS separate reader counting, old-project/library migration without geometry changes, quantity/deletion and PDF/JSON persistence');
 })().catch(error=>{console.error(error.stack);process.exitCode=1;});

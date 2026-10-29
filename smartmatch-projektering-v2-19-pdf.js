@@ -338,7 +338,7 @@
    const item=found.get('projection-v2-'+old.id);if(!item)return [];
    if(item.code!==old.code){
     const source=state.stencils[old.stencilId];let stencil=Object.values(next.stencils).find(s=>s.code===item.code);
-    if(stencil&&stencil.kind!==source.kind)throw Error('Den nya beteckningen används av en annan typ av stämpel.');
+    if((stencil&&(stencil.kind!==source.kind||D.isReferenceStencil(stencil)!==D.isReferenceStencil(source)))||(D.isReferenceStencil(source)&&['DA','DS','KL','DFS','AK'].includes(item.code)))throw Error('Den nya beteckningen används av en annan typ av stämpel.');
     if(!stencil){let id=item.code;while(next.stencils[id])id='pdf-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);stencil={...clone(source),id,code:item.code,name:item.code};next.stencils[id]=stencil;}
     if(source.kind==='card'&&!next.cards[item.code])next.cards[item.code]={...clone(state.cards[old.code]),code:item.code,meta:{...state.cards[old.code].meta,littera:item.code}};
     item.stencilId=stencil.id;changed=true;

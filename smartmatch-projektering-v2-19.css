@@ -940,3 +940,8 @@ body[data-pane-resizing] .drawing-host { pointer-events: none; }
  .card-preview-toolbar{flex-wrap:wrap;justify-content:center}
  .material-time-reset{min-width:34px;min-height:34px}
 }
+
+
+.inspector-fields > .inspector-reference { width: 180px; }
+.inspector-fields > .inspector-reference[hidden] { display: none; }
+.inspector-reference input { width: 100%; min-height: 28px; padding: 4px; font-size: 12px; }

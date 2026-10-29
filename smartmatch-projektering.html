@@ -5,29 +5,29 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#173e3a">
   <meta name="description" content="Projektera dörrar på egna PDF-ritningar med stenciler, gemensamma dörrkort och sökbar PDF-export.">
-  <title>Projektering 2.19.4 | Tillsyno</title>
+  <title>Projektering 2.19.5 | Tillsyno</title>
   <style>html[data-auth-pending] body{visibility:hidden!important}</style>
   <script src="vendor/supabase-2.49.10.min.js"></script>
   <script src="auth-config.js"></script>
   <script src="auth/client.js?v=2.4.270"></script>
   <script src="auth/guard.js?v=2.4.270" defer></script>
-  <link rel="stylesheet" href="smartmatch-projektering-v2-19.css?v=2.19.4">
+  <link rel="stylesheet" href="smartmatch-projektering-v2-19.css?v=2.19.5">
   <script src="vendor/pdf.min.js" defer></script>
   <script src="vendor/pdf-lib.min.js" defer></script>
-  <script src="smartmatch-projektering-v2-19-annotations.js?v=2.19.4" defer></script>
-  <script src="smartmatch-projektering-v2-19-catalog.js?v=2.19.4" defer></script>
-  <script src="smartmatch-projektering-v2-19-data.js?v=2.19.4" defer></script>
-  <script src="smartmatch-projektering-v2-19-store.js?v=2.19.4" defer></script>
-  <script src="smartmatch-projektering-v2-19-canvas.js?v=2.19.4" defer></script>
-  <script src="smartmatch-projektering-v2-19-pdf.js?v=2.19.4" defer></script>
-  <script src="smartmatch-projektering-v2-19-import.js?v=2.19.4" defer></script>
-  <script src="smartmatch-projektering-v2-19-materials.js?v=2.19.4" defer></script>
-  <script src="smartmatch-projektering-v2-19-library.js?v=2.19.4" defer></script>
+  <script src="smartmatch-projektering-v2-19-annotations.js?v=2.19.5" defer></script>
+  <script src="smartmatch-projektering-v2-19-catalog.js?v=2.19.5" defer></script>
+  <script src="smartmatch-projektering-v2-19-data.js?v=2.19.5" defer></script>
+  <script src="smartmatch-projektering-v2-19-store.js?v=2.19.5" defer></script>
+  <script src="smartmatch-projektering-v2-19-canvas.js?v=2.19.5" defer></script>
+  <script src="smartmatch-projektering-v2-19-pdf.js?v=2.19.5" defer></script>
+  <script src="smartmatch-projektering-v2-19-import.js?v=2.19.5" defer></script>
+  <script src="smartmatch-projektering-v2-19-materials.js?v=2.19.5" defer></script>
+  <script src="smartmatch-projektering-v2-19-library.js?v=2.19.5" defer></script>
   <script src="smartmatch-projektering-v2-8-suggest.js?v=2.8" defer></script>
   <script src="smartmatch-projektering-v2-9-library-ui.js?v=2.9" defer></script>
   <script src="smartmatch-projektering-v2-10-search.js?v=2.10" defer></script>
   <script src="smartmatch-projektering-v2-10-layout.js?v=2.10" defer></script>
-  <script src="smartmatch-projektering-v2-19.js?v=2.19.4" defer></script>
+  <script src="smartmatch-projektering-v2-19.js?v=2.19.5" defer></script>
 </head>
 <body data-view="drawing">
   <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -66,7 +66,7 @@
   </defs></svg>
 
   <header class="app-header">
-    <a class="brand" href="index.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small>Projektering 2.19.4</small></span></a>
+    <a class="brand" href="index.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small>Projektering 2.19.5</small></span></a>
     <div class="project-name"><label for="projectName">Projekt</label><input id="projectName" value="Nytt projekt" maxlength="120" aria-label="Projektnamn" autocomplete="off"></div>
     <div class="header-status"><span class="status-dot" aria-hidden="true"></span><output id="saveStatus" aria-live="polite">Öppna en ritning för att börja</output></div>
     <button id="help" class="icon-button" type="button" aria-label="Öppna guiden" title="Guide och kortkommandon"><svg><use href="#i-help"/></svg></button>
@@ -164,7 +164,7 @@
         <div id="drawingEmpty" class="drawing-empty"><div class="empty-plan-icon"><svg><use href="#i-plan"/></svg></div><p class="eyebrow">Börja projektera</p><h2>Din ritning.<br>Dina dörrkort.</h2><p>Öppna en PDF och placera stämplar där dörrarna finns.</p><button type="button" class="button primary" data-open-drawing><svg><use href="#i-folder"/></svg>Välj PDF-ritning</button><button id="createBlankDrawing" type="button" class="button blank-card-button"><svg><use href="#i-card-plus"/></svg>Skapa dörrkort</button><button type="button" class="text-button" data-example>Prova exemplet med 50 dörrar<svg><use href="#i-chevron-right"/></svg></button><div class="empty-mini-stamps" aria-hidden="true"><span>GS1</span><span>GS65</span><span class="square">DA</span></div></div>
       </div>
       <div class="view-bar"><div class="page-navigation"><button id="prevPage" type="button" class="icon-button" aria-label="Föregående ritningssida" title="Föregående sida"><svg><use href="#i-chevron-left"/></svg></button><label for="pageNumber" class="sr-only">Ritningssida</label><input id="pageNumber" type="number" min="1" value="1" aria-label="Ritningssida"><span>/ <output id="pageTotal">0</output></span><button id="nextPage" type="button" class="icon-button" aria-label="Nästa ritningssida" title="Nästa sida"><svg><use href="#i-chevron-right"/></svg></button></div><output id="toolHint" class="tool-hint" hidden>Välj en ritning för att börja.</output><div class="zoom-navigation"><button id="zoomOut" type="button" class="icon-button" aria-label="Zooma ut" title="Zooma ut">−</button><output id="zoomLevel">100 %</output><button id="zoomIn" type="button" class="icon-button" aria-label="Zooma in" title="Zooma in">+</button><button id="zoomFit" type="button" class="icon-button" aria-label="Anpassa ritningen" title="Anpassa ritningen"><svg><use href="#i-fit"/></svg></button><button id="fullscreen" type="button" class="icon-button" aria-label="Visa ritningen i helskärm" title="Helskärm"><svg><use href="#i-fullscreen"/></svg></button></div></div>
-      <details class="selection-inspector"><summary><span>Vald markering</span><output id="selectedInfo">Ingen markering vald</output><svg aria-hidden="true"><use href="#i-edit"/></svg></summary><div class="inspector-fields"><label>X · %<input id="selectionX" type="number" min="0" max="100" step="0.1" aria-label="Markering X procent"></label><label>Y · %<input id="selectionY" type="number" min="0" max="100" step="0.1" aria-label="Markering Y procent"></label><label>Bredd · pt<input id="selectionWidth" type="number" min="1" step="1" aria-label="Markering bredd"></label><label>Höjd · pt<input id="selectionHeight" type="number" min="1" step="1" aria-label="Markering höjd"></label><label>Rotation · °<input id="selectionRotation" type="number" min="-360" max="360" step="1" aria-label="Markering rotation"></label><label class="inspector-lock"><input id="selectionLocked" type="checkbox">Låst</label><button id="applySelection" type="button" class="button">Uppdatera</button><button id="editEquipment" type="button" class="button" hidden><svg><use href="#i-edit"/></svg>Produktuppgifter</button></div><div class="shared-size-control"><label for="sizeScope">Storlek gäller<select id="sizeScope"><option value="doors">Alla dörrstämplar</option><option value="code">Samma beteckning</option><option value="single">Bara denna</option></select></label><output id="sharedSizeHint">Dra i handtagen på en vald stämpel för att ändra storlek.</output></div></details>
+      <details class="selection-inspector"><summary><span>Vald markering</span><output id="selectedInfo">Ingen markering vald</output><svg aria-hidden="true"><use href="#i-edit"/></svg></summary><div class="inspector-fields"><label id="selectionReferenceField" class="inspector-reference" hidden>Beteckning<input id="selectionReferenceCode" type="text" maxlength="24" autocomplete="off" spellcheck="false" aria-label="Sifferbeteckning"></label><label>X · %<input id="selectionX" type="number" min="0" max="100" step="0.1" aria-label="Markering X procent"></label><label>Y · %<input id="selectionY" type="number" min="0" max="100" step="0.1" aria-label="Markering Y procent"></label><label>Bredd · pt<input id="selectionWidth" type="number" min="1" step="1" aria-label="Markering bredd"></label><label>Höjd · pt<input id="selectionHeight" type="number" min="1" step="1" aria-label="Markering höjd"></label><label>Rotation · °<input id="selectionRotation" type="number" min="-360" max="360" step="1" aria-label="Markering rotation"></label><label class="inspector-lock"><input id="selectionLocked" type="checkbox">Låst</label><button id="applySelection" type="button" class="button">Uppdatera</button><button id="editEquipment" type="button" class="button" hidden><svg><use href="#i-edit"/></svg>Produktuppgifter</button></div><div class="shared-size-control"><label for="sizeScope">Storlek gäller<select id="sizeScope"><option value="doors">Alla dörrstämplar</option><option value="code">Samma beteckning</option><option value="single">Bara denna</option></select></label><output id="sharedSizeHint">Dra i handtagen på en vald stämpel för att ändra storlek.</output></div></details>
       <details class="placements-index"><summary>Markeringar på ritningen</summary><label class="search-field compact"><svg aria-hidden="true"><use href="#i-search"/></svg><input id="placementSearch" type="search" placeholder="Sök beteckning" aria-label="Sök placerad markering"></label><div id="placementsList" class="placements-list"></div></details>
     </section>
 
