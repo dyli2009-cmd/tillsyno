@@ -7,12 +7,12 @@
  'use strict';
  const LIMITS=Object.freeze({cards:500,placements:5000,pages:200,stencils:2000,customProducts:1000,materialTimes:20000});
  const META_KEYS=Object.freeze(['littera','hanging','doorType','fire','security','escape','reentry']);
- const SPECIAL_CODES=Object.freeze(['WC','HWC','DBL','DA','DS','DFS']);
+ const SPECIAL_CODES=Object.freeze(['WC','HWC','DBL','DA','DS','KL','DFS']);
  const TOOLBAR_TOOLS=Object.freeze(['toolPan','toolErase','undo','redo','duplicateSelection','deleteSelection','lockSelection','newStencilTool','newCardTool','rotateLeft','rotateRight','selectAllTool']);
  const DEFAULT_TOOLBAR_TOOLS=Object.freeze(['undo','redo','duplicateSelection','deleteSelection','newStencilTool','newCardTool','rotateLeft','rotateRight']);
- const PRODUCT_TYPES=Object.freeze(['none','doorAutomation','doorCloser','elbowContact','other']);
- const PRODUCT_TYPE_LABELS=Object.freeze({none:'Ingen separat produkt',doorAutomation:'Dörrautomatik',doorCloser:'Dörrstängare',elbowContact:'Armbågskontakt',other:'Övrig produkt'});
- const CATEGORY_DEFAULTS=Object.freeze(['Dörrkort','Dörrautomatik','Dörrstängare','DFS','Armbågskontakter','Övrigt']);
+ const PRODUCT_TYPES=Object.freeze(['none','doorAutomation','doorCloser','cardReader','elbowContact','other']);
+ const PRODUCT_TYPE_LABELS=Object.freeze({none:'Ingen separat produkt',doorAutomation:'Dörrautomatik',doorCloser:'Dörrstängare',cardReader:'Kortläsare',elbowContact:'Armbågskontakt',other:'Övrig produkt'});
+ const CATEGORY_DEFAULTS=Object.freeze(['Dörrkort','Dörrautomatik','Dörrstängare','Kortläsare','DFS','Armbågskontakter','Övrigt']);
  const SIZE_SCOPES=Object.freeze(['doors','code','single']);
   // Exact words used as headings by the existing reader cannot be reliable card identities.
   const RESERVED_CODES = new Set([
@@ -1401,10 +1401,10 @@
     return match?{type:match[1],number:match[2]||''}:null;
   }
   function defaultStencil(value){
-    const code=normalizeCode(value),restroom=restroomSymbol(code),specialSymbol=/^DBL(?::?[1-9][0-9]*)?$/.test(code),symbol=['DA','DS','DFS','DADS'].includes(code);
-    const productType=code==='DA'?'doorAutomation':code==='DS'?'doorCloser':code==='DFS'?'other':'none';
+    const code=normalizeCode(value),restroom=restroomSymbol(code),specialSymbol=/^DBL(?::?[1-9][0-9]*)?$/.test(code),symbol=['DA','DS','KL','DFS','DADS'].includes(code);
+    const productType=code==='DA'?'doorAutomation':code==='DS'?'doorCloser':code==='KL'?'cardReader':code==='DFS'?'other':'none';
     const restroomMark=!!restroom||specialSymbol;
-    const stencil={id:code,name:code==='DA'?'Dörrautomatik':code==='DS'?'Dörrstängare':code,code,kind:symbol?'symbol':'card',productType,shape:restroomMark?'oval':symbol?'square':'oval',fill:restroomMark?'#ffdb5c':symbol?(code==='DS'?'#f3b65d':'#db756c'):'#ffdb5c',stroke:restroomMark?'#97792c':symbol?'#815044':'#97792c',textColor:'#26323b',width:symbol?(code==='DADS'?38:28):Math.max(52,code.length*6+14),height:symbol?28:Math.ceil(Math.max(52,code.length*6+14)/1.4),fontSize:11};
+    const stencil={id:code,name:code==='DA'?'Dörrautomatik':code==='DS'?'Dörrstängare':code==='KL'?'Kortläsare':code,code,kind:symbol?'symbol':'card',productType,shape:restroomMark?'oval':symbol?'square':'oval',fill:restroomMark?'#ffdb5c':symbol?(code==='DS'?'#f3b65d':'#db756c'):'#ffdb5c',stroke:restroomMark?'#97792c':symbol?'#815044':'#97792c',textColor:'#26323b',width:symbol?(code==='DADS'?38:28):Math.max(52,code.length*6+14),height:symbol?28:Math.ceil(Math.max(52,code.length*6+14)/1.4),fontSize:11};
     return {...stencil,category:defaultCategory(stencil)};
   }
   // Upgrade only known standard card sizes; preserve custom styles and sizes.
@@ -1431,29 +1431,34 @@
     if(!isObject(input))throw Error('Stencilen saknas.');
     const code=normalizeCode(input.code),base=defaultStencil(code),stencil={...base,...input};
     if(!['card','symbol'].includes(stencil.kind))throw Error('Välj dörrkort eller symbol som stenciltyp.');
-    const productType=Object.hasOwn(input,'productType')?input.productType:stencil.kind==='symbol'?base.productType:'none';
-    if(!PRODUCT_TYPES.includes(productType))throw Error('Välj dörrautomatik, dörrstängare, övrig produkt eller ingen separat produkt.');
+    // KL was imported as an unclassified symbol in 2.19.3. Upgrade its type
+    // on every load while preserving its ID, geometry, styling and placements.
+    const reader=stencil.kind==='symbol'&&code==='KL';
+    const declaredType=Object.hasOwn(input,'productType')?input.productType:stencil.kind==='symbol'?base.productType:'none';
+    const productType=reader&&PRODUCT_TYPES.includes(declaredType)?'cardReader':declaredType;
+    if(reader&&stencil.name==='KL')stencil.name='Kortläsare';
+    if(!PRODUCT_TYPES.includes(productType))throw Error('Välj dörrautomatik, dörrstängare, kortläsare, övrig produkt eller ingen separat produkt.');
     if(stencil.kind==='card'&&productType!=='none')throw Error('En separat produkt ska vara en dörrstämpel utan dörrkort.');
     if(!['oval','square','rectangle'].includes(stencil.shape))throw Error('Välj oval, fyrkant eller rektangel.');
     const color=(value,label)=>{if(typeof value!=='string'||!/^#[0-9a-f]{6}$/i.test(value))throw Error(label+' måste vara en färg med sex hexadecimala siffror.');return value.toLowerCase();};
-    const category=Object.hasOwn(input,'category')?text(input.category,'Stencilkategori',60,false).replace(/\s+/g,' '):defaultCategory({...stencil,productType});
+    const category=reader?'Kortläsare':Object.hasOwn(input,'category')?text(input.category,'Stencilkategori',60,false).replace(/\s+/g,' '):defaultCategory({...stencil,productType});
     return {id:stencilIdValue(stencil.id),name:text(stencil.name,'Stencilnamn',80,false),code,kind:stencil.kind,productType,category,shape:stencil.shape,fill:color(stencil.fill,'Fyllnadsfärg'),stroke:color(stencil.stroke,'Kantfärg'),textColor:color(stencil.textColor,'Textfärg'),width:num(stencil.width,'Stämpelbredd',6,500),height:num(stencil.height,'Stämpelhöjd',6,500),fontSize:num(stencil.fontSize,'Textstorlek',4,72)};
   }
   function stencilProductType(stencil){
     if(stencil?.kind!=='symbol')return 'none';
-    return stencil.productType??(stencil.code==='DA'?'doorAutomation':stencil.code==='DS'?'doorCloser':stencil.code==='DFS'?'other':'none');
+    return stencil.productType??(stencil.code==='DA'?'doorAutomation':stencil.code==='DS'?'doorCloser':stencil.code==='KL'?'cardReader':stencil.code==='DFS'?'other':'none');
   }
-  function isProductStencil(stencil){return ['doorAutomation','doorCloser','elbowContact','other'].includes(stencilProductType(stencil));}
+  function isProductStencil(stencil){return ['doorAutomation','doorCloser','cardReader','elbowContact','other'].includes(stencilProductType(stencil));}
   function productMultiplier(stencil){return stencilProductType(stencil)==='elbowContact'?2:1;}
   function defaultCategory(stencil){
     if(stencil?.kind==='card')return 'Dörrkort';
     const type=stencilProductType(stencil);
-    return type==='doorAutomation'?'Dörrautomatik':type==='doorCloser'?'Dörrstängare':type==='elbowContact'?'Armbågskontakter':type==='other'&&stencil?.code==='DFS'?'DFS':'Övrigt';
+    return type==='doorAutomation'?'Dörrautomatik':type==='doorCloser'?'Dörrstängare':type==='cardReader'?'Kortläsare':type==='elbowContact'?'Armbågskontakter':type==='other'&&stencil?.code==='DFS'?'DFS':'Övrigt';
   }
   function stencilCategory(stencil){return typeof stencil?.category==='string'&&stencil.category.trim()?stencil.category.trim().replace(/\s+/g,' '):defaultCategory(stencil);}
   function stencilLabel(stencil){
     const productType=stencilProductType(stencil);
-    return productType==='doorAutomation'?'Dörrautomatik':productType==='doorCloser'?'Dörrstängare':productType==='elbowContact'?'Armbågskontakt':productType==='other'?(stencilCategory(stencil)==='Övrigt'?'Produkt':stencilCategory(stencil)):stencil?.kind==='card'?'Dörrstämpel med dörrkort':'Dörrstämpel utan dörrkort';
+    return productType==='doorAutomation'?'Dörrautomatik':productType==='doorCloser'?'Dörrstängare':productType==='cardReader'?'Kortläsare':productType==='elbowContact'?'Armbågskontakt':productType==='other'?(stencilCategory(stencil)==='Övrigt'?'Produkt':stencilCategory(stencil)):stencil?.kind==='card'?'Dörrstämpel med dörrkort':'Dörrstämpel utan dörrkort';
   }
   function normalizedEquipment(input={}){
     if(!isObject(input))throw Error('Produktens uppgifter är ogiltiga.');
@@ -1468,8 +1473,8 @@
     for(const placement of products)if(!placement.equipment.objectNumber){while(used.has(String(candidate)))candidate++;placement.equipment.objectNumber=String(candidate);used.add(String(candidate));candidate++;}
   }
   function placementCounts(state){
-    const counts={markings:state.placements.length,cards:Object.keys(state.cards).length,doorAutomation:0,doorCloser:0,otherProducts:0};
-    for(const placement of state.placements){const stencil=state.stencils[placement.stencilId],type=stencilProductType(stencil);if(type==='doorAutomation'||type==='doorCloser')counts[type]+=equipmentFor(placement).quantity;else if(type==='other'||type==='elbowContact')counts.otherProducts+=equipmentFor(placement).quantity*productMultiplier(stencil);}
+    const counts={markings:state.placements.length,cards:Object.keys(state.cards).length,doorAutomation:0,doorCloser:0,cardReader:0,otherProducts:0};
+    for(const placement of state.placements){const stencil=state.stencils[placement.stencilId],type=stencilProductType(stencil);if(type==='doorAutomation'||type==='doorCloser'||type==='cardReader')counts[type]+=equipmentFor(placement).quantity;else if(type==='other'||type==='elbowContact')counts.otherProducts+=equipmentFor(placement).quantity*productMultiplier(stencil);}
     return counts;
   }
   function normalizedPage(input){
