@@ -35,6 +35,14 @@
    const menu=document.createElement('details');menu.className='cfAddMenu';
    const summary=document.createElement('summary');summary.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Lägg till objekt</span><span aria-hidden="true">⌃</span>';
    menu.append(summary);tools.before(menu);menu.append(tools);
+   // The wrapper replaces the old flex item. Keep the popup inside the
+   // visible drawing instead of letting it reach behind the header.
+   const viewer=document.getElementById('secViewer');
+   function fitMenu(){if(viewer)menu.style.setProperty('--cf-add-max-height',Math.max(44,viewer.clientHeight-8)+'px');}
+   if(viewer&&typeof ResizeObserver!=='undefined')new ResizeObserver(fitMenu).observe(viewer);
+   window.addEventListener('resize',fitMenu);
+   menu.addEventListener('toggle',fitMenu);
+   fitMenu();
    const query=matchMedia('(max-width:800px)');
    function layout(){const compact=query.matches||root.dataset.tillsynoDevice==='phone';menu.dataset.compact=String(compact);menu.open=!compact;}
    query.addEventListener('change',layout);new MutationObserver(layout).observe(root,{attributes:true,attributeFilter:['data-tillsyno-device']});layout();

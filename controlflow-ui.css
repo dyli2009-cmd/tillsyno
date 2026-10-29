@@ -110,14 +110,14 @@ html[data-controlflow-ui="1"][data-cf-large-text] body.allInOneApp #mobileBar{po
  html[data-controlflow-ui="1"] body.allInOneApp #secViewer{min-height:50dvh!important}
 }
 
-html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfAddMenu{flex:none;position:relative;z-index:25}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfAddMenu{flex:none;order:2;position:relative;z-index:25}
 html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfAddMenu>summary{display:none!important}
 html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfAddMenu[data-compact="true"]{padding:6px 8px;background:var(--ta-header);border-top:1px solid var(--ta-border)}
 html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfAddMenu[data-compact="true"]>summary{display:flex!important;align-items:center;justify-content:center;gap:12px;min-height:44px;padding:8px 12px;box-sizing:border-box;font-size:var(--cf-body);line-height:1.35;background:var(--ta-soft2);border:1px solid var(--ta-border);border-radius:9px;cursor:pointer;list-style:none}
 html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfAddMenu>summary::-webkit-details-marker{display:none}
 html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfAddMenu>summary svg{width:22px;height:22px;flex:none}
 html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfAddMenu[data-compact="true"]:not([open])>.allInOneProtocolTools{display:none!important}
-html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfAddMenu[data-compact="true"][open]>.allInOneProtocolTools{position:absolute;bottom:calc(100% + 4px);left:8px;right:8px;max-height:50dvh;overflow:auto!important;background:var(--ta-card);border:1px solid var(--ta-border);border-radius:10px;box-shadow:0 6px 20px #0002}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfAddMenu[data-compact="true"][open]>.allInOneProtocolTools{position:absolute;bottom:calc(100% + 4px);left:8px;right:8px;max-height:min(50dvh,var(--cf-add-max-height,50dvh));box-sizing:border-box;overflow:auto!important;overscroll-behavior:contain;background:var(--ta-card);border:1px solid var(--ta-border);border-radius:10px;box-shadow:0 6px 20px #0002}
 html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp:not(.secHasPdf) .cfAddMenu{display:none!important}
 @media(max-width:700px){
  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .workspaceFileLine{flex-wrap:nowrap!important}

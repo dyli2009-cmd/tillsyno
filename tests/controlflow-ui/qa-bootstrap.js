@@ -1,6 +1,8 @@
 (async()=>{
  const params=new URLSearchParams(location.search),mode=params.get('qa');if(!mode)return;
  if(!crypto.subtle)Object.defineProperty(crypto,'subtle',{value:{digest:async(alg,bytes)=>(await fetch('/__qa/hash',{method:'POST',body:bytes})).arrayBuffer()}});
+ // Local HTTP preview lacks secure-context randomUUID; production uses HTTPS.
+ if(!crypto.randomUUID)Object.defineProperty(crypto,'randomUUID',{value:()=>{const b=crypto.getRandomValues(new Uint8Array(16));b[6]=(b[6]&15)|64;b[8]=(b[8]&63)|128;const h=[...b].map(x=>x.toString(16).padStart(2,'0')).join('');return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);}});
  const pause=ms=>new Promise(r=>setTimeout(r,ms));
  const results={path:location.pathname,width:innerWidth,theme:params.get('theme')||'mist',checks:[],errors:[]};
  const assert=(ok,name,detail)=>results.checks.push({ok:!!ok,name,detail});
@@ -23,7 +25,27 @@
  const bodyExpected=innerWidth>=1100&&!['phone','tablet'].includes(params.get('device'))?18:16;
  assert(size('.secAppHeader .brand strong')>=24,'Header title >=24',size('.secAppHeader .brand strong'));
  for(const sel of ['#securityExport','#securityPreview','#secZoomIn','#secZoomOut','#secPrev','#secNext']){const el=document.querySelector(sel),r=el.getBoundingClientRect();assert(r.width>=43.5&&r.height>=43.5,'Target >=44 '+sel,{width:r.width,height:r.height})}
- const menu=document.querySelector('.cfAddMenu');if(innerWidth<=800){assert(menu?.dataset.compact==='true'&&!menu.open,'Compact add menu starts closed');menu.querySelector('summary').click();const add=document.querySelector('.allInOneProtocolTools [data-add]:not([hidden])');assert(add?.getBoundingClientRect().height>=44,'Add action accessible');menu.querySelector('summary').click();}
+ const menu=document.querySelector('.cfAddMenu');
+ if(menu.dataset.compact==='true'){
+  assert(!menu.open,'Compact add menu starts closed');
+  const original=items.slice();
+  for(const scale of [0,6]){
+   AppTextScale.set(scale);await pause(80);
+   for(const type of types){
+    const summary=menu.querySelector('summary');summary.scrollIntoView({block:'nearest'});summary.click();await pause(40);
+    const add=menu.querySelector('[data-add="'+type+'"]');add.scrollIntoView({block:'nearest'});await pause(40);
+    const r=add.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
+    assert(add===hit||add.contains(hit),'Object option receives pointer '+type+' scale '+scale,{hit:hit?.tagName,rect:r.toJSON()});
+    assert(r.height>=44,'Add action target '+type);
+    add.click();assert(addType===type,'Object type selected '+type);assert(!menu.open,'Menu closes after selection '+type);
+    const count=items.length,m=document.getElementById('secMarkers'),rect=m.getBoundingClientRect();
+    m.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:rect.x+rect.width*.8,clientY:rect.y+rect.height*.8}));
+    assert(items.length===count+1&&items.at(-1).type===type,'Drawing placement creates '+type);
+   }
+  }
+  items=original;selected=null;AppTextScale.set(0);document.getElementById('secHint').hidden=true;save();drawMarkers();refreshTop();window.scrollTo(0,0);await pause(80);
+ }
+
  function contrast(el){const doc=el.ownerDocument;const rgb=s=>(s.match(/[\d.]+/g)||[]).map(Number);let c=rgb(getComputedStyle(el).color),bg=[255,255,255];let chain=[];for(let n=el;n;n=n.parentElement)chain.unshift(n);for(const n of chain){const v=rgb(getComputedStyle(n).backgroundColor);if(v.length>=3){const a=v.length===4?v[3]:1;bg=bg.map((x,i)=>v[i]*a+x*(1-a));}}const lum=v=>v.slice(0,3).map(x=>{x/=255;return x<=.04045?x/12.92:((x+.055)/1.055)**2.4}).reduce((a,x,i)=>a+x*[.2126,.7152,.0722][i],0);const l1=lum(c),l2=lum(bg);return (Math.max(l1,l2)+.05)/(Math.min(l1,l2)+.05);}
  for(const selector of ['.headerSubtitle','#securityExport','#securityMessage','#secPage','#secZoom']){const el=document.querySelector(selector);if(el&&visible(el))assert(contrast(el)>=4.5,'Text contrast '+selector,contrast(el));}
  assert(document.querySelector('#secViewer').clientHeight>=(revision?100:180),'Drawing usable height',document.querySelector('#secViewer').clientHeight);

@@ -20,3 +20,7 @@ Omfattning:
 - Faktiska exporterade PDF-byte: protokollsidor, inbäddade objekt, rotation/filnamn och stängning/återöppning i Säkerhetsservice.
 
 Webbläsarfönster/iframe-bredder är inte fysisk iOS, touchhårdvara eller TestFlight. Native-bygge och autentiserad produktionssession ingår inte i detta test.
+
+## Menyregression v2.4.503
+
+Menykontrollen testar nu varje aktiv objekttyp i 100/200 % text. Den rullar fram knappen och kontrollerar med `elementFromPoint` att knappens mittpunkt faktiskt tar emot klick, väljer typen och placerar ett objekt genom ritningens klickhanterare. Detta fångar överlappning som ett ensamt `.click()` eller måttkontroll missar. Manuell pekarinteraktion kompletterar det syntetiska testet. Lokal HTTP får en testbegränsad `randomUUID`-ersättning; produktionsappen och autentisering ändras inte.
