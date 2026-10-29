@@ -133,3 +133,10 @@ Kontrollpunkter i Avläsning: Hela avlästa tabellen / eget läsområde visas in
 Verifiering: 26 automatiska PDF-/integrationskontroller (båda huvudmodulerna), 9 webbläsarkontroller per bredd 390 och 834, samt verklig dragmarkering i webbläsaren. Syntetiska PDF-stämplar med underliggande ritningslinje, angränsande GS och andra PDF-länkar används. Fysisk iOS och kundernas Bluebeam-filer har inte testats.
 
 Även Projekterings redigerbara TillsynoCode-/FreeText-stämplar stöds: endast den uttryckligen grupperade projection-v2-frame-ramen tas med vid dölj/borttagning. Vanlig fri PDF-text omfattas inte.
+
+
+## 2026-10-29 — v2.4.509, auktoriserade projektuppgifter
+
+Användaren beställde gemensam projektidentitet från Projektering till SmartMatch/Avläsning och befintliga egenkontroll-/SLR-fält. Ny versionsisolerad metadataadapter skriver/läser TillsynoProjectInfoV1. Sparade SmartMatch-värden, även avsiktliga tomma värden, har företräde över importerade grundvärden. Logga följer med; projekterande person blir inte automatiskt signerande tekniker. Inga ändrade produktmatchningsregler, ingen automatisk överföring av nya produktlistor och ingen ny försättssida. KL:s gamla standardfärg migreras till grönt; egna färgval behålls.
+
+Verifiering: tests/project-info-v509.cjs (52 kontroller) och tests/project-details-v509.cjs passerar. Proven omfattar faktisk PDF-export/import i båda aktuella huvudmodulerna, SLR:s befintliga fältmappning, projektfil, stor logga, sparade överstyrningar, färgmigrering och atomisk sparning. Browserkontroll av projektformulär, sparning/återöppning och 390 px telefonlayout genomförd; fysisk iPhone/iPad är inte provad.

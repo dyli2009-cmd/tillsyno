@@ -5,30 +5,32 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#173e3a">
   <meta name="description" content="Projektera dörrar på egna PDF-ritningar med stenciler, gemensamma dörrkort och sökbar PDF-export.">
-  <title>Projektering 2.19.11 | Tillsyno</title>
+  <title>Projektering 2.19.12 | Tillsyno</title>
   <style>html[data-auth-pending] body{visibility:hidden!important}</style>
   <script src="vendor/supabase-2.49.10.min.js"></script>
   <script src="auth-config.js"></script>
   <script src="auth/client.js?v=2.4.270"></script>
   <script src="auth/guard.js?v=2.4.270" defer></script>
-  <link rel="stylesheet" href="smartmatch-projektering-v2-19.css?v=2.19.11">
+  <link rel="stylesheet" href="smartmatch-projektering-v2-19.css?v=2.19.12">
   <script src="vendor/pdf.min.js" defer></script>
   <script src="vendor/pdf-lib.min.js" defer></script>
-  <script src="smartmatch-projektering-v2-19-annotations.js?v=2.19.11" defer></script>
-  <script src="smartmatch-projektering-v2-19-catalog.js?v=2.19.11" defer></script>
-  <script src="smartmatch-projektering-v2-19-data.js?v=2.19.11" defer></script>
-  <script src="smartmatch-projektering-v2-19-store.js?v=2.19.11" defer></script>
-  <script src="smartmatch-projektering-v2-19-canvas.js?v=2.19.11" defer></script>
-  <script src="smartmatch-projektering-v2-19-pdf.js?v=2.19.11" defer></script>
-  <script src="smartmatch-projektering-v2-19-import.js?v=2.19.11" defer></script>
-  <script src="smartmatch-projektering-v2-19-materials.js?v=2.19.11" defer></script>
-  <script src="smartmatch-projektering-v2-19-library.js?v=2.19.11" defer></script>
-  <script src="smartmatch-projektering-v2-8-suggest.js?v=2.19.11" defer></script>
+  <script src="smartmatch-projektering-v2-19-annotations.js?v=2.19.12" defer></script>
+  <script src="smartmatch-projektering-v2-19-catalog.js?v=2.19.12" defer></script>
+  <script src="smartmatch-projektering-v509-data.js?v=2.19.12" defer></script>
+  <script src="smartmatch-projektering-v509-store.js?v=2.19.12" defer></script>
+  <script src="smartmatch-projektering-v2-19-canvas.js?v=2.19.12" defer></script>
+  <script src="tillsyno-project-info-v509.js" defer></script>
+  <script src="smartmatch-projektering-v509-pdf.js?v=2.19.12" defer></script>
+  <script src="smartmatch-projektering-v2-19-import.js?v=2.19.12" defer></script>
+  <script src="smartmatch-projektering-v2-19-materials.js?v=2.19.12" defer></script>
+  <script src="smartmatch-projektering-v2-19-library.js?v=2.19.12" defer></script>
+  <script src="smartmatch-projektering-v2-8-suggest.js?v=2.19.12" defer></script>
   <script src="smartmatch-projektering-v2-9-library-ui.js?v=2.9" defer></script>
   <script src="smartmatch-projektering-v2-10-search.js?v=2.10" defer></script>
   <script src="smartmatch-projektering-v2-10-layout.js?v=2.10" defer></script>
-  <script src="smartmatch-projektering-v2-19-window.js?v=2.19.11" defer></script>
-  <script src="smartmatch-projektering-v2-19.js?v=2.19.11" defer></script>
+  <script src="smartmatch-projektering-v2-19-window.js?v=2.19.12" defer></script>
+  <script src="smartmatch-projektering-v509.js?v=2.19.12" defer></script>
+<link rel="stylesheet" href="tillsyno-project-info-v509.css">
 </head>
 <body data-view="drawing">
   <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -67,7 +69,7 @@
   </defs></svg>
 
   <header class="app-header">
-    <a class="brand" href="index.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small>Projektering 2.19.11</small></span></a>
+    <a class="brand" href="index.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small>Projektering 2.19.12</small></span></a>
     <div class="project-name"><label for="projectName">Projekt</label><input id="projectName" value="Nytt projekt" maxlength="120" aria-label="Projektnamn" autocomplete="off"><button id="projectDetails" type="button" class="icon-button" title="Projektuppgifter och logga" aria-label="Projektuppgifter och logga"><svg aria-hidden="true"><use href="#i-edit"/></svg></button></div>
     <div class="header-status"><span class="status-dot" aria-hidden="true"></span><output id="saveStatus" aria-live="polite">Öppna en ritning för att börja</output></div>
     <button id="help" class="icon-button" type="button" aria-label="Öppna guiden" title="Guide och kortkommandon"><svg><use href="#i-help"/></svg></button>
@@ -241,13 +243,9 @@
   <dialog id="projectDetailsDialog" class="project-details-dialog" aria-labelledby="projectDetailsTitle">
     <div class="dialog-heading"><div><p class="eyebrow">Gemensamt för alla dörrkort</p><h2 id="projectDetailsTitle">Projektuppgifter</h2></div><button id="closeProjectDetails" type="button" class="icon-button" aria-label="Stäng projektuppgifter">×</button></div>
     <form id="projectDetailsForm">
-      <div class="project-details-fields">
-        <label class="project-details-wide" for="projectDetailsName">Projektnamn<input id="projectDetailsName" maxlength="120" required autocomplete="off"></label>
-        <label for="projectDesigner">Projekterat av<input id="projectDesigner" maxlength="120" autocomplete="name" placeholder="Namn på projektör"></label>
-        <label for="projectDate">Datum<input id="projectDate" type="date" min="0001-01-01" max="9999-12-31"></label>
-      </div>
-      <div class="project-logo-field"><label for="projectLogoFile">Logga</label><input id="projectLogoFile" type="file" accept="image/png,image/jpeg,image/webp"><div id="projectLogoPreview" class="project-logo-preview" hidden><img id="projectLogoImage" alt="Projektets logga"><span id="projectLogoName"></span><button id="removeProjectLogo" type="button" class="button">Ta bort logga</button></div></div>
-      <p class="project-details-hint">Projektuppgifterna och loggan följer med på varje dörrkort som sparas som PDF. Du kan ändra dem senare under Projekt.</p>
+      <div class="project-details-fields"><label class="project-details-wide" for="projectDetailsName">Projektnamn<input id="projectDetailsName" maxlength="120" required></label><label for="projectDesigner">Projekterat av<input id="projectDesigner" maxlength="120"></label><label for="projectDate">Projekteringsdatum<input id="projectDate" type="date" min="0001-01-01" max="9999-12-31"></label><label for="projectInfo_facilityNo">Anläggningsnummer<input id="projectInfo_facilityNo" maxlength="160"></label><label for="projectInfo_order">Ordernummer / AO<input id="projectInfo_order" maxlength="160"></label></div>
+<div class="project-info-parties"><fieldset><legend>Utförande företag</legend><label for="projectInfo_company">Utförande företag<input id="projectInfo_company" maxlength="160"></label><label for="projectInfo_companyContact">Kontaktperson<input id="projectInfo_companyContact" maxlength="160"></label><label for="projectInfo_companyPhone">Telefonnummer<input id="projectInfo_companyPhone" maxlength="160" type="tel"></label><label for="projectInfo_companyAddress">Adress<input id="projectInfo_companyAddress" maxlength="160"></label><label for="projectInfo_companyPostalCode">Postnummer<input id="projectInfo_companyPostalCode" maxlength="160"></label><label for="projectInfo_companyPostalCity">Postort<input id="projectInfo_companyPostalCity" maxlength="160"></label><div class="project-logo-field"><label for="projectLogoFile">Logga</label><input id="projectLogoFile" type="file" accept="image/png,image/jpeg,image/webp"><div id="projectLogoPreview" class="project-logo-preview" hidden><img id="projectLogoImage" alt="Projektets logga"><span id="projectLogoName"></span><button id="removeProjectLogo" type="button" class="button">Ta bort logga</button></div></div></fieldset><fieldset><legend>Beställare / kund</legend><label for="projectInfo_customer">Beställare / kund<input id="projectInfo_customer" maxlength="160"></label><label for="projectInfo_contact">Kontaktperson<input id="projectInfo_contact" maxlength="160"></label><label for="projectInfo_phone">Telefonnummer<input id="projectInfo_phone" maxlength="160" type="tel"></label><label for="projectInfo_address">Adress<input id="projectInfo_address" maxlength="160"></label><label for="projectInfo_postalCode">Postnummer<input id="projectInfo_postalCode" maxlength="160"></label><label for="projectInfo_postalCity">Postort<input id="projectInfo_postalCity" maxlength="160"></label></fieldset></div>
+      <p class="project-details-hint">Uppgifterna följer med i projekt-PDF:en till SmartMatch och Avläsning och kan kompletteras där. Projektnamn, projektör och logga visas även på dörrkorten.</p>
       <p id="projectDetailsMessage" class="dialog-message" role="status"></p>
       <div class="dialog-actions"><button id="cancelProjectDetails" type="button" class="button">Avbryt</button><button id="saveProjectDetails" type="submit" class="button primary">Spara projektuppgifter</button></div>
     </form>
@@ -265,7 +263,7 @@
     <div class="dialog-actions"><button id="cancelImport" type="button" class="button">Avbryt</button><button id="acceptImport" type="button" class="button primary">Öppna konverterat projekt</button></div>
   </dialog>
   <noscript><p class="noscript">Aktivera JavaScript för att använda projekteringsappen.</p></noscript>
-<span class="projektering-version" aria-label="Version 2.19.11">v2.19.11</span>
+<span class="projektering-version" aria-label="Version 2.19.12">v2.19.12</span>
 </body>
 </html>
 
