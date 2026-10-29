@@ -406,3 +406,5 @@ Kompletterat användarbeslut samma arbetspass, TEST 9.6: skilj Avläsning av rit
 
 
 2026-10-29, v2.4.507 / Avläsning 9.100.3: Användaren begär borttagning av det extra DS/DA-lagret på iPad/iPhone. Aktuell Avläsning laddar inte längre smartmatch-read-equipment-symbols-v9-85.js. Original-PDF, dörrkort, GS-markeringar och sparade data ändras inte. Äldre testsidor behåller sin implementation.
+
+2026-10-29, v2.4.508: Beställt stämpelverktyg i aktuell SmartMatch och Avläsning. Separata PDF-stämplar väljs med tryck/ram, döljs/återställs eller tas bort ur exporterad PDF. Egna v508-filer isolerar ändringen från äldre testsidor. Avläsningsvyn döljer råtabell och har Ta bort hela listan under Verktyg. Se SMARTMATCH_FUNCTION_RULES_LOCK.md för avgränsning och verifiering.

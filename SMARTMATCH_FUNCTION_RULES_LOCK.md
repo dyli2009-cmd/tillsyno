@@ -123,3 +123,13 @@ DS är en orange kvadrat och DA en mörkröd kvadrat. Båda behåller 14 × 14 C
 ## Originalsymboler utan extra DS/DA-lager – 2026-10-29
 
 Uttryckligt användarbeslut: ta bort orange DS och mörkröda DA som appen lagt ovanpå originalritningen för läsbarhet på iPad/iPhone. Avläsning 9.100.3 laddar inte längre den separata utrustningsmodulen. Original-PDF och dess annoteringar, GS-kopplingar, dörrkort och projektdata behålls. Detta ersätter ovanstående historiska 9.29-regel i aktuell Avläsning; äldre testsidor ändras inte. Verifierat att endast modulens scriptimport avlägsnas och att ingen annan aktiv kod refererar till dess API. Ingen fysisk iOS-verifiering utförd.
+
+## Välj stämpel – 2026-10-29, v2.4.508
+
+Uttrycklig beställning: Verktyg → Välj stämpel i aktuell SmartMatch och Avläsning. Tryck eller dra en ruta, välj en identifierad PDF-/Stamp, dölj i appens ritningsvy eller ta bort vid projekt-PDF-export. Inga vita masker, OCR-gissningar eller produkt-/dörrkortsrader raderas. Dolda original finns kvar i PDF och kan återställas; borttagning kan ångras fram till återöppning av den exporterade filen. Sidnummer, namn, rektangel, ämne och innehåll identifierar stämpeln även efter PDF-omskrivning; identiska tvetydiga objekt avvisas. Valen sparas i projektpayload och TillsynoStampEdits-katalogen. Exporten verifierar metadata och att borttagna stämplar saknas. Historiska testsidor och Kontrollflöde är oförändrade.
+
+Kontrollpunkter i Avläsning: Hela avlästa tabellen / eget läsområde visas inte längre, rådata sparas fortsatt. Avlästa produkter finns kvar. Töm lista heter Ta bort hela listan och ligger i Verktyg; befintlig bekräftelse för bara den öppna dörrens kontrollpunkter bevaras.
+
+Verifiering: 26 automatiska PDF-/integrationskontroller (båda huvudmodulerna), 9 webbläsarkontroller per bredd 390 och 834, samt verklig dragmarkering i webbläsaren. Syntetiska PDF-stämplar med underliggande ritningslinje, angränsande GS och andra PDF-länkar används. Fysisk iOS och kundernas Bluebeam-filer har inte testats.
+
+Även Projekterings redigerbara TillsynoCode-/FreeText-stämplar stöds: endast den uttryckligen grupperade projection-v2-frame-ramen tas med vid dölj/borttagning. Vanlig fri PDF-text omfattas inte.
