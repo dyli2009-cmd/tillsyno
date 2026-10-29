@@ -110,7 +110,7 @@ window.SmartMatchAppBridge={
  getReadStampIndex:()=>smartReadStampIndex.map(item=>({...item,rect:Array.isArray(item.rect)?item.rect.slice():item.rect})),
  addManualReadPositions,beginReadSample,cancelReadSample,appendReadCards,createVirtualDoorCard,
  getDoorCardMapping:()=>protocolMap,
- readWorkState,setReadWorkCheck,
+ readWorkState,setReadWorkCheck,setPositionChange,restorePositionChange,
  getPositionTimeSummary:id=>calculateDoorTime(instances.find(o=>o.id===id)),
  getTimeReport:()=>calculateTimeReport(),
  resolveProjectProduct, getProjectMaterials:projectMaterialRows,
@@ -892,7 +892,7 @@ function smartPickProgressPlacement(position,w,h,otherPositions,used,displayWidt
 async function smartFlattenProgressBadges(doc,pages,linked){
  const {PDFName,PDFString,StandardFonts,PDFDict}=PDFLib,name=PDFName.of,ctx=doc.context;
  const cleared=smartRemoveOldProgressStreams(doc,pages);
- const active=linked.filter(o=>Number(o.progress)>0||o.workStarted);
+ const active=linked.filter(o=>Number(o.progress)>0||o.workStarted||window.SmartMatchPositionChanges?.active(o).length);
  if(!active.length)return {cleared,added:0};
  const layer=smartProgressLayer(doc);
  const font=await doc.embedFont(StandardFonts.HelveticaBold);
@@ -925,7 +925,10 @@ async function smartFlattenProgressBadges(doc,pages,linked){
   for(const o of ordered){
    const box=geometry.rectToDisplay(o.rect);
    if(!box)continue;
-   const complete=Number(o.progress)>=100,label=Math.min(100,Math.max(0,Math.round(o.progress)))+'%';
+   const changes=window.SmartMatchPositionChanges?.active(o)||[];
+   const complete=Number(o.progress)>=100,label=(changes.length?'Ändring '+changes.length+' · ':'')+Math.min(100,Math.max(0,Math.round(o.progress||0)))+'%';
+   const flagColor=changes.length?(window.SmartMatchPositionChanges.COLORS[changes[0].color]||'#a65b00'):null;
+   const flagRgb=flagColor?[1,3,5].map(i=>(parseInt(flagColor.slice(i,i+2),16)/255).toFixed(3)).join(' '):null;
    const w=Math.max(32,Math.ceil(font.widthOfTextAtSize(label,11)+14)),h=18;
    if(geometry.width<w+5||geometry.height<h+5)continue;
    const others=pageRects.filter(item=>item.id!==o.id).map(item=>item.box);
@@ -952,12 +955,12 @@ async function smartFlattenProgressBadges(doc,pages,linked){
      x1.toFixed(2)+' '+y1.toFixed(2)+' m '+x2.toFixed(2)+' '+y2.toFixed(2)+' l S');
    }
    commands.push(
-    complete?'0.086 0.506 0.278 rg':'0.192 0.486 0.569 rg',
+    flagRgb?flagRgb+' rg':complete?'0.086 0.506 0.278 rg':'0.192 0.486 0.569 rg',
     '0 0 '+w+' '+h+' re f',
     complete?'0.13 0.43 0.26 RG':'0.13 0.39 0.55 RG',
     '0.8 w 0.5 0.5 '+(w-1)+' '+(h-1)+' re S',
     '1 1 1 rg',
-    'BT '+fontKey.toString()+' 11 Tf 7 5 Td ('+label+') Tj ET',
+    'BT '+fontKey.toString()+' 11 Tf 7 5 Td '+font.encodeText(label).toString()+' Tj ET',
     'EMC','Q'
    );
   }
@@ -4118,11 +4121,11 @@ function effectiveChecks(o,def){
  if(def?.pending||def?.workState==='pending')return [];
  const base=(def?.checks||[]).map(line=>{
   const override=o.overrides?.[line.key]||{};
-  if(override.hidden)return null;
+  if(override.hidden||window.SmartMatchPositionChanges?.isExcluded(o,line))return null;
   const quantityValue=override.quantity??line.quantity??1;
   return {...line,label:override.label??line.label,value:override.value??line.value,note:override.note||'',quantity:Math.max(1,Math.min(999,Math.round(Number(quantityValue)||1))),minutes:override.minutes!==null&&override.minutes!==''&&Number.isFinite(Number(override.minutes))?Math.max(0,Number(override.minutes)):null,source:'base'};
  }).filter(Boolean);
- const custom=(o.customItems||[]).map(item=>({
+ const custom=(o.customItems||[]).filter(item=>!window.SmartMatchPositionChanges?.isExcluded(o,{key:item.id,source:'custom'})).map(item=>({
   key:item.id,label:item.label||'Egen punkt',value:item.value||'',note:item.note||'',quantity:Math.max(1,Math.min(999,Math.round(Number(item.quantity)||1))),minutes:item.minutes!==null&&item.minutes!==''&&Number.isFinite(Number(item.minutes))?Math.max(0,Number(item.minutes)):null,section:item.section||'',sectionKey:item.sectionKey||'',kind:item.kind||'work',source:'custom',actionable:true
  }));
  return [...base,...custom].map(resolveProjectProduct);
@@ -4209,8 +4212,8 @@ function readWorkState(o){
 function syncReadWorkChecks(o){window.SmartMatchReadTest?.syncChecks?.(o)}
 async function setReadWorkCheck(o,key,checked){
  if(!o||typeof key!=='string'||!key)return null;
- const def=window.SmartMatchReadTest?.protocolDef?.(o.code,protocolMap[o.code]);
- if(def?.pending||def?.workState==='pending')return readWorkState(o);
+ const def=await protocolDef(o.code);
+ if(def?.pending||def?.workState==='pending'||!effectiveChecks(o,def).some(item=>item.key===key))return readWorkState(o);
  o.checks=o.checks||{};o.checks[key]=!!checked;
  syncReadWorkChecks(o);
  await recalc(o);save();
@@ -6058,6 +6061,7 @@ function renderMarkers(){
     if(attention.some(item=>item.kind==='remark')){const badge=document.createElement('b');badge.className='pwAttentionBadge remark';badge.textContent='!';badges.appendChild(badge)}
     btn.appendChild(badges);btn.title+=' · '+attention.map(item=>attentionKindLabel(item.kind)+': '+item.text).join(' · ');btn.setAttribute('aria-label',btn.title);
    }
+   window.SmartMatchPositionChanges?.decorateMarker(btn,o);
    btn.onclick=e=>{e.preventDefault();e.stopPropagation();if(window.SmartMatchDALink?.onGSClick?.(o))return;if(bulkSelectMode&&(protocolCandidates[o.code]||[]).length)toggleBulkInstance(o);else if(protocolMap[o.code])openProtocol(o);else openLabChoices(o)};
    nextMarkers.appendChild(btn);
   });
@@ -6834,6 +6838,28 @@ function tidyGsText(value){
  return String(value||'').replace(/\b(GS\d*)\b(?:[\s,;\/]+\1\b)+/gi,'$1')
   .replace(/\bGS\b(?:[\s,;\/]+GS\b)+/gi,'GS').replace(/\s+/g,' ').trim();
 }
+async function refreshPositionChange(o){
+ syncReadWorkChecks(o);await recalc(o);save();
+ updateStats();renderGroups();renderMarkers();
+ if(selectedId===o.id&&el.protocol.open){syncProtocolProgress(o);await renderChecklist(o);}
+ if(el.timeDialog.open)await renderTimeReport();
+}
+async function setPositionChange(o,item,values){
+ if(!instances.includes(o))throw Error('Dörrpositionen finns inte kvar.');
+ const def=await protocolDef(o.code);
+ if(def?.pending||def?.workState==='pending')throw Error('Läs produkterna innan du ändrar en produktrad.');
+ const exists=item.source==='custom'?(o.customItems||[]).some(row=>row.id===item.key):(def?.checks||[]).some(row=>row.key===item.key);
+ // Existing records remain editable even if a later reread removed the row.
+ if(!exists&&!window.SmartMatchPositionChanges.changeFor(o,item))throw Error('Produktraden finns inte kvar. Öppna dörren igen.');
+ window.SmartMatchPositionChanges.set(o,item,values);
+ await refreshPositionChange(o);
+ setState('Ändring sparad för '+(o.drawingLabel||o.code)+' · position '+o.position+'.');
+}
+async function restorePositionChange(o,item){
+ if(!instances.includes(o))throw Error('Dörrpositionen finns inte kvar.');
+ window.SmartMatchPositionChanges.restore(o,item);await refreshPositionChange(o);
+ setState('Ändringen återställd för '+(o.drawingLabel||o.code)+' · position '+o.position+'.');
+}
 function appendEditableCheck(o,item,root=el.checklist){
  const row=document.createElement('div');row.className='pwCheckRow'+(o.checks[item.key]?' done':'');
  const input=document.createElement('input');input.type='checkbox';input.checked=!!o.checks[item.key];input.setAttribute('aria-label','Klarmarkera '+[item.label,item.value].filter(Boolean).join(' · '));
@@ -6849,7 +6875,7 @@ function appendEditableCheck(o,item,root=el.checklist){
  const actions=document.createElement('div');actions.className='pwCheckActions';
  const edit=document.createElement('button');edit.type='button';edit.textContent='Ändra';edit.onclick=()=>openItemEditor(o,item);
  const remove=document.createElement('button');remove.type='button';remove.className='pwRemoveItem';remove.textContent='Ta bort';remove.onclick=()=>removeChecklistItem(o,item);
- actions.append(edit,remove);row.append(input,content,actions);
+ actions.append(edit,remove);window.SmartMatchPositionChanges?.appendAction(o,item,actions,row);row.append(input,content,actions);
  input.onchange=async()=>{o.checks[item.key]=input.checked;syncReadWorkChecks(o);row.classList.toggle('done',input.checked);await recalc(o);save();syncProtocolProgress(o);refreshVisibleWorkSection(root.closest?.('.rtWorkSection'));updateStats();renderGroups();renderMarkers();const def=await protocolDef(o.code),items=effectiveChecks(o,def),done=items.filter(current=>!!o.checks?.[current.key]).length;el.checklistMeta.textContent=done+' / '+items.length+' klara';if(el.timeDialog.open)await renderTimeReport()};
  // Finger-friendly checkbox: tapping the point text also toggles its checkbox.
  // Action buttons keep their own behavior and never mark a point accidentally.
@@ -6873,7 +6899,7 @@ function makeWorkSection(title,items,o){
 async function renderChecklist(o){
  document.getElementById('pwDoorReadExtras').replaceChildren();
  el.checklist.replaceChildren();
- renderDoorAttention(o);
+ renderDoorAttention(o);window.SmartMatchPositionChanges?.render(o);
  const reader=window.SmartMatchReadTest,selected=reader?.protocolDef?.(o.code,protocolMap[o.code]);
  for(const id of ['pwChecklistMarkAll','pwChecklistClearAll','pwAddChecklistItem','pwAddExtraTime'])document.getElementById(id).hidden=false;
  if(el.rereadCard){const generated=!!selected?.generated;el.rereadCard.hidden=!selected||generated;el.rereadCard.disabled=!selected||generated;}
@@ -6890,11 +6916,11 @@ async function renderChecklist(o){
  el.checklistMeta.textContent=done+' / '+checks.length+' klara';
  document.getElementById('pwChecklistMarkAll').disabled=!checks.length;
  document.getElementById('pwChecklistClearAll').disabled=!checks.length;
- if(!def.lines.length&&!o.customItems.length){reader?.appendTable?.(document.getElementById('pwDoorReadExtras'),o.code,protocolMap[o.code]);const p=document.createElement('p');p.className='pwMuted';p.textContent='Inga GS-kontrollpunkter. Granska produktlistan och Lev av / Mont av, eller lägg till en egen punkt.';el.checklist.appendChild(p);return}
+ if(!def.lines.length&&!o.customItems.length){reader?.appendTable?.(document.getElementById('pwDoorReadExtras'),o.code,protocolMap[o.code],o);const p=document.createElement('p');p.className='pwMuted';p.textContent='Inga GS-kontrollpunkter. Granska produktlistan och Lev av / Mont av, eller lägg till en egen punkt.';el.checklist.appendChild(p);return}
  const byKey=new Map(checks.filter(item=>item.source==='base').map(item=>[item.key,item]));
  const visibleGroups=new Map();
  if(def.readTestSelected){
-  reader?.appendTable?.(document.getElementById('pwDoorReadExtras'),o.code,protocolMap[o.code]);
+  reader?.appendTable?.(document.getElementById('pwDoorReadExtras'),o.code,protocolMap[o.code],o);
   const clear=document.createElement('button');clear.type='button';clear.id='rtClearDoorWork';clear.textContent='Töm kontrollistan';clear.onclick=()=>void clearDoorWork(o);document.getElementById('pwDoorReadExtras').append(clear);
   const caption=document.createElement('p');caption.className='rtInternalNote';caption.textContent='Kontrollpunkterna gäller den här dörren. Ändra text eller tid, ta bort en punkt eller lägg till en egen punkt vid behov.';
   const groups=visibleGroups,groupedItems=new Map();

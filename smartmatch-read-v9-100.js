@@ -571,7 +571,7 @@
  function makeUI(){
   if(ui)return;
   ui=document.createElement('dialog');ui.id='rtDialog';ui.className='rtDialog';ui.setAttribute('aria-labelledby','rtTitle');
-  ui.innerHTML=`<header class="rtHead"><div><small>SmartMatch · Avläsning TEST 9.100</small><h2 id="rtTitle">Läs dörrkort</h2></div><button id="rtCancel" type="button">Avbryt</button></header>
+  ui.innerHTML=`<header class="rtHead"><div><small>SmartMatch · Avläsning TEST 9.100.1</small><h2 id="rtTitle">Läs dörrkort</h2></div><button id="rtCancel" type="button">Avbryt</button></header>
    <ol id="rtGuide" class="rtGuide" aria-label="Så går du vidare"><li data-step="1"><b>1</b> Visa ett exempel</li><li data-step="2"><b>2</b> Hitta dörrkorten</li><li data-step="3"><b>3</b> Läs och sök</li><li data-step="4"><b>4</b> Granska och starta</li></ol>
    <span id="rtReadPhaseLabel" hidden><input id="rtReadPhase" type="hidden" value="codes"></span><p id="rtNextHint" class="rtNextHint"></p>
    <p id="rtIntro" class="rtIntro">Markera ett enda dörrkort som exempel – även om sidan innehåller flera kort. Appen läser varje korts egen beteckning och söker hela beteckningen på ritningen. Spara sedan med Spara PDF. Kopplingar och arbetsstatus följer med i projekt-PDF:en, som kan öppnas direkt nästa gång.</p>
@@ -1845,19 +1845,19 @@
   for(const line of def.checks)checks[line.key]=!!o.checks?.[line.key];
   remember();
  }
- function appendProducts(root,card){
+ function appendProducts(root,card,position=null){
   const products=card.products||[];if(!products.length)return;
   const details=document.createElement('details');details.className='rtProductInventory';
   const summary=document.createElement('summary');summary.textContent='Avlästa produkter · '+products.length;details.open=root.classList.contains('rtResult');details.append(summary);
   const note=document.createElement('p');note.textContent='GS i Lev av eller Mont av ger kontrollpunkter. Produkten tas med en gång även om båda visar GS.';details.append(note);
   const wrap=document.createElement('div');wrap.style.overflowX='auto';const table=document.createElement('table');table.style.cssText='border-collapse:collapse;width:100%;font-size:12px';table.setAttribute('aria-label','Avlästa produkter på dörrkortet');
-  const head=document.createElement('tr');for(const title of ['Kategori / grupp','Produkt / modell','Antal','Lev av','Mont av']){const cell=document.createElement('th');cell.textContent=title;cell.style.cssText='text-align:left;padding:6px';head.append(cell);}table.append(head);
-  for(const original of products){const product=root.id==='pwChecklist'&&original.responsibility==='GS'?(window.SmartMatchAppBridge?.resolveProjectProduct?.(original)||original):original;const row=document.createElement('tr');row.dataset.installer=product.responsibility==='GS'?'gs':product.responsibility?'other':'missing';for(const value of [[product.label,product.section].filter(Boolean).join(' · '),product.value,product.quantity||'—',product.delivery||'—',product.installer??product.responsibility??'—']){const cell=document.createElement('td');cell.textContent=value??'';cell.style.cssText='padding:6px;border-top:1px solid #cbd5df';row.append(cell);}table.append(row);}
+  const head=document.createElement('tr');for(const title of ['Kategori / grupp','Produkt / modell','Antal','Lev av','Mont av',...(position?['Ändring på denna position']:[])]){const cell=document.createElement('th');cell.textContent=title;cell.style.cssText='text-align:left;padding:6px';head.append(cell);}table.append(head);
+  for(const original of products){const product=root.id==='pwChecklist'&&original.responsibility==='GS'?(window.SmartMatchAppBridge?.resolveProjectProduct?.(original)||original):original;const row=document.createElement('tr');row.dataset.installer=product.responsibility==='GS'?'gs':product.responsibility?'other':'missing';for(const value of [[product.label,product.section].filter(Boolean).join(' · '),product.value,product.quantity||'—',product.delivery||'—',product.installer??product.responsibility??'—']){const cell=document.createElement('td');cell.textContent=value??'';cell.style.cssText='padding:6px;border-top:1px solid #cbd5df';row.append(cell);}const change=position&&window.SmartMatchPositionChanges?.inventoryChange(position,{...original,sourceIdentity:original.sourceIdentity||(original.id?'generated:'+original.id:'')},products);if(change){row.dataset.positionChange=change.excluded?'excluded':'flagged';if(change.excluded)for(const cell of row.children)cell.style.textDecoration='line-through';const status=document.createElement('td');status.textContent=(change.excluded?'× Utgår: ':'⚑ Ändring: ')+change.note;status.style.cssText='padding:6px;text-decoration:none;min-width:130px';row.append(status);}else if(position){row.append(document.createElement('td'));}table.append(row);}
   wrap.append(table);details.append(wrap);root.append(details);
  }
- function appendTable(root,code,page){
+ function appendTable(root,code,page,position=null){
   const card=cardFor(code,page);if(!card||card.workState==='pending')return;
-  appendProducts(root,card);
+  appendProducts(root,card,position);
   const details=document.createElement('details');details.className='rtTableUnderlay';const summary=document.createElement('summary');summary.textContent='Hela avlästa tabellen · eget läsområde';const pre=document.createElement('pre');pre.textContent=card.rawTable||'Ingen tabelltext kunde läsas.';details.append(summary,pre);root.append(details);
  }
  function workProgress(o){
@@ -1887,11 +1887,12 @@
    const button=document.createElement('button');button.type='button';button.textContent='Fortsätt med produkter';button.onclick=()=>void continueProducts();root.append(p,button);
    $('pwChecklistMeta').textContent='Arbetslista ej läst';$('pwProtocolPercent').textContent='Ej läst';$('pwProtocolBar').style.width='0%';return true;
   }
-  appendTable(root,o.code,page);active.checks=active.checks||{};
+  appendTable(root,o.code,page,o);active.checks=active.checks||{};
   const caption=document.createElement('p');caption.className='rtInternalNote';caption.textContent='Arbetslista · endast i appen. Klar-markeringarna hör till den här dörren.';root.append(caption);
   const redraw=()=>{const state=workProgress(o);$('pwChecklistMeta').textContent=state.done+' av '+state.total+' klara';$('pwProtocolPercent').textContent=state.percent+'% arbete';$('pwProtocolBar').style.width=state.percent+'%';updateBadges();};
   const groups=new Map();
   for(const line of def.lines){
+   if(window.SmartMatchPositionChanges?.isExcluded(o,line))continue;
    const labelText=line.displayText||line.value||line.text;
    const groupKey=line.sectionKey||'arbetslista';
    if(!groups.has(groupKey)){
@@ -1926,3 +1927,4 @@
   const markers=$('pwMarkers');if(markers)new MutationObserver(updateBadges).observe(markers,{childList:true});for(const id of ['rtOpenSettings','rtMenuSettings','rtEditPreparation'])$(id)?.addEventListener('click',()=>{const menu=$('pwToolMenu');if(menu)menu.hidden=true;void openSettings().catch(e=>window.SmartMatchAppBridge?.setStatus(e.message));});});
  window.SmartMatchReadTest=Object.freeze({beforeAnalyze,getSavedCardIndex,getReadStampIndex:()=>clone(annotationIndex||[]),takePreparedOpen,discardPreparedOpen,openSettings,continueProducts,rereadCard,openDeferredCards,getDeferredCardCount,getAllCardPages:()=>allCardPages(active),canOpenSavedProject:reviewedData,ensureManualCard,addGeneratedCard,updateGroupMapping,getRemovedReadPositions,removeReadPositions,relinkReadPositions,getDrawingSample,setDrawingSample,getCardNames,getOriginalCardCode,restoreReadData,hasPendingProducts:()=>cardsFrom(active).some(c=>c.workState==='pending')||!!Object.keys(active?.pendingWorkCards||{}).length,parsePages,candidates,workRows,cardFor,cardRegion:(code,page)=>cardFor(code,page)?.bounds||null,cardDisplayRegion,setCardDisplayRegion,isCardPage:p=>allCardPages(active).includes(Number(p)),identityForPage:p=>{const c=cardsForPage(p)[0];return c?{code:c.code,row:c.header,area:'known-layout-card-heading',profileId:'user-selected-read-test-v9'}:null;},identitiesForPage:p=>cardsForPage(p).map(c=>({code:c.code,row:c.header,area:'known-layout-card-heading',profileId:'user-selected-read-test-v9',cardId:c.id})),drawingSelection:()=>active?.matching?.version===2?{codes:[...new Set([...drawingCodes(active),...(active.renamedGroupCodes||[])])],positions:clone(active.matching.hits.filter(h=>h.selected!==false&&!active.removedReadPositions?.some(removed=>sameReadPlace(removed,h))))}:null,protocolDef,checksForPosition,replacePositionChecks,syncChecks,appendTable,renderWork,payload:()=>active?clone(active):null});
 })();
+
