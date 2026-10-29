@@ -1,4 +1,4 @@
-// Browser regression: rotated PDF geometry, edits, persistence, export and detector arrows.
+// Browser regression: rotated PDF geometry, edits, persistence, export and security arrows.
 const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os');
 const repo=path.resolve(__dirname,'..');
@@ -14,14 +14,21 @@ const root=process.env.CONTROLFLOW_SCREENSHOTS||fs.mkdtempSync(path.join(os.tmpd
   await context.route('**/vendor/supabase-2.49.10.min.js',route=>route.fulfill({contentType:'application/javascript',body:''}));
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>{errors.push(e.message);console.error(device.name,e.stack)});
   await page.goto('http://127.0.0.1:'+server.address().port+'/'+'all-in-one.html');await page.waitForTimeout(200);
-  await page.evaluate(()=>{window.AllInOneProtocols?.set(['lock','alarm','detector']);document.querySelectorAll('dialog[open]').forEach(d=>d.close());});
+  await page.evaluate(()=>{window.AllInOneProtocols?.set(['lock','alarm','access','detector']);document.querySelectorAll('dialog[open]').forEach(d=>d.close());});
   assert(await page.locator('#secRotate').isDisabled());
   await page.locator('#securityFile').setInputFiles(root+'/drawing.pdf');await page.waitForFunction(()=>document.body.classList.contains('secHasPdf')&&!document.querySelector('#secRotate').disabled);await page.evaluate(()=>renderQueue);
-  await page.evaluate(()=>{items=[normalize({uid:'test-lock',type:'lock',number:1,id:'L1',page:1,x:.15,y:.275,labelX:.4,labelY:.4})];items.push(normalize({uid:'detector-test',type:'detector',number:1,id:'DET1',page:1,x:.8,y:.55,labelX:.85,labelY:.35}));textNotes=[{uid:'n1',page:1,x:.2,y:.3,labelX:.7,labelY:.65,text:'Test',targets:[{x:.2,y:.3},{x:.8,y:.8}]}];drawingExtras=[{uid:'line1',type:'line',page:1,x1:.1,y1:.1,x2:.3,y2:.3},{uid:'door1',type:'door-single',page:1,x:.6,y:.3,size:.08,angle:30},{uid:'text1',type:'text-arrow',page:1,x:.5,y:.75,targetX:.7,targetY:.5,text:'Text'}];save();drawMarkers();});
+  await page.evaluate(()=>{items=[normalize({uid:'test-lock',type:'lock',number:1,id:'L1',page:1,x:.15,y:.275,labelX:.4,labelY:.4})];items.push(normalize({uid:'detector-test',type:'detector',number:1,id:'DET1',page:1,x:.8,y:.55,labelX:.85,labelY:.35}));items.push(normalize({uid:'test-alarm',type:'alarm',number:1,id:'I1',page:1,x:.35,y:.7,labelX:.2,labelY:.65}),normalize({uid:'test-access',type:'access',number:1,id:'P1',page:1,x:.8,y:.8,labelX:.7,labelY:.85}));textNotes=[{uid:'n1',page:1,x:.2,y:.3,labelX:.7,labelY:.65,text:'Test',targets:[{x:.2,y:.3},{x:.8,y:.8}]}];drawingExtras=[{uid:'line1',type:'line',page:1,x1:.1,y1:.1,x2:.3,y2:.3},{uid:'door1',type:'door-single',page:1,x:.6,y:.3,size:.08,angle:30},{uid:'text1',type:'text-arrow',page:1,x:.5,y:.75,targetX:.7,targetY:.5,text:'Text'}];save();drawMarkers();});
   const rotate=()=>device.mobile?page.locator('#secRotate').tap():page.locator('#secRotate').click();
   const detector=page.locator('.secTarget.detectorArrow');assert.equal(await detector.count(),1);assert.equal(await detector.locator('svg').count(),0,'detector pictogram removed');
   assert.equal(await detector.evaluate(el=>getComputedStyle(el).backgroundColor),'rgba(0, 0, 0, 0)');assert.equal(await detector.evaluate(el=>getComputedStyle(el,'::after').display),'none','no dot covers the arrowhead');assert.equal(await page.locator('.secConnector[data-uid="detector-test"]').getAttribute('marker-end'),'url(#secArrow-untested)');
   await detector.click();assert.equal(await page.evaluate(()=>cur().type),'detector');assert.equal(await page.evaluate(()=>document.body.dataset.view),'protocol');await page.evaluate(()=>{go('drawing');selected=null;drawMarkers()});
+  for(const type of ['alarm','lock','access']){
+   const mark=page.locator('.secMarker.'+type);await mark.click();await mark.click();
+   assert.equal(await page.evaluate(()=>cur().type),type);assert.equal(await page.evaluate(()=>document.body.dataset.view),'protocol','protocol still opens for '+type);
+   await page.evaluate(()=>{go('drawing');selected=null;lastObjectTap=null;drawMarkers()});
+  }
+  const arrowStyles=await page.locator('.secTarget.securityArrow').evaluateAll(nodes=>nodes.map(el=>({background:getComputedStyle(el).backgroundColor,before:getComputedStyle(el,'::before').display,after:getComputedStyle(el,'::after').display,width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height})));
+  assert.equal(arrowStyles.length,4);for(const style of arrowStyles){assert.equal(style.background,'rgba(0, 0, 0, 0)');assert.equal(style.before,'none');assert.equal(style.after,'none');assert(style.width>=44&&style.height>=44,'44 px hit area');}
   const initial=await page.evaluate(()=>JSON.stringify({items,textNotes,drawingExtras}));
   async function check(angle){
    await page.evaluate(()=>renderQueue);
@@ -51,8 +58,8 @@ const root=process.env.CONTROLFLOW_SCREENSHOTS||fs.mkdtempSync(path.join(os.tmpd
   const area=await page.locator('.serviceDrawingOverlay').boundingBox();
   await page.mouse.move(area.x+area.width*.2,area.y+area.height*.7);await page.mouse.down();await page.mouse.move(area.x+area.width*.4,area.y+area.height*.8,{steps:5});await page.mouse.up();
   const line=await page.evaluate(()=>drawingExtras.at(-1));assert.equal(line.type,'line');assert(Math.abs(line.x1-.8)<.01&&Math.abs(line.y1-.3)<.01&&Math.abs(line.x2-.6)<.01&&Math.abs(line.y2-.2)<.01,'new annotation stores original coordinates');
-  const exported=await page.evaluate(async()=>{const original=Array.from(sourceBytes),{out,originalBytes}=await buildSecurityDrawingPdf();const result=await PDFLib.PDFDocument.load(await out.save());return {angles:result.getPages().map(p=>p.getRotation().angle),same:JSON.stringify(original)===JSON.stringify(Array.from(originalBytes))}});
-  assert.deepEqual(exported.angles,[0,90]);assert(exported.same,'export preserves original drawing');
+  const exported=await page.evaluate(async()=>{const original=Array.from(sourceBytes),previous=PDFLib.PDFPage.prototype.drawCircle;let pointCircles=0;PDFLib.PDFPage.prototype.drawCircle=function(options){if(options.size===2.7)pointCircles++;return previous.call(this,options)};let built;try{built=await buildSecurityDrawingPdf()}finally{PDFLib.PDFPage.prototype.drawCircle=previous}const {out,originalBytes}=built;const result=await PDFLib.PDFDocument.load(await out.save());return {pointCircles,angles:result.getPages().map(p=>p.getRotation().angle),same:JSON.stringify(original)===JSON.stringify(Array.from(originalBytes))}});
+  assert.equal(exported.pointCircles,0,'PDF arrows have no covering point circles');assert.deepEqual(exported.angles,[0,90]);assert(exported.same,'export preserves original drawing');
   await rotate();await rotate();await rotate();await page.evaluate(()=>renderQueue);
   await page.locator('#secNext').click();await page.evaluate(()=>renderQueue);assert.equal(await page.evaluate(()=>drawingRotation()),0,'rotation scoped per page');
   assert((await page.evaluate(()=>pageWidth/pageHeight))<1,'native PDF orientation preserved');

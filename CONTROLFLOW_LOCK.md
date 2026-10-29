@@ -181,3 +181,6 @@ Användaren beställde en knapp för att vända ritningen i Kontrollflöde/Säke
 
 Verifierat i Chromium på dator, surfplatta och telefonbredder 390/320 px: PDF-pixlar mot markör, fyra rotationslägen, dragning, placering, textredigering, ritverktyg, PDF-export, sidbyte och återöppning. Fysisk iPhone/TestFlight har inte provats. Kontrollflödet är åter LÅST efter beställningen.
 
+# 2026-10-29 · v2.4.498 · Samma pil för Säkerhetsservice
+
+På användarens beställning används samma rena pil för Inbrottslarm, Lås & Dörrmiljö och Passer som för Detektorer. Den runda punkten över pilspetsen tas bort i arbetsritningen och PDF. Etiketter, statusfärger, dragning, protokoll och lagrade koordinater bevaras; markeringens osynliga tryckyta är 44 × 44 px. Övriga protokoll behåller sina markeringar. Kontrollflödet är åter LÅST efter denna avgränsade beställning.
