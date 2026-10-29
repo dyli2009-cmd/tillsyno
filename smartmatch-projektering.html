@@ -5,34 +5,35 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#173e3a">
   <meta name="description" content="Projektera dörrar på egna PDF-ritningar med stenciler, gemensamma dörrkort och sökbar PDF-export.">
-  <title>Projektering 2.19.14 | Tillsyno</title>
+  <title>Projektering 2.19.15 | Tillsyno</title>
   <style>html[data-auth-pending] body{visibility:hidden!important}</style>
   <script src="vendor/supabase-2.49.10.min.js"></script>
   <script src="auth-config.js"></script>
   <script src="auth/client.js?v=2.4.270"></script>
   <script src="auth/guard.js?v=2.4.270" defer></script>
-  <link rel="stylesheet" href="smartmatch-projektering-v2-19.css?v=2.19.14">
+  <link rel="stylesheet" href="smartmatch-projektering-v2-19.css?v=2.19.15">
   <script src="vendor/pdf.min.js" defer></script>
   <script src="vendor/pdf-lib.min.js" defer></script>
-  <script src="smartmatch-projektering-v2-19-annotations.js?v=2.19.14" defer></script>
-  <script src="smartmatch-projektering-v2-19-catalog.js?v=2.19.14" defer></script>
-  <script src="smartmatch-projektering-v511-data.js?v=2.19.14" defer></script>
+  <script src="smartmatch-projektering-v2-19-annotations.js?v=2.19.15" defer></script>
+  <script src="smartmatch-projektering-v2-19-catalog.js?v=2.19.15" defer></script>
+  <script src="smartmatch-automation-models-v512.js" defer></script>
+  <script src="smartmatch-projektering-v512-data.js?v=2.19.15" defer></script>
   <script src="smartmatch-product-times-v511.js" defer></script>
-  <script src="smartmatch-projektering-v511-store.js?v=2.19.14" defer></script>
-  <script src="smartmatch-projektering-v2-19-canvas.js?v=2.19.14" defer></script>
+  <script src="smartmatch-projektering-v512-store.js?v=2.19.15" defer></script>
+  <script src="smartmatch-projektering-v2-19-canvas.js?v=2.19.15" defer></script>
   <script src="tillsyno-project-info-v509.js" defer></script>
-  <script src="smartmatch-projektering-v511-pdf.js?v=2.19.14" defer></script>
-  <script src="smartmatch-projektering-v2-19-import.js?v=2.19.14" defer></script>
-  <script src="smartmatch-projektering-v511-materials.js?v=2.19.14" defer></script>
-  <script src="smartmatch-projektering-v511-library.js?v=2.19.14" defer></script>
-  <script src="smartmatch-projektering-v2-8-suggest.js?v=2.19.14" defer></script>
+  <script src="smartmatch-projektering-v512-pdf.js?v=2.19.15" defer></script>
+  <script src="smartmatch-projektering-v2-19-import.js?v=2.19.15" defer></script>
+  <script src="smartmatch-projektering-v512-materials.js?v=2.19.15" defer></script>
+  <script src="smartmatch-projektering-v512-library.js?v=2.19.15" defer></script>
+  <script src="smartmatch-projektering-v2-8-suggest.js?v=2.19.15" defer></script>
   <script src="smartmatch-projektering-v511-library-ui.js?v=2.9" defer></script>
   <script src="smartmatch-projektering-v2-10-search.js?v=2.10" defer></script>
   <script src="smartmatch-projektering-v2-10-layout.js?v=2.10" defer></script>
-  <script src="smartmatch-projektering-v2-19-window.js?v=2.19.14" defer></script>
-  <script src="smartmatch-projektering-v511.js?v=2.19.14" defer></script>
+  <script src="smartmatch-projektering-v2-19-window.js?v=2.19.15" defer></script>
+  <script src="smartmatch-projektering-v512.js?v=2.19.15" defer></script>
 <link rel="stylesheet" href="tillsyno-project-info-v509.css">
-<link rel="stylesheet" href="smartmatch-projektering-v510.css"></head>
+<link rel="stylesheet" href="smartmatch-projektering-v512.css"></head>
 <body data-view="drawing">
   <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
     <symbol id="i-plan" viewBox="0 0 24 24"><path d="M3 3h18v18H3zM3 11h8V3m0 8v10m0-6h10"/></symbol>
@@ -70,7 +71,7 @@
   </defs></svg>
 
   <header class="app-header">
-    <a class="brand" href="index.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small>Projektering 2.19.14</small></span></a>
+    <a class="brand" href="index.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small>Projektering 2.19.15</small></span></a>
     <div class="project-name"><label for="projectName">Projekt</label><input id="projectName" value="Nytt projekt" maxlength="120" aria-label="Projektnamn" autocomplete="off"><button id="projectDetails" type="button" class="icon-button" title="Projektuppgifter och logga" aria-label="Projektuppgifter och logga"><svg aria-hidden="true"><use href="#i-edit"/></svg></button></div>
     <div class="header-status"><span class="status-dot" aria-hidden="true"></span><output id="saveStatus" aria-live="polite">Öppna en ritning för att börja</output></div>
     <button id="help" class="icon-button" type="button" aria-label="Öppna guiden" title="Guide och kortkommandon"><svg><use href="#i-help"/></svg></button>
@@ -93,7 +94,7 @@
   <main class="workspace" id="projectWorkspace">
     <aside id="libraryPane" class="pane library-pane" aria-labelledby="libraryHeading">
       <div class="pane-heading"><div><p class="eyebrow">Bibliotek</p><h1 id="libraryHeading">Stenciler</h1></div><div class="pane-heading-actions"><button id="openCatalog" type="button" class="icon-button" aria-label="Öppna produktregister och montagetider" title="Produktregister och montagetider"><svg><use href="#i-search"/></svg></button><button id="manageLibrary" type="button" class="button library-manage-button" title="Grupper, produkter och säkerhetskopia">Bibliotek</button><button id="newStencil" type="button" class="icon-button" aria-label="Skapa egen stencil" title="Skapa egen stencil"><svg><use href="#i-plus"/></svg></button></div></div>
-      <section aria-label="Objektstenciler"><button id="newObject510" type="button" class="button"><span aria-hidden="true" style="display:inline-block;width:32px;height:20px;border:2px solid #32754c;border-radius:50%"></span>Ny objektstencil</button><div id="objectRows510"></div></section>
+      <section aria-label="Objektstenciler"><button id="newObject510" type="button" class="button"><span aria-hidden="true" style="display:inline-block;width:32px;height:20px;border:2px solid #32754c;border-radius:2px"></span>Dörrautomatikstencil</button><div id="objectRows510"></div></section>
       <label class="search-field"><svg aria-hidden="true"><use href="#i-search"/></svg><input id="stampSearch" type="search" aria-label="Sök bland alla stenciler" placeholder="Sök GS65, DBL, DA…" autocomplete="off"></label>
       <div id="stencilCategories" class="stencil-categories" role="group" aria-label="Stenciltyp"></div>
       <div id="stencilCardGroups" class="stencil-categories stencil-card-groups" role="group" aria-label="Grupper av dörrkort"></div>
@@ -238,7 +239,7 @@
 
   <dialog id="stencilDialog" class="stencil-dialog" aria-labelledby="stencilTitle"><div class="dialog-heading"><div><p class="eyebrow">Stämpelbibliotek</p><h2 id="stencilTitle">Egen stencil</h2></div><button id="closeStencil" type="button" class="icon-button" aria-label="Stäng stencil"><svg><use href="#i-close"/></svg></button></div><div class="stencil-editor"><div class="stencil-fields"><label for="stencilCode">Beteckning<input id="stencilCode" type="text" maxlength="24" placeholder="T.ex. GS101" autocomplete="off" autocapitalize="characters"></label><label for="stencilName">Namn<input id="stencilName" type="text" maxlength="100" placeholder="Stencilen i biblioteket"></label><label for="stencilKind">Användning<select id="stencilKind"><option value="card">Dörrkort</option><option value="symbol">Symbol · Övrigt</option></select></label><label id="stencilProductField" for="stencilProductType">Räkna som<select id="stencilProductType" aria-describedby="stencilProductHint"><option value="none">Ingen produkt</option><option value="doorAutomation">Dörrautomatik (DA)</option><option value="doorCloser">Dörrstängare (DS)</option><option value="cardReader">Kortläsare (KL)</option><option value="other">Annan produkt (t.ex. DFS)</option><option value="elbowContact">Armbågskontakt (×2)</option></select><span id="stencilProductHint" class="field-hint">Räknas i översikten ovanför ritningen.</span></label><label id="stencilCategoryField" for="stencilCategory" hidden>Kategori<select id="stencilCategory"><option value="Dörrkort">Dörrkort</option><option value="Dörrautomatik">Dörrautomatik</option><option value="Dörrstängare">Dörrstängare</option><option value="Kortläsare">Kortläsare</option><option value="DFS">DFS</option><option value="Armbågskontakter">Armbågskontakter</option><option value="Övrigt">Övrigt</option><option value="__custom__">Egen kategori…</option></select></label><label id="stencilCustomCategoryField" for="stencilCustomCategory" class="custom-category-field" hidden>Ny kategori<input id="stencilCustomCategory" type="text" maxlength="60" placeholder="Kategorins namn"></label><label for="stencilShape">Form<select id="stencilShape"><option value="oval">Oval</option><option value="square">Liten fyrkant</option><option value="rectangle">Rektangel</option></select></label><div class="stencil-color-row"><label for="stencilFill">Fyllning<input id="stencilFill" type="color" value="#ffdb5c"></label><label for="stencilStroke">Kant<input id="stencilStroke" type="color" value="#97792c"></label><label for="stencilTextColor">Text<input id="stencilTextColor" type="color" value="#26323b"></label></div><div class="stencil-size-row"><label for="stencilWidth">Bredd · pt<input id="stencilWidth" type="number" min="4" max="500" value="48" step="1"></label><label for="stencilHeight">Höjd · pt<input id="stencilHeight" type="number" min="4" max="500" value="25" step="1"></label><label for="stencilFontSize">Text · pt<input id="stencilFontSize" type="number" min="4" max="100" value="11" step="1"></label></div></div><div class="stencil-preview-panel"><p class="eyebrow">Förhandsvisning</p><div id="stencilPreview" class="stencil-preview-stage" aria-label="Förhandsvisning av stencilen"></div><p>Stencilen delar utseende. Under Vald markering väljer du vilka stämplar som ska dela storlek.</p></div></div><p id="stencilMessage" class="dialog-message" role="status"></p><div class="dialog-actions"><button id="saveStencil" type="button" class="button primary"><svg><use href="#i-check"/></svg>Spara stencil</button></div></dialog>
 
-  <dialog id="objectDialog510" class="equipment-dialog" aria-labelledby="objectTitle510"><div class="dialog-heading"><h2 id="objectTitle510">Första objektstencilen</h2><button id="closeObject510" type="button" class="icon-button" aria-label="Avbryt objektstencil">×</button></div><div class="equipment-fields"><label for="objectNumber510">Objektnummer<input id="objectNumber510" maxlength="24" autocomplete="off" placeholder="Skriv objektnummer"></label><label for="objectModel510">Maskintyp / modell<input id="objectModel510" maxlength="160" list="objectModels510" autocomplete="off" placeholder="Välj eller skriv modell"></label><datalist id="objectModels510"><option value="SW100"><option value="SW200"><option value="SW300"><option value="ED100"><option value="ED200"><option value="ED250"></datalist></div><p>En stencil räknas som en maskin. Tryck sedan på ritningen för att placera fler med samma uppgifter.</p><p id="objectMessage510" role="status" class="dialog-message"></p><div class="dialog-actions"><button id="saveObject510" class="button primary" type="button">Spara och placera</button></div></dialog>
+  <dialog id="objectDialog510" class="equipment-dialog" aria-labelledby="objectTitle510"><div class="dialog-heading"><h2 id="objectTitle510">Första dörrautomatiken</h2><button id="closeObject510" type="button" class="icon-button" aria-label="Avbryt dörrautomatik">×</button></div><div class="equipment-fields"><label for="objectNumber510">Objektnummer<input id="objectNumber510" maxlength="24" autocomplete="off" placeholder="Skriv objektnummer"></label><label for="objectModel510">Maskintyp / modell<select id="objectModel510" required><option value="">Välj maskintyp / modell</option></select></label></div><p>Märkning: objektnummer–maskinkod–löpnummer. Nästa tryck placerar nästa automatik och räknar upp löpnumret.</p><p id="objectMessage510" role="status" class="dialog-message"></p><div class="dialog-actions"><button id="saveObject510" class="button primary" type="button">Spara och placera</button></div></dialog>
   <dialog id="equipmentDialog" class="equipment-dialog" aria-labelledby="equipmentTitle"><div class="dialog-heading"><div><p class="eyebrow">Produkt på ritningen</p><h2 id="equipmentTitle">Produktuppgifter</h2></div><button id="closeEquipment" type="button" class="icon-button" aria-label="Stäng produktuppgifter"><svg><use href="#i-close"/></svg></button></div><div class="equipment-fields"><label for="equipmentObjectNumber">Objektnummer<input id="equipmentObjectNumber" type="text" maxlength="40" autocomplete="off" placeholder="T.ex. 1"></label><label for="equipmentQuantity">Antal<input id="equipmentQuantity" type="number" min="1" max="999" step="1" value="1"><output id="equipmentQuantityHint" class="field-hint"></output></label><label for="equipmentModel" class="wide-field">Typ / produkt<input id="equipmentModel" type="text" maxlength="160" list="equipmentModels" autocomplete="off" placeholder="T.ex. SW300"></label><datalist id="equipmentModels"></datalist><label for="equipmentNote" class="wide-field">Anteckning<textarea id="equipmentNote" rows="3" maxlength="1000" placeholder="Information till teknikern"></textarea></label></div><p id="equipmentMessage" class="dialog-message" role="status"></p><p class="dialog-footnote">Uppgifterna hör till den här placeringen. Teknikern kan fylla på och spara dem i projektet.</p><div class="dialog-actions"><button id="saveEquipment" type="button" class="button primary"><svg><use href="#i-check"/></svg>Spara produktuppgifter</button></div></dialog>
 
   <dialog id="textDialog" class="text-dialog" aria-labelledby="textTitle"><h2 id="textTitle">Nytt dörrkort</h2><label id="textLabel" for="textValue">Beteckning</label><input id="textValue" type="text" maxlength="24" placeholder="T.ex. GS65" autocomplete="off" autocapitalize="characters"><div class="dialog-actions"><button id="textCancel" type="button" class="button">Avbryt</button><button id="textAccept" type="button" class="button primary">Skapa</button></div></dialog>
@@ -246,7 +247,7 @@
   <dialog id="projectDetailsDialog" class="project-details-dialog" aria-labelledby="projectDetailsTitle">
     <div class="dialog-heading"><div><p class="eyebrow">Gemensamt för alla dörrkort</p><h2 id="projectDetailsTitle">Projektuppgifter</h2></div><button id="closeProjectDetails" type="button" class="icon-button" aria-label="Stäng projektuppgifter">×</button></div>
     <form id="projectDetailsForm">
-      <div class="project-details-fields"><label class="project-details-wide" for="projectDetailsName">Projektnamn<input id="projectDetailsName" maxlength="120" required></label><label for="projectDesigner">Projekterat av<input id="projectDesigner" maxlength="120"></label><label for="projectDate">Projekteringsdatum<input id="projectDate" type="date" min="0001-01-01" max="9999-12-31"></label><label for="projectInfo_facilityNo">Anläggningsnummer<input id="projectInfo_facilityNo" maxlength="160"></label><label for="projectInfo_order">Ordernummer / AO<input id="projectInfo_order" maxlength="160"></label></div>
+      <div class="project-details-fields"><label class="project-details-wide" for="projectDetailsName">Projektnamn<input id="projectDetailsName" maxlength="120" required></label><label for="projectDesigner">Projekterat av<input id="projectDesigner" maxlength="120"></label><label for="projectDate">Projekteringsdatum<input id="projectDate" type="date" min="0001-01-01" max="9999-12-31"></label><label for="projectInfo_facilityNo">Objektnummer / anläggningsnummer<input id="projectInfo_facilityNo" maxlength="160"></label><label for="projectInfo_order">Ordernummer / AO<input id="projectInfo_order" maxlength="160"></label></div>
 <div class="project-info-parties"><fieldset><legend>Utförande företag</legend><label for="projectInfo_company">Utförande företag<input id="projectInfo_company" maxlength="160"></label><label for="projectInfo_companyContact">Kontaktperson<input id="projectInfo_companyContact" maxlength="160"></label><label for="projectInfo_companyPhone">Telefonnummer<input id="projectInfo_companyPhone" maxlength="160" type="tel"></label><label for="projectInfo_companyAddress">Adress<input id="projectInfo_companyAddress" maxlength="160"></label><label for="projectInfo_companyPostalCode">Postnummer<input id="projectInfo_companyPostalCode" maxlength="160"></label><label for="projectInfo_companyPostalCity">Postort<input id="projectInfo_companyPostalCity" maxlength="160"></label><div class="project-logo-field"><label for="projectLogoFile">Logga</label><input id="projectLogoFile" type="file" accept="image/png,image/jpeg,image/webp"><div id="projectLogoPreview" class="project-logo-preview" hidden><img id="projectLogoImage" alt="Projektets logga"><span id="projectLogoName"></span><button id="removeProjectLogo" type="button" class="button">Ta bort logga</button></div></div></fieldset><fieldset><legend>Beställare / kund</legend><label for="projectInfo_customer">Beställare / kund<input id="projectInfo_customer" maxlength="160"></label><label for="projectInfo_contact">Kontaktperson<input id="projectInfo_contact" maxlength="160"></label><label for="projectInfo_phone">Telefonnummer<input id="projectInfo_phone" maxlength="160" type="tel"></label><label for="projectInfo_address">Adress<input id="projectInfo_address" maxlength="160"></label><label for="projectInfo_postalCode">Postnummer<input id="projectInfo_postalCode" maxlength="160"></label><label for="projectInfo_postalCity">Postort<input id="projectInfo_postalCity" maxlength="160"></label></fieldset></div>
       <p class="project-details-hint">Uppgifterna följer med i projekt-PDF:en till SmartMatch och Avläsning och kan kompletteras där. Projektnamn, projektör och logga visas även på dörrkorten.</p>
       <p id="projectDetailsMessage" class="dialog-message" role="status"></p>
@@ -266,7 +267,7 @@
     <div class="dialog-actions"><button id="cancelImport" type="button" class="button">Avbryt</button><button id="acceptImport" type="button" class="button primary">Öppna konverterat projekt</button></div>
   </dialog>
   <noscript><p class="noscript">Aktivera JavaScript för att använda projekteringsappen.</p></noscript>
-<span class="projektering-version" aria-label="Version 2.19.14">v2.19.14</span>
+<span class="projektering-version" aria-label="Version 2.19.15">v2.19.15</span>
 </body>
 </html>
 

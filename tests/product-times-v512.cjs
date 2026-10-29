@@ -1,0 +1,22 @@
+'use strict';
+const assert=require('node:assert/strict');
+const D=require('../smartmatch-projektering-v512-data.js'),T=require('../smartmatch-product-times-v511.js'),L=require('../smartmatch-projektering-v512-library.js'),M=require('../smartmatch-projektering-v512-materials.js'),P=require('../smartmatch-projektering-v512-pdf.js'),PDF=require('../vendor/pdf-lib.min.js');
+(async()=>{
+ for(const p of D.PRODUCTS)assert(T.get(p.category,p.name),'missing '+p.name);
+ for(const [category,name,minutes] of [['lock','212-50',6],['lock','222-50',6],['lock','232-50 Mikro',90],['lock','410-50',90],['lock','622-50',12],['operator','SW300',180],['activation','AK',19.8],['strike','STEP 40',19.8],['cylinder','7801',6]])assert.equal(T.get(category,name).minutes,minutes,name);
+ assert.equal(T.get('lock','411-50 MA').origin,'estimated');
+ assert.equal(T.parse('1','30'),90);assert.equal(T.parse('0','19,8'),19.8);assert.equal(T.parse('',''),null);assert.throws(()=>T.parse('0','60'));assert.throws(()=>T.parse('-1','0'));
+ const product=D.PRODUCTS.find(p=>p.name==='212-50');let lib=L.saveProduct(L.createDefault(),{...product,timeMinutes:22});lib=L.unpack(await L.pack(lib));assert.equal(lib.products.find(p=>p.id===product.id).timeMinutes,22);
+ const doc=await PDF.PDFDocument.create();doc.addPage([595,842]);const original=new Uint8Array(await doc.save());const state=D.createEmpty('Tidsprov');state.drawing={name:'prov.pdf',pages:P.metadata(doc)};
+ const card=D.createCard('GS1');card.rows.find(r=>r.id==='day-lock').product='212-50';
+ const elbow=card.rows.find(r=>r.id==='closing-elbow');elbow.product='AK';elbow.installer='GS';
+ const dt=card.rows.find(r=>r.id==='night-lock');dt.product='222-50';dt.installer='DT';dt.delivery='GS';
+ D.updateCard(state,'GS1',card);D.addStencil(state,D.defaultStencil('GS1'));
+ for(let i=0;i<10;i++)D.addPlacement(state,{stencilId:'GS1',page:1,x:.15+(i%4)*.2,y:.2+Math.floor(i/4)*.2});
+ state.customProducts=[{...product,timeMinutes:22}];
+ let report=M.build(state);assert(!report.rows.some(r=>r.product==='222-50'),'DT excluded even if delivery GS');
+ assert.equal(report.rows.find(r=>r.product==='212-50').timePerUnit,22);assert.equal(report.rows.find(r=>r.product==='AK').quantity,20);assert.equal(report.rows.find(r=>r.product==='AK').timeMinutes,396);
+ const bytes=await P.build(state,original),reopened=await P.inspect(bytes);assert.equal(M.build(reopened.state).rows.find(r=>r.product==='212-50').timePerUnit,22);
+ const row=report.rows.find(r=>r.product==='212-50');D.setMaterialTime(state,row.key,33);assert.equal(M.build(state).rows.find(r=>r.product==='212-50').timePerUnit,33,'project override wins');
+ console.log('PASS all 413 products timed, decimal conversion, editable library backup, GS/DT filtering, AK x2, project override and PDF roundtrip');
+})().catch(e=>{console.error(e);process.exitCode=1});
