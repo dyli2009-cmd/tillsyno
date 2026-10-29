@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="sv" data-auth-pending>
+<html lang="sv" data-auth-pending data-app-version="2.4.497">
 <head><meta charset="utf-8">
 <script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}var page={ice:'#edf6fb',mist:'#ebf1f5',coast:'#edf7f6',sand:'#f7f5f1',night:'#081523',graphite:'#12151c',pine:'#091c1e'}[theme];document.documentElement.style.setProperty('--tillsyno-route-bg',page);document.documentElement.style.setProperty('background',page,'important');document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
 <style id="tillsyno-route-transition">html{background:var(--tillsyno-route-bg,#ebf1f5)!important}#tillsynoNavCurtain{position:fixed;inset:0;z-index:2147483647;background:var(--tillsyno-route-bg,#ebf1f5);opacity:1;pointer-events:auto}html.tillsyno-nav-ready #tillsynoNavCurtain{opacity:0;pointer-events:none}</style>
@@ -17,7 +17,7 @@
 <meta http-equiv="Expires" content="0">
 <title>Kontrollflöde – Tillsyno</title>
 <link rel="stylesheet" href="style.css?v=2.4.251">
-<link rel="stylesheet" href="security.css?v=2.4.256"><link rel="stylesheet" href="security-compact.css?v=2.4.215"><link rel="stylesheet" href="all-in-one.css?v=2.4.294">
+<link rel="stylesheet" href="security.css?v=2.4.497"><link rel="stylesheet" href="security-compact.css?v=2.4.215"><link rel="stylesheet" href="all-in-one.css?v=2.4.294">
 <script src="vendor/pdf.min.js"></script>
 <script src="vendor/jspdf.umd.min.js"></script>
 <script src="vendor/pdf-lib.min.js"></script>
@@ -118,6 +118,7 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
     <button id="secPrev" aria-label="Föregående sida">‹</button><span id="secPage">Ingen ritning</span><span class="mobileSwipeHint" aria-hidden="true">↔ Svep</span><button id="secNext" aria-label="Nästa sida">›</button>
     <button id="secZoomOut">−</button><span id="secZoom">100%</span><button id="secZoomIn">+</button>
     <button id="secToggleOverlays" type="button" class="drawingVisibilityButton" aria-pressed="false" aria-label="Dölj markeringar" title="Dölj markeringar"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="eyeShape" d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle class="eyePupil" cx="12" cy="12" r="2.8"/><path class="eyeSlash" d="M4 4l16 16"/></svg></button>
+    <button id="secRotate" type="button" class="drawingRotateButton" disabled aria-label="Vrid ritningen 90° åt höger" title="Vrid ritningen 90° åt höger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10a8 8 0 1 0-2 8M20 3v7h-7"/></svg><span data-rotation>0°</span></button>
     <button id="secFit" hidden style="display:none!important">Passa</button>
   </div>
   <div id="secHint" hidden>Tryck på ritningen där objektet finns.</div>
@@ -309,9 +310,9 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
 </nav>
 <script src="ui-text-scale.js?v=2.4.215"></script><script src="drawing-annotations.js?v=2.4.215"></script>
 <script src="session-history.js?v=2.4.215"></script>
-<script>window.DOORSERVICE_APP_MODE="all-in-one";</script><script src="offline-work.js?v=2.4.256"></script><script src="security.js?v=2.4.359"></script><script src="legacy-door-import.js?v=2.4.215"></script><script src="all-in-one.js?v=2.4.359"></script>
+<script>window.DOORSERVICE_APP_MODE="all-in-one";</script><script src="offline-work.js?v=2.4.256"></script><script src="security.js?v=2.4.497"></script><script src="legacy-door-import.js?v=2.4.215"></script><script src="all-in-one.js?v=2.4.359"></script>
 <script src="drawing-transfer.js?v=2.4.215"></script>
 <script src="offline.js?v=2.4.359"></script>
 <script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let observer=null;function reveal(){if(root.hasAttribute('data-auth-pending')){if(!observer){observer=new MutationObserver(reveal);observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}return}if(observer){observer.disconnect();observer=null}root.classList.add('tillsyno-nav-ready')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',reveal)})();</script>
 <script src="tillsyno-appearance.js?v=2.4.359"></script>
-<script src="controlflow-workspace-ui-v335.js?v=2.4.359"></script><script src="controlflow-revision/customer-stamp-editor-v335.js?v=2.4.359"></script><link rel="stylesheet" href="security-detectors-v344.css?v=2.4.359"><script src="security-detectors-v344.js?v=2.4.359"></script></body></html>
+<script src="controlflow-workspace-ui-v335.js?v=2.4.359"></script><script src="controlflow-revision/customer-stamp-editor-v335.js?v=2.4.359"></script><link rel="stylesheet" href="security-detectors-v344.css?v=2.4.497"><script src="security-detectors-v344.js?v=2.4.497"></script></body></html>

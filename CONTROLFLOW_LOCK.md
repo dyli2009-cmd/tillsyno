@@ -172,3 +172,12 @@ När låset är aktivt:
 
 
 2026-10-15, Tillsyno v2.4.356: På användarens beställning rättas blinkningen när CE-märkning öppnas. HTML markerar CE-uppstart separat från behörighetskontrollen; befintligt tema visas medan innehållet hålls dolt tills lokala projektuppgifter och rätt startvy är färdiga. Ingen extra laddningsvy läggs till. Startflaggan tas bort i finally även vid lagringsfel. Befintligt val mellan projektmenyn och ett aktivt lokalt CE-projekt samt spara/öppna/stäng bevaras. Endast CE:s initiala synlighet ändras funktionellt; authregler och övriga moduler bevaras. Verifierat i Chromium: 18 starter i telefon/iPad/dator och ljust/mörkt tema, med tomt projekt, aktivt sparat projekt och stängt sparat projekt. IndexedDB-öppning fördröjdes; bildrutornas synlighet kontrollerades utan en enda felaktig vy. Sparade företagsuppgifter och Nytt projekt/Stäng kontrollerade. Ytterligare test av lagringsfel bekräftade att startspärren släpps och befintligt felmeddelande visas. Native saknar CE-modulen och speglar endast det gemensamma versionsnumret och anteckningen. Kontrollflödet är fortsatt LÅST.
+
+# 2026-10-29 · v2.4.497 · Beställd vridning i Säkerhetsservice
+
+Användaren beställde även en ren pil i stället för detektorpiktogrammet på ritningen. Samma pil används i arbetsvyn och PDF; transparent 44 px tryckyta bevarar klick, dragning och protokoll.
+
+Användaren beställde en knapp för att vända ritningen i Kontrollflöde/Säkerhetsservice. Den avgränsade ändringen är 90° visningsrotation per sida i Säkerhetsservice under Kontrollflöde. Objektpunkter, etiketter, textpilar och ritverktyg följer rotationen; inmatning räknas tillbaka till originalets koordinater. Visningsläget sparas lokalt per ritning/sida. Käll-PDF och exporterad orientering bevaras. På telefon ligger knappen med snabbverktygen, på dator vid zoom/sidbyte. Revisionsmodulen och Projektflöde ändras inte. Ingen separat native-källa finns i detta repo.
+
+Verifierat i Chromium på dator, surfplatta och telefonbredder 390/320 px: PDF-pixlar mot markör, fyra rotationslägen, dragning, placering, textredigering, ritverktyg, PDF-export, sidbyte och återöppning. Fysisk iPhone/TestFlight har inte provats. Kontrollflödet är åter LÅST efter beställningen.
+
