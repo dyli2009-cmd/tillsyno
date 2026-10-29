@@ -9,7 +9,6 @@
  const MAX_ORIGINAL=50*1024*1024,MAX_FILE=80*1024*1024,MAX_DATA=12*1024*1024;
  const codeRect=Object.freeze({x:30/595,y:44/842,w:155/595,h:36/842});
  const tableRect=Object.freeze({x:30/595,y:152/842,w:535/595,h:642/842});
- const STANDARD_ROW_IDS=new Set(['day-lock','day-cylinder-fittings','day-strike','day-handle','day-pull','day-escape','day-cable','day-cylinder-hinge','day-cylinder-strike','night-lock','night-strike','night-cylinder-fittings','night-cylinder-hinge','night-cylinder-strike','closing-closer','closing-arm','closing-operator','closing-sensor-hinge','closing-sensor-strike','closing-elbow','closing-coordinator','closing-bolt','access-magnet','access-reader','access-button','access-controller']);
  const natural=(a,b)=>a.localeCompare(b,'sv',{numeric:true,sensitivity:'base'});
  const clone=value=>JSON.parse(JSON.stringify(value));
  function bytes(value){
@@ -216,13 +215,14 @@
  }
  function cardPageLayout(card,fonts){
   const cols=[30,155,268,294,331,368,405,447,565],functions=dataLibrary().cardFunctions(card);
-  const meaningful=row=>!!(row.product.trim()&&!/^[-–—]+$/.test(row.product.trim())||row.note||row.connection||row.functionOwner);
-  for(const compact of [false,true])for(const size of [7.8,7.4,7]){
+  // Filter the printed view only. The editable card keeps every choice and
+  // all saved data, regardless of installer or delivery responsibility.
+  const rows=card.rows.filter(row=>row.product.trim()&&!/^(?:[-–—]\s*)+$/.test(row.product.trim()));
+  for(const size of [7.8,7.4,7]){
    const lineHeight=size*1.18,groupHeight=size+5,groups=[];
-   for(const row of card.rows){
-    if(!meaningful(row)&&(compact||!STANDARD_ROW_IDS.has(row.id)))continue;
+   for(const row of rows){
     let group=groups.find(g=>g.title===row.section);if(!group){group={title:row.section,rows:[]};groups.push(group);}
-    const specified=meaningful(row),values=[row.label,row.product||'-',row.product?String(row.quantity):'',specified?row.delivery||'-':'',specified?row.installer||'-':'',row.connection||'',row.functionOwner||'',row.note||''];
+    const values=[row.label,row.product,String(row.quantity),row.delivery||'-',row.installer||'-',row.connection||'',row.functionOwner||'',row.note||''];
     const lines=values.map((value,i)=>cardLines(fonts.regular,value,cols[i+1]-cols[i]-8,size));
     group.rows.push({lines,height:Math.max(...lines.map(lines=>lines.length))*lineHeight+2});
    }

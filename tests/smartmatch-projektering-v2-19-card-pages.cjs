@@ -6,7 +6,7 @@ const normalize=s=>String(s).replace(/\s+/g,' ').trim();
 async function textPages(bytes){const pdf=await J.getDocument({data:bytes.slice(),verbosity:0}).promise;try{const pages=[];for(let n=1;n<=pdf.numPages;n++){const p=await pdf.getPage(n);pages.push({items:(await p.getTextContent()).items,viewport:p.getViewport({scale:1})});}return pages;}finally{await pdf.destroy();}}
 function readTable(page){const stop=page.items.find(t=>t.str==='Dörrfunktion').transform[5];return W.read({words:page.items.filter(t=>t.transform[5]<=690&&t.transform[5]>stop+12).map(t=>({text:t.str,x:t.transform[4],y:page.viewport.height-t.transform[5]-t.height,w:t.width,h:t.height}))});}
 function assertRead(card,page){
- const read=readTable(page),expected=card.rows.filter(row=>row.product.trim()&&!/^[-–—]+$/.test(row.product));assert.equal(read.products.length,expected.length,card.code+' product count');
+ const read=readTable(page),expected=card.rows.filter(row=>row.product.trim()&&!/^(?:[-–—]\s*)+$/.test(row.product.trim()));assert.equal(read.products.length,expected.length,card.code+' product count');
  for(const row of expected){const item=read.products.find(p=>p.label===row.label&&p.section===row.section);assert(item,card.code+' / '+row.section+' / '+row.label);assert.equal(normalize(item.value),normalize(row.product));assert.equal(item.installer,row.installer);assert.equal(item.delivery,row.delivery);}
  return expected.length;
 }
@@ -22,12 +22,18 @@ function assertRead(card,page){
  for(const [id,code,page,x,y]of [['one','GS1',1,.2,.2],['two','GS1',1,.4,.2],['three','GS1',2,.2,.2],['variant','GS1:1',1,.6,.2],['other','GS2',2,.6,.2],['reader','KL',2,.8,.5]])D.addPlacement(state,{id,stencilId:code,page,x,y});
  const card=state.cards.GS1;Object.assign(card.rows.find(r=>r.id==='day-lock'),{product:'MODEL-ONE',delivery:'GS',installer:'DT',connection:'EL',functionOwner:'BH',note:'Alternative model; coordinate with the door supplier.'});Object.assign(card.rows.find(r=>r.id==='closing-operator'),{product:'ED100',delivery:'DT',installer:'GS'});Object.assign(card.rows.find(r=>r.id==='extra-door-stop'),{product:'STOP-90',delivery:'DT',installer:'DT'});
  card.rows.push({id:'import-special',section:'Dörrstängning',label:'Klämfri bakkant',category:'other',product:'Skydd',quantity:1,delivery:'DT',installer:'DT',note:'Check clearance.'});
+ Object.assign(card.rows.find(r=>r.id==='access-reader'),{product:'',note:'Keep this unfinished draft digitally.',connection:'EL',functionOwner:'GS'});
+ card.rows.find(r=>r.id==='night-lock').product=' — – - ';
+ card.rows.find(r=>r.id==='day-handle').product='   ';
  card.note='Dörrfunktion: Door description.\nLarmfunktion: Alarm description.\nBrandfunktion: Fire description.\nGeneral note.';
  const before=D.clone(state),valid=D.validate(state);assert.equal(valid.schema,6,'older pages must reject the new fields instead of dropping them');assert.deepEqual(state,before);assert.deepEqual(valid.cards.GS1.functions,{door:'Door description.',alarm:'Alarm description.',fire:'Fire description.'});assert.equal(valid.cards.GS1.note,'General note.');assert.deepEqual(D.validate(valid),valid,'function migration is idempotent');
  assert.deepEqual(P.exportCardCodes(valid),['GS1','GS1:1','GS2']);assert.deepEqual(P.exportCardCodes(valid,'cards'),['GS1','GS1:1','GS2','GS99']);
  const bytes=await P.build(valid,original),pages=await textPages(bytes);assert.equal(pages.length,5,'two drawings plus one page per placed card');assertRead(valid.cards.GS1,pages[2]);
  assert.equal(C.extract(pages[2].items.filter(t=>t.transform[4]<185&&t.transform[5]>762&&t.transform[5]<798).map(t=>t.str).join(' ')).code,'GS1');assert.equal(C.extract(pages[3].items.filter(t=>t.transform[4]<185&&t.transform[5]>762&&t.transform[5]<798).map(t=>t.str).join(' ')).code,'GS1:1');
  const cardText=normalize(pages[2].items.map(t=>t.str).join(' '));for(const value of ['Alternative model; coordinate with the door supplier.','Door description.','Alarm description.','Fire description.','General note.','STOP-90'])assert(cardText.includes(value),value+' stays on the same card');
+ for(const value of ['Nattlåsning','Larm/Passer','Trycke','Kortläsare','Cylinderbehör','Keep this unfinished draft digitally.'])assert(!cardText.includes(value),value+' is omitted without a product');
+ assert.equal(valid.cards.GS1.rows.length,40,'all editable choices remain');assert.equal(valid.cards.GS1.rows.find(r=>r.id==='access-reader').note,'Keep this unfinished draft digitally.');
+ const previewText=normalize((await textPages(await P.buildCardPreview(valid,'GS1')))[0].items.map(t=>t.str).join(' '));assert.equal(previewText,cardText.replace('Dörrkort · 1/3','Dörrkort · 1/1'),'preview uses the same populated rows as combined export');
  assert(!pages.slice(2).some(p=>p.items.some(t=>/fortsättning|kompletterande uppgifter/i.test(t.str))));assert.deepEqual((await P.inspect(bytes)).state,valid,'unprinted cards remain editable without extra printed pages');
  const S=require('../smartmatch-projektering-v2-19-store.js');assert.equal(S.RECORD_KEY,'current-v6');assert.deepEqual((await S.unpack(await S.pack(valid,original))).state,valid);
  assert.equal((await L.PDFDocument.load(await P.build(valid,original,{mode:'cards'}))).getPageCount(),4);
