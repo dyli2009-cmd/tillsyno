@@ -34,7 +34,7 @@ function uiChecks(state){
  const context=vm.createContext({D,$:el,state:D.clone(state),draft,activeCode:'GS1',cardDisclosureCode:null,productSuggest:null,viewer:{cancelGesture(){}},busy:false,clone:D.clone,esc:value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),draftChanged(){context.dirty=true;},dirty:true,projectLogoDraft:null,Date,Uint8Array,original:new Uint8Array(),undoStack:[],redoStack:[],selected:[],damagedStore:false,storageOk:true,message(){},renderAll(){},S:{async save(value){if(storageFailure)throw Error('Simulated disk failure');saved=D.clone(value);}}});
  vm.runInContext(source.slice(source.indexOf('  function renderProjectLogo()'),source.indexOf('  function ask({')),context);
  vm.runInContext(source.slice(source.indexOf('  async function commit('),source.indexOf('  function setActive(')),context);
- vm.runInContext(source.slice(source.indexOf('  function updateCardOverview()'),source.indexOf('  const annotationItem =')),context);
+ vm.runInContext(source.slice(source.indexOf('  function renderCardSummary()'),source.indexOf('  const annotationItem =')),context);
  vm.runInContext(source.split('\n').find(line=>line.includes("$('cardRows').addEventListener('input'")),context);
  vm.runInContext('renderCard();openProjectDetails();',context);
  assert.equal(el('projectDetailsDialog').open,true);

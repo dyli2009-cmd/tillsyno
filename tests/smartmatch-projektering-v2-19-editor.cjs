@@ -11,8 +11,8 @@ function suite(){
   const section=title=>page.locator('#cardRows details').filter({has:page.locator('summary > span').getByText(title,{exact:true})});
   const field=(id,key)=>page.locator('#cardRows [data-row-id="'+id+'"][data-field="'+key+'"]');
   const product=id=>page.locator('#cardRows [data-product-input][data-row-id="'+id+'"]');
-  async function open(code){await view(page,'stencils');await page.locator('#cardList [data-card-code="'+code+'"]').click();await page.waitForSelector('#cardEditorDialog[open]');await idle(page);}
-  async function collapsed(){assert.equal(await page.locator('#cardPane .card-section[open]').count(),0);for(const id of ['cardDoorFunction','cardAlarmFunction','cardFireFunction'])assert(await page.locator('#'+id).isVisible());}
+  async function open(code){await view(page,'stencils');await page.locator('#cardList [data-card-code="'+code+'"]').click();await idle(page);await page.locator('#openCardEditor').click();await page.waitForSelector('#cardEditorDialog[open]');await idle(page);}
+  async function collapsed(){assert.equal(await page.locator('#cardEditorPane .card-section[open]').count(),0);for(const id of ['cardDoorFunction','cardAlarmFunction','cardFireFunction'])assert(await page.locator('#'+id).isVisible());}
   async function bounds(){await overflow(page);const bad=await page.locator('#cardEditorDialog input, #cardEditorDialog select, #cardEditorDialog textarea, #cardEditorDialog button').evaluateAll(nodes=>nodes.filter(n=>n.getClientRects().length).filter(n=>{const r=n.getBoundingClientRect(),d=n.closest('dialog').getBoundingClientRect();return r.left<d.left-1||r.right>d.right+1;}).map(n=>n.id||n.getAttribute('aria-label')));assert.deepEqual(bad,[],'all editor controls fit');}
   try{
    await page.goto(url());await ready(page);
@@ -25,8 +25,25 @@ function suite(){
     await Proj2Store.save(s,new Uint8Array());
    });
    await page.reload();await ready(page);
-   if(device.name==='desktop'){await section('Daglåsning').locator('summary').click();await product('day-lock').fill('SIDOPANEL');await product('day-lock').blur();}
-   await open('GS2');await collapsed();if(device.name==='desktop')assert.equal((await snap(page)).draft.rows.find(r=>r.id==='day-lock').product,'SIDOPANEL','opening same card preserves its unsaved draft');await bounds();await shot('overview');
+   await open('GS2');await collapsed();await bounds();await shot('overview');
+   assert.equal(await page.locator('#cardPane input, #cardPane select, #cardPane textarea').count(),0,'right panel is a read-only summary');
+   assert.equal(await page.locator('#cardSummary [data-summary-row]').count(),0,'unselected products are omitted');
+   if(device.name==='desktop'){
+    const win=page.locator('#cardEditorDialog'),header=page.locator('#cardDragHandle');
+    let before=await win.boundingBox(),h=await header.boundingBox();
+    await page.mouse.move(h.x+40,h.y+20);await page.mouse.down();await page.mouse.move(h.x+110,h.y+60,{steps:5});await page.mouse.up();
+    let moved=await win.boundingBox();assert(moved.x>before.x+50&&moved.y>before.y+25,'window moves by dragging its header');
+    let grip=await page.locator('.card-window-grip').boundingBox();
+    await page.mouse.move(grip.x+10,grip.y+10);await page.mouse.down();await page.mouse.move(grip.x+90,grip.y+35,{steps:5});await page.mouse.up();
+    let bigger=await win.boundingBox();assert(bigger.width>moved.width+60&&bigger.height>moved.height+15,'corner grows both dimensions');
+    await page.locator('#maximizeCardEditor').click();let max=await win.boundingBox();assert(max.width>=device.width-18&&max.height>=device.height-18);
+    await page.locator('#maximizeCardEditor').click();let restored=await win.boundingBox();assert(Math.abs(restored.width-bigger.width)<2&&Math.abs(restored.x-bigger.x)<2,'restores previous size and position');
+    await header.focus();await header.press('ArrowLeft');assert((await win.boundingBox()).x<restored.x-5,'keyboard move');
+    await page.locator('.card-window-grip').focus();await page.locator('.card-window-grip').press('ArrowLeft');assert((await win.boundingBox()).width<bigger.width-5,'keyboard resize');
+    h=await header.boundingBox();await page.mouse.move(h.x+35,h.y+20);await page.mouse.down();await page.mouse.move(-200,-200,{steps:5});await page.mouse.up();const clipped=await win.boundingBox();assert(clipped.x>=0&&clipped.y>=0,'header stays reachable');
+    await bounds();await shot('moved');
+   }
+
    await section('Daglåsning').locator('summary').click();
    assert.equal(await field('day-strike','connection').inputValue(),'Specialentreprenör','unknown imported owner preserved');
    assert.equal(await page.locator('[data-note-row]:not([hidden])').count(),0,'notes start collapsed');
@@ -40,6 +57,8 @@ function suite(){
    await page.locator('[data-action="toggle-note"][data-row-id="day-lock"]').click();
    assert.equal(await field('day-lock','note').isVisible(),false);
    assert.equal(await field('day-lock','note').inputValue(),'Rätt bleck krävs <kontrollera>.');
+   const summary=page.locator('#cardSummary [data-summary-row="day-lock"]');assert.equal(await summary.count(),1);assert((await summary.textContent()).includes('Lev DT'));assert((await summary.textContent()).includes('Ansl EL'));assert((await summary.textContent()).includes('Funk BH'));assert((await summary.textContent()).includes('Rätt bleck krävs <kontrollera>.'));assert.equal(await summary.locator('kontrollera').count(),0,'summary escapes notes');
+   const chosen=await product('day-lock').inputValue();await product('day-lock').fill('');assert.equal(await summary.count(),0,'cleared products disappear from summary');await product('day-lock').fill(chosen);await product('day-lock').blur();
    await productButton(page,'day-lock').click();await page.waitForSelector('#productDialog[open]');
    await page.locator('#closeProduct').click();assert(await page.locator('#cardEditorDialog').isVisible());
    await bounds();await shot('day');
@@ -62,7 +81,7 @@ function suite(){
    await page.locator('#previousCard').click();await page.waitForFunction(()=>Proj2App.snapshot().activeCode==='GS4');await idle(page);await collapsed();
    await section('Nattlåsning').locator('summary').click();assert.equal(await product('night-lock').inputValue(),'LÅS-TEST');
    await page.locator('#finishCard').click();await page.waitForSelector('#cardEditorDialog[open]',{state:'hidden'});await idle(page);
-   assert.equal(await page.locator('#projectWorkspace > #cardPane').count(),1,'same editor returned home');
+   assert.equal(await page.locator('#projectWorkspace > #cardPane').count(),1,'summary stays beside the drawing');
    await open('GS2');await collapsed();
    await section('Daglåsning').locator('summary').click();
    assert.equal(await field('day-strike','note').inputValue(),'Befintlig anmärkning');
@@ -75,9 +94,25 @@ function suite(){
    // Placing a card stamp opens the digital editor automatically, for desktop and touch.
    await settleImport(page,'#drawingFile',source,'editor-plan.pdf',2);if(await page.locator('#projectDetailsDialog[open]').count())await page.locator('#closeProjectDetails').click();
    await place(page,'GS4',.4,.4);await page.waitForSelector('#cardEditorDialog[open]');await collapsed();await bounds();
+   await page.locator('#finishCard').click();await page.waitForSelector('#cardEditorDialog[open]',{state:'hidden'});await idle(page);
+   await view(page,'drawing');await page.locator('#toolSelect').click();
+   const stamp=page.locator('#drawingHost [data-placement-id]').first();
+   await stamp.click();await idle(page);assert.equal(await page.locator('#cardEditorDialog[open]').count(),0,'single click selects without opening editor');
+   assert.equal(await page.locator('#cardSummaryHeading').textContent(),'GS4');
+   assert.equal(await page.locator('#cardSummary [data-summary-row]').count(),1,'summary contains only the selected night lock');
+   assert((await page.locator('#cardSummary').textContent()).includes('LÅS-TEST'));assert(!(await page.locator('#cardSummary').textContent()).includes('Cylinderbehör'));
+   if(device.name==='desktop'){
+    await shot('summary');const initial=(await snap(page)).state.placements[0],box=await stamp.boundingBox();
+    await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();await page.mouse.move(box.x+box.width/2+25,box.y+box.height/2+20,{steps:6});await page.mouse.up();await idle(page);
+    await page.waitForFunction(x=>Proj2App.snapshot().state.placements[0].x!==x,initial.x);assert.equal(await page.locator('#cardEditorDialog[open]').count(),0,'dragging a stamp does not open the editor');
+    await page.waitForTimeout(450);await stamp.dblclick({delay:80});
+   }else{
+    await page.waitForTimeout(550);const pos=await stamp.boundingBox();await page.touchscreen.tap(pos.x+pos.width/2,pos.y+pos.height/2);await page.waitForTimeout(100);await page.touchscreen.tap(pos.x+pos.width/2,pos.y+pos.height/2);
+   }
+   await page.waitForSelector('#cardEditorDialog[open]');await idle(page);await collapsed();
    await page.locator('#finishCard').click();await page.waitForSelector('#cardEditorDialog[open]',{state:'hidden'});
    await page.reload();await ready(page);await open('GS4');await collapsed();await section('Nattlåsning').locator('summary').click();assert.equal(await product('night-lock').inputValue(),'LÅS-TEST','saved after reload');
-   assert.deepEqual(errors,[]);console.log(device.name+': folded overview, owner selectors, notes, modal product picking, save/next/back, failed saves, close/cancel, new card and placement passed');
+   assert.deepEqual(errors,[]);console.log(device.name+': folded overview, owner selectors, notes, modal product picking, save/next/back, failed saves, close/cancel, new card, placement, summary, single/double click and window geometry passed');
   }catch(error){await shot('failure');console.error(device.name,await page.evaluate(()=>({code:window.Proj2App?.snapshot().activeCode,message:document.getElementById('appMessage').textContent,dialogs:[...document.querySelectorAll('dialog[open]')].map(n=>n.id)})));throw error;}finally{await ctx.close();}
  }
  (async()=>{const source=await fixture();await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const browser=await chromium.launch({executablePath:process.env.PROJECTION2_CHROMIUM||chromium.executablePath(),headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});try{for(const device of devices)await run(browser,device,source);}finally{await browser.close();await new Promise(resolve=>server.close(resolve));}})().catch(error=>{console.error(error);process.exitCode=1;});

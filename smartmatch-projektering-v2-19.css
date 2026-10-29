@@ -980,100 +980,100 @@ body[data-pane-resizing] .drawing-host { pointer-events: none; }
 /* 2.19.10 — one digital card, with a compact overview and an editing dialog. */
 body.card-editor-open { overflow: hidden; }
 .card-editor-dialog { width: min(1120px, calc(100vw - 40px)); height: min(900px, calc(100dvh - 40px)); max-width: none; max-height: none; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; }
-.card-editor-dialog::backdrop { background: #17352a80; }
+.card-editor-dialog::backdrop { background: #17352a12; backdrop-filter: none; }
 .card-editor-dialog[open] { display: flex; }
-#cardEditorDialog #cardPane { display: flex; width: 100%; height: 100%; max-width: none; min-height: 0; margin: 0; border: 0; border-radius: 0; }
-#cardPane { container-type: inline-size; container-name: doorcard; }
+#cardEditorDialog #cardEditorPane { display: flex; width: 100%; height: 100%; max-width: none; min-height: 0; margin: 0; border: 0; border-radius: 0; }
+#cardEditorPane { container-type: inline-size; container-name: doorcard; }
 #closeCardEditor, .card-editor-navigation { display: none; }
 #cardEditorDialog #openCardEditor { display: none; }
 #cardEditorDialog #closeCardEditor { display: inline-flex; font-size: 25px; }
-#cardPane .card-heading { padding: 13px 18px 10px; flex: none; }
-#cardPane .card-heading h2 { font-size: 26px; }
-#cardPane .card-actions .icon-button { width: 36px; height: 36px; min-height: 36px; }
-#cardPane .card-fork-actions { padding: 0 18px 9px; }
-#cardPane .card-fork-actions > .button { width: auto; font-size: 12px; }
-#cardPane .shared-notice { padding: 7px 18px; font-size: 12px; }
-#cardPane .card-scroll { padding: 12px 18px 18px; overscroll-behavior: contain; }
-#cardPane .card-section { border: 1px solid #d2ddd1; border-radius: 7px; margin: 0 0 8px; overflow: hidden; }
-#cardPane .card-section > summary { display: flex; align-items: center; gap: 10px; padding: 11px 12px; margin: 0; border: 0; background: #f0f5ed; color: #294d36; font-size: 15px; font-weight: 650; line-height: 1.4; list-style: none; }
-#cardPane .card-section > summary::-webkit-details-marker { display: none; }
-#cardPane .card-section > summary::before { content: '›'; font-size: 22px; line-height: 16px; width: 12px; flex: none; transition: transform .12s; }
-#cardPane .card-section[open] > summary::before { transform: rotate(90deg); }
-#cardPane .card-section > summary small { margin-left: auto; text-align: right; font-size: 12px; font-weight: 400; color: #53654e; }
-#cardPane .card-table-wrap { overflow: visible; padding: 4px 8px 8px; }
-#cardPane .card-rows table { width: 100%; table-layout: fixed; border-collapse: collapse; }
-#cardPane .card-rows thead th { width: auto; padding: 9px 5px; color: #52604d; font-size: 12px; font-weight: 600; }
-#cardPane .card-rows thead th:first-child { width: 19%; }
-#cardPane .card-rows thead th:nth-child(2) { width: auto; }
-#cardPane .card-rows thead th:nth-child(3) { width: 56px; }
-#cardPane .card-rows thead th:nth-child(n+4):nth-child(-n+7) { width: 70px; }
-#cardPane .card-rows thead th:last-child { width: 42px; }
-#cardPane .component-group { border-top: 1px solid #d5dfd1; }
-#cardPane .component-group:nth-of-type(even) { background: #f4f7f1; }
-#cardPane .component-row > th { padding: 10px 8px; color: #263d2b; font-size: 15px; font-weight: 650; line-height: 1.4; overflow-wrap: normal; }
-#cardPane .component-row > td { padding: 8px 4px; }
-#cardPane .component-row .product-cell { display: table-cell; }
-#cardPane .card-rows input, #cardPane .card-rows select { min-height: 36px; font-size: 14px; padding: 6px; color: #263d2b; background: #fff; }
-#cardPane .product-entry { gap: 4px; }
-#cardPane .product-entry .product-library { flex-basis: 30px; width: 30px; min-height: 36px; }
-#cardPane .product-entry .clear-product { flex-basis: 24px; width: 24px; min-height: 36px; font-size: 19px; }
-#cardPane .row-note-toggle { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 36px; min-width: 36px; padding: 6px; color: #54734d; border: 1px solid #cedac9; border-radius: 5px; background: #fff; }
-#cardPane .row-note-toggle svg { width: 16px; height: 16px; }
-#cardPane .row-note-toggle.has-note { background: #fff2d7; border-color: #b57d22; color: #78500e; }
-#cardPane .note-indicator { font-size: 8px; position: absolute; right: 2px; top: 1px; }
-#cardPane .note-button-label { display: none; }
-#cardPane .card-row-note[hidden] { display: none !important; }
-#cardPane .card-row-note td { padding: 2px 8px 12px; }
-#cardPane .card-row-note label { display: block; color: #4d6048; font-size: 12px; margin: 3px 0 5px; }
-#cardPane .card-row-note textarea { width: 100%; min-height: 62px; font-size: 14px; padding: 8px; resize: vertical; }
-#cardPane .card-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin: 0; padding: 12px; }
-#cardPane .card-meta > label { display: grid; grid-template-columns: 115px minmax(0,1fr); font-size: 13px; border: 0; padding: 0; color: #40553b; }
-#cardPane .card-meta input { min-height: 36px; font-size: 14px; border: 1px solid #d6e0cf; }
-#cardPane .card-functions { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin: 12px 0; }
-#cardPane .card-functions .card-note { border: 0; margin: 0; padding: 0; }
-#cardPane .card-functions h3 { margin: 0 0 6px; }
-#cardPane .card-note textarea { min-height: 74px; padding: 8px; font-size: 14px; }
-#cardPane .card-note-section .card-note { padding: 12px; margin: 0; border: 0; }
-#cardPane .card-save { flex-wrap: wrap; padding: 10px 18px; gap: 8px; }
-#cardPane .card-save output { font-size: 12px; }
-#cardPane .card-save .button { font-size: 13px; min-height: 38px; }
+#cardEditorPane .card-heading { padding: 13px 18px 10px; flex: none; }
+#cardEditorPane .card-heading h2 { font-size: 26px; }
+#cardEditorPane .card-actions .icon-button { width: 36px; height: 36px; min-height: 36px; }
+#cardEditorPane .card-fork-actions { padding: 0 18px 9px; }
+#cardEditorPane .card-fork-actions > .button { width: auto; font-size: 12px; }
+#cardEditorPane .shared-notice { padding: 7px 18px; font-size: 12px; }
+#cardEditorPane .card-scroll { padding: 12px 18px 18px; overscroll-behavior: contain; }
+#cardEditorPane .card-section { border: 1px solid #d2ddd1; border-radius: 7px; margin: 0 0 8px; overflow: hidden; }
+#cardEditorPane .card-section > summary { display: flex; align-items: center; gap: 10px; padding: 11px 12px; margin: 0; border: 0; background: #f0f5ed; color: #294d36; font-size: 15px; font-weight: 650; line-height: 1.4; list-style: none; }
+#cardEditorPane .card-section > summary::-webkit-details-marker { display: none; }
+#cardEditorPane .card-section > summary::before { content: '›'; font-size: 22px; line-height: 16px; width: 12px; flex: none; transition: transform .12s; }
+#cardEditorPane .card-section[open] > summary::before { transform: rotate(90deg); }
+#cardEditorPane .card-section > summary small { margin-left: auto; text-align: right; font-size: 12px; font-weight: 400; color: #53654e; }
+#cardEditorPane .card-table-wrap { overflow: visible; padding: 4px 8px 8px; }
+#cardEditorPane .card-rows table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+#cardEditorPane .card-rows thead th { width: auto; padding: 9px 5px; color: #52604d; font-size: 12px; font-weight: 600; }
+#cardEditorPane .card-rows thead th:first-child { width: 19%; }
+#cardEditorPane .card-rows thead th:nth-child(2) { width: auto; }
+#cardEditorPane .card-rows thead th:nth-child(3) { width: 56px; }
+#cardEditorPane .card-rows thead th:nth-child(n+4):nth-child(-n+7) { width: 70px; }
+#cardEditorPane .card-rows thead th:last-child { width: 42px; }
+#cardEditorPane .component-group { border-top: 1px solid #d5dfd1; }
+#cardEditorPane .component-group:nth-of-type(even) { background: #f4f7f1; }
+#cardEditorPane .component-row > th { padding: 10px 8px; color: #263d2b; font-size: 15px; font-weight: 650; line-height: 1.4; overflow-wrap: normal; }
+#cardEditorPane .component-row > td { padding: 8px 4px; }
+#cardEditorPane .component-row .product-cell { display: table-cell; }
+#cardEditorPane .card-rows input, #cardEditorPane .card-rows select { min-height: 36px; font-size: 14px; padding: 6px; color: #263d2b; background: #fff; }
+#cardEditorPane .product-entry { gap: 4px; }
+#cardEditorPane .product-entry .product-library { flex-basis: 30px; width: 30px; min-height: 36px; }
+#cardEditorPane .product-entry .clear-product { flex-basis: 24px; width: 24px; min-height: 36px; font-size: 19px; }
+#cardEditorPane .row-note-toggle { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 36px; min-width: 36px; padding: 6px; color: #54734d; border: 1px solid #cedac9; border-radius: 5px; background: #fff; }
+#cardEditorPane .row-note-toggle svg { width: 16px; height: 16px; }
+#cardEditorPane .row-note-toggle.has-note { background: #fff2d7; border-color: #b57d22; color: #78500e; }
+#cardEditorPane .note-indicator { font-size: 8px; position: absolute; right: 2px; top: 1px; }
+#cardEditorPane .note-button-label { display: none; }
+#cardEditorPane .card-row-note[hidden] { display: none !important; }
+#cardEditorPane .card-row-note td { padding: 2px 8px 12px; }
+#cardEditorPane .card-row-note label { display: block; color: #4d6048; font-size: 12px; margin: 3px 0 5px; }
+#cardEditorPane .card-row-note textarea { width: 100%; min-height: 62px; font-size: 14px; padding: 8px; resize: vertical; }
+#cardEditorPane .card-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin: 0; padding: 12px; }
+#cardEditorPane .card-meta > label { display: grid; grid-template-columns: 115px minmax(0,1fr); font-size: 13px; border: 0; padding: 0; color: #40553b; }
+#cardEditorPane .card-meta input { min-height: 36px; font-size: 14px; border: 1px solid #d6e0cf; }
+#cardEditorPane .card-functions { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin: 12px 0; }
+#cardEditorPane .card-functions .card-note { border: 0; margin: 0; padding: 0; }
+#cardEditorPane .card-functions h3 { margin: 0 0 6px; }
+#cardEditorPane .card-note textarea { min-height: 74px; padding: 8px; font-size: 14px; }
+#cardEditorPane .card-note-section .card-note { padding: 12px; margin: 0; border: 0; }
+#cardEditorPane .card-save { flex-wrap: wrap; padding: 10px 18px; gap: 8px; }
+#cardEditorPane .card-save output { font-size: 12px; }
+#cardEditorPane .card-save .button { font-size: 13px; min-height: 38px; }
 #cardEditorDialog .card-editor-navigation { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex: 1; }
 #cardOrder { white-space: nowrap; text-align: center; }
 @container doorcard (max-width: 740px) {
- #cardPane .card-rows table, #cardPane .card-rows tbody { display: block; }
- #cardPane .card-rows thead { display: none; }
- #cardPane .component-group { margin: 8px 0; border: 1px solid #d0dccb; border-radius: 6px; overflow: hidden; }
- #cardPane .component-row { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 7px; padding: 10px; }
- #cardPane .component-row > th { grid-column: 1 / -1; padding: 0 0 7px; font-size: 16px; border-bottom: 1px solid #d8e1d3; }
- #cardPane .component-row > td { display: block; padding: 0; min-width: 0; }
- #cardPane .component-row .product-cell { grid-column: 1 / 4; }
- #cardPane .component-row .quantity-cell { grid-column: 4; }
- #cardPane .component-row td[data-label]::before { content: attr(data-label); display: block; margin: 0 0 4px; font-size: 12px; font-weight: 500; color: #52634d; }
- #cardPane .component-row .note-cell { grid-column: 1 / -1; }
- #cardPane .note-button-label { display: inline; font-size: 12px; }
- #cardPane .card-row-note, #cardPane .card-row-note td { display: block; }
- #cardPane .card-rows input, #cardPane .card-rows select, #cardPane .card-rows textarea, #cardPane .card-meta input, #cardPane .card-note textarea { font-size: 16px; }
- #cardPane .card-meta, #cardPane .card-functions { grid-template-columns: 1fr; }
- #cardPane .card-functions { gap: 10px; }
- #cardPane .card-note textarea { min-height: 62px; }
- #cardPane .card-actions { flex-wrap: wrap; justify-content: flex-end; }
- #cardPane .card-actions .icon-button { width: 32px; height: 36px; min-height: 36px; }
- #cardPane .card-save .card-editor-navigation { flex-basis: 100%; justify-content: space-between; gap: 4px; }
- #cardPane .card-editor-navigation .button { padding-inline: 9px; font-size: 12px; }
- #cardPane .card-save > #saveCard { margin-left: auto; }
- #cardPane .card-meta-section > summary { flex-wrap: wrap; }
- #cardPane .card-meta-section > summary small { flex-basis: 100%; text-align: left; padding-left: 22px; margin-top: -6px; }
+ #cardEditorPane .card-rows table, #cardEditorPane .card-rows tbody { display: block; }
+ #cardEditorPane .card-rows thead { display: none; }
+ #cardEditorPane .component-group { margin: 8px 0; border: 1px solid #d0dccb; border-radius: 6px; overflow: hidden; }
+ #cardEditorPane .component-row { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 7px; padding: 10px; }
+ #cardEditorPane .component-row > th { grid-column: 1 / -1; padding: 0 0 7px; font-size: 16px; border-bottom: 1px solid #d8e1d3; }
+ #cardEditorPane .component-row > td { display: block; padding: 0; min-width: 0; }
+ #cardEditorPane .component-row .product-cell { grid-column: 1 / 4; }
+ #cardEditorPane .component-row .quantity-cell { grid-column: 4; }
+ #cardEditorPane .component-row td[data-label]::before { content: attr(data-label); display: block; margin: 0 0 4px; font-size: 12px; font-weight: 500; color: #52634d; }
+ #cardEditorPane .component-row .note-cell { grid-column: 1 / -1; }
+ #cardEditorPane .note-button-label { display: inline; font-size: 12px; }
+ #cardEditorPane .card-row-note, #cardEditorPane .card-row-note td { display: block; }
+ #cardEditorPane .card-rows input, #cardEditorPane .card-rows select, #cardEditorPane .card-rows textarea, #cardEditorPane .card-meta input, #cardEditorPane .card-note textarea { font-size: 16px; }
+ #cardEditorPane .card-meta, #cardEditorPane .card-functions { grid-template-columns: 1fr; }
+ #cardEditorPane .card-functions { gap: 10px; }
+ #cardEditorPane .card-note textarea { min-height: 62px; }
+ #cardEditorPane .card-actions { flex-wrap: wrap; justify-content: flex-end; }
+ #cardEditorPane .card-actions .icon-button { width: 32px; height: 36px; min-height: 36px; }
+ #cardEditorPane .card-save .card-editor-navigation { flex-basis: 100%; justify-content: space-between; gap: 4px; }
+ #cardEditorPane .card-editor-navigation .button { padding-inline: 9px; font-size: 12px; }
+ #cardEditorPane .card-save > #saveCard { margin-left: auto; }
+ #cardEditorPane .card-meta-section > summary { flex-wrap: wrap; }
+ #cardEditorPane .card-meta-section > summary small { flex-basis: 100%; text-align: left; padding-left: 22px; margin-top: -6px; }
 }
 @media (max-width: 700px) {
  .card-editor-dialog { width: 100%; height: 100dvh; margin: 0; border: 0; border-radius: 0; }
- #cardPane .card-scroll { padding: 10px; }
- #cardPane .card-heading, #cardPane .shared-notice { padding-inline: 12px; }
- #cardPane .card-fork-actions { padding-inline: 12px; }
- #cardPane .card-save { padding: 8px 10px max(8px, env(safe-area-inset-bottom)); }
+ #cardEditorPane .card-scroll { padding: 10px; }
+ #cardEditorPane .card-heading, #cardEditorPane .shared-notice { padding-inline: 12px; }
+ #cardEditorPane .card-fork-actions { padding-inline: 12px; }
+ #cardEditorPane .card-save { padding: 8px 10px max(8px, env(safe-area-inset-bottom)); }
 }
 @media (pointer: coarse) {
- #cardPane input, #cardPane select, #cardPane textarea { font-size: 16px !important; }
- #cardPane .row-note-toggle, #cardPane .card-save .button { min-height: 44px; }
+ #cardEditorPane input, #cardEditorPane select, #cardEditorPane textarea { font-size: 16px !important; }
+ #cardEditorPane .row-note-toggle, #cardEditorPane .card-save .button { min-height: 44px; }
 }
 @media print { .card-editor-dialog { display: none !important; } }
 @media (pointer: coarse) { .row-responsibility input, .row-responsibility textarea { font-size: 16px; } }
@@ -1083,6 +1083,53 @@ body.card-editor-open { overflow: hidden; }
 .card-editor-message[data-level=error] { color: #a42729; background: #fff0ed; padding-block: 8px; }
 
 @container doorcard (max-width: 360px) {
- #cardPane .previous-label { display: none; }
- #cardPane #previousCard { min-width: 36px; font-size: 20px; }
+ #cardEditorPane .previous-label { display: none; }
+ #cardEditorPane #previousCard { min-width: 36px; font-size: 20px; }
+}
+
+/* 2.19.11 — selected products beside the drawing; movable editing window. */
+.card-summary-heading { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 16px; }
+.card-summary-heading > div { min-width: 0; }
+.card-summary-heading h2 { font-size: 26px; overflow-wrap: anywhere; }
+.card-summary-heading .button { font-size: 12px; min-height: 36px; }
+.card-summary-usage { margin: 0; padding: 8px 16px; font-size: 12px; color: #516c49; background: #edf3e7; }
+.card-summary-usage:empty { display: none; }
+.card-summary-content { flex: 1; min-height: 0; overflow: auto; padding: 12px 15px; overscroll-behavior: contain; }
+.summary-meta { margin: 0 0 14px; }
+.summary-meta > div { display: grid; grid-template-columns: minmax(85px,35%) minmax(0,1fr); gap: 8px; padding: 5px 0; border-bottom: 1px solid #e1e8dc; font-size: 13px; }
+.summary-meta dt { color: #64715f; }
+.summary-meta dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.summary-section { margin: 0 0 15px; }
+.summary-section > h3, .summary-function > h3 { font-size: 14px; color: #31543c; padding: 7px 0; margin: 0 0 6px; border-bottom: 1px solid #d3dfcc; }
+.summary-product { padding: 10px; margin: 7px 0; border: 1px solid #d8e2d3; border-radius: 6px; background: #f8faf5; }
+.summary-product-title { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; color: #263d2b; font-size: 14px; }
+.summary-product-title > strong { overflow-wrap: anywhere; }
+.summary-product-title > span { white-space: nowrap; font-size: 12px; }
+.summary-model { margin: 5px 0 8px; font-size: 16px; line-height: 1.4; font-weight: 600; overflow-wrap: anywhere; }
+.summary-owners { display: flex; gap: 5px 12px; flex-wrap: wrap; color: #5b6c53; font-size: 11px; }
+.summary-owners span { overflow-wrap: anywhere; }
+.summary-owners b { color: #2f4934; }
+.summary-note { margin: 8px 0 0; padding-top: 7px; border-top: 1px solid #dce4d7; font-size: 12px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.summary-function { margin: 12px 0; }
+.summary-function p { margin: 5px 0; font-size: 13px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.summary-empty { font-size: 13px; line-height: 1.6; color: #617459; }
+.card-summary-hint { flex: none; margin: 0; padding: 10px 15px; border-top: 1px solid var(--line); font-size: 11px; line-height: 1.5; color: #65775e; }
+.card-editor-dialog { position: fixed; inset: auto; margin: 0; }
+#cardEditorDialog .card-heading { cursor: move; touch-action: none; user-select: none; }
+#cardEditorDialog .card-actions { cursor: default; }
+#cardDragHandle { border-radius: 4px; }
+#cardDragHandle:focus-visible { outline: 2px solid var(--teal); outline-offset: 4px; }
+.editor-window-hint { display: block; margin-top: 5px; color: #7a8972; font-size: 10px; font-weight: 400; }
+.card-window-edge, .card-window-grip { position: absolute; z-index: 2; touch-action: none; }
+.card-window-edge.edge-right { right: 0; top: 70px; bottom: 20px; width: 7px; cursor: ew-resize; }
+.card-window-edge.edge-bottom { bottom: 0; left: 18px; right: 20px; height: 7px; cursor: ns-resize; }
+.card-window-grip { right: 0; bottom: 0; width: 20px; height: 20px; min-height: 0; padding: 0; border: 0; background: transparent; color: #698360; font-size: 16px; cursor: nwse-resize; }
+.card-editor-dialog[data-maximized=true] .card-window-edge, .card-editor-dialog[data-maximized=true] .card-window-grip { display: none; }
+.card-editor-dialog[data-maximized=true] .card-heading { cursor: default; }
+.card-editor-dialog[data-window-gesture] { user-select: none; }
+@media (max-width: 759px) {
+ .card-editor-dialog { inset: 0; width: 100%; height: 100dvh; border: 0; border-radius: 0; }
+ #cardEditorDialog .card-heading { cursor: default; touch-action: auto; }
+ .card-window-edge, .card-window-grip, #maximizeCardEditor, .editor-window-hint { display: none; }
+ .card-summary-heading, .card-summary-usage { padding-inline: 14px; }
 }
