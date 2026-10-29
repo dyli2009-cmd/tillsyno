@@ -5,6 +5,7 @@ const D=require('../smartmatch-projektering-v2-19-data.js');
 const L=require('../smartmatch-projektering-v2-19-library.js');
 const S=require('../smartmatch-projektering-v2-19-store.js');
 const M=require('../smartmatch-projektering-v2-19-materials.js');
+const P=require('../smartmatch-projektering-v2-19-pdf.js');
 const fixture=require('./fixtures/projektering-v2-18-catalog19-legacy.json');
 const clone=value=>JSON.parse(JSON.stringify(value));
 (async()=>{
@@ -46,5 +47,8 @@ const clone=value=>JSON.parse(JSON.stringify(value));
  const report=M.build(migrated),oldCloser=report.rows.find(r=>r.product==='TS5000');
  assert(oldCloser&&oldCloser.timePerUnit===C.getTime('closer','TS5000').minutes,'previous product time remains usable');
  assert(M.csv(report).includes('TS5000'),'previous product remains in exports');
+ const sample=await P.example();
+ for(const card of Object.values(sample.state.cards))for(const row of card.rows){if(!row.product)continue;const def=D.SECTIONS.flatMap(s=>s.rows).find(r=>r.id===row.id);assert(C.isAllowedProduct({category:def.category,name:row.product}),'example uses allowed models: '+row.product);}
+ assert((await P.build(sample.state,sample.original)).length>0,'example remains exportable');
  console.log('PASS ASSA/Dorma selection, old-model identities, all search paths, old-library imports, new-product validation, unchanged saved cards/times and project/CSV roundtrip.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

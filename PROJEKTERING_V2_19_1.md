@@ -6,6 +6,8 @@ Urvalet använder exakta kombinationer av kategori och modellnamn. Äldre modell
 
 Den fullständiga historiska katalogen och projektens innehåll finns kvar. Gamla bibliotek kan öppnas och säkerhetskopieras utan att produkter raderas. Importerade produkter från andra fabrikat återkommer inte i produktvalen. Sparade dörrkort, egna tider och tidigare produkters tidsuppgifter bevaras vid inläsning och export.
 
+Nya exempelprojekt använder ASSA 310-50 och 1301 i stället för de tidigare exempelmodellerna.
+
 Startsidan visar 2.4.486 och projekteringen 2.19.1. Båda aktuella projekteringssidorna och offlineversionen har uppdaterade versionsmarkörer.
 
 Verifierat: JavaScript-syntax, katalogregression, data/bibliotek/projektfiler, nytt fabrikatsurval och materialkalkyl med PDF/CSV-export. Webbläsar- och enhetstest kunde inte köras eftersom Chromium saknades och installationshämtningen misslyckades. Ingen ändring av inloggning, Kontrollflöde eller Avläsning.
