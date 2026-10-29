@@ -1,0 +1,7 @@
+#objectDialog510{width:680px;max-width:calc(100vw - 24px);box-sizing:border-box}
+#objectDialog510 .equipment-fields{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+#objectDialog510 .equipment-fields label{min-width:0}
+#objectDialog510 select,#objectDialog510 input{width:100%;font-size:16px}
+#objectModelName514{display:block;overflow-wrap:anywhere;font-size:14px;margin-top:4px}
+.object-marking514{padding:12px;margin-top:14px;background:var(--panel-bg,#eef5f1);border:1px solid #81a38e;border-radius:8px}
+#objectMarking514{display:block;font-size:18px;font-weight:700;overflow-wrap:anywhere;margin-top:6px}
