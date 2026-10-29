@@ -1,0 +1,18 @@
+#libraryPane{padding:12px;gap:10px}
+#libraryPane>.search-field{margin:0;flex:none}
+#libraryPane .project-card-library{display:flex;flex-direction:column;flex:1;min-height:0;margin:0;border:0;padding:0}
+#libraryPane #cardList{overflow:auto;min-height:0}
+#libraryPane #savedCardsHeading{font-size:16px}
+#openStencilPicker520{flex:none;min-height:44px}
+#stencilPicker520{width:720px;max-width:calc(100vw - 24px);max-height:90dvh;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--paper,#fff);color:var(--ink);overflow:auto}
+#stencilPicker520::backdrop{background:#183c344d}
+#stencilPicker520 .pane-heading{padding:0 0 12px;gap:8px}
+#stencilPicker520 .pane-heading-actions{flex-wrap:wrap}
+#stencilPicker520 .library-scroll{overflow:visible;max-height:none;padding:0}
+#stencilPicker520 .stamp-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
+#stencilPicker520 .stencil-item{min-height:64px}
+#stencilPicker520 .search-field{margin:12px 0}
+#stencilPicker520 #newObject510{width:auto;margin-bottom:8px}
+#stencilPicker520 #closeStencilPicker520{font-size:30px;min-width:44px;min-height:44px;order:10}
+#stencilPicker520 .library-selected{position:sticky;bottom:-16px;background:var(--paper,#fff);padding:8px;margin-top:8px;z-index:2}
+#stencilPicker520 .library-foot{margin:4px 0}
