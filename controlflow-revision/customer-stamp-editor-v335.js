@@ -61,7 +61,7 @@ async function refresh(){
 function commit(){save();drawMarkers();refresh();}
 function resize(factor){if(busy)return;closePercent();const list=selected?visibleItems().filter(o=>o.uid===selected):visibleItems();list.forEach(o=>{o.customerStampScale=Math.round(clamp(scale(o)*factor,.5,3)*10000)/10000;});commit();}
 arrowWidth.onchange=()=>{if(busy)return;const value=Number(arrowWidth.value);if(![1,1.5,2,3].includes(value))return;const list=selected?visibleItems().filter(o=>o.uid===selected):visibleItems();list.forEach(o=>{o.customerArrowScale=value;});commit();};
-reset.onclick=()=>{if(busy)return;closePercent();visibleItems().forEach(o=>{o.customerStampScale=1.77;});selected=null;commit();};
+reset.onclick=()=>{if(busy)return;closePercent();visibleItems().forEach(o=>{o.customerStampScale=securityCustomerStampScale();});selected=null;commit();};
 smaller.onclick=()=>resize(1/1.1);larger.onclick=()=>resize(1.1);target.onchange=()=>{closePercent();selected=target.value==='all'?null:target.value;paint();};
 toggle.onclick=()=>{closePercent();editing=!editing;selected=null;paint();};done.onclick=()=>{if(!percent.hidden&&!applyPercentSize())return;editing=false;paint();};exportButton.onclick=()=>{if(busy)return;editing=false;dialog.close();document.getElementById('securityExport').click();};
 wrap.addEventListener('pointerdown',event=>{
@@ -95,9 +95,9 @@ wrap.addEventListener('touchmove',event=>{
  wrap.scrollLeft+=rect.left+pinch.x*rect.width-midX;wrap.scrollTop+=rect.top+pinch.y*rect.height-midY;paint();
 },{passive:false});
 function endPinch(event){if(!pinch||event.touches.length>=2)return;pinch=null;renderCustomerPreview();}
-wrap.title='Zooma med två fingrar eller Ctrl + mushjul (⌘ på Mac). Dra med vänster musknapp för att flytta ritningen.';
+wrap.title='Zooma med mushjulet eller två fingrar. Dra med vänster musknapp för att flytta ritningen.';
 wrap.addEventListener('wheel',event=>{
- if(previewMode!=='drawing'||!dialog.open||busy||pinch||(!event.ctrlKey&&!event.metaKey))return;
+ if(previewMode!=='drawing'||!dialog.open||busy||pinch)return;
  event.preventDefault();const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width,y=(event.clientY-rect.top)/rect.height,previous=customerPreviewZoom,delta=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?wrap.clientHeight:1);
  customerPreviewZoom=clamp(previous*Math.exp(-delta*.002),.5,6);const ratio=customerPreviewZoom/previous;wrap.style.justifyContent='safe center';canvas.style.width=rect.width*ratio+'px';canvas.style.height=rect.height*ratio+'px';
  const next=canvas.getBoundingClientRect();wrap.scrollLeft+=next.left+x*next.width-event.clientX;wrap.scrollTop+=next.top+y*next.height-event.clientY;paint();clearTimeout(wheelTimer);wheelTimer=setTimeout(()=>renderCustomerPreview(),120);
