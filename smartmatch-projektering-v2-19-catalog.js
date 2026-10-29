@@ -53,25 +53,6 @@
    return prefix||natural.compare(a.name,b.name)||natural.compare(a.category,b.category);
   });
  }
- // Selection is limited to ASSA/ABLOY and Dorma/dormakaba. The complete
- // time register stays available for projects created before this restriction.
- const allowedManufacturers=new Set(['assa','assa abloy','abloy','dorma','dormakaba']);
- // Exact older models, verified in produktbibliotek/copiax-kallor-v1/v2.json.
- // These are manufacturer identities only; they never inherit another model's time.
- const previousBrandModels=[["lock","310-50","ASSA ABLOY"],["lock","411-50","ASSA ABLOY"],["lock","411-50 MA","ASSA ABLOY"],["lock","511-50","ASSA ABLOY"],["lock","565-50","ASSA ABLOY"],["lock","2002-50","ASSA ABLOY"],["lock","EL580","ABLOY"],["cylinder-fittings","256","ASSA ABLOY"],["cylinder-fittings","3212","ASSA ABLOY"],["cylinder-fittings","3212:2","ASSA ABLOY"],["cylinder-fittings","4265","ASSA ABLOY"],["strike","575","ASSA ABLOY"],["strike","1487-1","ASSA ABLOY"],["strike","1487-2","ASSA ABLOY"],["handle","696","ASSA ABLOY"],["handle","6696","ASSA ABLOY"],["handle","DH 7020","dormakaba"],["handle","DH 8020","dormakaba"],["pull","8633","ASSA ABLOY"],["escape","179A","ASSA ABLOY"],["escape","179G","ASSA ABLOY"],["escape","179G-2","ASSA ABLOY"],["cable","EA280","ABLOY"],["cable","EA281","ABLOY"],["cylinder","03","ASSA ABLOY"],["cylinder","13","ASSA ABLOY"],["cylinder","1201","ASSA ABLOY"],["cylinder","1211","ASSA ABLOY"],["cylinder","1212","ASSA ABLOY"],["cylinder","1301","ASSA ABLOY"],["closer","DC300","ASSA ABLOY"],["closer","DC500","ASSA ABLOY"],["closer","DC700","ASSA ABLOY"],["closer","TS83","dormakaba"],["closer","TS93 B","dormakaba"],["closer-arm","CL-N","dormakaba"],["closer-arm","G93N","dormakaba"],["closer-arm","G195","ASSA ABLOY"],["closer-arm","L190","ASSA ABLOY"],["closer-arm","L191","ASSA ABLOY"],["operator","ED100LE","dormakaba"],["operator","ED250LE","dormakaba"],["operator","SW100","ASSA ABLOY"],["operator","SW200","ASSA ABLOY"],["operator","SW300","ASSA ABLOY"],["activation","KT 3-1","dormakaba"],["coordinator","SR 390","dormakaba"],["coordinator","SR392/1","dormakaba"],["bolt","1396","ASSA ABLOY"],["bolt","2396","ASSA ABLOY"]];
- const previousBrands=new Map(previousBrandModels.map(([category,name,manufacturer])=>[category+'\u0000'+normalize(canonicalName(category,name)),manufacturer]));
- function manufacturerFor(category,name){
-  const entry=find(category,name,{includeReference:true});
-  return entry?entry.manufacturer:previousBrands.get(String(category)+'\u0000'+normalize(canonicalName(category,name)))||null;
- }
- function isAllowedProduct(product){
-  if(!product||typeof product.category!=='string'||typeof product.name!=='string')return false;
-  const entry=find(product.category,product.name,{includeReference:true});
-  // A preparation operation is work, not a product from another manufacturer.
-  if(entry?.kind==='work')return true;
-  return allowedManufacturers.has(normalize(manufacturerFor(product.category,product.name)));
- }
- function selectionList(options={}){return list(options).filter(isAllowedProduct);}
  const stats=Object.freeze({entries:entries.length,products:products.length,reference:entries.length-products.length,provided:entries.filter(entry=>entry.origin==='provided').length,estimated:entries.filter(entry=>entry.origin==='estimated').length});
  const assumptions=Object.freeze([
   'Uppskattade tider gäller normalt montage i förberedd dörr eller montageyta.',
@@ -79,6 +60,5 @@
   'Tider gäller en fysisk produkt eller den angivna satsen. Armbågskontaktens antal räknas separat.',
   'Kontrollera paketomfattningen så att samma montage inte räknas två gånger.'
  ]);
- return Object.freeze({version:'2.19.1',manufacturerFor,isAllowedProduct,selectionList,sourceDate:'2026-10-23',entries,products,categories,stats,assumptions,normalize,canonicalName,getCategoryWarning,list,find,getTime,getEntry});
+ return Object.freeze({version:'2.19.2',sourceDate:'2026-10-23',entries,products,categories,stats,assumptions,normalize,canonicalName,getCategoryWarning,list,find,getTime,getEntry});
 });
-

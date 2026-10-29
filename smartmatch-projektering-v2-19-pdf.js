@@ -294,11 +294,10 @@
   }
   for(const card of Object.values(state.cards)){
    const set=(id,product,delivery='GS',installer='GS')=>{const row=card.rows.find(r=>r.id===id);if(row)Object.assign(row,{product,delivery,installer});};
-   set('day-lock','310-50');set('day-cylinder-fittings','256');set('day-cylinder-hinge','1301');set('day-handle','6696','DT','DT');card.meta.doorType='Exempeldörr';card.meta.hanging='Enligt ritning';
+   set('day-lock','ST140-50');set('day-cylinder-fittings','256');set('day-cylinder-hinge','8882');set('day-handle','6696','DT','DT');card.meta.doorType='Exempeldörr';card.meta.hanging='Enligt ritning';
   }
   state.cards[data.initialCardCode('GS1')].note='Samma sparade GS1:1-kort används vid flera dörrar.';
   return {state:data.validate(state),original:await document.save()};
  }
  return Object.freeze({build,buildCardPreview,inspect,blank,example,metadata,stampMatrix,codeRect,tableRect,DATA_KEY,SOURCE_KEY});
 });
-
