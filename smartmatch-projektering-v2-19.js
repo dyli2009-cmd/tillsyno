@@ -855,7 +855,7 @@
   }
   function download(bytes,name,type){const url=URL.createObjectURL(new Blob([bytes],{type})),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
   const filename=()=>state.project.name.replace(/[^a-zA-Z0-9åäöÅÄÖ_-]+/g,'-').slice(0,70)||'projektering';
-  async function exportPDF(mode){if(!await leaveDraft())return;message('Skapar sökbar PDF …');const snapshot=D.validate(state),bytes=await Proj2PDF.build(snapshot,original,{mode});download(bytes,filename()+'-'+(mode==='combined'?'ritning-och-dorrkort':mode==='drawing'?'ritning':'dorrkort')+'.pdf','application/pdf');message(mode==='combined'?'Ritningen och '+Proj2PDF.exportCardCodes(snapshot,mode).length+' unika dörrkort är sparade. Varje dörrkort har en egen sida.':'PDF:en är skapad. Den kan öppnas här igen för fortsatt projektering.');}
+  async function exportPDF(mode){if(!await leaveDraft())return;message('Skapar sökbar PDF …');const snapshot=D.validate(state),editableText=mode!=='cards'&&$('pdfEditableText').checked,bytes=await Proj2PDF.build(snapshot,original,{mode,editableText});download(bytes,filename()+'-'+(mode==='combined'?'ritning-och-dorrkort':mode==='drawing'?'ritning':'dorrkort')+(editableText?'-bluebeam-text':'')+'.pdf','application/pdf');message(editableText?'PDF:en är skapad med redigerbar text. Ändra själva textrutan i Bluebeam. Öppna sedan PDF:en här igen och exportera för att uppdatera dörrkorten.':mode==='combined'?'Ritningen och '+Proj2PDF.exportCardCodes(snapshot,mode).length+' unika dörrkort är sparade. Varje dörrkort har en egen sida.':'PDF:en är skapad. Den kan öppnas här igen för fortsatt projektering.');}
   function csvCell(value){let text=String(value??'');if(/^[=+@-]/.test(text))text="'"+text;return '"'+text.replace(/"/g,'""')+'"';}
   async function exportSchedule(){
     if(!await leaveDraft())return;
@@ -1109,7 +1109,7 @@
       }
       state=libraryProject(state,{fresh:!restoredProject});
       setActive(state.cards.GS1?'GS1':Object.keys(state.cards).sort(natural)[0]||null);if(!libraryStencils().some(stencil=>stencil.id===currentStencil))currentStencil=firstLibraryStencil();revealStencil(state.stencils[currentStencil]);bind();makeViewer();if(original.length)await viewer.open(original);renderAll();showView('drawing');
-      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.19.7'});
+      window.Proj2App=Object.freeze({snapshot:()=>({state:clone(state),selectedIds:[...selected],page:currentPage,activeCode,draft:clone(draft),dirty,view:viewer.snapshot(),materials:clone(materialReport),search:clone(pdfSearchState),library:clone(library),librarySaved:libraryExists&&!libraryDamaged}),librarySnapshot:()=>clone(library),searchSnapshot:()=>clone(pdfSearchState),previewSnapshot:()=>({open:$('cardPreviewDialog').open,code:cardPreviewCode,view:cardPreviewViewer?.snapshot()||null}),version:'2.19.8'});
     }catch(error){message(error?.message||'Projektet kunde inte öppnas.',true);}
   }
   window.addEventListener('tillsyno-authorized',()=>void boot());

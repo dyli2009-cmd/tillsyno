@@ -160,8 +160,8 @@
    A.lines(item).forEach((line,index)=>text(page,font,line,b.x+8,meta.height-(b.y+8+item.fontSize+index*item.fontSize*1.3),item.fontSize,hex(lib,item.textColor)));
   }
  }
- function drawPlacements(document,state,font,lib){
-  if(state.schema>=5)return drawEditablePlacements(document,state,font,lib);
+ function drawPlacements(document,state,font,lib,editableText=false){
+  if(state.schema>=5||editableText)return drawEditablePlacements(document,state,font,lib,editableText);
   for(const item of state.placements){
    const page=document.getPage(item.page-1),definition=state.stencils[item.stencilId],matrix=stampMatrix(state.drawing.pages[item.page-1],item),label=assertText(font,item.code);
    let fontSize=Math.min(definition.fontSize,item.height*.5),labelWidth=font.widthOfTextAtSize(label,fontSize);
@@ -184,21 +184,42 @@
    page.node.addAnnot(document.context.register(document.context.obj({Type:'Annot',Subtype:'Stamp',Rect:rect,Subj:lib.PDFHexString.fromText(item.code),Contents:lib.PDFHexString.fromText(item.code),NM:lib.PDFHexString.fromText('projection-v2-'+item.id),F:4,AP:{N:appearance}})));
   }
  }
- function drawEditablePlacements(document,state,font,lib){
+ function drawEditablePlacements(document,state,font,lib,editableText=false){
   for(const item of state.placements){
+   if(editableText&&item.rotation%90!==0)throw Error('Redigerbar PDF-text kräver 0, 90, 180 eller 270 graders rotation. Ändra rotationen för '+item.code+' i Tillsyno eller avmarkera Redigerbar text i Bluebeam.');
    const output=document.getPage(item.page-1),definition=state.stencils[item.stencilId],m=stampMatrix(state.drawing.pages[item.page-1],item);
    const corners=[[-item.width/2,-item.height/2],[item.width/2,-item.height/2],[item.width/2,item.height/2],[-item.width/2,item.height/2]].map(([x,y])=>point(m,x,y));
    const xs=corners.map(p=>p[0]),ys=corners.map(p=>p[1]),rect=[Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys)],w=rect[2]-rect[0],h=rect[3]-rect[1];
-   const page=lib.PDFPage.create(document),matrix=[...m.slice(0,4),m[4]-rect[0],m[5]-rect[1]],label=assertText(font,item.code);
+   let page=lib.PDFPage.create(document);const matrix=[...m.slice(0,4),m[4]-rect[0],m[5]-rect[1]],label=assertText(font,item.code);
    let fontSize=Math.min(definition.fontSize,item.height*.5);const labelWidth=font.widthOfTextAtSize(label,fontSize);if(labelWidth>item.width-4)fontSize*=Math.max(.05,(item.width-4)/labelWidth);
    page.pushOperators(lib.pushGraphicsState(),lib.concatTransformationMatrix(...matrix));
    const style={color:hex(lib,definition.fill),borderColor:hex(lib,definition.stroke),borderWidth:Math.max(.45,Math.min(1.1,item.height*.035))};
-   if(definition.shape==='oval')page.drawEllipse({x:0,y:0,xScale:item.width/2,yScale:item.height/2,...style});else page.drawRectangle({x:-item.width/2,y:-item.height/2,width:item.width,height:item.height,...style});
+   // The annotation clips its appearance to Rect/BBox. Keep the entire stroke
+   // inside that box, including at the four tips of an oval.
+   const inset=style.borderWidth/2;
+   if(definition.shape==='oval')page.drawEllipse({x:0,y:0,xScale:item.width/2-inset,yScale:item.height/2-inset,...style});else page.drawRectangle({x:-item.width/2+inset,y:-item.height/2+inset,width:item.width-2*inset,height:item.height-2*inset,...style});
+   let frameAppearance;
+   if(editableText){
+    page.pushOperators(lib.popGraphicsState());
+    frameAppearance=document.context.register(document.context.flateStream(page.getContentStream().getUnencodedContents(),{Type:'XObject',Subtype:'Form',BBox:[0,0,w,h],Resources:page.node.Resources()}));
+    // The visible text must be its own FreeText annotation. Changing /Subj on
+    // a Stamp can never change text baked into its appearance stream.
+    page=lib.PDFPage.create(document);
+    page.pushOperators(lib.pushGraphicsState(),lib.concatTransformationMatrix(...matrix));
+   }
    const flip=item.rotation>90&&item.rotation<=270;if(flip)page.pushOperators(lib.pushGraphicsState(),lib.concatTransformationMatrix(-1,0,0,-1,0,0));
    text(page,font,label,-font.widthOfTextAtSize(label,fontSize)/2,-fontSize*.34,fontSize,hex(lib,definition.textColor));
    if(flip)page.pushOperators(lib.popGraphicsState());page.pushOperators(lib.popGraphicsState());
    const appearance=document.context.register(document.context.flateStream(page.getContentStream().getUnencodedContents(),{Type:'XObject',Subtype:'Form',BBox:[0,0,w,h],Resources:page.node.Resources()}));
-   output.node.addAnnot(document.context.register(document.context.obj({Type:'Annot',Subtype:'Stamp',Rect:rect,Subj:lib.PDFHexString.fromText(item.code),Contents:lib.PDFHexString.fromText(item.code),NM:lib.PDFHexString.fromText('projection-v2-'+item.id),F:4,AP:{N:appearance},TillsynoRect:rect,TillsynoCode:lib.PDFHexString.fromText(item.code)})));
+   const common={Type:'Annot',Rect:rect,Contents:lib.PDFHexString.fromText(item.code),NM:lib.PDFHexString.fromText('projection-v2-'+item.id),F:4,AP:{N:appearance},TillsynoRect:rect,TillsynoCode:lib.PDFHexString.fromText(item.code)};
+   if(!editableText){output.node.addAnnot(document.context.register(document.context.obj({...common,Subtype:'Stamp',Subj:lib.PDFHexString.fromText(item.code)})));continue;}
+   const rgb=value=>[1,3,5].map(n=>parseInt(value.slice(n,n+2),16)/255),color=rgb(definition.textColor),rotation=((Math.round(Math.atan2(m[1],m[0])*180/Math.PI)+(flip?180:0))%360+360)%360;
+   const verticalInset=Math.max(0,(item.height-fontSize)/2),padding=rotation%180?[verticalInset,2,verticalInset,2]:[2,verticalInset,2,verticalInset];
+   const labelRef=document.context.register(document.context.obj({...common,Subtype:'FreeText',Subj:lib.PDFHexString.fromText('Beteckning'),DA:lib.PDFString.of('/Helvetica-Bold '+fontSize+' Tf '+color.join(' ')+' rg'),DS:lib.PDFString.of('font: bold '+fontSize+'pt Helvetica; text-align:center; color:'+definition.textColor),DR:{Font:{'Helvetica-Bold':font.ref}},Q:1,Rotate:rotation,RD:padding,BS:{W:0},Border:[0,0,0],C:[],IT:'FreeText',TillsynoTextRotation:rotation}));
+   // Standard PDF annotation grouping; the text is primary and the frame is
+   // subordinate. Editors can edit the text without rebuilding the frame.
+   const frameRef=document.context.register(document.context.obj({Type:'Annot',Subtype:definition.shape==='oval'?'Circle':'Square',Rect:rect,NM:lib.PDFHexString.fromText('projection-v2-frame-'+item.id),Subj:lib.PDFHexString.fromText('Ram'),F:4,AP:{N:frameAppearance},C:rgb(definition.stroke),IC:rgb(definition.fill),BS:{W:style.borderWidth,S:'S'},Border:[0,0,style.borderWidth],IRT:labelRef,RT:'Group'}));
+   output.node.addAnnot(frameRef);output.node.addAnnot(labelRef);
   }
  }
  function cardLines(font,value,width,size){
@@ -280,16 +301,17 @@
  async function build(input,originalBytes,options={}){
   const lib=library(),data=dataLibrary();if(!lib||!data)throw Error('PDF-verktyget kunde inte laddas. Öppna sidan igen med internet.');
   const state=data.validate(input),mode=options.mode||'combined';if(!['combined','drawing','cards'].includes(mode))throw Error('Välj ritning, dörrkort eller komplett PDF.');
+  const editableText=options.editableText===true&&mode!=='cards';if(editableText&&state.schema<5)state.schema=5;
   const source=await sourceDocument(state,originalBytes),document=await lib.PDFDocument.create(),regular=await document.embedFont(lib.StandardFonts.Helvetica),bold=await document.embedFont(lib.StandardFonts.HelveticaBold),codes=exportCardCodes(state,mode);
   if(mode==='drawing'||mode==='combined'){
    if(!source.document&&mode==='drawing')throw Error('Importera en ritning innan du exporterar en ritnings-PDF.');
-   if(source.document){const exportPages=await copyDrawing(document,source.document,state,lib);checkPlacements(state);drawPlacements(document,{...state,drawing:{...state.drawing,pages:exportPages}},bold,lib);drawTextAnnotations(document,{...state,drawing:{...state.drawing,pages:exportPages}},{regular,bold},lib);}
+   if(source.document){const exportPages=await copyDrawing(document,source.document,state,lib);checkPlacements(state);drawPlacements(document,{...state,drawing:{...state.drawing,pages:exportPages}},bold,lib,editableText);drawTextAnnotations(document,{...state,drawing:{...state.drawing,pages:exportPages}},{regular,bold},lib);}
   }
   if(mode==='cards'||mode==='combined')codes.forEach((code,index)=>drawCard(document,state,code,{regular,bold},lib,index+1,codes.length));
   // Standalone symbols stay visible on the drawing and in the embedded project;
   // only actual door cards append printable pages.
   if(!document.getPageCount())throw Error('Lägg till en ritning eller ett dörrkort före PDF-export.');
-  const payload=JSON.stringify({format:'TillsynoProjekteringV2',state,originalLength:source.original.length,...(state.schema>=5?{editableStamps:true,drawingPages:mode==='cards'?0:state.drawing.pages.length}:{})});if(payload.length>MAX_DATA)throw Error('Projektuppgifterna är för stora för PDF-export.');
+  const payload=JSON.stringify({format:'TillsynoProjekteringV2',state,originalLength:source.original.length,...(state.schema>=5?{editableStamps:true,editableText,drawingPages:mode==='cards'?0:state.drawing.pages.length}:{})});if(payload.length>MAX_DATA)throw Error('Projektuppgifterna är för stora för PDF-export.');
   document.catalog.set(lib.PDFName.of(DATA_KEY),lib.PDFHexString.fromText(payload));
   document.catalog.set(lib.PDFName.of(SOURCE_KEY),document.context.register(document.context.flateStream(source.original,{Type:'EmbeddedFile',Subtype:'application/pdf'})));
   document.setTitle(state.project.name+' · Projektering');document.setAuthor('Tillsyno');document.setCreator('Tillsyno Projektering 2.19');document.setSubject('Ritning med stämplar och dörrkort');
@@ -304,28 +326,47 @@
   const state=data.validate(payload.state),stream=lookup(document,document.catalog.get(lib.PDFName.of(SOURCE_KEY)));if(!(stream instanceof lib.PDFRawStream))throw Error('Ritningsoriginalet saknas i projekt-PDF:en. Öppna en komplett sparad projektfil.');
   let original;try{original=new Uint8Array(lib.decodePDFRawStream(stream).decode());}catch(_){throw Error('Ritningsoriginalet i projekt-PDF:en kunde inte läsas.');}
   if(original.length!==payload.originalLength||original.length>MAX_ORIGINAL)throw Error('Ritningsoriginalets storlek stämmer inte med projekt-PDF:en.');
-  await sourceDocument(state,original);return {state:payload.editableStamps?readStampEdits(document,state,payload.drawingPages):state,original};
+  await sourceDocument(state,original);return {state:payload.editableStamps?readStampEdits(document,state,payload.drawingPages,payload.editableText===true):state,original};
  }
- function readStampEdits(document,state,drawingPages){
+ function readStampEdits(document,state,drawingPages,editableText=false){
   const lib=library(),D=dataLibrary();
   if(!Number.isInteger(drawingPages)||drawingPages<0||drawingPages>document.getPageCount()||(drawingPages&&drawingPages!==state.drawing.pages.length))throw Error('Projektets ritningssidor har ändrats utanför Tillsyno. Importera ritningen på nytt.');
   if(!drawingPages||!state.placements.length)return state;
   const found=new Map(),byId=new Map(state.placements.map(p=>['projection-v2-'+p.id,p])),pages=metadata(document);
   for(let i=0;i<drawingPages;i++){
    const annotations=lookup(document,document.getPage(i).node.get(lib.PDFName.of('Annots')));if(!annotations?.asArray)continue;
+   const frames=new Map();
+   if(editableText)for(const ref of annotations.asArray()){
+    const frame=lookup(document,ref);if(!frame?.get)continue;
+    const name=decodedText(lookup(document,frame.get(lib.PDFName.of('NM'))))||'';if(!name.startsWith('projection-v2-frame-'))continue;
+    const id='projection-v2-'+name.slice('projection-v2-frame-'.length);if(frames.has(id))throw Error('En ram har dubblerats med samma ID i PDF:en.');frames.set(id,frame);
+   }
    for(const ref of annotations.asArray()){
-    const a=lookup(document,ref);if(!a?.get||String(lookup(document,a.get(lib.PDFName.of('Subtype'))))!=='/Stamp')continue;
+    const a=lookup(document,ref);if(!a?.get||String(lookup(document,a.get(lib.PDFName.of('Subtype'))))!==(editableText?'/FreeText':'/Stamp'))continue;
     const id=decodedText(lookup(document,a.get(lib.PDFName.of('NM'))));if(!byId.has(id))continue;
     if(found.has(id))throw Error('En stämpel har dubblerats med samma ID i PDF:en. Ge kopian ett eget ID före återöppning.');
-    const old=byId.get(id),rect=numericArray(document,a.get(lib.PDFName.of('Rect')),4),base=numericArray(document,a.get(lib.PDFName.of('TillsynoRect')),4);
+    const old=byId.get(id),base=numericArray(document,a.get(lib.PDFName.of('TillsynoRect')),4);let rect=numericArray(document,a.get(lib.PDFName.of('Rect')),4);
     if(!rect||!base||rect[2]<=rect[0]||rect[3]<=rect[1])throw Error('En ändrad stämpel saknar giltiga koordinater.');
     const subject=decodedText(lookup(document,a.get(lib.PDFName.of('Subj'))))||old.code,contents=decodedText(lookup(document,a.get(lib.PDFName.of('Contents'))))||old.code;
-    const code=D.normalizeCode(subject!==old.code?subject:contents),t=pages[i].transform;
+    // FreeText /Contents is the visible label. /Subj is only a description.
+    const code=D.normalizeCode(editableText?decodedText(lookup(document,a.get(lib.PDFName.of('Contents')))):subject!==old.code?subject:contents),t=pages[i].transform;
+    if(editableText){
+     const frame=frames.get(id),frameRect=frame&&numericArray(document,frame.get(lib.PDFName.of('Rect')),4);
+     // Some editors trim FreeText Rect to its inner RD box on the first edit.
+     // The frame remains authoritative for placement size; centered text may
+     // be smaller, but moving it away from the frame must not be lost silently.
+     if(!frameRect||frameRect[2]<=frameRect[0]||frameRect[3]<=frameRect[1]||[0,1].some(k=>Math.abs((frameRect[k]+frameRect[k+2]-rect[k]-rect[k+2])/2)>.1)||rect[0]<frameRect[0]-.1||rect[1]<frameRect[1]-.1||rect[2]>frameRect[2]+.1||rect[3]>frameRect[3]+.1)throw Error('Texten och ramen för '+old.code+' har skilts åt. Gruppera och flytta eller ändra storlek på dem tillsammans i PDF:en.');
+     rect=frameRect;
+     const rotation=lookup(document,a.get(lib.PDFName.of('Rotate')))?.asNumber?.()||0,baseRotation=lookup(document,a.get(lib.PDFName.of('TillsynoTextRotation')))?.asNumber?.()||0;
+     if(rotation!==baseRotation)throw Error('Rotationen för '+old.code+' har ändrats i PDF:en. Återställ den och rotera markeringen i Tillsyno före nästa export.');
+     frames.delete(id);
+    }
     const [cx,cy]=point(t,(rect[0]+rect[2])/2,(rect[1]+rect[3])/2),sx=(rect[2]-rect[0])/(base[2]-base[0]),sy=(rect[3]-rect[1])/(base[3]-base[1]);
     if(old.rotation%90!==0&&Math.abs(sx-sy)>.001)throw Error('En roterad stämpel har ändrats i olika skalor. Återställ proportionerna före återöppning.');
     const turned=old.rotation%180===90;
     found.set(id,{...old,page:i+1,code,x:cx/pages[i].width,y:cy/pages[i].height,width:old.width*(turned?sy:sx),height:old.height*(turned?sx:sy)});
    }
+   if(editableText&&[...frames.keys()].some(id=>byId.has(id)))throw Error('En beteckning saknas men dess ram finns kvar. Ta bort både text och ram om markeringen ska tas bort.');
   }
   if(!found.size)throw Error('Projektets redigerbara stämplar saknas. PDF:en kan ha tillplattats. Öppna en projektkopia med bevarade markeringar.');
   const next=clone(state);let changed=found.size!==state.placements.length;
@@ -333,7 +374,7 @@
    const item=found.get('projection-v2-'+old.id);if(!item)return [];
    if(item.code!==old.code){
     const source=state.stencils[old.stencilId];let stencil=Object.values(next.stencils).find(s=>s.code===item.code);
-    if((stencil&&(stencil.kind!==source.kind||D.isReferenceStencil(stencil)!==D.isReferenceStencil(source)))||(D.isReferenceStencil(source)&&['DA','DS','KL','DFS','AK'].includes(item.code)))throw Error('Den nya beteckningen används av en annan typ av stämpel.');
+    if((stencil&&(stencil.kind!==source.kind||D.isReferenceStencil(stencil)!==D.isReferenceStencil(source)||(source.kind==='symbol'&&stencil.productType!==source.productType)))||(D.isReferenceStencil(source)&&['DA','DS','KL','DFS','AK'].includes(item.code)))throw Error('Den nya beteckningen används av en annan typ av stämpel.');
     if(!stencil){let id=item.code;while(next.stencils[id])id='pdf-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);stencil={...clone(source),id,code:item.code,name:item.code};next.stencils[id]=stencil;}
     if(source.kind==='card'&&!next.cards[item.code])next.cards[item.code]={...clone(state.cards[old.code]),code:item.code,meta:{...state.cards[old.code].meta,littera:item.code}};
     item.stencilId=stencil.id;changed=true;

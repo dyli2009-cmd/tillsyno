@@ -171,6 +171,8 @@
  function annotationHits(annotations,codes,vp,onConflict=()=>{}){
   const hits=[],patterns=codes.map(code=>({code,pattern:codePattern(code)}));
   for(const a of annotations){
+   // A Tillsyno FreeText label and its grouped frame are one marking.
+   if(String(a.name||'').startsWith('projection-v2-frame-'))continue;
    // Invisible, Hidden and NoView annotations do not describe a visible stamp.
    if((Number(a.flags||a.annotationFlags||0)&35)!==0)continue;
    const box=annotationBox(a.rect,vp);if(!box)continue;
@@ -195,7 +197,7 @@
     if(codes.includes(exact)){found.add(exact);appearance=true;}
    }
    if(found.size>1){onConflict(a,[...found]);continue;}
-   for(const code of found)hits.push({code,box,confidence:100,annotationId:String(a.id??''),labelSource:appearance?'appearance':'metadata',structured:String(a.subtype||'').toLowerCase()==='stamp'});
+   for(const code of found)hits.push({code,box,confidence:100,annotationId:String(a.id??''),labelSource:appearance?'appearance':'metadata',structured:String(a.subtype||'').toLowerCase()==='stamp'||(a.subtype==='FreeText'&&String(a.name||'').startsWith('projection-v2-'))});
   }
   return hits;
  }
