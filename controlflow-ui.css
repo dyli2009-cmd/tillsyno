@@ -146,4 +146,12 @@ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp :is(.headerS
 html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityDrawing .pagebar{background:var(--ta-header,#e4eff4)!important;color:var(--ta-ink,#173f55)!important}
 html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp :is(#secPage,#secZoom){color:var(--ta-ink,#173f55)!important}
 
+/* Keep the root drawing usable when long selected-protocol names fill a small phone. */
+html[data-controlflow-ui="1"]:not([data-cf-large-text]) body.securityWorkspace[data-view="drawing"]{overflow-y:auto!important}
+html[data-controlflow-ui="1"]:not([data-cf-large-text]) body.securityWorkspace[data-view="drawing"]>main{display:flex!important;flex-direction:column;flex:1 0 auto!important;min-height:320px!important;overflow:visible!important}
+html[data-controlflow-ui="1"]:not([data-cf-large-text]) body.securityWorkspace[data-view="drawing"] #securityDrawing{flex:1 0 auto!important;height:auto!important;min-height:320px!important;overflow:visible!important}
+html[data-controlflow-ui="1"]:not([data-cf-large-text]) body.securityWorkspace[data-view="drawing"] #secViewer{flex:1 0 180px!important;min-height:180px!important}
+html[data-controlflow-ui="1"]:not([data-cf-large-text]) body.securityWorkspace[data-view="drawing"] .objectBar{flex:none!important}
+html[data-controlflow-ui="1"]:not([data-cf-large-text]) body.securityWorkspace[data-view="drawing"] #mobileBar{position:static!important;flex:none!important}
 }
+

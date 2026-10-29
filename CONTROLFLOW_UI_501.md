@@ -20,3 +20,9 @@ Testresultatet avser Chromium i fasta fönster/iframes. Fysisk iPhone/iPad, Safa
 ## Avgränsning och återställning
 
 Produktionslogiken för PDF, inloggning och lagring är oförändrad. Nya UI-filer aktiveras bara via data-controlflow-ui på Kontrollflödets två ingångar. Startsidan ändrar endast versionsnummer/länk och service workern får ny cacheversion samt de nya UI-resurserna. Ingen global CSS eller annan modul ändras. För återställning återställs releasecommitten som helhet och en ny cacheversion publiceras.
+
+## Slutkontroll och korrigering i v2.4.502
+
+En oberoende kontroll med emulerad pekskärm fann 96 px rityta på 320×740 när samtliga sju protokolltyper i rotens arbetsyta var valda. Arbetsytan får nu minst 180 px rityta i normal textskala. Flexlayouten tillåter vertikal rullning när rubriker och kontroller behöver mer utrymme. Detta gäller endast rotens ritningsläge; den separata revisionsmodulen och gränssnittsstandarden från v2.4.501 behålls.
+
+Fyra ytterligare Chromium-fall är godkända: 1440×900, 834×1194, 390×844 och 320×740, med pekskärmsemulering för de tre sista. Kontroll på produktionskoden omfattar typografi, tryckytor, objektmeny, alla sju protokolltyper, textskala 200 %, bevarade data, verkliga PDF-byte och stängning/återöppning. Testkravet för rotens minsta rityta är skärpt till 180 px.

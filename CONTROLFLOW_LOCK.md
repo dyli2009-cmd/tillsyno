@@ -210,3 +210,9 @@ Användaren beställde först gemensamma regler för text, ikoner och knappar, s
 En separat stilmall och textskala används endast på markerade Kontrollflödessidor. Viktiga knappar visar ikon och text. På telefon samlas objektknapparna under Lägg till objekt. Text kan förstoras till 200 % med rullbar layout; UI-förstoringen ändrar inte ritningsmarkörer, PDF-mått eller lagrade protokollvärden. Datormåtten ersätter äldre kompakta regler endast inom denna beställning.
 
 Verifiering och begränsningar dokumenteras i CONTROLFLOW_UI_501.md. PDF-/lagringslogiken och gemensamma stilmallar ändras inte. CE, SmartMatch och äldre testsidor omfattas inte. Ingen separat native-källa finns i detta repo; ingen TestFlight-publicering utförs. Kontrollflödet är åter LÅST efter den avgränsade beställningen.
+
+# 2026-10-29 · v2.4.502 · Minsta rityta på liten telefon
+
+Slutkontrollen av den beställda läsbarhetsstandarden omfattade även emulerad pekskärm med samtliga sju protokolltyper i Säkerhetsservice/Brand valda. På 320×740 kunde långa rubriker lämna bara 96 px rityta. Rotens ritningsarbetsyta garanterar nu minst 180 px i normal textskala; vid platsbrist får sidan rulla och verktyg/navigering ligger efter ritningen. Ändringen är avgränsad till body.securityWorkspace i ritningsläget och ändrar inte revisionsmodulens layout, PDF eller lagring. Den publicerade v2.4.501-standarden och objektmenyn behålls.
+
+Verifierat i Chromium med dator 1440×900 samt emulerad pekskärm 834×1194, 390×844 och 320×740. Samtliga fyra fall godkända: läsbarhet, protokollsvar, textförstoring till 200 %, bevarade objektdata/stämpelmått, PDF-export, rotation, filnamn och stängning/återöppning. Testets minimihöjd är höjd till 180 px för rotens arbetsyta. Inga fysiska iOS-tester utförda. Kontrollflödet är åter LÅST.
