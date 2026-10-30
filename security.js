@@ -1008,7 +1008,14 @@ function buildChecklist(o){
   [['na','Ingår ej'],['ok','Klart utan anmärkning'],['remark','Klart med anmärkning']].forEach(([value,label])=>{
    const b=document.createElement('button');b.type='button';b.textContent=symbolChecks?{na:'–',ok:'✓',remark:'×'}[value]:label;b.dataset.v=value;b.classList.toggle('active',c.result===value);
    if(symbolChecks){b.title=label;b.setAttribute('aria-pressed',String(c.result===value));b.setAttribute('aria-label',label+', kontrollpunkt '+n)}
-   b.onclick=()=>{c.result=value;o.checks[n]=c;if(value==='remark'&&!c.note)c.note='';if(value!=='remark'&&c.note)c.note='';o.manualFail=false;syncStatus(o);save();buildChecklist(o);$('secStatus').value=o.status;drawMarkers();updateProgress(o);showOverview()};
+   b.onclick=()=>{
+    c.result=symbolChecks&&c.result===value?'':value;o.checks[n]=c;
+    // Keep a deselected remark as a draft so selecting it again restores the text.
+    if(c.result==='remark'&&!c.note)c.note='';if(c.result&&c.result!=='remark'&&c.note)c.note='';
+    o.manualFail=false;
+    if(symbolChecks&&!c.result){o.remediationDate='';o.remediationSignature=''}
+    syncStatus(o);save();buildChecklist(o);$('secStatus').value=o.status;drawMarkers();updateProgress(o);showOverview()
+   };
    choices.appendChild(b)
   });
   row.appendChild(choices);

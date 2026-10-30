@@ -244,3 +244,8 @@ Användaren beställde mindre protokolltext och en kompaktare telefonvy, samt at
 Ritverktygsfältet döljs utifrån både data-view, öppen översikt och revisionsmodulens inlinepanel. Det återkommer i ritningsvyn. Protokollinnehåll, datalagring och PDF-logik är oförändrade. Kontrollflödet är åter LÅST efter denna beställning.
 
 Verifierat i Chromium: 23 fall och 2031 kontrollpåståenden godkända på båda ingångarna, telefon 320/390, surfplatta 834 och dator 1440 px samt teman och manuella enhetsval. Verkliga navigeringsknappar testas för Översikt → Protokoll → Projekt → Ritning; verktygsfältet döljs/återkommer. Kontrollsvar, 200 % text, objektplacering, PDF-export och återöppning är godkända. Visuell kontroll av 14 px kontrolltext, 13 px etiketter, 16 px inmatning och kontrollrader på telefon. Fysisk iOS/Safari och TestFlight har inte provats.
+
+
+# 2026-10-30 · v2.4.531 · Ångra kontrollsvar i Säkerhetsservice
+
+Användaren beställde att samma val ska kunna avmarkeras med ett nytt tryck. Ändringen är avgränsad till Säkerhetsservices fyra protokoll och egna punkter. Avmarkerad punkt återgår till ej kontrollerad; status, räknare och sparning uppdateras. Anmärkningstext behålls som ett inaktivt utkast. Kontrollflödet är åter LÅST efter denna beställning. Verifiering och avgränsningar finns i DEVELOPMENT_RULES.md.
