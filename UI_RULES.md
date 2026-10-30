@@ -70,3 +70,8 @@ Användaren beställde borttagna PDF-zoomknappar och klar-instruktion. Sidväxli
 ## Säkerhetsservices resultatrubriker v2.4.529
 
 Beställd mindre text över svarskolumnerna: 11 px på iPad/surfplatta och 10 px på telefon, skalbart till 200 %. Tätare radavstånd och vertikal utfyllnad. Svarsknapparnas 44 px tryckytor och befintliga kortnamn bevaras. Rymlig datorvy med fin pekare behåller tidigare rubrikstorlek.
+
+
+## Säkerhetsservice Översikt v2.4.530
+
+Endast rubriken ”Översikt” visas i panelhuvudet. Kompakt skala: 18 px panelrubrik, 14 px objektrubrik/filterfält, 12 px etiketter/brödtext och 11 px statusmärken. Avstånd minskas; redigerbara fält är minst 16 px vid fokus på pekskärm. Textförstoring till 200 % bevaras och filtren går i en kolumn vid stor text.
