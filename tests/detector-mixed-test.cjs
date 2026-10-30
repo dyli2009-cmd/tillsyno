@@ -2,7 +2,7 @@
 // are deterministic doubles here; the bundled OCR is also checked in browser QA.
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const {PDFDocument,StandardFonts,rgb}=require('../vendor/pdf-lib.min.js');
-const pdfjs=require('../vendor/pdf.min.js'),core=require('../detector-scan-test/core.js');
+const pdfjs=require('../vendor/pdf.min.js'),core=require('../detector-scan-core.js');
 pdfjs.GlobalWorkerOptions.workerSrc=path.resolve(__dirname,'../vendor/pdf.worker.min.js');
 (async()=>{
  const doc=await PDFDocument.create(),font=await doc.embedFont(StandardFonts.Helvetica),p=doc.addPage([600,400]);
@@ -16,7 +16,7 @@ pdfjs.GlobalWorkerOptions.workerSrc=path.resolve(__dirname,'../vendor/pdf.worker
  assert.deepEqual(core.inkBounds(ink),{left:20,top:8,width:7,height:33});assert.equal(core.inkBounds({width:1,height:1,data:new Uint8ClampedArray([255,255,255,255])}),null);
  const ctx={fillRect(){},translate(){},rotate(){},drawImage(){},getImageData(){return ink}};
  const sandbox={DetectorScanCore:core,window:{Tesseract:true},Tesseract:{createWorker:async()=>({setParameters:async p=>{mode=p.tessedit_pageseg_mode},recognize:async()=>{calls++;readingModes.push(mode);if(fail)throw Error('offline');return{data:queued.shift()||{text:'5',confidence:92}}},terminate:async()=>{closed++}})},document:{baseURI:'https://test.invalid/',createElement:()=>({width:0,height:0,getContext:()=>ctx})},setTimeout,URL};
- vm.runInNewContext(fs.readFileSync(path.resolve(__dirname,'../detector-scan-test/vision.js'),'utf8'),sandbox);
+ vm.runInNewContext(fs.readFileSync(path.resolve(__dirname,'../detector-scan-vision.js'),'utf8'),sandbox);
  const rendered={pageNumber:1,rotate:0,getViewport:a=>page.getViewport(a),getOperatorList:()=>page.getOperatorList(),getTextContent:()=>page.getTextContent(),render:()=>({promise:Promise.resolve(),cancel(){}})};
  const session=sandbox.window.DetectorVision.createSession(),result=await session.scanPage(rendered,pdfjs,profile);
  assert.deepEqual(Array.from(result.hits,h=>h.code).sort(),['2','3','5']);assert.equal(result.ocr,1);assert.equal(calls,1,'Only the textless frame goes to OCR; letters/ranges remain excluded');session.close();assert.equal(closed,1);

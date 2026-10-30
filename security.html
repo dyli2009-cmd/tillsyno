@@ -47,6 +47,7 @@
     <button data-add="alarm">＋ Inbrott</button>
     <button data-add="lock">＋ Lås & Dörrmiljö</button>
     <button data-add="access">＋ Passer</button>
+    <button id="secToggleOverlays" type="button" aria-pressed="false">Visa / dölj markeringar</button>
     <button id="secPrecision" type="button" class="precisionButton" aria-pressed="false" title="Precisionsläge för exakt placering på telefon">⌖ Precision</button>
     <button id="secAddText" hidden>＋ Text</button>
     <button id="secChangeDrawing" type="button" hidden>Byt ritning</button>
@@ -93,6 +94,20 @@
     <button id="secOpenContinue" type="button">Fortsätt / ändra</button>
   </div>
   <p class="muted">Ny service behåller projekt, kund, företag, logga, objekt och tekniker men nollställer dagens kontroll.</p>
+</dialog>
+
+<dialog id="secSaveDialog" class="secSaveDialog" aria-labelledby="secSaveTitle">
+  <div class="secSaveHead"><strong id="secSaveTitle">Spara PDF</strong><button id="secSaveClose" type="button" aria-label="Stäng">×</button></div>
+  <div class="secSaveChoices">
+    <button id="secSaveWork" type="button" class="secSaveChoice primary">
+      <span class="secSaveChoiceIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5h11l3 3V20.5H5z"/><path d="M8 3.5v6h8v-6M8 20.5v-7h8v7"/></svg></span>
+      <span><strong>Spara arbets-PDF</strong><small>Arbetsfil som kan öppnas igen och fortsättas vid nästa service.</small></span>
+    </button>
+    <button id="secSaveNew" type="button" class="secSaveChoice">
+      <span class="secSaveChoiceIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h8l3 3V20.5H7z"/><path d="M15 3.5v4h4"/><path d="M12 11v6M9 14h6"/></svg></span>
+      <span><strong>Skapa ny PDF</strong><small>Gör en separat kopia med nytt filnamn. Den tidigare filen ligger kvar.</small></span>
+    </button>
+  </div>
 </dialog>
 
 <dialog id="secPreviewDialog" class="secPreviewDialog">
@@ -154,8 +169,8 @@
 </nav>
 <script src="ui-text-scale.js?v=2.4.215"></script><script src="drawing-annotations.js?v=2.4.215"></script>
 <script src="session-history.js?v=2.4.215"></script>
-<script src="offline-work.js?v=2.4.256"></script><script src="security.js?v=2.4.531"></script>
+<script src="offline-work.js?v=2.4.256"></script><script src="security.js?v=2.4.532"></script>
 <script src="drawing-transfer.js?v=2.4.215"></script>
 <script src="offline.js?v=2.4.296"></script>
 <script src="tillsyno-appearance.js?v=2.4.359"></script>
-<script src="controlflow-revision/customer-stamp-editor-v335.js?v=2.4.359"></script></body></html>
+<script src="controlflow-revision/customer-stamp-editor-v335.js?v=2.4.359"></script><link rel="stylesheet" href="security-detector-scan.css?v=2.4.532"><script src="detector-scan-core.js?v=2.4.532"></script><script src="detector-scan-vision.js?v=2.4.532"></script><script src="security-detector-scan.js?v=2.4.532"></script></body></html>

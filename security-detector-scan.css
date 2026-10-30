@@ -1,0 +1,48 @@
+/* Compact detector scan tool and rectangular number controls. */
+body.securityDetectorScanApp .detectorScanTools{width:100%;color:var(--ink,#193746);font-size:12px}
+.detectorScanActions{display:flex;gap:6px;flex-wrap:wrap}
+body.securityDetectorScanApp .detectorScanTools button{min-height:36px;padding:7px 11px;font-size:12px;line-height:1.25;border-radius:7px}
+#detectorScanStatus{margin:5px 0 0;font-size:11px;line-height:1.35}
+#detectorManualForm{display:flex;align-items:end;gap:8px;margin-top:8px;max-width:460px}
+#detectorManualForm[hidden]{display:none}
+#detectorManualForm label{flex:1;min-width:0;font-size:11px}
+#detectorManualCode{width:100%;min-height:36px;font-size:16px;padding:6px}
+body.securityDetectorScanApp .detectorNumberBox{position:absolute!important;transform:translate(-50%,-50%);box-sizing:border-box;min-width:0!important;min-height:0!important;padding:0!important;margin:0!important;border:1px solid #000!important;border-radius:0!important;background:var(--detector-status-color,#77858e)!important;color:#fff!important;box-shadow:none!important;display:grid;place-items:center;line-height:1;font-family:Arial,sans-serif;font-weight:400;z-index:4;overflow:visible;touch-action:pan-x pan-y}
+.detectorNumberBox span{display:block;white-space:nowrap;pointer-events:none;line-height:1}
+body.securityDetectorScanApp .detectorNumberBox:focus-visible,body.securityDetectorScanApp .detectorNumberBox.isSelected{outline:2px solid #1873b5;outline-offset:2px}
+body.securityDetectorScanApp .detectorNumberBox::before,body.securityDetectorScanApp .detectorNumberBox::after{content:none!important}
+body.securityDetectorScanApp #detectorMove{font-size:12px;min-height:34px}
+
+body.securityDetectorScanApp .detectorNumberBox{pointer-events:auto}
+
+#detectorSampleForm{display:flex;align-items:end;gap:8px;flex-wrap:wrap;margin:8px 0;max-width:540px}
+#detectorSampleForm[hidden],#detectorSampleInfo[hidden]{display:none}
+#detectorSampleForm label{font-size:11px;flex:1;min-width:110px}
+#detectorSampleCode{width:100%;min-height:36px;font-size:16px;padding:6px}
+#detectorSamplePreview{max-width:110px;max-height:42px;object-fit:contain;background:#fff;border:1px solid #8aa3ae;padding:3px}
+#detectorSampleInfo{font-size:11px;margin:5px 0;color:var(--ink,#193746)}
+.detectorSampleLayer{position:absolute;inset:0;z-index:40;cursor:crosshair;touch-action:none}
+.detectorSampleRegion{position:absolute;min-width:4px;min-height:4px;border:2px solid #0879c1;background:rgba(0,120,190,.12);pointer-events:none;box-sizing:border-box}
+.detectorScanTools button:disabled{opacity:.45;cursor:default}
+
+body.securityDetectorScanApp .detectorScanActions [hidden]{display:none!important}
+
+#detectorSizePanel{max-width:420px;padding-top:6px;margin-top:5px;border-top:1px solid #adc1cb}
+#detectorSizePanel[hidden]{display:none!important}
+.detectorSizeHeading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.detectorSizeHeading strong{font-size:12px}
+.detectorSizeRow{display:grid;grid-template-columns:94px minmax(0,1fr);align-items:center;gap:10px}
+.detectorSizeRow label{display:flex;justify-content:space-between;align-items:center;gap:4px;font-size:12px}
+.detectorSizeRow output{font-variant-numeric:tabular-nums;font-size:11px}
+body.securityDetectorScanApp .detectorSizeRow input[type=range]{width:100%;min-width:0;height:32px;min-height:32px;margin:0;padding:0;accent-color:#376e84;touch-action:pan-y}
+body.securityDetectorScanApp #detectorSizeReset{font-size:11px;padding:5px 8px;min-height:30px}
+body.securityDetectorScanApp #detectorSize{font-size:12px;min-height:34px}
+#securityDetectorScanPanel{padding:7px 10px;border-top:1px solid #c5d8df;background:var(--panel,#edf5f8);flex:0 0 auto;max-height:42vh;overflow:auto;box-sizing:border-box}
+#securityDetectorScanPanel[hidden]{display:none!important}
+.detectorPanelHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+.detectorPanelHead strong{font-size:12px}
+body.securityDetectorScanApp #detectorClose{min-height:30px;min-width:30px;padding:2px;font-size:20px}
+.serviceToolChoices .detectorScanLauncher{width:auto!important;display:flex;align-items:center;gap:5px;padding:5px 8px!important;grid-column:1/-1}
+.detectorScanLauncher span{font-size:11px;white-space:nowrap}
+.detectorScanLauncher svg{width:22px;height:22px;flex:none}
+@media(max-width:420px){.detectorScanActions{gap:5px}body.securityDetectorScanApp .detectorScanTools button{padding:7px;font-size:11px}#detectorScanStatus{font-size:10px}}

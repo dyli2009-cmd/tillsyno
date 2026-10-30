@@ -1,7 +1,7 @@
 // node tests/detector-scan-test.cjs [optional private original drawing PDF]
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {PDFDocument,StandardFonts,rgb,degrees}=require('../vendor/pdf-lib.min.js');
-const pdfjs=require('../vendor/pdf.min.js'),core=require('../detector-scan-test/core.js');
+const pdfjs=require('../vendor/pdf.min.js'),core=require('../detector-scan-core.js');
 pdfjs.GlobalWorkerOptions.workerSrc=path.resolve(__dirname,'../vendor/pdf.worker.min.js');
 async function open(bytes){return pdfjs.getDocument({data:new Uint8Array(bytes)}).promise;}
 (async()=>{

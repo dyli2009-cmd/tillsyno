@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),core=require('../detector-scan-test/core.js');
+const assert=require('node:assert/strict'),core=require('../detector-scan-core.js');
 const profile={version:1,width:48,height:24,textHeight:14,angle:0};
 function image(w=420,h=240){return{width:w,height:h,data:new Uint8ClampedArray(w*h*4).fill(255)};}
 function line(im,x1,y1,x2,y2,color=0){for(let y=y1;y<=y2;y++)for(let x=x1;x<=x2;x++){const i=(y*im.width+x)*4;im.data.set([color,color,color,255],i);}}

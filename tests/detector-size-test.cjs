@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),core=require('../detector-scan-test/core.js');
+const assert=require('node:assert/strict'),core=require('../detector-scan-core.js');
 const base={width:.04,height:.02,textHeight:.014,angle:0,manual:true};
 const wide=core.resizeBox(base,'width',250);assert.equal(wide.width,.1);assert.equal(wide.height,base.height);assert.equal(wide.textHeight,base.textHeight);assert.equal(core.boxScale(wide,'width'),250);assert.equal(base.baseWidth,undefined);
 const tall=core.resizeBox(wide,'height',200);assert.equal(tall.width,.1);assert.equal(tall.height,.04);assert.equal(tall.textHeight,.028);
