@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict'),state=require('../detector-scan-test/state.js');
+const detector={uid:'one',type:'detector',id:'3',page:1,x:.2,y:.3,detectorBox:{width:.02,height:.01},status:'untested',checks:{'1.1':{result:''}}};
+const importedWork={items:[detector,{uid:'old-door',type:'automation'}],textNotes:[{text:'old'}],drawingExtras:[{type:'old'}],project:{customer:'Testkund',detectorSample:{code:'1041'},detectorSetup:{completed:true}},drawingRotations:{1:90}};
+const before=JSON.stringify(importedWork),fresh=state.openingRecord({importedWork});
+assert.deepEqual(fresh.items,[]);assert.deepEqual(fresh.textNotes,[]);assert.deepEqual(fresh.drawingExtras,[]);assert.equal(fresh.project.customer,'Testkund');assert.equal(fresh.project.detectorSample,undefined);assert.equal(fresh.project.detectorSetup,undefined);assert.deepEqual(fresh.drawingRotations,{1:90});assert.equal(JSON.stringify(importedWork),before);assert.equal(state.isReady(fresh.project,fresh.items),false);
+assert.equal(state.isReady({detectorSample:{code:'3'}},[]),false);assert.equal(state.isReady({},[detector]),true);assert.equal(state.isReady({detectorSetup:{completed:true}},[]),true);
+const testWork={...importedWork,items:[detector]},saved={...testWork,items:[{...detector,status:'ok',checks:{'1.1':{result:'ok'}}}]};
+assert.equal(state.openingRecord({saved,importedWork}).items[0].status,'ok');
+assert.equal(state.openingRecord({testFile:true,importedWork:testWork,saved}).items[0].status,'untested');
+assert.equal(state.openingRecord({testFile:true,importedWork:testWork,saved,resumeClosed:true}).items[0].status,'ok');
+const portable=state.openingRecord({testFile:true,importedWork:JSON.parse(JSON.stringify(saved))});assert.equal(portable.items[0].uid,'one');assert.equal(portable.items[0].x,.2);assert.equal(portable.items[0].checks['1.1'].result,'ok');assert.equal(state.isReady(portable.project,portable.items),true);
+assert.deepEqual(state.openingRecord({saved:importedWork}).items,[detector]);assert.deepEqual(state.openingRecord().items,[]);
+console.log('PASS: first-open isolation, sample alone is not completion, legacy TEST resume, portable save data, explicit-file precedence, same-file local resume and retained positions/status.');
