@@ -53,3 +53,8 @@ När en PDF är öppen och ritningsvyn visas döljs den gula instruktionen, omr�
 På användarens beställning gäller 14 px kontrolltext, 13 px etiketter och 18/16 px rubriker inom telefonens protokoll. Inmatning behåller 16 px och svarsknappar minst 44 px tryckyta. Avstånd minskas. Revisionsrader visar text och svar bredvid varandra från 360 px vid normal textskala; mindre skärm eller större text får radbrytning. Samma telefonläge används vid högst 800 px eller manuellt val Telefon. Textförstoring bevaras. Dator/iPad och övriga panelers textskala ändras inte.
 
 Ritverktygsfältet (sessionHistoryBar) visas endast i ritningsvyn. Det döljs även när Översikt ligger över en fortfarande aktiv ritningsvy eller när en separat inlinepanel är öppen. Det återkommer när man återgår till ritningen.
+
+
+## Kompaktare objektuppgifter i Säkerhetsservice v2.4.527
+
+Användaren beställde mindre uppgifter och inga dubbla fil-/projektnamn i arbetsytan efter PDF-öppning. Avgränsat undantag: 14 px rubrik, 12 px etiketter/låsta värden, 14 px redigerbara fält och 36 px fälthöjd. Etiketternas sammanlagda tryckyta är minst 44 px; fokuserade redigerbara fält är minst 16 px på pekskärm. Fyra kolumner på större skärmar, två på telefon, en vid stor text. Kontrollpunkternas text/svarsknappar och sparade namn ändras inte. Övriga moduler följer tidigare regler.

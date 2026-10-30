@@ -1,0 +1,22 @@
+/* Requested compact metadata in Security Service only. Stored PDF names are unchanged. */
+@layer controlflowStandard {
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout].secHasPdf :is(.secAppHeader .headerDetails,.objectBar,#secProtocolTitle){display:none!important}
+
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .protocolMetaPanel{margin-bottom:4px!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .protocolMetaPanel>summary{font-size:calc(.875rem * var(--cf-text-scale))!important;min-height:32px;padding:4px 6px!important;line-height:1.2!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .protocolMetaHint{font-size:calc(.75rem * var(--cf-text-scale))!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .compactSecurityMeta{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:3px 6px!important;padding:4px 6px!important;align-items:end}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .compactSecurityMeta>label{font-size:calc(.75rem * var(--cf-text-scale))!important;line-height:1.15!important;gap:2px!important;min-height:44px}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .compactSecurityMeta :is(input,select){font-size:calc(.875rem * var(--cf-text-scale))!important;min-height:36px!important;height:auto!important;padding:4px 6px!important;margin:0!important;line-height:1.2!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .compactSecurityMeta input[readonly]{font-size:calc(.75rem * var(--cf-text-scale))!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .compactDeleteButton{font-size:calc(.75rem * var(--cf-text-scale))!important;padding:4px 6px!important}
+@media(max-width:700px){
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .compactSecurityMeta{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+html[data-controlflow-ui="1"][data-tillsyno-device="phone"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .compactSecurityMeta{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+/* Keep the focused editable text at 16 px on touch devices to avoid iOS field zoom. */
+@media(pointer:coarse){
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .compactSecurityMeta :is(input:not([readonly]),select):focus{font-size:max(1rem,calc(.875rem * var(--cf-text-scale)))!important}
+}
+html[data-controlflow-ui="1"][data-cf-large-text][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .compactSecurityMeta{grid-template-columns:1fr!important}
+}
