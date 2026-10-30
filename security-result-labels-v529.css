@@ -1,0 +1,15 @@
+/* Compact result-column headings on phone/tablet; answer buttons retain their touch targets. */
+@layer controlflowStandard {
+@media(max-width:1099px),(pointer:coarse){
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .securityCheckTable .revisionCheckColumns,html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .securityCheckTable .revisionCheckColumns span{font-size:calc(.6875rem * var(--cf-text-scale))!important;line-height:1.15!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .securityCheckTable .revisionCheckColumns{padding:4px 6px!important}
+}
+@media(max-width:700px){
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .securityCheckTable .revisionCheckColumns,html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .securityCheckTable .revisionCheckColumns span{font-size:calc(.625rem * var(--cf-text-scale))!important;line-height:1.15!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .securityCheckTable .revisionCheckColumns{padding:4px 6px!important}
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-tillsyno-device="tablet"] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .securityCheckTable .revisionCheckColumns,html[data-controlflow-ui="1"][data-tillsyno-theme][data-tillsyno-device="tablet"] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .securityCheckTable .revisionCheckColumns span{font-size:calc(.6875rem * var(--cf-text-scale))!important;line-height:1.15!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-tillsyno-device="tablet"] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .securityCheckTable .revisionCheckColumns{padding:4px 6px!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-tillsyno-device="phone"] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .securityCheckTable .revisionCheckColumns,html[data-controlflow-ui="1"][data-tillsyno-theme][data-tillsyno-device="phone"] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .securityCheckTable .revisionCheckColumns span{font-size:calc(.625rem * var(--cf-text-scale))!important;line-height:1.15!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-tillsyno-device="phone"] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityProtocol .securityCheckTable .revisionCheckColumns{padding:4px 6px!important}
+}

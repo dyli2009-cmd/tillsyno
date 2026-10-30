@@ -65,3 +65,8 @@ Användaren beställde mindre uppgifter och inga dubbla fil-/projektnamn i arbet
 ## Säkerhetsservices ritningsrad v2.4.528
 
 Användaren beställde borttagna PDF-zoomknappar och klar-instruktion. Sidväxlingen ligger i arbetsverktygsraden och textskalans A+/A− i ritverktygsmenyn. Raden får radbrytas på smala skärmar; sidknapparnas 44 px tryckytor bevaras. Nyp-/mushjulszoom, sidfunktion och felmeddelanden ändras inte. Namnraderna följer v2.4.527.
+
+
+## Säkerhetsservices resultatrubriker v2.4.529
+
+Beställd mindre text över svarskolumnerna: 11 px på iPad/surfplatta och 10 px på telefon, skalbart till 200 %. Tätare radavstånd och vertikal utfyllnad. Svarsknapparnas 44 px tryckytor och befintliga kortnamn bevaras. Rymlig datorvy med fin pekare behåller tidigare rubrikstorlek.
