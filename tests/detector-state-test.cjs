@@ -5,9 +5,12 @@ const before=JSON.stringify(importedWork),fresh=state.openingRecord({importedWor
 assert.deepEqual(fresh.items,[]);assert.deepEqual(fresh.textNotes,[]);assert.deepEqual(fresh.drawingExtras,[]);assert.equal(fresh.project.customer,'Testkund');assert.equal(fresh.project.detectorSample,undefined);assert.equal(fresh.project.detectorSetup,undefined);assert.deepEqual(fresh.drawingRotations,{1:90});assert.equal(JSON.stringify(importedWork),before);assert.equal(state.isReady(fresh.project,fresh.items),false);
 assert.equal(state.isReady({detectorSample:{code:'3'}},[]),false);assert.equal(state.isReady({},[detector]),true);assert.equal(state.isReady({detectorSetup:{completed:true}},[]),true);
 const testWork={...importedWork,items:[detector]},saved={...testWork,items:[{...detector,status:'ok',checks:{'1.1':{result:'ok'}}}]};
-assert.equal(state.openingRecord({saved,importedWork}).items[0].status,'ok');
+assert.deepEqual(state.openingRecord({saved,importedWork}).items,[]);
+assert.deepEqual(state.openingRecord({saved,importedWork,resumeClosed:true}).items,[]);
+assert.equal(state.openingRecord({saved,importedWork}).project.detectorSample,undefined);
+assert.equal(state.openingRecord({saved,importedWork}).project.detectorSetup,undefined);
 assert.equal(state.openingRecord({testFile:true,importedWork:testWork,saved}).items[0].status,'untested');
-assert.equal(state.openingRecord({testFile:true,importedWork:testWork,saved,resumeClosed:true}).items[0].status,'ok');
+assert.equal(state.openingRecord({testFile:true,importedWork:testWork,saved,resumeClosed:true}).items[0].status,'untested');
 const portable=state.openingRecord({testFile:true,importedWork:JSON.parse(JSON.stringify(saved))});assert.equal(portable.items[0].uid,'one');assert.equal(portable.items[0].x,.2);assert.equal(portable.items[0].checks['1.1'].result,'ok');assert.equal(state.isReady(portable.project,portable.items),true);
-assert.deepEqual(state.openingRecord({saved:importedWork}).items,[detector]);assert.deepEqual(state.openingRecord().items,[]);
-console.log('PASS: first-open isolation, sample alone is not completion, legacy TEST resume, portable save data, explicit-file precedence, same-file local resume and retained positions/status.');
+assert.deepEqual(state.openingRecord({saved:importedWork}).items,[]);assert.deepEqual(state.openingRecord().items,[]);
+console.log('PASS: source PDFs stay unlinked despite cached/closed work; only saved TEST metadata restores positions/status, including older TEST versions; no cached sample or completion leaks.');

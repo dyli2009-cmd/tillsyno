@@ -1,8 +1,8 @@
-/* Test work belongs to one drawing. Ordinary imports never supply controls. */
+/* Only an explicitly saved test PDF restores controls. Cached source matches never do. */
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.DetectorTestState=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
  'use strict';
- function openingRecord({testFile=false,importedWork=null,saved=null,resumeClosed=false}={}){
-  const own=(resumeClosed&&saved)||(testFile&&importedWork)||saved;
+ function openingRecord({testFile=false,importedWork=null}={}){
+  const own=testFile&&importedWork;
   if(own)return{...own,items:(own.items||[]).filter(o=>o.type==='detector')};
   const project={...(importedWork?.project||{})};
   delete project.detectorSample;delete project.detectorSetup;

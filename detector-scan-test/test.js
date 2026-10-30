@@ -5,13 +5,13 @@
  const controls=document.createElement('section');controls.className='detectorScanTools';
  controls.innerHTML='<div class="detectorScanActions"><button id="detectorLearn" type="button" class="primary">1. Markera exempel</button><button id="detectorScan" type="button" class="primary">2. Skanna ritningen</button><button id="detectorSetupToggle" type="button" hidden>Sök fler</button><button id="detectorManual" type="button">Lägg till manuellt</button><button id="detectorCancel" type="button" hidden>Avbryt</button></div><form id="detectorManualForm" hidden><label>Nummer<input id="detectorManualCode" inputmode="numeric" pattern="[0-9]+" required placeholder="Exempel: 3 eller 1041" autocomplete="off"></label><button type="submit">Välj position</button></form><form id="detectorSampleForm" hidden><img id="detectorSamplePreview" alt="Markerad nummerruta"><label>Kontrollera numret<input id="detectorSampleCode" inputmode="numeric" pattern="[0-9]+" required autocomplete="off"></label><button type="submit">Använd exempel</button></form><p id="detectorSampleInfo" hidden></p><p id="detectorScanStatus" role="status" aria-live="polite">Markera först en nummerruta som exempel. Alla nummer med liknande ram söks sedan upp.</p>';
  bar.classList.remove('allInOneProtocolTools');bar.append(controls);
- const badge=document.createElement('span');badge.className='detectorTestBadge';badge.textContent='TEST 0.3';document.querySelector('.secAppHeader .headerActions').append(badge);
+ const badge=document.createElement('span');badge.className='detectorTestBadge';badge.textContent='TEST 0.4';document.querySelector('.secAppHeader .headerActions').append(badge);
  let run=0,busy=false,moveUid=null,placingCode='',scanDoc=null,cached=new Map(),vision=null,draft=null,selectionLayer=null,setupOpen=false;
  const scanButton=$('detectorScan'),manualButton=$('detectorManual'),cancelButton=$('detectorCancel'),manualForm=$('detectorManualForm'),codeInput=$('detectorManualCode'),status=$('detectorScanStatus');
  const setupToggle=$('detectorSetupToggle'),learnButton=$('detectorLearn'),sampleForm=$('detectorSampleForm'),sampleCode=$('detectorSampleCode'),sampleInfo=$('detectorSampleInfo');
  const setStatus=text=>{status.textContent=text;};
  const ready=()=>DetectorTestState.isReady(project,items);
- const readyMessage=()=>ready()?'Kopplingar och kontrollstatus är återställda. Ingen ny skanning behövs.':'Ny ritning utan kopplingar. Markera ett exempel och skanna första gången.';
+ const readyMessage=()=>ready()?'Kopplingar och kontrollstatus är återställda. Ingen ny skanning behövs.':'Originalritning utan kopplingar. Markera ett exempel och skanna.';
  function updateControls(){
   const configured=ready(),showSetup=!configured||setupOpen||busy||!!selectionLayer||!!draft;
   learnButton.hidden=scanButton.hidden=!showSetup;setupToggle.hidden=!configured||busy||!!selectionLayer||!!draft;
