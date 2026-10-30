@@ -71,14 +71,18 @@
  }
  // Appearance is independent of the number. Dimensions use unzoomed PDF units.
  function validProfile(p){return !!p&&p.version===1&&[p.width,p.height,p.textHeight].every(n=>Number.isFinite(n)&&n>0)&&Number.isFinite(p.angle);}
- function similarFrame(b,p,scale=1){
+ function similarFrame(b,p,scale=1,scan=false){
   if(!validProfile(p))return false;
   const w=(b.right-b.left)/scale,h=(b.bottom-b.top)/scale,short=Math.min(w,h),long=Math.max(w,h),sampleShort=Math.min(p.width,p.height),sampleLong=Math.max(p.width,p.height);
-  return short>=sampleShort*.55&&short<=sampleShort*1.8&&long<=Math.max(sampleLong*2,sampleShort*10);
+  return short>=sampleShort*(scan ? .35 : .55)&&short<=sampleShort*(scan?2.7:1.8)&&long<=Math.max(sampleLong*(scan?3:2),sampleShort*(scan?14:10));
  }
  // matchNumbers already validates that the digits fit their own frame. A different
  // font size inside a matching frame must not be rejected by the sample's font.
- function filterByProfile(hits,p,viewport){return hits.filter(h=>similarFrame({left:0,top:0,right:h.width*viewport.width,bottom:h.height*viewport.height},p));}
+ function filterByProfile(hits,p,viewport,scan=false){return hits.filter(h=>similarFrame({left:0,top:0,right:h.width*viewport.width,bottom:h.height*viewport.height},p,1,scan));}
+ function confirmedSampleHit(p,viewport,page){
+  if(!validProfile(p)||p.confirmed!==true||p.page!==page||!/^\d+$/.test(p.code)||![p.x,p.y].every(n=>Number.isFinite(n)&&n>=0&&n<=1))return null;
+  return{code:p.code,page,x:p.x,y:p.y,width:p.width/viewport.width,height:p.height/viewport.height,textHeight:p.textHeight/viewport.height,angle:p.angle,confirmed:true};
+ }
  function hasFrameInk(image,box){
   const inset=Math.max(2,Math.min(box.right-box.left,box.bottom-box.top)*.15),left=Math.max(0,Math.ceil(box.left+inset)),right=Math.min(image.width,Math.floor(box.right-inset)),top=Math.max(0,Math.ceil(box.top+inset)),bottom=Math.min(image.height,Math.floor(box.bottom-inset));
   if(right<=left||bottom<=top)return true; // Let the full-resolution reader decide.
@@ -93,9 +97,9 @@
  }
  // Read the visible border, irrespective of how PDF paths were constructed.
  // A row run is a horizontal edge; two edges must have matching, covered sides.
- function framesFromPixels(image,profile,scale=1){
+ function framesFromPixels(image,profile,scale=1,scan=false){
   const {width:w,height:h,data}=image,dark=new Uint8Array(w*h),lines=[],active=new Map(),short=Math.min(profile.width,profile.height)*scale;
-  const min=Math.max(6,Math.floor(short*.5)),max=Math.min(Math.max(w,h),Math.ceil(Math.max(profile.width,profile.height,short/scale*5)*scale*2)),gap=1;
+  const min=Math.max(6,Math.floor(short*(scan ? .3 : .5))),max=Math.min(Math.max(w,h),Math.ceil(Math.max(profile.width,profile.height,short/scale*5)*scale*(scan?3:2))),gap=1;
   for(let i=0;i<dark.length;i++){const j=i*4;dark[i]=data[j+3]>100&&Math.max(data[j],data[j+1],data[j+2])<150?1:0;}
   for(let y=0;y<h;y++){
    for(let x=0;x<w;x++){
@@ -120,7 +124,7 @@
    for(let key=bucket-1;key<=bucket+1;key++)for(const b of buckets.get(key)||[]){
     if(b.top-a.bottom<min||b.top-a.bottom>max||Math.abs(a.left-b.left)>tolerance||Math.abs(a.right-b.right)>tolerance)continue;
     const box={left:Math.round((a.left+b.left)/2),right:Math.round((a.right+b.right)/2),top:a.top,bottom:b.bottom};
-    if(!similarFrame(box,profile,scale)||side(box.left,a.bottom,b.top)<.83||side(box.right,a.bottom,b.top)<.83)continue;
+    if(!similarFrame(box,profile,scale,scan)||side(box.left,a.bottom,b.top)<.83||side(box.right,a.bottom,b.top)<.83)continue;
     if(found.some(f=>overlap(f,box)>.85))continue;found.push(box);
    }
   }
@@ -148,5 +152,5 @@
   // Older arrow points sit near their number. Only reuse a nearby, same-code object.
   return items.filter(o=>o.type==='detector'&&!o.detectorBox&&!used.has(o.uid)&&o.page===hit.page&&String(o.id).trim()===hit.code&&Math.hypot((o.x-hit.x)/hit.width,(o.y-hit.y)/hit.height)<5).sort((a,b)=>Math.hypot(a.x-hit.x,a.y-hit.y)-Math.hypot(b.x-hit.x,b.y-hit.y))[0]||null;
  }
- return{boxScale,resizeBox,fitLabelSize,framesFromOperators,framesFromPixels,hasFrameInk,inkBounds,validProfile,similarFrame,filterByProfile,textGeometry,matchNumbers,scanPage,samePosition,nearestExisting};
+ return{boxScale,resizeBox,fitLabelSize,framesFromOperators,framesFromPixels,hasFrameInk,inkBounds,validProfile,similarFrame,filterByProfile,confirmedSampleHit,textGeometry,matchNumbers,scanPage,samePosition,nearestExisting};
 });

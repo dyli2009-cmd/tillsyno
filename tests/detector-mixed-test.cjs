@@ -21,8 +21,17 @@ pdfjs.GlobalWorkerOptions.workerSrc=path.resolve(__dirname,'../vendor/pdf.worker
  const session=sandbox.window.DetectorVision.createSession(),result=await session.scanPage(rendered,pdfjs,profile);
  assert.deepEqual(Array.from(result.hits,h=>h.code).sort(),['2','3','5']);assert.equal(result.ocr,1);assert.equal(calls,1,'Only the textless frame goes to OCR; letters/ranges remain excluded');session.close();assert.equal(closed,1);
  const retrySession=sandbox.window.DetectorVision.createSession();
- for(const [first,second,expected]of[[{text:'ce',confidence:32},{text:'2',confidence:94},'2'],[{text:')',confidence:29},{text:'5',confidence:95},'5'],[{text:'Q',confidence:91},{text:'9',confidence:95},'9'],[{text:'3',confidence:45},{text:'9',confidence:95},null],[{text:')',confidence:29},{text:'5',confidence:61},null],[{text:'PSU',confidence:96},{text:'PSU',confidence:94},null]]){
-  queued=[first,second];readingModes.length=0;const checked=await retrySession.scanPage(rendered,pdfjs,profile),ocr=checked.hits.filter(h=>h.ocr);assert.equal(ocr[0]?.code||null,expected);assert.deepEqual(readingModes,['7','8'],'Each frame starts in line mode, then retries normalized word mode');
+ for(const [readings,expected,modes]of[
+  [[{text:'ce',confidence:32},{text:'2',confidence:94}],'2',['7','8']],
+  [[{text:')',confidence:29},{text:'5',confidence:95}],'5',['7','8']],
+  [[{text:'Q',confidence:91},{text:'9',confidence:95}],'9',['7','8']],
+  [[{text:'3',confidence:45},{text:'9',confidence:95}],null,['7','8']],
+  [[{text:')',confidence:29},{text:'5',confidence:61},{text:'5',confidence:70}],null,['7','8','7']],
+  [[{text:'PSU',confidence:96}],null,['7']],
+  [[{text:'?',confidence:32},{text:'?',confidence:40},{text:'52',confidence:94}],'52',['7','8','7']],
+  [[{text:'56',confidence:40},{text:'56',confidence:60},{text:'57',confidence:95}],null,['7','8','7']]
+ ]){
+  queued=[...readings];readingModes.length=0;const checked=await retrySession.scanPage(rendered,pdfjs,profile),ocr=checked.hits.filter(h=>h.ocr);assert.equal(ocr[0]?.code||null,expected);assert.deepEqual(readingModes,modes,'Each frame resets OCR mode; a wider retry must stay confident and consistent');
  }
  queued=[{text:'9-16',confidence:92}];readingModes.length=0;const range=await retrySession.scanPage(rendered,pdfjs,profile);assert.equal(range.ocr,0);assert.deepEqual(readingModes,['7'],'A range is never retried as a number');retrySession.close();
  fail=true;const offline=sandbox.window.DetectorVision.createSession(),partial=await offline.scanPage(rendered,pdfjs,profile);assert.equal(partial.ocrFailed,true);assert.equal(partial.unread,1);assert.deepEqual(Array.from(partial.hits,h=>h.code),['3','2']);offline.close();

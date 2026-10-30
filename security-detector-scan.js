@@ -3,7 +3,7 @@
  'use strict';
  const core=window.DetectorScanCore,bar=document.querySelector('.securityTools');
  const controls=document.createElement('section');controls.className='detectorScanTools';controls.id='securityDetectorScanPanel';controls.hidden=true;controls.setAttribute('aria-label','Skanna detektorer');document.body.classList.add('securityDetectorScanApp');
- controls.innerHTML='<div class="detectorPanelHead"><strong>Skanna detektorer</strong><button id="detectorClose" type="button" aria-label="Stäng skanningsverktyget">×</button></div><div class="detectorScanActions"><button id="detectorLearn" type="button" class="primary">1. Markera exempel</button><button id="detectorScan" type="button" class="primary">2. Skanna ritningen</button><button id="detectorSetupToggle" type="button" hidden>Sök fler</button><button id="detectorManual" type="button">Lägg till manuellt</button><button id="detectorCancel" type="button" hidden>Avbryt</button></div><form id="detectorManualForm" hidden><label>Nummer<input id="detectorManualCode" inputmode="numeric" pattern="[0-9]+" required placeholder="Exempel: 3 eller 1041" autocomplete="off"></label><button type="submit">Välj position</button></form><form id="detectorSampleForm" hidden><img id="detectorSamplePreview" alt="Markerad nummerruta"><label>Kontrollera numret<input id="detectorSampleCode" inputmode="numeric" pattern="[0-9]+" required autocomplete="off"></label><button type="submit">Använd exempel</button></form><section id="detectorSizePanel" hidden aria-label="Storlek på nummerruta"><div class="detectorSizeHeading"><strong id="detectorSizeTitle">Storlek</strong><button id="detectorSizeDone" type="button">Klar</button></div><div class="detectorSizeRow"><label for="detectorWidth">Bredd <output id="detectorWidthValue" for="detectorWidth">100 %</output></label><input id="detectorWidth" type="range" min="25" max="600" step="5" value="100"></div><div class="detectorSizeRow"><label for="detectorHeight">Höjd <output id="detectorHeightValue" for="detectorHeight">100 %</output></label><input id="detectorHeight" type="range" min="25" max="600" step="5" value="100"></div><button id="detectorSizeReset" type="button">Återställ storlek</button></section><p id="detectorSampleInfo" hidden></p><p id="detectorScanStatus" role="status" aria-live="polite">Markera först en nummerruta som exempel. Alla nummer med liknande ram söks sedan upp.</p>';
+ controls.innerHTML='<div class="detectorPanelHead"><strong>Skanna detektorer</strong><button id="detectorClose" type="button" aria-label="Stäng skanningsverktyget">×</button></div><div class="detectorScanActions"><button id="detectorLearn" type="button" class="primary">1. Markera exempel</button><button id="detectorScan" type="button" class="primary">2. Skanna ritningen</button><button id="detectorSetupToggle" type="button" hidden>Sök fler</button><button id="detectorManual" type="button">Lägg till manuellt</button><button id="detectorCancel" type="button" hidden>Avbryt</button></div><form id="detectorManualForm" hidden><label>Nummer<input id="detectorManualCode" inputmode="numeric" pattern="[0-9]+" required placeholder="Exempel: 3 eller 1041" autocomplete="off"></label><button type="submit">Välj position</button></form><form id="detectorSampleForm" hidden><img id="detectorSamplePreview" alt="Markerad nummerruta"><label>Kontrollera numret<input id="detectorSampleCode" inputmode="numeric" pattern="[0-9]+" required autocomplete="off"></label><button type="submit">Använd och koppla</button></form><section id="detectorSizePanel" hidden aria-label="Storlek på nummerruta"><div class="detectorSizeHeading"><strong id="detectorSizeTitle">Storlek</strong><button id="detectorSizeDone" type="button">Klar</button></div><div class="detectorSizeRow"><label for="detectorWidth">Bredd <output id="detectorWidthValue" for="detectorWidth">100 %</output></label><input id="detectorWidth" type="range" min="25" max="600" step="5" value="100"></div><div class="detectorSizeRow"><label for="detectorHeight">Höjd <output id="detectorHeightValue" for="detectorHeight">100 %</output></label><input id="detectorHeight" type="range" min="25" max="600" step="5" value="100"></div><button id="detectorSizeReset" type="button">Återställ storlek</button></section><p id="detectorSampleInfo" hidden></p><p id="detectorScanStatus" role="status" aria-live="polite">Markera först en nummerruta som exempel. Alla nummer med liknande ram söks sedan upp.</p>';
  bar.after(controls);
  const toolMenu=document.querySelector('.serviceToolsMenu'),toolChoices=toolMenu?.querySelector('.serviceToolChoices'),launcher=document.createElement('button');launcher.type='button';launcher.id='securityDetectorScan';launcher.className='serviceIconButton detectorScanLauncher';launcher.title='Skanna detektorer';launcher.setAttribute('aria-label','Skanna detektorer');launcher.setAttribute('aria-controls',controls.id);launcher.setAttribute('aria-expanded','false');launcher.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/><rect x="6" y="8" width="12" height="8"/><path d="M11 10h2v4"/></svg><span>Skanna detektorer</span>';(toolChoices||bar).append(launcher);
  function openTool(){if(!pdf)return msg('Öppna en PDF först.',true);cancel();controls.hidden=false;launcher.setAttribute('aria-expanded','true');if(toolMenu)toolMenu.hidden=true;securityDrawingTools?.stop();go('drawing');updateControls();setStatus(readyMessage());}
@@ -35,7 +35,7 @@
  $('detectorSizeReset').onclick=()=>{const group={};securitySessionHistory.endGroup();changeSize('width',100,group);changeSize('height',100,group);securitySessionHistory.endGroup();};
 
  const ready=()=>project.detectorSetup?.completed===true||items.some(isBox);
- const readyMessage=()=>ready()?'Detektorer finns kopplade. Välj Sök fler eller lägg till manuellt.':'Markera en nummerruta som exempel och skanna ritningen.';
+ const readyMessage=()=>{if(!ready())return 'Markera en nummerruta som exempel och skanna ritningen.';const result=project.detectorScanSummary;return items.filter(isBox).length+' detektorer kopplade. '+(result?.unread?result.unread+' ramar behöver kontrolleras. ':'')+(result?.incomplete?'Skanningen avbröts på en eller flera sidor. ':'')+'Välj Sök fler eller lägg till manuellt.';};
  function updateControls(){
   launcher.disabled=!pdf||busy;
   const configured=ready(),showSetup=!configured||setupOpen||busy||!!selectionLayer||!!draft;
@@ -63,7 +63,7 @@
   if(!pdf||busy)return;
   stopSelection();resetPlacement();const doc=pdf,n=page,angle=(360-drawingRotation())%360,token=++run;busy=true;updateControls();cancelButton.hidden=false;setStatus('Läser exemplet…');
   const session=DetectorVision.createSession(()=>{if(token!==run||doc!==pdf)throw Error('Avbrutet');});vision=session;
-  try{draft=await session.learn(await doc.getPage(n),rect,pdfjsLib,angle);if(token!==run||doc!==pdf)return;$('detectorSamplePreview').src=draft.preview;sampleCode.value=draft.code;sampleForm.hidden=false;sampleCode.focus();setStatus('Kontrollera numret i exemplet och tryck Använd exempel.');}
+  try{draft=await session.learn(await doc.getPage(n),rect,pdfjsLib,angle);if(token!==run||doc!==pdf)return;$('detectorSamplePreview').src=draft.preview;sampleCode.value=draft.code;sampleForm.hidden=false;sampleCode.focus();setStatus('Kontrollera numret och tryck Använd och koppla.');}
   catch(e){if(token===run){draft=null;setStatus(e.message||'Exemplet kunde inte läsas. Markera igen.');}}
   finally{session.close();if(vision===session)vision=null;if(token===run){busy=false;updateControls();cancelButton.hidden=!draft;}}
  }
@@ -82,7 +82,17 @@
   drawingGestureLocked=true;drawingLockScroll={left:viewer.scrollLeft,top:viewer.scrollTop};pinch=null;panTouch=null;panMouse=null;cancelButton.hidden=false;updateControls();setStatus('Dra runt en nummerruta, eller tryck på två motsatta hörn. Ta med hela svarta ramen. Zooma in innan du markerar.');
  }
  learnButton.onclick=startLearning;
- sampleForm.onsubmit=e=>{e.preventDefault();const code=sampleCode.value.trim();if(!draft||!/^\d+$/.test(code))return;securitySessionHistory.endGroup();securitySessionHistory.record();project.detectorSample={...draft,code};draft=null;sampleForm.hidden=true;cache().clear();save();cancelButton.hidden=true;updateControls();setStatus('Exemplet är sparat. Tryck Skanna ritningen för att hitta alla liknande nummerrutor.');};
+ sampleForm.onsubmit=async e=>{
+  e.preventDefault();const code=sampleCode.value.trim();if(!draft||!/^\d+$/.test(code))return;
+  const doc=pdf,example=draft,profile={...example,code,confirmed:true};
+  try{
+  const p=await doc.getPage(profile.page);if(pdf!==doc||draft!==example)return;
+  const hit=core.confirmedSampleHit(profile,p.getViewport({scale:1}),profile.page);if(!hit)return;
+  securitySessionHistory.endGroup();securitySessionHistory.record();enableDetectors();
+  project.detectorSample=profile;const result=applyHits([hit]);draft=null;sampleForm.hidden=true;setupOpen=true;cache().clear();save();drawMarkers();showOverview();cancelButton.hidden=true;updateControls();
+  setStatus('Nummerruta '+code+(result.added?' är kopplad. ':' var redan kopplad. ')+'Exemplet är sparat. Skanna ritningen för att hitta fler.');
+  }catch(error){if(pdf===doc)setStatus('Kunde inte koppla exemplet. '+(error.message||'Markera igen.'));}
+ };
  async function scan(){
   if(!pdf||busy)return;
   enableDetectors();
@@ -99,12 +109,12 @@
    }
    if(token!==run||pdf!==doc)return;
    securitySessionHistory.endGroup();securitySessionHistory.record();
-   const result=applyHits(hits);if(hits.length&&!failed.length&&!ocrFailed)project.detectorSetup={version:1,completed:true,scannedAt:new Date().toISOString()};setupOpen=false;save();drawMarkers();showOverview();
+   const result=applyHits(hits),scannedAt=new Date().toISOString();project.detectorScanSummary={found:hits.length,added:result.added,existing:result.existing,unread,incomplete:!!failed.length||ocrFailed,scannedAt};project.detectorSetup={version:1,completed:!!hits.length&&!failed.length&&!ocrFailed&&!unread,scannedAt};setupOpen=false;save();drawMarkers();showOverview();
    const notice=[hits.length+' nummerrutor hittade. '+result.added+' tillagda'+(result.existing?', '+result.existing+' redan kopplade':'')+'.'];
    if(hits.length)notice.push('Spara PDF så följer kopplingar och kontrollstatus med nästa gång.');
    if(ocr)notice.push(ocr+' nummer bildlästa. Kontrollera dem mot ritningen.');
    if(ocrFailed)notice.push('Bildläsningen kunde inte slutföras. Kontrollera anslutningen och försök igen.');
-   if(unread)notice.push(unread+' ramar kunde inte nummerläsas säkert. Lägg till manuellt.');
+   if(unread)notice.push(unread+' ramar kunde inte nummerläsas säkert efter omläsning. Kontrollera dem eller markera ett nytt exempel.');
    if(failed.length)notice.push('Kunde inte slutföra sida '+failed.join(', ')+'. Försök igen eller lägg till manuellt.');
    if(!hits.length&&!failed.length)notice.push('Prova ett tydligare exempel eller lägg till manuellt.');
    setStatus(notice.join(' '));
