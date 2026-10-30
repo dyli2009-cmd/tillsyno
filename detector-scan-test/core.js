@@ -1,4 +1,4 @@
-/* Detector scan TEST 0.1. PDF geometry only; no project or network side effects. */
+/* Detector scan TEST 0.2. PDF and raster geometry only; no project or network side effects. */
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.DetectorScanCore=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
  'use strict';
  const identity=()=>[1,0,0,1,0,0];
@@ -69,6 +69,46 @@
   }
   return found.sort((a,b)=>a.y-b.y||a.x-b.x).map(({box,...hit})=>hit);
  }
+ // Appearance is independent of the number. Dimensions use unzoomed PDF units.
+ function validProfile(p){return !!p&&p.version===1&&[p.width,p.height,p.textHeight].every(n=>Number.isFinite(n)&&n>0)&&Number.isFinite(p.angle);}
+ function similarFrame(b,p,scale=1){
+  if(!validProfile(p))return false;
+  const w=(b.right-b.left)/scale,h=(b.bottom-b.top)/scale,short=Math.min(w,h),long=Math.max(w,h),sampleShort=Math.min(p.width,p.height),sampleLong=Math.max(p.width,p.height);
+  return short>=sampleShort*.55&&short<=sampleShort*1.8&&long<=Math.max(sampleLong*2,sampleShort*10);
+ }
+ function filterByProfile(hits,p,viewport){return hits.filter(h=>similarFrame({left:0,top:0,right:h.width*viewport.width,bottom:h.height*viewport.height},p)&&h.textHeight*viewport.height>=p.textHeight*.5&&h.textHeight*viewport.height<=p.textHeight*1.9);}
+ // Read the visible border, irrespective of how PDF paths were constructed.
+ // A row run is a horizontal edge; two edges must have matching, covered sides.
+ function framesFromPixels(image,profile,scale=1){
+  const {width:w,height:h,data}=image,dark=new Uint8Array(w*h),lines=[],active=new Map(),short=Math.min(profile.width,profile.height)*scale;
+  const min=Math.max(6,Math.floor(short*.5)),max=Math.min(Math.max(w,h),Math.ceil(Math.max(profile.width,profile.height,short/scale*5)*scale*2)),gap=1;
+  for(let i=0;i<dark.length;i++){const j=i*4;dark[i]=data[j+3]>100&&Math.max(data[j],data[j+1],data[j+2])<150?1:0;}
+  for(let y=0;y<h;y++){
+   for(let x=0;x<w;x++){
+    if(!dark[y*w+x])continue;
+    const start=x;let last=x,miss=0;
+    while(++x<w){if(dark[y*w+x]){last=x;miss=0;}else if(++miss>gap)break;}
+    const length=last-start+1;if(length<min||length>max)continue;
+    const key=Math.round(start/3)+':'+Math.round(last/3),old=active.get(key);
+    if(old&&old.bottom===y-1){old.bottom=y;old.left=Math.min(old.left,start);old.right=Math.max(old.right,last);}
+    else{const line={left:start,right:last,top:y,bottom:y};lines.push(line);active.set(key,line);}
+   }
+  }
+  const buckets=new Map();for(const line of lines){const key=Math.floor(line.left/4);if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(line);}
+  const side=(x,y1,y2)=>{let covered=0;for(let y=y1;y<=y2;y++){for(let dx=-2;dx<=2;dx++)if(x+dx>=0&&x+dx<w&&dark[y*w+x+dx]){covered++;break;}}return covered/Math.max(1,y2-y1+1);};
+  const found=[];
+  for(const a of lines){
+   if(a.bottom-a.top>short*.3)continue;
+   const bucket=Math.floor(a.left/4);
+   for(let key=bucket-1;key<=bucket+1;key++)for(const b of buckets.get(key)||[]){
+    if(b.top-a.bottom<min||b.top-a.bottom>max||Math.abs(a.left-b.left)>3||Math.abs(a.right-b.right)>3)continue;
+    const box={left:Math.round((a.left+b.left)/2),right:Math.round((a.right+b.right)/2),top:a.top,bottom:b.bottom};
+    if(!similarFrame(box,profile,scale)||side(box.left,a.bottom,b.top)<.83||side(box.right,a.bottom,b.top)<.83)continue;
+    if(found.some(f=>overlap(f,box)>.85))continue;found.push(box);
+   }
+  }
+  return found;
+ }
  async function scanPage(pdfPage,pdfjs){const viewport=pdfPage.getViewport({scale:1});const [ops,text]=await Promise.all([pdfPage.getOperatorList(),pdfPage.getTextContent()]);const frames=framesFromOperators(ops,pdfjs.OPS,viewport);return{hits:matchNumbers(frames,text,viewport,pdfPage.pageNumber),hasText:text.items.some(t=>t.str?.trim()),frameCount:frames.length};}
  function samePosition(item,hit){if(item.page!==hit.page)return false;const box=item.detectorBox;const dx=Math.abs(item.x-hit.x),dy=Math.abs(item.y-hit.y);return dx<Math.max(.0008,(box?.width||hit.width)*.3)&&dy<Math.max(.0008,(box?.height||hit.height)*.3);}
  function nearestExisting(items,hit,used=new Set()){
@@ -76,5 +116,5 @@
   // Older arrow points sit near their number. Only reuse a nearby, same-code object.
   return items.filter(o=>o.type==='detector'&&!o.detectorBox&&!used.has(o.uid)&&o.page===hit.page&&String(o.id).trim()===hit.code&&Math.hypot((o.x-hit.x)/hit.width,(o.y-hit.y)/hit.height)<5).sort((a,b)=>Math.hypot(a.x-hit.x,a.y-hit.y)-Math.hypot(b.x-hit.x,b.y-hit.y))[0]||null;
  }
- return{framesFromOperators,textGeometry,matchNumbers,scanPage,samePosition,nearestExisting};
+ return{framesFromOperators,framesFromPixels,validProfile,similarFrame,filterByProfile,textGeometry,matchNumbers,scanPage,samePosition,nearestExisting};
 });

@@ -4,7 +4,7 @@ const ALL_IN_ONE=window.DOORSERVICE_APP_MODE==='all-in-one';
 const APP_STORAGE_PREFIX='security-detector-test:';
 const APP_WORK_KEY='SecurityDetectorTestWork';
 const APP_STATE_NAME='security-detector-test';
-const APP_LABEL='Detektorer TEST 0.1';
+const APP_LABEL='Detektorer TEST 0.2';
 const SYSTEMS={
  alarm:{label:'Inbrottslarm',markerLabel:'Inbrottslarm',prefix:'I',checks:[
  ['1.1','Lägg anläggningen i serviceläge på larmcentral.'],

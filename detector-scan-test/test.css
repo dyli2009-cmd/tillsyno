@@ -25,3 +25,13 @@ body.detectorTestApp #detectorMove{font-size:12px;min-height:34px}
 
 body.detectorTestApp .detectorTestBadge{display:inline-flex;align-items:center;align-self:center;border:1px solid #658a9b;color:var(--ink,#193746);border-radius:4px;font-size:10px;font-weight:600;line-height:1;padding:4px;white-space:nowrap;margin-left:auto}
 body.detectorTestApp .detectorNumberBox{pointer-events:auto}
+
+#detectorSampleForm{display:flex;align-items:end;gap:8px;flex-wrap:wrap;margin:8px 0;max-width:540px}
+#detectorSampleForm[hidden],#detectorSampleInfo[hidden]{display:none}
+#detectorSampleForm label{font-size:11px;flex:1;min-width:110px}
+#detectorSampleCode{width:100%;min-height:36px;font-size:16px;padding:6px}
+#detectorSamplePreview{max-width:110px;max-height:42px;object-fit:contain;background:#fff;border:1px solid #8aa3ae;padding:3px}
+#detectorSampleInfo{font-size:11px;margin:5px 0;color:var(--ink,#193746)}
+.detectorSampleLayer{position:absolute;inset:0;z-index:40;cursor:crosshair;touch-action:none}
+.detectorSampleRegion{position:absolute;min-width:4px;min-height:4px;border:2px solid #0879c1;background:rgba(0,120,190,.12);pointer-events:none;box-sizing:border-box}
+.detectorScanTools button:disabled{opacity:.45;cursor:default}
