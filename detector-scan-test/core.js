@@ -76,7 +76,9 @@
   const w=(b.right-b.left)/scale,h=(b.bottom-b.top)/scale,short=Math.min(w,h),long=Math.max(w,h),sampleShort=Math.min(p.width,p.height),sampleLong=Math.max(p.width,p.height);
   return short>=sampleShort*.55&&short<=sampleShort*1.8&&long<=Math.max(sampleLong*2,sampleShort*10);
  }
- function filterByProfile(hits,p,viewport){return hits.filter(h=>similarFrame({left:0,top:0,right:h.width*viewport.width,bottom:h.height*viewport.height},p)&&h.textHeight*viewport.height>=p.textHeight*.5&&h.textHeight*viewport.height<=p.textHeight*1.9);}
+ // matchNumbers already validates that the digits fit their own frame. A different
+ // font size inside a matching frame must not be rejected by the sample's font.
+ function filterByProfile(hits,p,viewport){return hits.filter(h=>similarFrame({left:0,top:0,right:h.width*viewport.width,bottom:h.height*viewport.height},p));}
  // Read the visible border, irrespective of how PDF paths were constructed.
  // A row run is a horizontal edge; two edges must have matching, covered sides.
  function framesFromPixels(image,profile,scale=1){
@@ -94,14 +96,17 @@
     else{const line={left:start,right:last,top:y,bottom:y};lines.push(line);active.set(key,line);}
    }
   }
-  const buckets=new Map();for(const line of lines){const key=Math.floor(line.left/4);if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(line);}
-  const side=(x,y1,y2)=>{let covered=0;for(let y=y1;y<=y2;y++){for(let dx=-2;dx<=2;dx++)if(x+dx>=0&&x+dx<w&&dark[y*w+x+dx]){covered++;break;}}return covered/Math.max(1,y2-y1+1);};
+  // Rendered bitmap borders can differ by a source pixel at opposite corners.
+  // Keep that tolerance in drawing units when the scan is rendered larger.
+  const tolerance=Math.max(3,Math.ceil(scale*2)),bucketSize=tolerance+1,sideTolerance=Math.max(2,Math.ceil(scale));
+  const buckets=new Map();for(const line of lines){const key=Math.floor(line.left/bucketSize);if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(line);}
+  const side=(x,y1,y2)=>{let covered=0;for(let y=y1;y<=y2;y++){for(let dx=-sideTolerance;dx<=sideTolerance;dx++)if(x+dx>=0&&x+dx<w&&dark[y*w+x+dx]){covered++;break;}}return covered/Math.max(1,y2-y1+1);};
   const found=[];
   for(const a of lines){
    if(a.bottom-a.top>short*.3)continue;
-   const bucket=Math.floor(a.left/4);
+   const bucket=Math.floor(a.left/bucketSize);
    for(let key=bucket-1;key<=bucket+1;key++)for(const b of buckets.get(key)||[]){
-    if(b.top-a.bottom<min||b.top-a.bottom>max||Math.abs(a.left-b.left)>3||Math.abs(a.right-b.right)>3)continue;
+    if(b.top-a.bottom<min||b.top-a.bottom>max||Math.abs(a.left-b.left)>tolerance||Math.abs(a.right-b.right)>tolerance)continue;
     const box={left:Math.round((a.left+b.left)/2),right:Math.round((a.right+b.right)/2),top:a.top,bottom:b.bottom};
     if(!similarFrame(box,profile,scale)||side(box.left,a.bottom,b.top)<.83||side(box.right,a.bottom,b.top)<.83)continue;
     if(found.some(f=>overlap(f,box)>.85))continue;found.push(box);

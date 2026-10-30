@@ -61,7 +61,9 @@
    let hits=core.filterByProfile(core.matchNumbers(frames,text,viewport,p.pageNumber),profile,viewport),unread=0,ocr=0,ocrFailed=false;
    const texts=text.items.filter(t=>t.str?.trim()).map(t=>core.textGeometry(t,text.styles||{},viewport)).filter(Boolean);
    // Never convert readable nonnumeric text to digits through OCR.
-   const missing=profile.reading==='image'?frames.filter(b=>!texts.some(t=>t.cx>b.left&&t.cx<b.right&&t.cy>b.top&&t.cy<b.bottom)):[];
+   // A page can mix real text with outlined/image digits, regardless of how the
+   // chosen sample was stored. Read textless matching frames in either case.
+   const missing=frames.filter(b=>!texts.some(t=>t.cx>b.left&&t.cx<b.right&&t.cy>b.top&&t.cy<b.bottom));
    for(let i=0;i<missing.length;i++){
     guard();progress('nummer',i+1,missing.length);await next();const box=missing[i],angle=profile.angle+p.rotate-(profile.nativeRotation||0);let read;try{read=await readFrame(p,box,angle);}catch(e){guard();unread+=missing.length-i;ocrFailed=true;break;}guard();
     if(!read){unread++;continue;}
