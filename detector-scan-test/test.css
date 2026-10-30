@@ -1,0 +1,27 @@
+/* TEST 0.1: compact drawing-first controls, only the source number inside its box. */
+body.detectorTestApp .securityTools{display:block!important;padding:6px 8px!important;min-height:0!important}
+body.detectorTestApp .securityTools>[data-add],body.detectorTestApp #secPrecision{display:none!important}
+body.detectorTestApp .detectorScanTools{width:100%;color:var(--ink,#193746);font-size:12px}
+.detectorScanActions{display:flex;gap:6px;flex-wrap:wrap}
+body.detectorTestApp .detectorScanTools button{min-height:36px;padding:7px 11px;font-size:12px;line-height:1.25;border-radius:7px}
+#detectorScanStatus{margin:5px 0 0;font-size:11px;line-height:1.35}
+#detectorManualForm{display:flex;align-items:end;gap:8px;margin-top:8px;max-width:460px}
+#detectorManualForm[hidden]{display:none}
+#detectorManualForm label{flex:1;min-width:0;font-size:11px}
+#detectorManualCode{width:100%;min-height:36px;font-size:16px;padding:6px}
+.detectorTestNote{max-width:420px;font-size:12px!important;line-height:1.5}
+body.detectorTestApp .brand strong small{font-size:10px;padding:3px 6px;border:1px solid currentColor;border-radius:4px;white-space:nowrap}
+body.detectorTestApp .detectorNumberBox{position:absolute!important;transform:translate(-50%,-50%);box-sizing:border-box;min-width:0!important;min-height:0!important;padding:0!important;margin:0!important;border:1px solid #000!important;border-radius:0!important;background:#fff!important;color:#000!important;box-shadow:none!important;display:grid;place-items:center;line-height:1;font-family:Arial,sans-serif;font-weight:400;z-index:4;overflow:visible;touch-action:pan-x pan-y}
+.detectorNumberBox span{display:block;white-space:nowrap;pointer-events:none;line-height:1}
+body.detectorTestApp .detectorNumberBox.status-ok{background:#e5faed!important}
+body.detectorTestApp .detectorNumberBox.status-action{background:#fff2cf!important}
+body.detectorTestApp .detectorNumberBox.status-fail{background:#ffe0e3!important}
+body.detectorTestApp .detectorNumberBox:focus-visible,body.detectorTestApp .detectorNumberBox.isSelected{outline:2px solid #1873b5;outline-offset:2px}
+body.detectorTestApp .detectorNumberBox::before,body.detectorTestApp .detectorNumberBox::after{content:none!important}
+body.detectorTestApp #secViewer{min-height:100px}
+body.detectorTestApp .headerSubtitle{display:none}
+body.detectorTestApp #detectorMove{font-size:12px;min-height:34px}
+@media(max-width:420px){body.detectorTestApp .brand strong{font-size:14px!important}.detectorScanActions{gap:5px}body.detectorTestApp .detectorScanTools button{padding:8px;font-size:11px}#detectorScanStatus{font-size:10px}}
+
+body.detectorTestApp .detectorTestBadge{display:inline-flex;align-items:center;align-self:center;border:1px solid #658a9b;color:var(--ink,#193746);border-radius:4px;font-size:10px;font-weight:600;line-height:1;padding:4px;white-space:nowrap;margin-left:auto}
+body.detectorTestApp .detectorNumberBox{pointer-events:auto}
