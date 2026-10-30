@@ -55,15 +55,17 @@
    const total=Math.ceil(viewport.width/step)*Math.ceil(viewport.height/step);let tile=0;
    for(let top=0;top<viewport.height;top+=step)for(let left=0;left<viewport.width;left+=step){
     guard();progress('ramar',++tile,total);await next();const area={left,top,width:Math.min(size,viewport.width-left),height:Math.min(size,viewport.height-top)},c=await renderCrop(p,area,scale);
-    const found=core.framesFromPixels(c.getContext('2d').getImageData(0,0,c.width,c.height),profile,scale);c.width=c.height=0;
+    const pixels=c.getContext('2d').getImageData(0,0,c.width,c.height),found=core.framesFromPixels(pixels,profile,scale);c.width=c.height=0;
     for(const b of found){const frame={left:b.left/scale+left,top:b.top/scale+top,right:b.right/scale+left,bottom:b.bottom/scale+top};if(!frames.some(f=>duplicate(f,frame)))frames.push(frame);}
+    // Reuse the scan image to skip empty furniture/room rectangles before OCR.
+    for(const f of frames)if(f.hasInk===undefined&&f.left>=left&&f.top>=top&&f.right<=left+area.width&&f.bottom<=top+area.height)f.hasInk=core.hasFrameInk(pixels,{left:(f.left-left)*scale,right:(f.right-left)*scale,top:(f.top-top)*scale,bottom:(f.bottom-top)*scale});
    }
    let hits=core.filterByProfile(core.matchNumbers(frames,text,viewport,p.pageNumber),profile,viewport),unread=0,ocr=0,ocrFailed=false;
    const texts=text.items.filter(t=>t.str?.trim()).map(t=>core.textGeometry(t,text.styles||{},viewport)).filter(Boolean);
    // Never convert readable nonnumeric text to digits through OCR.
    // A page can mix real text with outlined/image digits, regardless of how the
    // chosen sample was stored. Read textless matching frames in either case.
-   const missing=frames.filter(b=>!texts.some(t=>t.cx>b.left&&t.cx<b.right&&t.cy>b.top&&t.cy<b.bottom));
+   const missing=frames.filter(b=>b.hasInk!==false&&!texts.some(t=>t.cx>b.left&&t.cx<b.right&&t.cy>b.top&&t.cy<b.bottom));
    for(let i=0;i<missing.length;i++){
     guard();progress('nummer',i+1,missing.length);await next();const box=missing[i],angle=profile.angle+p.rotate-(profile.nativeRotation||0);let read;try{read=await readFrame(p,box,angle);}catch(e){guard();unread+=missing.length-i;ocrFailed=true;break;}guard();
     if(!read){unread++;continue;}

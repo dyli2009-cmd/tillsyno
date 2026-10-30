@@ -9,6 +9,8 @@ const scaled=image();frame(scaled,20,20,96,48);assert.equal(core.framesFromPixel
 // Opposite corners of a magnified bitmap may differ by a drawing pixel.
 const soft=image();line(soft,44,30,164,30);line(soft,40,110,164,110);line(soft,40,31,44,110);line(soft,164,30,164,110);
 assert.equal(core.framesFromPixels(soft,{...profile,width:60,height:40},2).length,1);
+const blank=image();frame(blank,20,20,48,24);const inkBox={left:20,top:20,right:68,bottom:44};
+assert.equal(core.hasFrameInk(blank,inkBox),false,'An empty border is not an OCR candidate');line(blank,42,27,45,37);assert.equal(core.hasFrameInk(blank,inkBox),true,'Interior numeral strokes are retained');
 const viewport={width:600,height:400},hits=[{code:'1',width:24/600,height:24/400,textHeight:14/400},{code:'1041',width:48/600,height:24/400,textHeight:14/400},{code:'007',width:48/600,height:24/400,textHeight:14/400},{code:'9999',width:200/600,height:100/400,textHeight:60/400}];
 assert.deepEqual(core.filterByProfile(hits,profile,viewport).map(h=>h.code),['1','1041','007']);assert(core.validProfile(profile));assert(!core.validProfile({...profile,width:NaN}));assert(!core.validProfile({...profile,version:99}));
 console.log('PASS: learned size, short/long numbers, leading zero, alternate orientation, scaled pixels, open/oversized-frame rejection and invalid-profile guard.');

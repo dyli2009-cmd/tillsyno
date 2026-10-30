@@ -79,6 +79,13 @@
  // matchNumbers already validates that the digits fit their own frame. A different
  // font size inside a matching frame must not be rejected by the sample's font.
  function filterByProfile(hits,p,viewport){return hits.filter(h=>similarFrame({left:0,top:0,right:h.width*viewport.width,bottom:h.height*viewport.height},p));}
+ function hasFrameInk(image,box){
+  const inset=Math.max(2,Math.min(box.right-box.left,box.bottom-box.top)*.15),left=Math.max(0,Math.ceil(box.left+inset)),right=Math.min(image.width,Math.floor(box.right-inset)),top=Math.max(0,Math.ceil(box.top+inset)),bottom=Math.min(image.height,Math.floor(box.bottom-inset));
+  if(right<=left||bottom<=top)return true; // Let the full-resolution reader decide.
+  const needed=Math.max(2,Math.ceil((right-left)*(bottom-top)*.005));let count=0;
+  for(let y=top;y<bottom;y++)for(let x=left;x<right;x++){const i=(y*image.width+x)*4;if(image.data[i+3]>100&&Math.max(image.data[i],image.data[i+1],image.data[i+2])<150&&++count>=needed)return true;}
+  return false;
+ }
  // Read the visible border, irrespective of how PDF paths were constructed.
  // A row run is a horizontal edge; two edges must have matching, covered sides.
  function framesFromPixels(image,profile,scale=1){
@@ -136,5 +143,5 @@
   // Older arrow points sit near their number. Only reuse a nearby, same-code object.
   return items.filter(o=>o.type==='detector'&&!o.detectorBox&&!used.has(o.uid)&&o.page===hit.page&&String(o.id).trim()===hit.code&&Math.hypot((o.x-hit.x)/hit.width,(o.y-hit.y)/hit.height)<5).sort((a,b)=>Math.hypot(a.x-hit.x,a.y-hit.y)-Math.hypot(b.x-hit.x,b.y-hit.y))[0]||null;
  }
- return{boxScale,resizeBox,fitLabelSize,framesFromOperators,framesFromPixels,validProfile,similarFrame,filterByProfile,textGeometry,matchNumbers,scanPage,samePosition,nearestExisting};
+ return{boxScale,resizeBox,fitLabelSize,framesFromOperators,framesFromPixels,hasFrameInk,validProfile,similarFrame,filterByProfile,textGeometry,matchNumbers,scanPage,samePosition,nearestExisting};
 });
