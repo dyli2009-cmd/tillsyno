@@ -3,13 +3,31 @@
  'use strict';
  const core=window.DetectorScanCore,bar=document.querySelector('.securityTools');
  const controls=document.createElement('section');controls.className='detectorScanTools';
- controls.innerHTML='<div class="detectorScanActions"><button id="detectorLearn" type="button" class="primary">1. Markera exempel</button><button id="detectorScan" type="button" class="primary">2. Skanna ritningen</button><button id="detectorSetupToggle" type="button" hidden>Sök fler</button><button id="detectorManual" type="button">Lägg till manuellt</button><button id="detectorCancel" type="button" hidden>Avbryt</button></div><form id="detectorManualForm" hidden><label>Nummer<input id="detectorManualCode" inputmode="numeric" pattern="[0-9]+" required placeholder="Exempel: 3 eller 1041" autocomplete="off"></label><button type="submit">Välj position</button></form><form id="detectorSampleForm" hidden><img id="detectorSamplePreview" alt="Markerad nummerruta"><label>Kontrollera numret<input id="detectorSampleCode" inputmode="numeric" pattern="[0-9]+" required autocomplete="off"></label><button type="submit">Använd exempel</button></form><p id="detectorSampleInfo" hidden></p><p id="detectorScanStatus" role="status" aria-live="polite">Markera först en nummerruta som exempel. Alla nummer med liknande ram söks sedan upp.</p>';
+ controls.innerHTML='<div class="detectorScanActions"><button id="detectorLearn" type="button" class="primary">1. Markera exempel</button><button id="detectorScan" type="button" class="primary">2. Skanna ritningen</button><button id="detectorSetupToggle" type="button" hidden>Sök fler</button><button id="detectorManual" type="button">Lägg till manuellt</button><button id="detectorCancel" type="button" hidden>Avbryt</button></div><form id="detectorManualForm" hidden><label>Nummer<input id="detectorManualCode" inputmode="numeric" pattern="[0-9]+" required placeholder="Exempel: 3 eller 1041" autocomplete="off"></label><button type="submit">Välj position</button></form><form id="detectorSampleForm" hidden><img id="detectorSamplePreview" alt="Markerad nummerruta"><label>Kontrollera numret<input id="detectorSampleCode" inputmode="numeric" pattern="[0-9]+" required autocomplete="off"></label><button type="submit">Använd exempel</button></form><section id="detectorSizePanel" hidden aria-label="Storlek på nummerruta"><div class="detectorSizeHeading"><strong id="detectorSizeTitle">Storlek</strong><button id="detectorSizeDone" type="button">Klar</button></div><div class="detectorSizeRow"><label for="detectorWidth">Bredd <output id="detectorWidthValue" for="detectorWidth">100 %</output></label><input id="detectorWidth" type="range" min="25" max="600" step="5" value="100"></div><div class="detectorSizeRow"><label for="detectorHeight">Höjd <output id="detectorHeightValue" for="detectorHeight">100 %</output></label><input id="detectorHeight" type="range" min="25" max="600" step="5" value="100"></div><button id="detectorSizeReset" type="button">Återställ storlek</button></section><p id="detectorSampleInfo" hidden></p><p id="detectorScanStatus" role="status" aria-live="polite">Markera först en nummerruta som exempel. Alla nummer med liknande ram söks sedan upp.</p>';
  bar.classList.remove('allInOneProtocolTools');bar.append(controls);
- const badge=document.createElement('span');badge.className='detectorTestBadge';badge.textContent='TEST 0.4';document.querySelector('.secAppHeader .headerActions').append(badge);
- let run=0,busy=false,moveUid=null,placingCode='',scanDoc=null,cached=new Map(),vision=null,draft=null,selectionLayer=null,setupOpen=false;
+ const badge=document.createElement('span');badge.className='detectorTestBadge';badge.textContent='TEST 0.5';document.querySelector('.secAppHeader .headerActions').append(badge);
+ let run=0,busy=false,moveUid=null,placingCode='',scanDoc=null,cached=new Map(),vision=null,draft=null,selectionLayer=null,setupOpen=false,resizeUid=null;
  const scanButton=$('detectorScan'),manualButton=$('detectorManual'),cancelButton=$('detectorCancel'),manualForm=$('detectorManualForm'),codeInput=$('detectorManualCode'),status=$('detectorScanStatus');
  const setupToggle=$('detectorSetupToggle'),learnButton=$('detectorLearn'),sampleForm=$('detectorSampleForm'),sampleCode=$('detectorSampleCode'),sampleInfo=$('detectorSampleInfo');
  const setStatus=text=>{status.textContent=text;};
+ const sizePanel=$('detectorSizePanel'),widthInput=$('detectorWidth'),heightInput=$('detectorHeight'),labelMeasure=document.createElement('canvas').getContext('2d');labelMeasure.font='1px Arial';
+ function closeSize(){resizeUid=null;sizePanel.hidden=true;securitySessionHistory.endGroup();}
+ function syncSizeControls(){
+  const o=items.find(o=>o.uid===resizeUid&&o.type==='detector');if(!pdf||!o||o.page!==page){resizeUid=null;sizePanel.hidden=true;return;}
+  sizePanel.hidden=false;$('detectorSizeTitle').textContent='Storlek · '+detectorLabel(o);
+  for(const [axis,input,out]of [['width',widthInput,$('detectorWidthValue')],['height',heightInput,$('detectorHeightValue')]]){const percent=core.boxScale(boxFor(o),axis,drawingRotation());input.value=percent;out.value=percent+' %';input.setAttribute('aria-valuetext',percent+' procent');}
+ }
+ async function openSize(o){
+  if(!pdf||!o||o.type!=='detector'||busy)return;const doc=pdf,uid=o.uid;resetPlacement();manualForm.hidden=true;securityDrawingTools?.stop();selected=uid;resizeUid=uid;go('drawing');applyDrawingOverlayVisibility(false);if(page!==o.page){page=o.page;await render(true);if(pdf!==doc||resizeUid!==uid)return;}syncSizeControls();drawMarkers();setStatus('Justera bredd och höjd för '+detectorLabel(o)+'. Tryck Klar när rutan passar.');
+ }
+ function changeSize(axis,percent,group){
+  const o=items.find(o=>o.uid===resizeUid);if(!pdf||busy||!o||o.page!==page||!Number.isFinite(percent))return;
+  securitySessionHistory.record();o.detectorBox=core.resizeBox(boxFor(o),axis,percent,drawingRotation());securitySessionHistory.record(group);save();drawMarkers();
+ }
+ for(const [input,axis]of [[widthInput,'width'],[heightInput,'height']]){input.oninput=()=>changeSize(axis,Number(input.value),input);input.onchange=()=>securitySessionHistory.endGroup();}
+ $('detectorSizeDone').onclick=()=>{closeSize();setStatus('Storleken är inställd. Spara PDF för att behålla den i filen.');};
+ $('detectorSizeReset').onclick=()=>{const group={};securitySessionHistory.endGroup();changeSize('width',100,group);changeSize('height',100,group);securitySessionHistory.endGroup();};
+
  const ready=()=>DetectorTestState.isReady(project,items);
  const readyMessage=()=>ready()?'Kopplingar och kontrollstatus är återställda. Ingen ny skanning behövs.':'Originalritning utan kopplingar. Markera ett exempel och skanna.';
  function updateControls(){
@@ -23,7 +41,7 @@
  function stopSelection(){selectionLayer?.remove();selectionLayer=null;drawingGestureLocked=false;drawingLockScroll=null;}
 
  function cache(){if(scanDoc!==pdf){scanDoc=pdf;cached=new Map();}return cached;}
- function resetPlacement(){stopSelection();draft=null;sampleForm.hidden=true;moveUid=null;placingCode='';addType=null;document.body.classList.remove('secAdding');$('secHint').hidden=true;cancelButton.hidden=!busy;updateControls();}
+ function resetPlacement(){closeSize();stopSelection();draft=null;sampleForm.hidden=true;moveUid=null;placingCode='';addType=null;document.body.classList.remove('secAdding');$('secHint').hidden=true;cancelButton.hidden=!busy;updateControls();}
  function cancel(){setupOpen=false;run++;vision?.close();vision=null;busy=false;resetPlacement();manualForm.hidden=true;updateControls();cancelButton.hidden=true;setStatus('Avbrutet. Tidigare detektorer finns kvar.');}
  cancelButton.onclick=cancel;
  function detectorLabel(o){return String(o.id||o.number||'').trim();}
@@ -100,34 +118,35 @@
   const existing=core.nearestExisting(items.filter(o=>o.uid!==moveUid),hit);
   if(existing){selected=existing.uid;resetPlacement();showSelected();go('protocol');setStatus('Den här positionen är redan kopplad till '+detectorLabel(existing)+'.');return;}
   securitySessionHistory.endGroup();securitySessionHistory.record();
-  const o=moving||newDetector(hit);if(moving){o.page=page;attachHit(o,hit);}
-  selected=o.uid;resetPlacement();save();drawMarkers();showSelected();go('drawing');setStatus(code+' är kopplad till sin position på sida '+page+'.');
+  const o=moving||newDetector(hit);if(moving){const keptBox={...boxFor(o)};o.page=page;attachHit(o,hit);o.detectorBox=keptBox;}
+  selected=o.uid;resetPlacement();save();drawMarkers();showSelected();go('drawing');if(!moving)openSize(o);else setStatus(code+' är flyttad. Storleken är behållen.');
  };
  const drawBefore=drawMarkers;
  drawMarkers=function(){
-  drawBefore();if(drawingOverlaysHidden||hiddenDrawingProtocols.has('detector'))return;
+  drawBefore();syncSizeControls();if(drawingOverlaysHidden||hiddenDrawingProtocols.has('detector'))return;
   const rotation=drawingRotation(),sideways=rotation%180!==0,naturalW=sideways?pageHeight:pageWidth,naturalH=sideways?pageWidth:pageHeight;
   for(const o of items.filter(o=>o.type==='detector'&&o.page===page)){
    const box=boxFor(o),b=document.createElement('button'),span=document.createElement('span');b.type='button';b.className='detectorNumberBox status-'+statusOf(o)+(o.uid===selected?' isSelected':'');b.dataset.detectorUid=o.uid;b.setAttribute('aria-label','Detektor '+detectorLabel(o)+', sida '+o.page+', '+securityStatusText(o));b.title='Öppna detektor '+detectorLabel(o);b.style.setProperty('--detector-status-color','rgb('+COLORS[statusOf(o)].join(',')+')');span.textContent=detectorLabel(o);
-   const width=box.width*naturalW,height=box.height*naturalH;b.style.width=(sideways?height:width)+'px';b.style.height=(sideways?width:height)+'px';b.style.fontSize=(box.textHeight*naturalH*.9)+'px';span.style.transform='rotate('+((box.angle+rotation)%360)+'deg)';positionDrawingNode(b,o.x,o.y);b.append(span);
+   const width=box.width*naturalW,height=box.height*naturalH;b.style.width=(sideways?height:width)+'px';b.style.height=(sideways?width:height)+'px';b.style.fontSize=core.fitLabelSize(box,naturalW,naturalH,labelMeasure.measureText(detectorLabel(o)).width)+'px';span.style.transform='rotate('+((box.angle+rotation)%360)+'deg)';positionDrawingNode(b,o.x,o.y);b.append(span);
    let pointer=null,moved=false;b.onpointerdown=e=>{if(e.button!==0)return;pointer={x:e.clientX,y:e.clientY};moved=false;};b.onpointermove=e=>{if(pointer&&Math.hypot(e.clientX-pointer.x,e.clientY-pointer.y)>6)moved=true;};b.onpointercancel=()=>{pointer=null;moved=true;};
-   b.onclick=e=>{e.preventDefault();e.stopPropagation();if(moved||busy||addType||selectionLayer)return;selected=o.uid;showSelected();go('protocol');};markers.append(b);
+   b.onclick=e=>{e.preventDefault();e.stopPropagation();if(moved||busy||addType||selectionLayer)return;closeSize();selected=o.uid;showSelected();go('protocol');};markers.append(b);
   }
  };
  const moveButton=document.createElement('button');moveButton.type='button';moveButton.id='detectorMove';moveButton.textContent='Flytta på ritning';$('secDelete').before(moveButton);
  moveButton.onclick=()=>{const o=cur();if(o?.type!=='detector')return;resetPlacement();moveUid=o.uid;placingCode=detectorLabel(o);addType='detector';cancelButton.hidden=false;go('drawing');document.body.classList.add('secAdding');$('secHint').textContent='Tryck på den nya positionen för '+placingCode+'.';$('secHint').hidden=false;setStatus('Välj ny position för '+placingCode+'.');};
+ const sizeButton=document.createElement('button');sizeButton.type='button';sizeButton.id='detectorSize';sizeButton.textContent='Ändra storlek';moveButton.after(sizeButton);sizeButton.onclick=()=>openSize(cur());
  const selectedBefore=showSelected;
- showSelected=function(){selectedBefore();const o=cur();if(!o)return;moveButton.hidden=o.type!=='detector';$('secNumber').closest('label').hidden=o.type==='detector';if(o.type==='detector')$('secProtocolTitle').textContent='Detektor '+detectorLabel(o);};
+ showSelected=function(){selectedBefore();const o=cur();if(!o)return;moveButton.hidden=sizeButton.hidden=o.type!=='detector';$('secNumber').closest('label').hidden=o.type==='detector';if(o.type==='detector')$('secProtocolTitle').textContent='Detektor '+detectorLabel(o);};
  const buildBefore=buildSecurityDrawingPdf;
  buildSecurityDrawingPdf=async function(snapshot=structuredClone({items,textNotes,drawingExtras,project,logoData,drawingRotations}),bytes=sourceBytes.slice()){
   const result=await buildBefore(snapshot,bytes),{rgb,degrees,StandardFonts}=PDFLib,font=await result.out.embedFont(StandardFonts.Helvetica);
   for(const o of snapshot.items.filter(o=>o.type==='detector')){
    const p=await pdf.getPage(o.page),vp=p.getViewport({scale:1}),pg=result.out.getPage(o.page-1),box=boxFor(o),halfW=box.width*vp.width/2,halfH=box.height*vp.height/2,cx=o.x*vp.width,cy=o.y*vp.height;
    const corners=[[cx-halfW,cy-halfH],[cx+halfW,cy-halfH],[cx+halfW,cy+halfH],[cx-halfW,cy+halfH]].map(([x,y])=>vp.convertToPdfPoint(x,y));
-   const xs=corners.map(c=>c[0]),ys=corners.map(c=>c[1]),x=Math.min(...xs),y=Math.min(...ys),w=Math.max(...xs)-x,h=Math.max(...ys)-y,label=detectorLabel(o),size=box.textHeight*vp.height*.9,angle=p.rotate-box.angle,rad=angle*Math.PI/180,[px,py]=vp.convertToPdfPoint(cx,cy),tw=font.widthOfTextAtSize(label,size),s=statusOf(o),fill=rgb(...COLORS[s].map(c=>c/255));
+   const xs=corners.map(c=>c[0]),ys=corners.map(c=>c[1]),x=Math.min(...xs),y=Math.min(...ys),w=Math.max(...xs)-x,h=Math.max(...ys)-y,label=detectorLabel(o),size=core.fitLabelSize(box,vp.width,vp.height,font.widthOfTextAtSize(label,1)),angle=p.rotate-box.angle,rad=angle*Math.PI/180,[px,py]=vp.convertToPdfPoint(cx,cy),tw=font.widthOfTextAtSize(label,size),s=statusOf(o),fill=rgb(...COLORS[s].map(c=>c/255));
    pg.drawRectangle({x,y,width:w,height:h,color:fill,borderColor:rgb(0,0,0),borderWidth:.6});
    const tx=-tw/2,ty=-size*.34;pg.drawText(label,{x:px+tx*Math.cos(rad)-ty*Math.sin(rad),y:py+tx*Math.sin(rad)+ty*Math.cos(rad),font,size,color:rgb(1,1,1),rotate:degrees(angle)});
-   result.links.push({pageIndex:o.page-1,uid:o.uid,x:px,y:py,radius:Math.max(w,h)/2});
+   result.links.push({pageIndex:o.page-1,uid:o.uid,x:px,y:py,width:w,height:h,radius:Math.max(w,h)/2});
   }
   return result;
  };
@@ -137,5 +156,5 @@
  document.querySelectorAll('.securityTools [data-add]').forEach(b=>{b.hidden=true;});
  updateControls();
  const syncProjectBefore=syncProjectInputs;syncProjectInputs=function(){syncProjectBefore();updateControls();};
- window.DetectorTest={scan,learn,startLearning,applyHits,boxFor,attachHit,newDetector};
+ window.DetectorTest={scan,learn,startLearning,applyHits,boxFor,attachHit,newDetector,openSize};
 })();

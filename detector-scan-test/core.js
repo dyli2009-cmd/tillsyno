@@ -110,11 +110,26 @@
   return found;
  }
  async function scanPage(pdfPage,pdfjs){const viewport=pdfPage.getViewport({scale:1});const [ops,text]=await Promise.all([pdfPage.getOperatorList(),pdfPage.getTextContent()]);const frames=framesFromOperators(ops,pdfjs.OPS,viewport);return{hits:matchNumbers(frames,text,viewport,pdfPage.pageNumber),hasText:text.items.some(t=>t.str?.trim()),frameCount:frames.length};}
- function samePosition(item,hit){if(item.page!==hit.page)return false;const box=item.detectorBox;const dx=Math.abs(item.x-hit.x),dy=Math.abs(item.y-hit.y);return dx<Math.max(.0008,(box?.width||hit.width)*.3)&&dy<Math.max(.0008,(box?.height||hit.height)*.3);}
+ // Resize in visible drawing axes; store dimensions in the original PDF viewport.
+ function boxScale(box,axis,rotation=0){const swapped=Math.abs(rotation%180)===90,key=(axis==='width')!==swapped?'width':'height',base=key==='width'?'baseWidth':'baseHeight';return Math.round(box[key]/(box[base]||box[key])*100);}
+ function resizeBox(box,axis,percent,rotation=0){
+  if(!['width','height'].includes(axis)||!Number.isFinite(percent)||!Number.isFinite(box.width)||!Number.isFinite(box.height))return{...box};
+  const out={...box,baseWidth:box.baseWidth||box.width,baseHeight:box.baseHeight||box.height,baseTextHeight:box.baseTextHeight||box.textHeight};
+  const swapped=Math.abs(rotation%180)===90,key=(axis==='width')!==swapped?'width':'height',base=key==='width'?'baseWidth':'baseHeight';
+  out[key]=Math.min(1,out[base]*Math.max(25,Math.min(600,percent))/100);
+  const vertical=Math.abs(Math.sin((box.angle||0)*Math.PI/180))>.707;
+  out.textHeight=out.baseTextHeight*(vertical?out.width/out.baseWidth:out.height/out.baseHeight);
+  return out;
+ }
+ function fitLabelSize(box,width,height,unitTextWidth){
+  const a=(box.angle||0)*Math.PI/180,c=Math.abs(Math.cos(a)),s=Math.abs(Math.sin(a)),w=box.width*width*.88,h=box.height*height*.82;
+  return Math.max(.01,Math.min(box.textHeight*height*.9,w/Math.max(.01,c*unitTextWidth+s),h/Math.max(.01,s*unitTextWidth+c)));
+ }
+ function samePosition(item,hit){if(item.page!==hit.page)return false;const box=item.detectorBox;const dx=Math.abs(item.x-hit.x),dy=Math.abs(item.y-hit.y);return dx<Math.max(.0008,(box?.baseWidth||box?.width||hit.width)*.3)&&dy<Math.max(.0008,(box?.baseHeight||box?.height||hit.height)*.3);}
  function nearestExisting(items,hit,used=new Set()){
   const placed=items.find(o=>o.type==='detector'&&!used.has(o.uid)&&samePosition(o,hit));if(placed)return placed;
   // Older arrow points sit near their number. Only reuse a nearby, same-code object.
   return items.filter(o=>o.type==='detector'&&!o.detectorBox&&!used.has(o.uid)&&o.page===hit.page&&String(o.id).trim()===hit.code&&Math.hypot((o.x-hit.x)/hit.width,(o.y-hit.y)/hit.height)<5).sort((a,b)=>Math.hypot(a.x-hit.x,a.y-hit.y)-Math.hypot(b.x-hit.x,b.y-hit.y))[0]||null;
  }
- return{framesFromOperators,framesFromPixels,validProfile,similarFrame,filterByProfile,textGeometry,matchNumbers,scanPage,samePosition,nearestExisting};
+ return{boxScale,resizeBox,fitLabelSize,framesFromOperators,framesFromPixels,validProfile,similarFrame,filterByProfile,textGeometry,matchNumbers,scanPage,samePosition,nearestExisting};
 });

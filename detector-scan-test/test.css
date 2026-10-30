@@ -1,4 +1,4 @@
-/* TEST 0.3: compact drawing-first controls, only the source number inside its box. */
+/* TEST 0.5: compact drawing-first controls, only the source number inside its box. */
 body.detectorTestApp .securityTools{display:block!important;padding:6px 8px!important;min-height:0!important}
 body.detectorTestApp .securityTools>[data-add],body.detectorTestApp #secPrecision{display:none!important}
 body.detectorTestApp .detectorScanTools{width:100%;color:var(--ink,#193746);font-size:12px}
@@ -34,3 +34,14 @@ body.detectorTestApp .detectorNumberBox{pointer-events:auto}
 .detectorScanTools button:disabled{opacity:.45;cursor:default}
 
 body.detectorTestApp .detectorScanActions [hidden]{display:none!important}
+
+#detectorSizePanel{max-width:420px;padding-top:6px;margin-top:5px;border-top:1px solid #adc1cb}
+#detectorSizePanel[hidden]{display:none!important}
+.detectorSizeHeading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.detectorSizeHeading strong{font-size:12px}
+.detectorSizeRow{display:grid;grid-template-columns:94px minmax(0,1fr);align-items:center;gap:10px}
+.detectorSizeRow label{display:flex;justify-content:space-between;align-items:center;gap:4px;font-size:12px}
+.detectorSizeRow output{font-variant-numeric:tabular-nums;font-size:11px}
+body.detectorTestApp .detectorSizeRow input[type=range]{width:100%;min-width:0;height:32px;min-height:32px;margin:0;padding:0;accent-color:#376e84;touch-action:pan-y}
+body.detectorTestApp #detectorSizeReset{font-size:11px;padding:5px 8px;min-height:30px}
+body.detectorTestApp #detectorSize{font-size:12px;min-height:34px}

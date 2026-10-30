@@ -1,4 +1,4 @@
-# Detektorer TEST 0.4
+# Detektorer TEST 0.5
 
 Entry: `detector-scan-test/all-in-one.html`, linked from the existing home-page Testversioner panel. The production Security Service runtime is unchanged.
 
@@ -11,6 +11,12 @@ Entry: `detector-scan-test/all-in-one.html`, linked from the existing home-page 
 5. Open the saved test PDF next time to continue immediately. The initial learning/scanning controls are hidden once controls exist; **Sök fler** offers optional additions. A different drawing starts empty, even if it has the same filename. The original drawing ALWAYS starts unlinked, even after earlier scans, explicit close/reopen, or filename changes. Cached work with the same source fingerprint is never restored automatically.
 
 This is an appearance preset, not training a global AI model. Frame size, text height, orientation and text/image reading method are learned from the selected example; the example's number is never a search filter. Short numbers and leading zeros are retained. Each occurrence owns a UUID, page, coordinates, status and checklist, including repeated numbers in different positions. Rescanning preserves existing controls. Manual add/move and undo remain available.
+
+## Manual size adjustment
+
+After **Lägg till manuellt**, enter the number and place it on the drawing. The **Bredd** and **Höjd** sliders open directly below the drawing. Each adjusts one visible axis from 25–600% of that box's initial size. **Klar** closes the controls; **Återställ storlek** resets both dimensions. For an existing manual or scanned number, open its control and choose **Ändra storlek**.
+
+Dimensions are stored per occurrence in the original PDF viewport coordinate system. Stable base dimensions prevent compounded percentages after reopening. Rotating the drawing changes which visible slider controls each axis; zoom never changes saved geometry. Text grows with the height across its baseline and is fitted inside the rectangle in both the browser and PDF. Moving a box retains its dimensions; repeated scans retain existing sizes and use original dimensions for positional deduplication. Exported PDF links follow the rectangular width/height instead of a square radius. Changes use session undo/redo and persist in saved test-PDFs.
 
 ## Implementation and scope
 
@@ -26,6 +32,7 @@ When a regular service work-PDF is opened, the test extracts its embedded origin
 
 ## Validation
 
+- `node tests/detector-size-test.cjs`: independent and rotated axes, saved baselines, reset, text fitting, size bounds and position identity after enlargement.
 - `node tests/detector-state-test.cjs`: first-open isolation, legacy-test continuation, strict saved-file precedence, stale-cache rejection, portable positions/results and setup readiness.
 - `node tests/detector-scan-test.cjs [optional private original PDF]`: vector numbers, native rotation, duplicate positions and isolated work metadata.
 - `node tests/detector-appearance-test.cjs`: raster borders, learned scale, variable number lengths, rotated frames, invalid profiles and open/oversized-frame rejection.
@@ -34,3 +41,5 @@ When a regular service work-PDF is opened, the test extracts its embedded origin
 TEST 0.3 browser QA additionally verifies exact existing status colors in markers/PDF, no second scan after save/reopen, no links crossing between different PDFs with the same filename, portable reopening with local test history cleared, optional Sök fler, and a new service preserving connections while resetting status.
 
 TEST 0.4 fixes the source-fingerprint resume behavior. The browser regression opens the supplied service PDF after scanning it, after closing it, under a different filename and as its embedded raw original; all start with zero controls and no learned sample. An explicitly saved test-PDF still restores its own positions and results. Customer drawing coordinates remain fixture data outside the shipped app, not built-in templates.
+
+TEST 0.5 browser QA verifies automatic manual-size controls, independent width/height at 270° rotation, one-step undo of slider gestures/reset, reopening an existing box for adjustment, preserved size after moving/rescanning, separate sizes for duplicate numbers, view rotation, work-PDF save/reopen and exact rectangular PDF link bounds. Mobile layout and the existing-object button were checked through the browser.
