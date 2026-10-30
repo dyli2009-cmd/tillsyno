@@ -86,6 +86,11 @@
   for(let y=top;y<bottom;y++)for(let x=left;x<right;x++){const i=(y*image.width+x)*4;if(image.data[i+3]>100&&Math.max(image.data[i],image.data[i+1],image.data[i+2])<150&&++count>=needed)return true;}
   return false;
  }
+ function inkBounds(image){
+  let left=image.width,top=image.height,right=-1,bottom=-1;
+  for(let y=0;y<image.height;y++)for(let x=0;x<image.width;x++){const i=(y*image.width+x)*4;if(image.data[i+3]>100&&Math.max(image.data[i],image.data[i+1],image.data[i+2])<180){left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);}}
+  return right<left?null:{left,top,width:right-left+1,height:bottom-top+1};
+ }
  // Read the visible border, irrespective of how PDF paths were constructed.
  // A row run is a horizontal edge; two edges must have matching, covered sides.
  function framesFromPixels(image,profile,scale=1){
@@ -143,5 +148,5 @@
   // Older arrow points sit near their number. Only reuse a nearby, same-code object.
   return items.filter(o=>o.type==='detector'&&!o.detectorBox&&!used.has(o.uid)&&o.page===hit.page&&String(o.id).trim()===hit.code&&Math.hypot((o.x-hit.x)/hit.width,(o.y-hit.y)/hit.height)<5).sort((a,b)=>Math.hypot(a.x-hit.x,a.y-hit.y)-Math.hypot(b.x-hit.x,b.y-hit.y))[0]||null;
  }
- return{boxScale,resizeBox,fitLabelSize,framesFromOperators,framesFromPixels,hasFrameInk,validProfile,similarFrame,filterByProfile,textGeometry,matchNumbers,scanPage,samePosition,nearestExisting};
+ return{boxScale,resizeBox,fitLabelSize,framesFromOperators,framesFromPixels,hasFrameInk,inkBounds,validProfile,similarFrame,filterByProfile,textGeometry,matchNumbers,scanPage,samePosition,nearestExisting};
 });

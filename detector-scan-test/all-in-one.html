@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="sv" data-controlflow-ui="1" data-auth-pending data-app-version="detector-test-0.6.1">
+<html lang="sv" data-controlflow-ui="1" data-auth-pending data-app-version="detector-test-0.7">
 <head><meta charset="utf-8"><base href="../">
 <script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}var page={ice:'#edf6fb',mist:'#ebf1f5',coast:'#edf7f6',sand:'#f7f5f1',night:'#081523',graphite:'#12151c',pine:'#091c1e'}[theme];document.documentElement.style.setProperty('--tillsyno-route-bg',page);document.documentElement.style.setProperty('background',page,'important');document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
 <style id="tillsyno-route-transition">html{background:var(--tillsyno-route-bg,#ebf1f5)!important}#tillsynoNavCurtain{position:fixed;inset:0;z-index:2147483647;background:var(--tillsyno-route-bg,#ebf1f5);opacity:1;pointer-events:auto}html.tillsyno-nav-ready #tillsynoNavCurtain{opacity:0;pointer-events:none}</style>
@@ -15,7 +15,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Detektorer TEST 0.6.1 – Tillsyno</title>
+<title>Detektorer TEST 0.7 – Tillsyno</title>
 <link rel="stylesheet" href="style.css?v=2.4.251">
 <link rel="stylesheet" href="security.css?v=2.4.500"><link rel="stylesheet" href="security-compact.css?v=2.4.215"><link rel="stylesheet" href="all-in-one.css?v=2.4.294">
 <script src="vendor/pdf.min.js"></script>
@@ -107,11 +107,11 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
 <link rel="stylesheet" href="security-drawing-compact-v528.css">
 <link rel="stylesheet" href="security-result-labels-v529.css">
 <link rel="stylesheet" href="security-overview-compact-v530.css">
-<link rel="stylesheet" href="detector-scan-test/test.css?v=0.6.1"></head>
+<link rel="stylesheet" href="detector-scan-test/test.css?v=0.7"></head>
 <body class="securityApp allInOneApp detectorTestApp" data-security-project-layout data-view="drawing">
 <div id="tillsynoNavCurtain" aria-hidden="true"></div>
 <header class="appHeader secAppHeader">
- <div class="brand"><strong>Detektorer <small>TEST 0.6.1</small></strong></div>
+ <div class="brand"><strong>Detektorer <small>TEST 0.7</small></strong></div>
  <div class="headerActions"><a class="filebtn appHeaderIconButton homeIconLink" href="./" aria-label="Hem" title="Hem"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></svg><span>Hem</span></a><button id="securityPreview" class="appHeaderIconButton previewButton" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h9l3 3V20.5H6z"/><path d="M15 3.5v4h4"/><path d="M8.5 12.5h7M8.5 16h5"/></svg><span>Kundmall</span></button><button id="securityExport" class="primary appHeaderIconButton savePdfButton" type="button" aria-label="Spara PDF"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5h11l3 3V20.5H5z"/><path d="M8 3.5v6h8v-6M8 20.5v-7h8v7"/></svg><span>Spara PDF</span></button></div>
  <div class="headerDetails"><small class="headerSubtitle">En ritning · valfria protokoll</small></div>
  <input id="securityFile" type="file" accept="application/pdf" hidden>
@@ -131,7 +131,7 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
   <div id="secHint" hidden>Tryck på ritningen där objektet finns.</div>
   <section id="secViewer">
     <div id="secStage"><canvas id="secCanvas"></canvas><div id="secMarkers"></div></div>
-    <div id="secEmpty"><h1>Detektorer TEST 0.6.1</h1><p>Originalritningar öppnas utan kopplingar. Markera ett exempel och skanna. Öppna en sparad test-PDF för att fortsätta ett arbete.</p><p class="detectorTestNote">Eget testarbete. En service-PDF öppnas som grundritning med nya, tomma detektorkontroller.</p><label class="filebtn primary" for="securityFile">Öppna PDF</label></div>
+    <div id="secEmpty"><h1>Detektorer TEST 0.7</h1><p>Originalritningar öppnas utan kopplingar. Markera ett exempel och skanna. Öppna en sparad test-PDF för att fortsätta ett arbete.</p><p class="detectorTestNote">Eget testarbete. En service-PDF öppnas som grundritning med nya, tomma detektorkontroller.</p><label class="filebtn primary" for="securityFile">Öppna PDF</label></div>
   </section>
   <div class="securityTools allInOneProtocolTools">
     <button data-add="automation">＋ Checklista revision dörrautomatik</button>
@@ -318,11 +318,11 @@ body.allInOneApp #allProtocolDialog .allCeStandaloneArrow{
 </nav>
 <script src="controlflow-ui-scale.js?v=2.4.506"></script><script src="security-callout-layout-v530.js"></script><script src="drawing-annotations-security-v530.js"></script>
 <script src="session-history.js?v=2.4.215"></script>
-<script>window.DOORSERVICE_APP_MODE="all-in-one";window.AllInOneProtocols={get:()=>["detector"],set:()=>{}};</script><script src="offline-work.js?v=2.4.256"></script><script src="detector-scan-test/state.js?v=0.6.1"></script><script src="detector-scan-test/security.js?v=0.6.1"></script>
+<script>window.DOORSERVICE_APP_MODE="all-in-one";window.AllInOneProtocols={get:()=>["detector"],set:()=>{}};</script><script src="offline-work.js?v=2.4.256"></script><script src="detector-scan-test/state.js?v=0.7"></script><script src="detector-scan-test/security.js?v=0.7"></script>
 
 <script src="offline.js?v=2.4.359"></script>
 <script id="tillsyno-route-navigation">(function(){'use strict';const root=document.documentElement;let observer=null;function reveal(){if(root.hasAttribute('data-auth-pending')){if(!observer){observer=new MutationObserver(reveal);observer.observe(root,{attributes:true,attributeFilter:['data-auth-pending']})}return}if(observer){observer.disconnect();observer=null}root.classList.add('tillsyno-nav-ready')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();window.addEventListener('pageshow',reveal)})();</script>
 <script src="tillsyno-appearance.js?v=2.4.359"></script>
-<script src="security-workspace-ui-v528.js?v=2.4.528"></script><link rel="stylesheet" href="security-detectors-v344.css?v=2.4.498"><script src="security-detectors-v344.js?v=2.4.497"></script><script src="security-overview-ui-v530.js"></script><script src="detector-scan-test/core.js?v=0.6.1"></script><script src="detector-scan-test/vision.js?v=0.6.1"></script><script src="detector-scan-test/test.js?v=0.6.1"></script></body></html>
+<script src="security-workspace-ui-v528.js?v=2.4.528"></script><link rel="stylesheet" href="security-detectors-v344.css?v=2.4.498"><script src="security-detectors-v344.js?v=2.4.497"></script><script src="security-overview-ui-v530.js"></script><script src="detector-scan-test/core.js?v=0.7"></script><script src="detector-scan-test/vision.js?v=0.7"></script><script src="detector-scan-test/test.js?v=0.7"></script></body></html>
 
 

@@ -26,10 +26,28 @@
    const c=document.createElement('canvas'),a=((angle%360)+360)%360,vertical=a===90||a===270,w=source.width-inset*2,h=source.height-inset*2,pad=inset?10:0;
    c.width=Math.max(1,(vertical?h:w)+pad*2);c.height=Math.max(1,(vertical?w:h)+pad*2);const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);ctx.translate(c.width/2,c.height/2);ctx.rotate(-a*Math.PI/180);ctx.drawImage(source,inset,inset,w,h,-w/2,-h/2,w,h);return c;
   }
+  function normalizeNumber(input){
+   const b=core.inkBounds(input.getContext('2d').getImageData(0,0,input.width,input.height));
+   if(!b||b.height<Math.max(4,input.height*.2))return null;
+   const scale=Math.min(4,64/b.height,1600/b.width),c=document.createElement('canvas');c.width=Math.ceil(b.width*scale)+24;c.height=Math.ceil(b.height*scale)+24;
+   const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(input,b.left,b.top,b.width,b.height,12,12,b.width*scale,b.height*scale);return c;
+  }
   async function readFrame(p,box,angle){
    const width=box.right-box.left,height=box.bottom-box.top,scale=Math.min(12,Math.max(3,64/Math.min(width,height))),c=await renderCrop(p,{left:box.left,top:box.top,width,height},scale);
    const input=upright(c,angle,Math.max(2,Math.round(Math.min(c.width,c.height)*.1)));c.width=c.height=0;
-   try{const w=await localWorker();guard();const {data}=await w.recognize(input);guard();const code=(data.text||'').trim().replace(/\s+/g,'');return /^\d+$/.test(code)&&data.confidence>=65?{code,confidence:data.confidence}:null;}finally{input.width=input.height=0;}
+   let normalized;
+   try{
+    const w=await localWorker();guard();await w.setParameters({tessedit_pageseg_mode:'7'});guard();const {data}=await w.recognize(input);guard();const code=(data.text||'').trim().replace(/\s+/g,'');
+    if(/^\d+$/.test(code)&&data.confidence>=65)return{code,confidence:data.confidence};
+    // Never collapse ranges such as 9-16 into a detector number.
+    if(/\d\s*[-–—/]\s*\d/.test(data.text||''))return null;
+    // Thin CAD strokes need a tight, consistently sized crop and word reading.
+    // Keep punctuation/letters available to OCR; never force them into digits.
+    normalized=normalizeNumber(input);if(!normalized)return null;
+    await w.setParameters({tessedit_pageseg_mode:'8'});guard();const {data:retry}=await w.recognize(normalized);guard();const alternate=(retry.text||'').trim().replace(/\s+/g,'');
+    if(/^\d+$/.test(code)&&code!==alternate)return null;
+    return /^\d+$/.test(alternate)&&retry.confidence>=65?{code:alternate,confidence:retry.confidence}:null;
+   }finally{input.width=input.height=0;if(normalized)normalized.width=normalized.height=0;}
   }
   async function learn(p,rect,pdfjs,angle){
    const viewport=p.getViewport({scale:1}),rough={left:rect.x*viewport.width,top:rect.y*viewport.height,width:rect.width*viewport.width,height:rect.height*viewport.height},profile={version:1,width:rough.width,height:rough.height,textHeight:Math.min(rough.width,rough.height)*.6,angle};
