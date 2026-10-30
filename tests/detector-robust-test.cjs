@@ -11,7 +11,7 @@ pdfjs.GlobalWorkerOptions.workerSrc=path.resolve(__dirname,'../vendor/pdf.worker
  label('PSU',380,300,30,20,6);label('9-16',440,300,30,20,6);
  label('',20,200,110,8,10); // Long wall/furniture rectangle must not become detector 1.
  const pdf=await pdfjs.getDocument({data:await doc.save()}).promise,page=await pdf.getPage(1),vp=page.getViewport({scale:1}),profile={version:1,width:30,height:20,textHeight:10,angle:0,nativeRotation:0};
- let calls=0,queue=['57','58','1','1','1'],coarseReads=0,closed=0;
+ let calls=0,queue=['57','57','58','58','1','1'],coarseReads=0,closed=0;
  const image=ink=>{const data=new Uint8ClampedArray(48*48*4).fill(255);if(ink)for(let y=8;y<40;y++)for(let x=17;x<27;x++)data.set([0,0,0,255],(y*48+x)*4);return{width:48,height:48,data};};
  const sandbox={DetectorScanCore:core,window:{Tesseract:true},Tesseract:{createWorker:async()=>({setParameters:async()=>{},recognize:async()=>({data:{text:queue[calls++],confidence:95}}),terminate:async()=>{closed++}})},document:{baseURI:'https://test.invalid/',createElement:()=>{const c={width:0,height:0};c.getContext=()=>({fillRect(){},translate(){},rotate(){},drawImage(source){c.coarse=source.coarse},getImageData(){if(c.coarse)coarseReads++;return image(!c.coarse)}});return c;}},setTimeout,URL};
  vm.runInNewContext(fs.readFileSync(path.resolve(__dirname,'../detector-scan-vision.js'),'utf8'),sandbox);
@@ -20,7 +20,7 @@ pdfjs.GlobalWorkerOptions.workerSrc=path.resolve(__dirname,'../vendor/pdf.worker
  const create=sandbox.document.createElement;sandbox.document.createElement=()=>{const c=create();c.coarse=false;const ctx=c.getContext();ctx.canvas=c;c.getContext=()=>ctx;return c;};
  rendered.render=opts=>{opts.canvasContext.canvas.coarse=opts.canvasContext.canvas.width>=opts.viewport.width*.9;return{promise:Promise.resolve(),cancel(){}}};
  const session=sandbox.window.DetectorVision.createSession(),result=await session.scanPage(rendered,pdfjs,profile);session.close();
- assert.deepEqual(Array.from(result.hits,h=>h.code).sort(),['3','52','56','57','58']);assert.equal(calls,5,'Uncertain frames get the bounded retry, while long boxes cannot become digit 1');assert(coarseReads>0);assert.equal(closed,1);
+ assert.deepEqual(Array.from(result.hits,h=>h.code).sort(),['3','52','56','57','58']);assert.equal(calls,6,'Each image number is verified twice; long boxes cannot become digit 1');assert(coarseReads>0);assert.equal(closed,1);
  assert.equal(core.similarFrame({left:0,top:0,right:66,bottom:44},profile),false);
  assert.equal(core.similarFrame({left:0,top:0,right:66,bottom:44},profile,1,true),true);
  assert.equal(core.similarFrame({left:0,top:0,right:240,bottom:160},profile,1,true),false);
@@ -28,5 +28,8 @@ pdfjs.GlobalWorkerOptions.workerSrc=path.resolve(__dirname,'../vendor/pdf.worker
  assert.equal(core.confirmedSampleHit(confirmed,vp,1).code,'0052');assert.equal(core.confirmedSampleHit(confirmed,vp,2),null);assert.equal(core.confirmedSampleHit({...confirmed,confirmed:false},vp,1),null);
  calls=0;queue=[];const empty={...rendered,getOperatorList:async()=>({fnArray:[],argsArray:[]}),getTextContent:async()=>({items:[],styles:{}})};
  const fallback=sandbox.window.DetectorVision.createSession(),kept=await fallback.scanPage(empty,pdfjs,confirmed);fallback.close();assert.deepEqual(Array.from(kept.hits,h=>h.code),['0052']);assert.equal(calls,0,'User-confirmed location survives even when bulk extraction finds no frame');
+ const cropped=await PDFDocument.create(),cropFont=await cropped.embedFont(StandardFonts.Helvetica),cp=cropped.addPage([600,400]);
+ for(const [x,code]of [[20,'52'],[300,'57']]){cp.drawRectangle({x,y:100,width:30,height:20,borderColor:rgb(0,0,0),borderWidth:.5});cp.drawText(code,{x:x+5,y:105,font:cropFont,size:10});}
+ cp.setCropBox(0,50,200,200);const cropPdf=await pdfjs.getDocument({data:await cropped.save()}).promise,visible=await core.scanPage(await cropPdf.getPage(1),pdfjs);assert.deepEqual(visible.hits.map(h=>h.code),['52']);assert.equal(visible.frameCount,1,'Hidden original sheet content outside CropBox must not get connected');await cropPdf.destroy();
  await pdf.destroy();console.log('PASS: larger/smaller frames, incomplete numeric layer, thin strokes missed in overview, confirmed sample retention and letters/ranges exclusion.');
 })().catch(e=>{console.error(e);process.exitCode=1});

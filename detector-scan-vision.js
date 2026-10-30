@@ -36,36 +36,28 @@
    const width=box.right-box.left,height=box.bottom-box.top,scale=Math.min(12,Math.max(3,64/Math.min(width,height))),c=await renderCrop(p,{left:box.left,top:box.top,width,height},scale);
    const input=upright(c,angle,Math.max(2,Math.round(Math.min(c.width,c.height)*.1)));c.width=c.height=0;
    const fits=code=>input.width/input.height<=Math.max(3.5,code.length*1.5+1);
-   let normalized,retryInput;
+   let normalized,wide,normalizedWide;
    try{
-    // The overview bitmap can erase thin strokes. Decide emptiness only here,
-    // inside the border at the resolution used for actually reading the number.
     if(!core.inkBounds(input.getContext('2d').getImageData(0,0,input.width,input.height)))return{empty:true};
-    const w=await localWorker();guard();await w.setParameters({tessedit_pageseg_mode:'7'});guard();const {data}=await w.recognize(input);guard();const code=(data.text||'').trim().replace(/\s+/g,'');
-    if(/^\d+$/.test(code)&&data.confidence>=65&&fits(code))return{code,confidence:data.confidence};
-    // Never collapse ranges such as 9-16 into a detector number.
-    if(/\d\s*[-–—/]\s*\d/.test(data.text||''))return null;
-    if(/[a-z]{2}/i.test(code)&&data.confidence>=80)return null;
-    // Thin CAD strokes need a tight, consistently sized crop and word reading.
-    // Keep punctuation/letters available to OCR; never force them into digits.
-    const numeric=[];if(/^\d+$/.test(code))numeric.push(code);
+    const w=await localWorker(),readings=[];
+    const read=async(image,mode)=>{await w.setParameters({tessedit_pageseg_mode:mode});guard();const {data}=await w.recognize(image);guard();readings.push({text:data.text||'',confidence:data.confidence});return /\d\s*[-–—/]\s*\d/.test(data.text||'');};
+    // A single line reading confuses thin CAD 5s with 2, 0 or letters, even at
+    // high confidence. Require agreement from independently prepared readings.
+    if(await read(input,'7'))return null;
     normalized=normalizeNumber(input);
-    if(normalized){
-     await w.setParameters({tessedit_pageseg_mode:'8'});guard();const {data:retry}=await w.recognize(normalized);guard();const alternate=(retry.text||'').trim().replace(/\s+/g,'');
-     if(/\d\s*[-–—/]\s*\d/.test(retry.text||''))return null;
-     if(/[a-z]{2}/i.test(alternate)&&retry.confidence>=80)return null;
-     if(/^\d+$/.test(alternate)){
-      if(numeric.some(n=>n!==alternate))return null;
-      numeric.push(alternate);if(retry.confidence>=65&&fits(alternate))return{code:alternate,confidence:retry.confidence};
-     }
-    }
-    // One wider, higher-resolution retry for digits close to the frame edge.
-    // Keep confidence stricter on this fallback and reject numeric disagreement.
+    if(normalized&&await read(normalized,'8'))return null;
+    const agreed=core.consensusNumber(readings);
+    if(agreed)return fits(agreed.code)?agreed:null;
     const larger=await renderCrop(p,{left:box.left,top:box.top,width,height},Math.min(18,scale*1.5));
-    retryInput=upright(larger,angle,Math.max(2,Math.round(Math.min(larger.width,larger.height)*.035)));larger.width=larger.height=0;
-    await w.setParameters({tessedit_pageseg_mode:'7'});guard();const {data:last}=await w.recognize(retryInput);guard();const finalCode=(last.text||'').trim().replace(/\s+/g,'');
-    return /^\d+$/.test(finalCode)&&last.confidence>=80&&fits(finalCode)&&!numeric.some(n=>n!==finalCode)?{code:finalCode,confidence:last.confidence}:null;
-   }finally{input.width=input.height=0;if(normalized)normalized.width=normalized.height=0;if(retryInput)retryInput.width=retryInput.height=0;}
+    wide=upright(larger,angle,Math.max(2,Math.round(Math.min(larger.width,larger.height)*.035)));larger.width=larger.height=0;
+    normalizedWide=normalizeNumber(wide);
+    if(normalizedWide&&await read(normalizedWide,'8'))return null;
+    if(await read(wide,'7'))return null;
+    // A weak conflicting guess does not veto two strong matching readings.
+    // Equal support for two different numbers remains unresolved.
+    const result=core.consensusNumber(readings);
+    return result&&fits(result.code)?result:null;
+   }finally{for(const image of [input,normalized,wide,normalizedWide])if(image)image.width=image.height=0;}
   }
   async function learn(p,rect,pdfjs,angle){
    const viewport=p.getViewport({scale:1}),rough={left:rect.x*viewport.width,top:rect.y*viewport.height,width:rect.width*viewport.width,height:rect.height*viewport.height},profile={version:1,width:rough.width,height:rough.height,textHeight:Math.min(rough.width,rough.height)*.6,angle};

@@ -19,19 +19,23 @@ pdfjs.GlobalWorkerOptions.workerSrc=path.resolve(__dirname,'../vendor/pdf.worker
  vm.runInNewContext(fs.readFileSync(path.resolve(__dirname,'../detector-scan-vision.js'),'utf8'),sandbox);
  const rendered={pageNumber:1,rotate:0,getViewport:a=>page.getViewport(a),getOperatorList:()=>page.getOperatorList(),getTextContent:()=>page.getTextContent(),render:()=>({promise:Promise.resolve(),cancel(){}})};
  const session=sandbox.window.DetectorVision.createSession(),result=await session.scanPage(rendered,pdfjs,profile);
- assert.deepEqual(Array.from(result.hits,h=>h.code).sort(),['2','3','5']);assert.equal(result.ocr,1);assert.equal(calls,1,'Only the textless frame goes to OCR; letters/ranges remain excluded');session.close();assert.equal(closed,1);
+ assert.deepEqual(Array.from(result.hits,h=>h.code).sort(),['2','3','5']);assert.equal(result.ocr,1);assert.equal(calls,2,'Only the textless frame goes to OCR and gets two agreeing readings');session.close();assert.equal(closed,1);
  const retrySession=sandbox.window.DetectorVision.createSession();
  for(const [readings,expected,modes]of[
-  [[{text:'ce',confidence:32},{text:'2',confidence:94}],'2',['7','8']],
-  [[{text:')',confidence:29},{text:'5',confidence:95}],'5',['7','8']],
-  [[{text:'Q',confidence:91},{text:'9',confidence:95}],'9',['7','8']],
-  [[{text:'3',confidence:45},{text:'9',confidence:95}],null,['7','8']],
-  [[{text:')',confidence:29},{text:'5',confidence:61},{text:'5',confidence:70}],null,['7','8','7']],
-  [[{text:'PSU',confidence:96}],null,['7']],
-  [[{text:'?',confidence:32},{text:'?',confidence:40},{text:'52',confidence:94}],'52',['7','8','7']],
-  [[{text:'56',confidence:40},{text:'56',confidence:60},{text:'57',confidence:95}],null,['7','8','7']]
+  [[{text:'ce',confidence:32},{text:'2',confidence:94},{text:'2',confidence:95},{text:'2',confidence:94}],'2',['7','8','8','7']],
+  [[{text:')',confidence:29},{text:'5',confidence:95},{text:'5',confidence:96},{text:'5',confidence:94}],'5',['7','8','8','7']],
+  [[{text:'Q',confidence:91},{text:'9',confidence:95},{text:'9',confidence:96},{text:'9',confidence:94}],'9',['7','8','8','7']],
+  [[{text:'3',confidence:45},{text:'9',confidence:95},{text:'9',confidence:95},{text:'9',confidence:94}],'9',['7','8','8','7']],
+  [[{text:'3',confidence:95},{text:'9',confidence:95},{text:'3',confidence:96},{text:'9',confidence:95}],null,['7','8','8','7']],
+  [[{text:')',confidence:29},{text:'5',confidence:61},{text:'5',confidence:70},{text:'5',confidence:79}],null,['7','8','8','7']],
+  [[{text:'PSU',confidence:96},{text:'PSU',confidence:94},{text:'PSU',confidence:95},{text:'PSU',confidence:95}],null,['7','8','8','7']],
+  [[{text:'22',confidence:33},{text:'52',confidence:93},{text:'52',confidence:94},{text:'22',confidence:15}],'52',['7','8','8','7']],
+  [[{text:'23',confidence:86},{text:'53',confidence:96},{text:'53',confidence:96},{text:'03',confidence:52}],'53',['7','8','8','7']],
+  [[{text:'ol',confidence:91},{text:'51',confidence:90},{text:'51',confidence:94},{text:'ol',confidence:73}],'51',['7','8','8','7']],
+  [[{text:'27',confidence:37},{text:'57',confidence:96},{text:'57',confidence:96},{text:'07',confidence:0}],'57',['7','8','8','7']],
+  [[{text:'49',confidence:96},{text:'49',confidence:96}],'49',['7','8']]
  ]){
-  queued=[...readings];readingModes.length=0;const checked=await retrySession.scanPage(rendered,pdfjs,profile),ocr=checked.hits.filter(h=>h.ocr);assert.equal(ocr[0]?.code||null,expected);assert.deepEqual(readingModes,modes,'Each frame resets OCR mode; a wider retry must stay confident and consistent');
+  queued=[...readings];readingModes.length=0;const checked=await retrySession.scanPage(rendered,pdfjs,profile),ocr=checked.hits.filter(h=>h.ocr);assert.equal(ocr[0]?.code||null,expected);assert.deepEqual(readingModes,modes,'OCR needs strong agreement; weak conflicting guesses do not veto a confirmed reading');
  }
  queued=[{text:'9-16',confidence:92}];readingModes.length=0;const range=await retrySession.scanPage(rendered,pdfjs,profile);assert.equal(range.ocr,0);assert.deepEqual(readingModes,['7'],'A range is never retried as a number');retrySession.close();
  fail=true;const offline=sandbox.window.DetectorVision.createSession(),partial=await offline.scanPage(rendered,pdfjs,profile);assert.equal(partial.ocrFailed,true);assert.equal(partial.unread,1);assert.deepEqual(Array.from(partial.hits,h=>h.code),['3','2']);offline.close();

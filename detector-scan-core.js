@@ -42,7 +42,9 @@
    }else if([OPS.stroke,OPS.closeStroke,OPS.fillStroke,OPS.eoFillStroke,OPS.closeFillStroke,OPS.closeEOFillStroke].includes(fn))paint(true);
    else if([OPS.fill,OPS.eoFill,OPS.endPath].includes(fn))paint(false);
   }
-  return frames;
+  // PDF content streams can still contain the entire original sheet after a
+  // CropBox edit. Only create detector candidates on the visible drawing.
+  return frames.filter(b=>b.left>=-.25&&b.top>=-.25&&b.right<=viewport.width+.25&&b.bottom<=viewport.height+.25);
  }
  function textGeometry(item,styles,viewport){
   const m=multiply(viewport.transform,item.transform),height=Math.hypot(m[2],m[3]),len=Math.hypot(m[0],m[1]);
@@ -82,6 +84,13 @@
  function confirmedSampleHit(p,viewport,page){
   if(!validProfile(p)||p.confirmed!==true||p.page!==page||!/^\d+$/.test(p.code)||![p.x,p.y].every(n=>Number.isFinite(n)&&n>=0&&n<=1))return null;
   return{code:p.code,page,x:p.x,y:p.y,width:p.width/viewport.width,height:p.height/viewport.height,textHeight:p.textHeight/viewport.height,angle:p.angle,confirmed:true};
+ }
+ function consensusNumber(readings){
+  const votes=new Map();
+  for(const r of readings){const code=String(r?.text||'').trim().replace(/\s+/g,'');if(!/^\d+$/.test(code)||!Number.isFinite(r.confidence)||r.confidence<80)continue;const list=votes.get(code)||[];list.push(r.confidence);votes.set(code,list);}
+  const ranked=[...votes].sort((a,b)=>b[1].length-a[1].length);
+  if(!ranked.length||ranked[0][1].length<2||ranked[1]?.[1].length===ranked[0][1].length)return null;
+  return{code:ranked[0][0],confidence:Math.min(...ranked[0][1])};
  }
  function hasFrameInk(image,box){
   const inset=Math.max(2,Math.min(box.right-box.left,box.bottom-box.top)*.15),left=Math.max(0,Math.ceil(box.left+inset)),right=Math.min(image.width,Math.floor(box.right-inset)),top=Math.max(0,Math.ceil(box.top+inset)),bottom=Math.min(image.height,Math.floor(box.bottom-inset));
@@ -152,5 +161,5 @@
   // Older arrow points sit near their number. Only reuse a nearby, same-code object.
   return items.filter(o=>o.type==='detector'&&!o.detectorBox&&!used.has(o.uid)&&o.page===hit.page&&String(o.id).trim()===hit.code&&Math.hypot((o.x-hit.x)/hit.width,(o.y-hit.y)/hit.height)<5).sort((a,b)=>Math.hypot(a.x-hit.x,a.y-hit.y)-Math.hypot(b.x-hit.x,b.y-hit.y))[0]||null;
  }
- return{boxScale,resizeBox,fitLabelSize,framesFromOperators,framesFromPixels,hasFrameInk,inkBounds,validProfile,similarFrame,filterByProfile,confirmedSampleHit,textGeometry,matchNumbers,scanPage,samePosition,nearestExisting};
+ return{boxScale,resizeBox,fitLabelSize,framesFromOperators,framesFromPixels,hasFrameInk,inkBounds,validProfile,similarFrame,filterByProfile,confirmedSampleHit,consensusNumber,textGeometry,matchNumbers,scanPage,samePosition,nearestExisting};
 });
