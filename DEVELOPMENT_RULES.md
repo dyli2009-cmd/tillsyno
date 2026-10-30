@@ -467,3 +467,9 @@ Verifiering: syntaxkontroll och webbläsarprov i isolerad testvy vid 768/390 px 
 
 2026-10-30, v2.4.527: På användarens beställning döljs båda fil-/projektnamnsraderna efter PDF-öppning i Säkerhetsservice. Objektuppgifter får 14 px rubrik, 12 px etiketter/låsta värden, 14 px redigerbara fält och mindre avstånd; fyra kolumner på större skärmar, två på telefon och en vid stor text. Fokuserade redigerbara fält använder minst 16 px på pekskärm. Filnamn i projektdata/sparning, kontrollpunkter och filhanteringsknappar bevaras. Den nya CSS-filen avgränsas med data-security-project-layout; Brand utan Säkerhetsservice och den separata revisionsmodulen omfattas inte.
 Verifiering: kod-/resurskontroll. Webbläsarprov kunde inte köras eftersom Chromium saknades och installationen misslyckades; ingen visuell kontroll, fysisk iOS eller TestFlight verifierad. Kontrollflödet är åter låst utanför denna beställning.
+
+
+
+
+2026-10-30, v2.4.528: Beställd förenkling av Säkerhetsservices ritningsyta. Den rena klar-instruktionen ”Börja markera valda protokoll” döljs; fel, laddning och andra statusmeddelanden bevaras. PDF-zoomknapparna och procentvisningen döljs. Befintlig sidväxling flyttas in i arbetsverktygsraden, medan A+/A− finns i ritverktygsmenyn även på iPad/dator. Den separata tomma sidraden döljs. Fil-/anläggningsnamnsraderna förblir dolda enligt v2.4.527. Nypzoom, mushjulszoom, filhantering och projektdata ändras inte. Brand utan Säkerhetsservice behåller tidigare verktygsplacering.
+Verifiering: JS-/CSS-syntax samt 100 DOM-/klickkontroller i simulerade breddlägen 320/390/834/1440: befintliga klickhändelser, unika knappar, sidgruppens placering, textreglage i meny, vybyte, byte av område och felmeddelanden. DOM-testet renderar inte layout. Chromium kunde installeras men fick inte starta på grund av miljöns socketbegränsning; ingen visuell kontroll, fysisk iOS eller TestFlight verifierad. Kontrollflödet är åter låst utanför beställningen.

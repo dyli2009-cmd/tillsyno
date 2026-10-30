@@ -58,3 +58,10 @@ Ritverktygsfältet (sessionHistoryBar) visas endast i ritningsvyn. Det döljs ä
 ## Kompaktare objektuppgifter i Säkerhetsservice v2.4.527
 
 Användaren beställde mindre uppgifter och inga dubbla fil-/projektnamn i arbetsytan efter PDF-öppning. Avgränsat undantag: 14 px rubrik, 12 px etiketter/låsta värden, 14 px redigerbara fält och 36 px fälthöjd. Etiketternas sammanlagda tryckyta är minst 44 px; fokuserade redigerbara fält är minst 16 px på pekskärm. Fyra kolumner på större skärmar, två på telefon, en vid stor text. Kontrollpunkternas text/svarsknappar och sparade namn ändras inte. Övriga moduler följer tidigare regler.
+
+
+
+
+## Säkerhetsservices ritningsrad v2.4.528
+
+Användaren beställde borttagna PDF-zoomknappar och klar-instruktion. Sidväxlingen ligger i arbetsverktygsraden och textskalans A+/A− i ritverktygsmenyn. Raden får radbrytas på smala skärmar; sidknapparnas 44 px tryckytor bevaras. Nyp-/mushjulszoom, sidfunktion och felmeddelanden ändras inte. Namnraderna följer v2.4.527.
