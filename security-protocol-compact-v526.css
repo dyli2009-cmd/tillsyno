@@ -1,0 +1,41 @@
+/* Security Service only. Keep the original controls and touch hit areas. */
+@layer controlflowStandard {
+html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace :is(.workspaceMeta,#securityCount,.ta-page-version){display:none!important}
+html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace .workspaceHeaderFiles{display:flex;gap:4px;align-items:center}
+html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace .workspaceHeaderFiles button{display:inline-flex!important;align-items:center;justify-content:center;width:44px!important;min-width:44px!important;min-height:44px!important;padding:8px!important;flex:none}
+html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace .workspaceHeaderFiles button[hidden]{display:none!important}
+html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace .workspaceHeaderFiles button span{display:none!important}
+html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace .workspaceHeaderFiles svg{width:22px;height:22px}
+html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace .headerActions{gap:4px!important;flex-wrap:wrap}
+html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace[data-view="protocol"] .headerSubtitle{display:none!important}
+html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace[data-view="protocol"] .objectBar{min-height:0!important;padding:4px 12px!important}
+html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace .workspaceFileLine{margin:0!important;padding:2px 0!important;min-height:0!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace #securityProtocol{--cf-body:calc(.875rem * var(--cf-text-scale));--cf-label:calc(.8125rem * var(--cf-text-scale));--cf-heading:calc(1rem * var(--cf-text-scale));padding:8px!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace #securityProtocol :is(.protocolMetaPanel,.doorDetails){padding:0!important;margin:0 0 6px!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace #securityProtocol .protocolMetaPanel>summary{padding:7px 8px!important;min-height:36px;box-sizing:border-box}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace #securityProtocol .compactSecurityMeta{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px 8px!important;padding:6px 8px!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace #securityProtocol .compactSecurityMeta>label{margin:0!important;gap:3px!important;grid-column:auto!important;line-height:1.2!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace #securityProtocol :is(input,textarea,select){font-size:calc(1rem * var(--cf-text-scale))!important;padding:6px 8px!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace #securityProtocol input[readonly]{font-size:calc(.875rem * var(--cf-text-scale))!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace #securityProtocol :is(.progressLine,.doorCheckActions){margin:4px 0!important;padding:0!important;gap:6px!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace #securityProtocol .secCheck{padding:6px 8px!important;margin-bottom:4px!important;gap:5px!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace #securityProtocol :is(.secCheckHead,.secCheckText){line-height:1.3!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace #securityProtocol .secCheckGroup>summary{padding:8px!important}
+@media(max-width:600px){html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace #securityProtocol .compactSecurityMeta{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+html[data-controlflow-ui="1"][data-cf-large-text][data-tillsyno-theme] body.allInOneApp.securityWorkspace #securityProtocol .compactSecurityMeta{grid-template-columns:1fr!important}
+}
+@layer controlflowStandard {
+html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace[data-view="protocol"] .secAppHeader{padding:8px 12px!important;gap:4px!important}
+html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace .secAppHeader .headerDetails{margin:0!important;padding:0!important;min-height:0!important}
+html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace .workspaceFileName{margin:0!important;padding:3px 6px!important;min-height:28px!important}
+@media(max-width:600px){
+ html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace[data-view="protocol"] .secAppHeader{display:grid!important;grid-template-columns:44px minmax(0,1fr) minmax(0,1fr)!important}
+ html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace[data-view="protocol"] .secAppHeader .brand{grid-row:1;grid-column:1/3;font-size:16px!important}
+ html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace[data-view="protocol"] .headerActions{display:contents!important}
+ html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace[data-view="protocol"] .headerActions>a{grid-row:2;grid-column:1}
+ html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace[data-view="protocol"] #securityPreview{grid-row:2;grid-column:2}
+ html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace[data-view="protocol"] #securityExport{grid-row:2;grid-column:3}
+ html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace[data-view="protocol"] .workspaceHeaderFiles{grid-row:1;grid-column:3;justify-content:end}
+ html[data-controlflow-ui="1"] body.allInOneApp.securityWorkspace[data-view="protocol"] .headerDetails{grid-row:3;grid-column:1/-1}
+}
+}
