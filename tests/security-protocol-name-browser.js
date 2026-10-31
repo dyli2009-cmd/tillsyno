@@ -11,7 +11,7 @@
   await tick(150);$('allProtocolDialog').close();AllInOneProtocols.set(['detector','lock','fire_detector']);
   const drawing=await PDFLib.PDFDocument.create();drawing.addPage([600,400]);
   await $('securityFile').onchange({target:{files:[new File([await drawing.save()],'protocol-names.pdf',{type:'application/pdf'})],value:''}});await renderQueue;
-  for(const [i,label]of ['52','57'].entries()){
+  for(const [i,label]of ['1044','57'].entries()){
    SecurityDetectorScan.open();$('detectorManual').click();$('detectorManualCode').value=label;$('detectorManualForm').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));createItem('detector',.25+i*.5,.4);$('detectorSizeDone').click();
   }
   const first=items[0].uid,second=items[1].uid;items[0].checks['1.1'].result='ok';syncStatus(items[0]);save();
@@ -29,15 +29,18 @@
   rename('Sire\u0301n');ok(cur().protocolLabel==='Sirén','Svenska tecken normaliseras utan att ändra namnet');texts=await reportTexts();ok(texts[first].includes('SIRÉNPROTOKOLL'),'Svenska tecken följer med till PDF-rubriken');
   rename('Siren');texts=await reportTexts();
   ok(texts[first].includes('SIRENPROTOKOLL')&&texts[second].includes('DETEKTORPROTOKOLL'),'Varje objekt får rätt rubrik i samma kund-PDF');
+  ok(texts[first].includes('ID / märkning:')&&texts[first].includes('1044 – Siren')&&texts[second].includes('57 – Detektor'),'Kundmallen visar objektets märkning tillsammans med dess protokolltyp');
+  ok(!texts[first].includes('Detektor nr:')&&!texts[first].includes('Namn / kod:'),'Det sammanhållna ID-fältet ersätter de gamla separata detektorfälten');
   ok(texts[lock].includes('LÅS & DÖRRMILJÖ')&&texts[fire].includes('BRANDDETEKTORER'),'Övriga kundprotokoll behåller sina rubriker');
+  const longId='1044 / Entré till lager och verkstad, passage vid trapphus B',longType='Ljud- och ljussignal med separat indikering';cur().id=longId;rename(longType);const longTexts=await reportTexts();ok(longTexts[first].replace(/\s+/g,'').includes((longId+' – '+longType).replace(/\s+/g,'')),'Lång märkning och protokolltyp radbryts utan att kapas');cur().id='1044';rename('Siren');
   $('secOverviewSearch').value='Siren';showOverview();const cards=$('secOverviewList').querySelectorAll('article');ok(cards.length===1&&cards[0].dataset.uid===first&&cards[0].querySelector('h3').textContent.includes('Siren'),'Översikten visar och söker på det egna namnet');$('secOverviewSearch').value='';
-  await openCustomerPreview();ok($('secPreviewDialog').open&&$('secPreviewTitle').textContent==='Siren · 52'&&previewMode==='report','Kundförhandsvisningen öppnar rätt objekt med eget namn');const previewText=(await(await previewPdf.getPage(previewPage)).getTextContent()).items.map(item=>item.str).join(' ');ok(previewText.includes('SIRENPROTOKOLL'),'Förhandsvisad PDF innehåller Sirenprotokoll');$('secPreviewClose').click();
+  await openCustomerPreview();ok($('secPreviewDialog').open&&$('secPreviewTitle').textContent==='Siren · 1044'&&previewMode==='report','Kundförhandsvisningen öppnar rätt objekt med eget namn');const previewText=(await(await previewPdf.getPage(previewPage)).getTextContent()).items.map(item=>item.str).join(' ');ok(previewText.includes('SIRENPROTOKOLL')&&previewText.includes('1044 – Siren'),'Förhandsvisad PDF innehåller Sirenprotokoll och ID med typ');$('secPreviewClose').click();
   let blob;const createUrl=URL.createObjectURL,click=HTMLAnchorElement.prototype.click;URL.createObjectURL=value=>{blob=value;return createUrl(value)};HTMLAnchorElement.prototype.click=function(){};
   try{await exportPdf();}finally{URL.createObjectURL=createUrl;HTMLAnchorElement.prototype.click=click;}
   ok(!!blob,'Arbets-PDF exporteras');const bytes=await blob.arrayBuffer(),saved=await inspectSecurityWorkPdf(new Uint8Array(bytes));
   ok(saved.work.items.find(o=>o.uid===first).protocolLabel==='Siren'&&!saved.work.items.find(o=>o.uid===second).protocolLabel,'Arbets-PDF sparar namnen per objekt');
   await $('securityFile').onchange({target:{files:[new File([bytes],'protocol-names-saved.pdf',{type:'application/pdf'})],value:''}});await renderQueue;if($('secOpenWorkDialog').open)$('secOpenContinue').click();select(first);
-  ok($('secType').value==='Siren'&&identity(cur())===original,'Återöppnad ritning behåller namn, placering och kontroll');texts=await reportTexts();ok(texts[first].includes('SIRENPROTOKOLL')&&texts[second].includes('DETEKTORPROTOKOLL'),'Kund-PDF behåller rätt rubriker efter återöppning');
+  ok($('secType').value==='Siren'&&identity(cur())===original,'Återöppnad ritning behåller namn, placering och kontroll');texts=await reportTexts();ok(texts[first].includes('SIRENPROTOKOLL')&&texts[first].includes('1044 – Siren')&&texts[second].includes('DETEKTORPROTOKOLL'),'Kund-PDF behåller rätt rubriker, ID och typ efter återöppning');
   out.textContent+='ALL PASS';const hide=document.createElement('button');hide.textContent='Dölj test';hide.onclick=()=>out.hidden=true;out.append(hide);
  })().catch(error=>{out.textContent+='FAIL '+error.message;console.error(error);});
 })();

@@ -1355,6 +1355,12 @@ function reportDoc(){
   const labelW=Math.min(w-7,doc.getTextWidth(labelText)+2.2);doc.text(labelText,x+1.5,yy+h/2+1);
   if(value!==undefined&&value!==null&&String(value)!==''){doc.setFont('helvetica',signature?'italic':(bold?'bold':'normal'));doc.setFontSize(signature?9.1:8.5);doc.setTextColor(...(signature?[70,125,165]:[20,20,20]));doc.text(doc.splitTextToSize(String(value),Math.max(5,w-labelW-3)).slice(0,1),x+1.5+labelW,yy+h/2+1)}
  }
+ function detectorIdentityCell(o,x,yy,w){
+  const label='ID / märkning:',value=[String(o.id||o.number||'').trim(),securityCustomProtocolLabel(o)||'Detektor'].filter(Boolean).join(' – ');
+  doc.setFont('helvetica','bold');doc.setFontSize(7.4);const labelW=Math.min(w-7,doc.getTextWidth(label)+2.2);
+  doc.setFontSize(8.5);const lines=doc.splitTextToSize(value,Math.max(5,w-labelW-3)),step=8.5*25.4/72*1.15,h=Math.max(8,lines.length*step+3);
+  cell(label,'',x,yy,w,h);doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(20,20,20);doc.text(lines,x+1.5+labelW,yy+(h-(lines.length-1)*step)/2+1,{lineHeightFactor:1.15});return h;
+ }
  function pdfProtocolMark(kind,cx,cy,size=10.2){
   doc.setFontSize(size);doc.setTextColor(20,20,20);
   if(kind==='na'){doc.setFont('helvetica','bold');doc.setFontSize(6.6);doc.text('-',cx,cy+1.2,{align:'center'});return}
@@ -1380,7 +1386,7 @@ function reportDoc(){
   cell('Telefon:',project.companyPhone,left,y,93);cell('Telefon:',project.phone,left+93,y,93);y+=7;
   cell('Adress:',project.companyAddress,left,y,93);cell('Adress:',project.address,left+93,y,93);y+=7;
   cell('Postnummer / Postadress:',[project.companyPostalCode,project.companyPostalCity].filter(Boolean).join(' '),left,y,93);cell('Postnummer / Postadress:',[project.postalCode,project.postalCity].filter(Boolean).join(' '),left+93,y,93);y+=7;
-  if(o.type==='detector'){const code=o.id==='Detektor '+o.number?'':o.id;cell('Detektor nr:',o.number,left,y,36,8,true);cell('Namn / kod:',code,left+36,y,66,8,true);cell('Placering:',o.location,left+102,y,84,8);y+=8;cell('Bedömning:',securityStatusText(o),left,y,93,8,true);cell('AO nummer:',project.order,left+93,y,93,8,true);y+=8;}else{cell('ID / märkning:',o.id,left,y,54,8,true);cell('Placering:',o.location,left+54,y,66,8);cell('AO nummer:',project.order,left+120,y,66,8,true);y+=8;}
+  if(o.type==='detector'){const h=detectorIdentityCell(o,left,y,102);cell('Placering:',o.location,left+102,y,84,h);y+=h;cell('Bedömning:',securityStatusText(o),left,y,93,8,true);cell('AO nummer:',project.order,left+93,y,93,8,true);y+=8;}else{cell('ID / märkning:',o.id,left,y,54,8,true);cell('Placering:',o.location,left+54,y,66,8);cell('AO nummer:',project.order,left+120,y,66,8,true);y+=8;}
  }
  function checkHeader(){
   const ws=[9,101,14,21,25,16],titles=['Nr','Benämning / kontrollpunkt','Ingår ej','Klart utan\nanmärkning','Klart med\nanmärkning','Signatur'];let x=left;
