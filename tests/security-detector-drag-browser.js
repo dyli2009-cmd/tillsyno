@@ -22,7 +22,7 @@
   }
   const beforeCancel=JSON.stringify(curItem());drag(uid,-19,-9,'touch','pointercancel');ok(JSON.stringify(curItem())===beforeCancel&&!drawingGestureLocked,'Avbruten beröring återställer placeringen');
   drag(uid,12,9,'mouse','lostpointercapture');ok(JSON.stringify(curItem())===beforeCancel&&!drawingGestureLocked,'Förlorat pekargrepp lämnar ingen osparad flytt');
-  const b=marker(uid),p=point(b);pointer(b,'pointerdown',p.x,p.y,81,'touch');pointer(b,'pointermove',p.x+20,p.y+10,81,'touch');
+  const b=marker(uid),p=point(b);pointer(b,'pointerdown',p.x,p.y,81,'touch');pointer(b,'pointermove',p.x+20,p.y+10,81,'touch');pointer(b,'pointerdown',p.x+21,p.y+10,82,'touch');
   const touch=(type,points)=>{const e=new Event(type,{bubbles:true,cancelable:true});Object.defineProperty(e,'touches',{value:points.map(([clientX,clientY])=>({clientX,clientY}))});viewer.dispatchEvent(e);};
   touch('touchstart',[[p.x,p.y],[p.x+60,p.y]]);touch('touchmove',[[p.x-10,p.y],[p.x+70,p.y]]);touch('touchend',[]);await renderQueue;ok(JSON.stringify(curItem())===beforeCancel&&!drawingGestureLocked,'Tvåfingerszoom avbryter flytten utan att flytta objektet');
   size('Height',200);drag(uid,9,7);ok(coreValue(curItem())===200&&!$('detectorSizePanel').hidden,'Höjden kan justeras och rutan flyttas igen i samma läge');

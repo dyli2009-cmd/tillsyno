@@ -218,7 +218,9 @@
    if(commit&&moved&&pdf===d.doc&&items.includes(o)){save();securitySessionHistory.endGroup();}
   }
   b.onpointerdown=e=>{
-   if(e.button!==0)return;pointer={x:e.clientX,y:e.clientY};moved=false;
+   if(e.button!==0)return;
+   if(drag){e.preventDefault();e.stopPropagation();return;}
+   pointer={x:e.clientX,y:e.clientY};moved=false;
    if(resizeUid!==o.uid||busy)return;
    e.preventDefault();e.stopPropagation();securitySessionHistory.endGroup();securitySessionHistory.record();
    drag={id:e.pointerId,doc:pdf,page:o.page,x:o.x,y:o.y,labelX:o.labelX,labelY:o.labelY,clientX:e.clientX,clientY:e.clientY,threshold:e.pointerType==='mouse'?3:5};
