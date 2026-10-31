@@ -75,3 +75,9 @@ Beställd mindre text över svarskolumnerna: 11 px på iPad/surfplatta och 10 px
 ## Säkerhetsservice Översikt v2.4.530
 
 Endast rubriken ”Översikt” visas i panelhuvudet. Kompakt skala: 18 px panelrubrik, 14 px objektrubrik/filterfält, 12 px etiketter/brödtext och 11 px statusmärken. Avstånd minskas; redigerbara fält är minst 16 px vid fokus på pekskärm. Textförstoring till 200 % bevaras och filtren går i en kolumn vid stor text.
+
+## Säkerhetsservices ritverktyg v2.4.543
+
+På användarens beställning får ritningen separata 90°-knappar åt vänster och höger, med gemensam vinkelvisning. Verktygsfält och ritverktygsmeny använder enhetliga 22 px linjeikoner. Menyn visar verktygsnamn i två kolumner, en vid stor text, och kan rullas inom skärmen. Tryckytorna är minst 44 px. Presentationen ligger i `security-toolbar-v543.css/js` och aktiveras endast i Säkerhetsservice; andra områdens ursprungliga SVG:er återställs.
+
+Verifierat i isolerad Chromium-vy med syntetisk tvåsidig PDF: rotation åt båda håll, snabba tryck, avbruten omritning, inbyggd PDF-rotation, oförändrade objektdata, export och återöppning samt scanner- och ritverktygsval. Layout kontrollerad vid 1280, 900, 768, 390 och 320 px, manuella enhetsval, ljust/mörkt tema och 200 % text. Ingen fysisk iOS-enhet eller TestFlight-build verifierad. Testfixturen finns i `tests/security-toolbar-browser.js` och laddas inte av produktionssidorna.

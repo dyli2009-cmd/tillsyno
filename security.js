@@ -265,7 +265,7 @@ const DOOR_AUTOMATION_MODELS=[
 const COLORS={ok:[35,131,84],action:[199,124,19],fail:[189,63,70],untested:[119,133,142]};
 let pdf=null,sourceBytes=null,page=1,zoom=1,baseScale=1,visualZoom=1,items=[],textNotes=[],drawingExtras=[],selected=null,addType=null,textMode=false,project={},logoData='',renderTask=null,renderVersion=0,renderQueue=Promise.resolve(),activeKey=null,pinch=null,panTouch=null,panMouse=null,pageWidth=1,pageHeight=1,suppressPageSwipeUntil=0,precisionMode=false,drawingGestureLocked=false,drawingLockScroll=null,drawingOverlaysHidden=false,lastObjectTap=null;
 const canvas=$('secCanvas'),ctx=canvas.getContext('2d'),markers=$('secMarkers'),viewer=$('secViewer');
-let drawingRaster=null,drawingRotations={},drawingFileLoading=false,openedDrawingFileKey=null;
+let drawingRaster=null,drawingRotations={},drawingFileLoading=false,openedDrawingFileKey=null,drawingRotationPending=false;
 function drawingRotation(){return [0,90,180,270].includes(drawingRotations[page])?drawingRotations[page]:0}
 function rotateDrawingPoint(x,y,angle=drawingRotation()){
  switch((angle%360+360)%360){case 90:return{x:1-y,y:x};case 180:return{x:1-x,y:1-y};case 270:return{x:y,y:1-x};default:return{x,y}}
@@ -278,7 +278,7 @@ function positionDrawingNode(node,x,y){const v=rotateDrawingPoint(x,y);node.styl
 function positionDrawingLine(line,end,x,y){const v=rotateDrawingPoint(x,y);line.setAttribute('x'+end,String(v.x*1000));line.setAttribute('y'+end,String(v.y*1000))}
 function validDrawingRotations(value){return value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.entries(value).filter(([key,angle])=>Number.isInteger(Number(key))&&Number(key)>0&&[0,90,180,270].includes(angle))):{}}
 function loadDrawingRotations(imported){try{drawingRotations=validDrawingRotations(imported===undefined?JSON.parse(localStorage.getItem(APP_STORAGE_PREFIX+activeKey+':view-rotations')):imported);if(imported!==undefined)localStorage.setItem(APP_STORAGE_PREFIX+activeKey+':view-rotations',JSON.stringify(drawingRotations))}catch(_){drawingRotations=validDrawingRotations(imported)}}
-function updateDrawingRotationButton(){const b=$('secRotate');if(b){b.disabled=!pdf;b.title=b.ariaLabel='Vrid ritningen 90° åt höger. Nu '+drawingRotation()+'°';b.querySelector('[data-rotation]').textContent=drawingRotation()+'°'}}
+function updateDrawingRotationButton(){const angle=drawingRotation()+'°';for(const[id,direction]of [['secRotate','höger'],['secRotateLeft','vänster']]){const b=$(id);if(!b)continue;b.disabled=!pdf||drawingRotationPending;b.title=b.ariaLabel='Vrid ritningen 90° åt '+direction+'. Nu '+angle;const value=b.querySelector('[data-rotation]');if(value)value.textContent=angle;}if($('secRotationValue'))$('secRotationValue').textContent=angle;}
 // Drawing tools edit a view copy; persisted and exported coordinates stay in the original PDF space.
 function projectDrawingExtras(list,inverse=false,rotations=drawingRotations){return list.map(item=>{
  const out={...item},angle=([0,90,180,270].includes(rotations[item.page])?rotations[item.page]:0)*(inverse?-1:1);
@@ -908,19 +908,23 @@ $('secOpenWorkDialog').addEventListener('cancel',e=>e.preventDefault());
 $('secOpenContinue').onclick=()=>{$('secOpenWorkDialog').close();go('drawing');msg('')};
 $('secOpenNewService').onclick=()=>{if(startNewSecurityService(false))$('secOpenWorkDialog').close()};
 
-if($('secRotate'))$('secRotate').onclick=async()=>{
- if(!pdf||drawingGestureLocked)return;
+async function rotateSecurityDrawing(direction=1){
+ if(!pdf||drawingGestureLocked||drawingRotationPending||drawingFileLoading||document.body.classList.contains('exporting'))return false;
+ const source=pdf;drawingRotationPending=true;updateDrawingRotationButton();
+ try{
  securityDrawingTools?.stop();securityDrawingTools?.deselect();
  clearTimeout(wheelZoomTimer);wheelZoomTimer=null;wheelZoomTarget=null;wheelZoomFocus=null;
- const previous=drawingRotation(),rotatedPage=page,rotatedKey=activeKey;drawingRotations[rotatedPage]=(previous+90)%360;
+ const previous=drawingRotation(),rotatedPage=page,rotatedKey=activeKey;drawingRotations[rotatedPage]=(previous+(direction<0?-90:90)+360)%360;
  zoom=1;visualZoom=1;pinch=null;panTouch=null;panMouse=null;lastObjectTap=null;
  $('secStage').style.transform='';$('secRotate').disabled=true;
- const rendered=await render(true);if(activeKey!==rotatedKey)return;
+ const rendered=await render(true);if(pdf!==source||activeKey!==rotatedKey)return false;
  if(rendered===false&&page===rotatedPage){drawingRotations[rotatedPage]=previous;await render(true)}
  else{try{localStorage.setItem(APP_STORAGE_PREFIX+rotatedKey+':view-rotations',JSON.stringify(drawingRotations))}catch(_){msg('Ritningen är vriden, men visningsläget kunde inte sparas på enheten.',true)}}
  if(page===rotatedPage){viewer.scrollLeft=0;viewer.scrollTop=0}
- updateDrawingRotationButton();
-};
+ return rendered!==false;
+ }finally{drawingRotationPending=false;updateDrawingRotationButton();}
+}
+if($('secRotate'))$('secRotate').onclick=()=>rotateSecurityDrawing(1);
 function changeSecurityPage(delta){
  if(!pdf)return false;
  const next=Math.max(1,Math.min(pdf.numPages,page+delta));if(next===page)return false;
