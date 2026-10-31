@@ -14,6 +14,8 @@ body.securityDetectorScanApp .detectorNumberBox::before,body.securityDetectorSca
 body.securityDetectorScanApp #detectorMove{font-size:12px;min-height:34px}
 
 body.securityDetectorScanApp .detectorNumberBox{pointer-events:auto}
+body.securityDetectorScanApp .detectorNumberBox.isSizing{cursor:move;touch-action:none!important}
+body.securityDetectorScanApp .detectorNumberBox.isDragging{cursor:grabbing;outline:2px solid #1873b5;outline-offset:2px}
 
 #detectorSampleForm{display:flex;align-items:end;gap:8px;flex-wrap:wrap;margin:8px 0;max-width:540px}
 #detectorSampleForm[hidden],#detectorSampleInfo[hidden]{display:none}
