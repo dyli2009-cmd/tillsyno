@@ -3,7 +3,7 @@
  'use strict';
  const core=window.DetectorScanCore,bar=document.querySelector('.securityTools');
  const controls=document.createElement('section');controls.className='detectorScanTools';controls.id='securityDetectorScanPanel';controls.hidden=true;controls.setAttribute('aria-label','Skanna detektorer');document.body.classList.add('securityDetectorScanApp');
- controls.innerHTML='<div class="detectorPanelHead"><strong>Skanna detektorer</strong><button id="detectorClose" type="button" aria-label="Stäng skanningsverktyget">×</button></div><div class="detectorScanActions"><button id="detectorLearn" type="button" class="primary">1. Markera exempel</button><button id="detectorScan" type="button" class="primary">2. Skanna ritningen</button><button id="detectorSetupToggle" type="button" hidden>Sök fler</button><button id="detectorReview" type="button" hidden>Granska osäkra</button><button id="detectorManual" type="button">Lägg till manuellt</button><button id="detectorCancel" type="button" hidden>Avbryt</button></div><label id="detectorModeLabel" class="detectorModeLabel">Läsning <select id="detectorMode"><option value="careful">Noggrann · långsammare</option><option value="normal">Normal</option></select><span>Bearbetas på din enhet</span></label><form id="detectorManualForm" hidden><label>Text / nummer<input id="detectorManualCode" type="text" required placeholder="Exempel: 3, D1 eller Entré" autocomplete="off"></label><button type="submit">Välj position</button></form><form id="detectorSampleForm" hidden><img id="detectorSamplePreview" alt="Markerad nummerruta"><label>Kontrollera numret<input id="detectorSampleCode" inputmode="numeric" pattern="[0-9]+" required autocomplete="off"></label><button type="submit">Använd och koppla</button></form><section id="detectorReviewPanel" hidden aria-label="Granskningsöversikt"><div class="detectorReviewToolbar"><button id="detectorReviewBack" type="button">Till ritningen</button><label><input id="detectorReviewAll" type="checkbox">Markera alla</label><button id="detectorReviewConnect" type="button" class="primary">Koppla valda</button><button id="detectorReviewRemove" type="button">Ta bort valda förslag</button></div><p id="detectorReviewProgress" role="status" aria-live="polite"></p><div id="detectorReviewGrid"></div></section><section id="detectorSizePanel" hidden aria-label="Storlek på nummerruta"><div class="detectorSizeHeading"><strong id="detectorSizeTitle">Storlek</strong><button id="detectorSizeDone" type="button">Klar</button></div><div class="detectorSizeRow"><label for="detectorWidth">Bredd <output id="detectorWidthValue" for="detectorWidth">100 %</output></label><input id="detectorWidth" type="range" min="25" max="600" step="5" value="100"></div><div class="detectorSizeRow"><label for="detectorHeight">Höjd <output id="detectorHeightValue" for="detectorHeight">100 %</output></label><input id="detectorHeight" type="range" min="25" max="600" step="5" value="100"></div><button id="detectorSizeReset" type="button">Återställ storlek</button></section><p id="detectorSampleInfo" hidden></p><p id="detectorScanStatus" role="status" aria-live="polite">Markera först en nummerruta som exempel. Alla nummer med liknande ram söks sedan upp.</p>';
+ controls.innerHTML='<div class="detectorPanelHead"><strong>Skanna detektorer</strong><button id="detectorClose" type="button" aria-label="Stäng skanningsverktyget">×</button></div><div class="detectorScanActions"><button id="detectorLearn" type="button" class="primary">1. Markera exempel</button><button id="detectorScan" type="button" class="primary">2. Skanna ritningen</button><button id="detectorSetupToggle" type="button" hidden>Sök fler</button><button id="detectorReview" type="button" hidden>Granska osäkra</button><button id="detectorManual" type="button">Lägg till manuellt</button><button id="detectorCancel" type="button" hidden>Avbryt</button></div><label id="detectorModeLabel" class="detectorModeLabel">Läsning <select id="detectorMode"><option value="careful">Noggrann · långsammare</option><option value="normal">Normal</option></select><span>Bearbetas på din enhet</span></label><form id="detectorManualForm" hidden><label>Text / nummer<input id="detectorManualCode" type="text" required placeholder="Exempel: 3, D1 eller Entré" autocomplete="off"></label><label>Numrering<select id="detectorManualStep"><option value="0">Ett objekt</option><option value="1">+1 · Uppåt</option><option value="-1">−1 · Nedåt</option></select></label><button type="submit">Välj position</button></form><section id="detectorSequencePanel" hidden aria-label="Löpande numrering"><label>Nästa nummer<input id="detectorSequenceCode" type="text" autocomplete="off" aria-describedby="detectorScanStatus"></label><div role="group" aria-label="Riktning för numrering"><button id="detectorSequenceMinus" type="button" aria-label="Räkna nedåt med 1" aria-pressed="false">−1</button><button id="detectorSequencePlus" type="button" aria-label="Räkna uppåt med 1" aria-pressed="false">+1</button></div><button id="detectorSequenceDone" type="button">Avsluta</button></section><form id="detectorSampleForm" hidden><img id="detectorSamplePreview" alt="Markerad nummerruta"><label>Kontrollera numret<input id="detectorSampleCode" inputmode="numeric" pattern="[0-9]+" required autocomplete="off"></label><button type="submit">Använd och koppla</button></form><section id="detectorReviewPanel" hidden aria-label="Granskningsöversikt"><div class="detectorReviewToolbar"><button id="detectorReviewBack" type="button">Till ritningen</button><label><input id="detectorReviewAll" type="checkbox">Markera alla</label><button id="detectorReviewConnect" type="button" class="primary">Koppla valda</button><button id="detectorReviewRemove" type="button">Ta bort valda förslag</button></div><p id="detectorReviewProgress" role="status" aria-live="polite"></p><div id="detectorReviewGrid"></div></section><section id="detectorSizePanel" hidden aria-label="Storlek på nummerruta"><div class="detectorSizeHeading"><strong id="detectorSizeTitle">Storlek</strong><button id="detectorSizeDone" type="button">Klar</button></div><div class="detectorSizeRow"><label for="detectorWidth">Bredd <output id="detectorWidthValue" for="detectorWidth">100 %</output></label><input id="detectorWidth" type="range" min="25" max="600" step="5" value="100"></div><div class="detectorSizeRow"><label for="detectorHeight">Höjd <output id="detectorHeightValue" for="detectorHeight">100 %</output></label><input id="detectorHeight" type="range" min="25" max="600" step="5" value="100"></div><button id="detectorSizeReset" type="button">Återställ storlek</button></section><p id="detectorSampleInfo" hidden></p><p id="detectorScanStatus" role="status" aria-live="polite">Markera först en nummerruta som exempel. Alla nummer med liknande ram söks sedan upp.</p>';
  bar.after(controls);
  const toolMenu=document.querySelector('.serviceToolsMenu'),toolChoices=toolMenu?.querySelector('.serviceToolChoices'),launcher=document.createElement('button');launcher.type='button';launcher.id='securityDetectorScan';launcher.className='serviceIconButton detectorScanLauncher';launcher.title='Skanna detektorer';launcher.setAttribute('aria-label','Skanna detektorer');launcher.setAttribute('aria-controls',controls.id);launcher.setAttribute('aria-expanded','false');launcher.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/><rect x="6" y="8" width="12" height="8"/><path d="M11 10h2v4"/></svg><span>Skanna detektorer</span>';(toolChoices||bar).append(launcher);
  function openTool(){if(!pdf)return msg('Öppna en PDF först.',true);cancel();controls.hidden=false;launcher.setAttribute('aria-expanded','true');if(toolMenu)toolMenu.hidden=true;securityDrawingTools?.stop();go('drawing');updateControls();setStatus(readyMessage());}
@@ -16,6 +16,8 @@
  const scanButton=$('detectorScan'),manualButton=$('detectorManual'),cancelButton=$('detectorCancel'),manualForm=$('detectorManualForm'),codeInput=$('detectorManualCode'),status=$('detectorScanStatus');
  const setupToggle=$('detectorSetupToggle'),learnButton=$('detectorLearn'),sampleForm=$('detectorSampleForm'),sampleCode=$('detectorSampleCode'),sampleInfo=$('detectorSampleInfo');
  const mode=$('detectorMode'),reviewButton=$('detectorReview');
+ const manualStep=$('detectorManualStep'),sequencePanel=$('detectorSequencePanel'),sequenceCode=$('detectorSequenceCode'),sequenceMinus=$('detectorSequenceMinus'),sequencePlus=$('detectorSequencePlus');
+ let manualSequence=null;
  const reviewPanel=$('detectorReviewPanel'),reviewGrid=$('detectorReviewGrid'),reviewAll=$('detectorReviewAll'),reviewConnect=$('detectorReviewConnect'),reviewRemove=$('detectorReviewRemove'),reviewProgress=$('detectorReviewProgress');
  let reviewGeneration=0,reviewSession=null,reviewOpen=false,reviewRows=[],previewDoc=null,previewCache=new Map();
  const profiles=()=>core.sampleProfiles(project);
@@ -27,8 +29,8 @@
  // Keep the manual default in PDF units, independent of zoom, screen size and page rotation.
  function naturalPageSize(){const sideways=drawingRotation()%180!==0,scale=Math.max(.001,baseScale*zoom);return{width:(sideways?pageHeight:pageWidth)/scale,height:(sideways?pageWidth:pageHeight)/scale};}
  function rememberManualSize(o){const box=boxFor(o),size=naturalPageSize(),vertical=Math.abs(Math.sin((box.angle||0)*Math.PI/180))>.707;project.detectorManualSize={version:1,width:vertical?box.height*size.height:box.width*size.width,height:vertical?box.width*size.width:box.height*size.height,textHeight:box.textHeight*size.height};}
- function withManualSize(hit){
-  const saved=project.detectorManualSize;if(saved?.version!==1||![saved.width,saved.height,saved.textHeight].every(n=>Number.isFinite(n)&&n>0))return{...hit,manual:true};
+ function withManualSize(hit,saved=project.detectorManualSize){
+  if(saved?.version!==1||![saved.width,saved.height,saved.textHeight].every(n=>Number.isFinite(n)&&n>0))return{...hit,manual:true};
   const size=naturalPageSize(),vertical=Math.abs(Math.sin((hit.angle||0)*Math.PI/180))>.707;
   return{...hit,width:Math.min(1,(vertical?saved.height:saved.width)/size.width),height:Math.min(1,(vertical?saved.width:saved.height)/size.height),textHeight:saved.textHeight/size.height,manual:true};
  }
@@ -38,15 +40,15 @@
   sizePanel.hidden=false;$('detectorSizeTitle').textContent='Storlek · '+detectorLabel(o);
   for(const [axis,input,out]of [['width',widthInput,$('detectorWidthValue')],['height',heightInput,$('detectorHeightValue')]]){const percent=core.boxScale(boxFor(o),axis,drawingRotation());input.value=percent;out.value=percent+' %';input.setAttribute('aria-valuetext',percent+' procent');}
  }
- async function openSize(o,remember=false){
-  if(!pdf||!isBox(o)||busy)return;const doc=pdf,uid=o.uid;resetPlacement();manualForm.hidden=true;securityDrawingTools?.stop();controls.hidden=false;launcher.setAttribute('aria-expanded','true');selected=uid;resizeUid=uid;manualSizeUid=remember?uid:null;go('drawing');enableDetectors();if(page!==o.page){page=o.page;await render(true);if(pdf!==doc||resizeUid!==uid)return;}syncSizeControls();drawMarkers();setStatus('Justera bredd och höjd och dra ruta '+detectorLabel(o)+' till rätt plats. '+(remember?'Storleken används för nästa manuella ruta. ':'')+'Tryck Klar när den passar.');
+ async function openSize(o,remember=false,keepSequence=false){
+  if(!pdf||!isBox(o)||busy)return;const doc=pdf,uid=o.uid;resetPlacement(keepSequence);manualForm.hidden=true;securityDrawingTools?.stop();controls.hidden=false;launcher.setAttribute('aria-expanded','true');selected=uid;resizeUid=uid;manualSizeUid=remember?uid:null;go('drawing');enableDetectors();if(page!==o.page){page=o.page;await render(true);if(pdf!==doc||resizeUid!==uid)return;}syncSizeControls();drawMarkers();setStatus('Justera bredd och höjd och dra ruta '+detectorLabel(o)+' till rätt plats. '+(remember?'Storleken används för nästa manuella ruta. ':'')+'Tryck Klar när den passar.');
  }
  function changeSize(axis,percent,group){
   const o=items.find(o=>o.uid===resizeUid);if(!pdf||busy||!o||o.page!==page||!Number.isFinite(percent))return;
   securitySessionHistory.record();o.detectorBox=core.resizeBox(boxFor(o),axis,percent,drawingRotation());if(manualSizeUid===o.uid)rememberManualSize(o);securitySessionHistory.record(group);save();drawMarkers();
  }
  for(const [input,axis]of [[widthInput,'width'],[heightInput,'height']]){input.oninput=()=>changeSize(axis,Number(input.value),input);input.onchange=()=>securitySessionHistory.endGroup();}
- $('detectorSizeDone').onclick=()=>{closeSize();setStatus('Storlek och placering är inställda. Spara PDF för att behålla dem i filen.');};
+ $('detectorSizeDone').onclick=()=>{const o=items.find(o=>o.uid===resizeUid);if(manualSequence&&o){rememberManualSize(o);manualSequence.size={...project.detectorManualSize};manualSequence.ready=true;save();closeSize();armSequence();}else{closeSize();setStatus('Storlek och placering är inställda. Spara PDF för att behålla dem i filen.');}};
  $('detectorSizeReset').onclick=()=>{const group={};securitySessionHistory.endGroup();changeSize('width',100,group);changeSize('height',100,group);securitySessionHistory.endGroup();};
 
  const ready=()=>project.detectorSetup?.completed===true||items.some(isBox);
@@ -60,7 +62,7 @@
   learnButton.disabled=!pdf||busy;manualButton.disabled=!pdf||busy;scanButton.disabled=!pdf||busy||!!selectionLayer||!!draft||!samples.length;
   mode.value=project.detectorScanMode==='normal'?'normal':'careful';mode.disabled=busy||!!draft; $('detectorModeLabel').hidden=!showSetup;
   reviewButton.hidden=!pending().length;reviewButton.disabled=busy||!!selectionLayer;reviewButton.textContent='Granska osäkra ('+pending().length+')';
-  updateReviewActions();
+  updateReviewActions();syncSequenceControls();
   sampleInfo.hidden=!showSetup||!samples.length;sampleInfo.textContent=sampleInfo.hidden?'':samples.length+' sparade exempel. Alla exemplens ramar används i sökningen. Lägg till en missad ruta om utseendet skiljer sig.';
  }
  mode.onchange=()=>{if(busy)return;project.detectorScanMode=mode.value==='normal'?'normal':'careful';save();};
@@ -68,7 +70,7 @@
  function stopSelection(){selectionLayer?.remove();selectionLayer=null;drawingGestureLocked=false;drawingLockScroll=null;}
 
  function cache(){if(scanDoc!==pdf){scanDoc=pdf;cached=new Map();}return cached;}
- function resetPlacement(){closeReview();closeSize();stopSelection();draft=null;reviewHit=null;markers.querySelector('.detectorReviewOutline')?.remove();sampleForm.hidden=true;moveUid=null;placingCode='';addType=null;document.body.classList.remove('secAdding');$('secHint').hidden=true;cancelButton.hidden=!busy;updateControls();}
+ function resetPlacement(keepSequence=false){if(!keepSequence)manualSequence=null;closeReview();closeSize();stopSelection();draft=null;reviewHit=null;markers.querySelector('.detectorReviewOutline')?.remove();sampleForm.hidden=true;moveUid=null;placingCode='';addType=null;document.body.classList.remove('secAdding');$('secHint').hidden=true;cancelButton.hidden=!busy;updateControls();}
  function cancel(){setupOpen=false;run++;vision?.close();vision=null;busy=false;resetPlacement();manualForm.hidden=true;updateControls();cancelButton.hidden=true;setStatus('Avbrutet. Tidigare detektorer finns kvar.');}
  cancelButton.onclick=cancel;
  function detectorLabel(o){return String(o.id||o.number||'').trim();}
@@ -197,11 +199,43 @@
   finally{session.close();if(vision===session)vision=null;if(token===run){busy=false;updateControls();cancelButton.hidden=true;}}
  }
  scanButton.onclick=scan;
- manualButton.onclick=()=>{if(!pdf||busy)return;enableDetectors();resetPlacement();manualForm.hidden=!manualForm.hidden;if(!manualForm.hidden){codeInput.value='';codeInput.focus();}};
- manualForm.onsubmit=e=>{e.preventDefault();const code=codeInput.value.trim().normalize('NFC');if(!code)return;placingCode=code;moveUid=null;addType='detector';document.body.classList.add('secAdding');manualForm.hidden=true;cancelButton.hidden=false;go('drawing');securityDrawingTools?.stop();$('secHint').textContent='Tryck mitt i nummerrutan '+code+'.';$('secHint').hidden=false;setStatus('Välj position för '+code+'.');};
+ function syncSequenceControls(){
+  const active=!!manualSequence;controls.classList.toggle('isManualSequence',active);sequencePanel.hidden=!active||!manualSequence.ready;
+  controls.querySelector('.detectorPanelHead strong').textContent=active?'Lägg till manuellt':'Skanna detektorer';
+  sequenceMinus.setAttribute('aria-pressed',String(active&&manualSequence.step<0));sequencePlus.setAttribute('aria-pressed',String(active&&manualSequence.step>0));
+ }
+ function armSequence(message){
+  const sequence=manualSequence;if(!sequence||sequence.doc!==pdf)return;
+  placingCode=sequence.next||'';moveUid=null;addType=placingCode?'detector':null;textMode=false;
+  document.body.classList.remove('secTextAdding');document.body.classList.toggle('secAdding',!!placingCode);$('secAddText').classList.remove('primary');$('secHint').hidden=true;
+  sequenceCode.value=placingCode;sequenceCode.removeAttribute('aria-invalid');cancelButton.hidden=true;syncSequenceControls();
+  setStatus(message||(placingCode?'Tryck på nästa position för '+placingCode+'. Samma bredd och höjd används.':'Nummer 0 är nått. Välj +1 eller skriv nästa nummer.'));
+ }
+ function sequenceDirection(step){
+  const sequence=manualSequence;if(!sequence)return;sequence.step=step;manualStep.value=String(step);
+  const last=sequence.placed.filter(p=>items.some(o=>o.uid===p.uid)).at(-1);if(last)sequence.next=SecurityManualNumbering.next(last.code,step);
+  armSequence();
+ }
+ sequenceMinus.onclick=()=>sequenceDirection(-1);sequencePlus.onclick=()=>sequenceDirection(1);
+ sequenceCode.oninput=()=>{
+  if(!manualSequence)return;const code=sequenceCode.value.trim().normalize('NFC'),valid=SecurityManualNumbering.valid(code);
+  manualSequence.next=valid?code:null;placingCode=valid?code:'';addType=valid?'detector':null;document.body.classList.toggle('secAdding',valid);sequenceCode.setAttribute('aria-invalid',String(!valid));
+  setStatus(valid?'Tryck på nästa position för '+code+'. Samma bredd och höjd används.':'Skriv ett nummer eller en märkning som slutar med siffror, till exempel U1033.');
+ };
+ $('detectorSequenceDone').onclick=()=>{resetPlacement();setStatus('Placeringen är avslutad. De skapade protokollen finns kvar.');};
+ manualButton.onclick=()=>{if(!pdf||busy)return;enableDetectors();resetPlacement();manualForm.hidden=!manualForm.hidden;if(!manualForm.hidden){codeInput.value='';codeInput.removeAttribute('aria-invalid');codeInput.focus();}};
+ codeInput.oninput=()=>codeInput.removeAttribute('aria-invalid');
+ manualForm.onsubmit=e=>{
+  e.preventDefault();if(!pdf||busy)return;const code=codeInput.value.trim().normalize('NFC'),step=Number(manualStep.value);if(!code)return;
+  if(step&&!SecurityManualNumbering.valid(code)){codeInput.setAttribute('aria-invalid','true');setStatus('Löpande numrering behöver siffror sist, till exempel 1037 eller U1033. Välj Ett objekt för fri text.');codeInput.focus();return;}
+  resetPlacement();manualSequence=step?{doc:pdf,step,firstCode:code,next:code,placed:[],ready:false,size:null}:null;
+  placingCode=code;moveUid=null;addType='detector';textMode=false;document.body.classList.remove('secTextAdding');$('secAddText').classList.remove('primary');document.body.classList.add('secAdding');manualForm.hidden=true;cancelButton.hidden=false;go('drawing');securityDrawingTools?.stop();$('secHint').textContent='Tryck mitt i nummerrutan '+code+'.';$('secHint').hidden=false;syncSequenceControls();setStatus('Välj position för '+code+'.'+(step?' Justera första rutans storlek och tryck Klar.':''));
+ };
  const createBefore=createItem;
  createItem=function(type,x,y){
   if(type!=='detector'||(!placingCode&&!moveUid))return createBefore(type,x,y);
+  if(drawingFileLoading||drawingRotationPending||document.body.classList.contains('exporting'))return;
+  const sequence=manualSequence;
   const moving=items.find(o=>o.uid===moveUid),code=moving?detectorLabel(moving):placingCode;if(!code)return;
   const candidates=cache().get(page)||[];
   const snapped=candidates.find(h=>h.code===code&&Math.abs(h.x-x)<=h.width*.9&&Math.abs(h.y-y)<=h.height*.9);
@@ -209,10 +243,11 @@
   const angle=(360-drawingRotation())%360,vertical=angle%180!==0,unit=12/Math.max(1,natural.h),textWidth=Math.max(18,labelMeasure.measureText(code).width*12+6),width=Math.min(.85,textWidth/Math.max(1,natural.w)),height=16/Math.max(1,natural.h);
   const hit=snapped||{code,page,x,y,width:vertical?16/Math.max(1,natural.w):width,height:vertical?Math.min(.85,textWidth/Math.max(1,natural.h)):height,textHeight:unit,angle,manual:true};
   const existing=findExisting(items.filter(o=>o.uid!==moveUid),hit);
-  if(existing){selected=existing.uid;resetPlacement();showSelected();go('protocol');setStatus('Den här positionen är redan kopplad till '+detectorLabel(existing)+'.');return;}
+  if(existing){if(sequence){setStatus('Positionen är redan kopplad till '+detectorLabel(existing)+'. Välj en annan position för '+code+'.');return;}selected=existing.uid;resetPlacement();showSelected();go('protocol');setStatus('Den här positionen är redan kopplad till '+detectorLabel(existing)+'.');return;}
   securitySessionHistory.endGroup();securitySessionHistory.record();
-  const o=moving||newDetector(withManualSize(hit));if(moving){const keptBox={...boxFor(o)};o.page=page;attachHit(o,hit);o.detectorBox=keptBox;}else rememberManualSize(o);
-  selected=o.uid;resetPlacement();save();drawMarkers();showSelected();go('drawing');if(!moving)openSize(o,true);else setStatus(code+' är flyttad. Storleken är behållen.');
+  const o=moving||newDetector(withManualSize(hit,sequence?.size||project.detectorManualSize));if(moving){const keptBox={...boxFor(o)};o.page=page;attachHit(o,hit);o.detectorBox=keptBox;}else rememberManualSize(o);
+  if(sequence){sequence.placed=sequence.placed.filter(p=>items.some(o=>o.uid===p.uid));sequence.placed.push({uid:o.uid,code});sequence.next=SecurityManualNumbering.next(code,sequence.step);}
+  selected=o.uid;resetPlacement(!!sequence);save();drawMarkers();showSelected();go('drawing');if(sequence?.ready)armSequence();else if(!moving)openSize(o,true,!!sequence);else setStatus(code+' är flyttad. Storleken är behållen.');
  };
  function bindBoxPointer(b,o){
   let pointer=null,moved=false,drag=null;
@@ -249,6 +284,7 @@
  }
  const drawBefore=drawMarkers;
  drawMarkers=function(){
+  if(manualSequence&&!manualSequence.ready&&resizeUid&&items.find(o=>o.uid===resizeUid)?.page!==page)resetPlacement();
   cancelSizeDrag?.();drawBefore();syncSizeControls();if(drawingOverlaysHidden||hiddenDrawingProtocols.has('detector'))return;
   const rotation=drawingRotation(),sideways=rotation%180!==0,naturalW=sideways?pageHeight:pageWidth,naturalH=sideways?pageWidth:pageHeight;
   for(const o of items.filter(o=>isBox(o)&&o.page===page&&allInOneProtocolActive(o.type))){
@@ -282,6 +318,18 @@
  document.querySelectorAll('.securityTools [data-add]').forEach(b=>{if(b.dataset.add==='detector')b.onclick=()=>{openTool();if(pdf)manualButton.click();};else{const previous=b.onclick;b.onclick=e=>{cancel();controls.hidden=true;launcher.setAttribute('aria-expanded','false');return previous?.call(b,e);};}});
  toolChoices?.querySelectorAll('button').forEach(b=>{if(b!==launcher)b.addEventListener('click',()=>{cancel();controls.hidden=true;launcher.setAttribute('aria-expanded','false');},true);});
  updateControls();
- const syncProjectBefore=syncProjectInputs;syncProjectInputs=function(){syncProjectBefore();updateControls();if(reviewOpen){if(pending().length)void openReview();else closeReview();}};
+ const syncProjectBefore=syncProjectInputs;
+ syncProjectInputs=function(){
+  syncProjectBefore();
+  if(manualSequence){
+   const present=new Set(items.map(o=>o.uid));let index=manualSequence.placed.length-1;while(index>=0&&!present.has(manualSequence.placed[index].uid))index--;
+   const last=manualSequence.placed[index],undone=manualSequence.placed[index+1];
+   manualSequence.next=undone?undone.code:last?SecurityManualNumbering.next(last.code,manualSequence.step):manualSequence.firstCode;
+   if(!last){closeSize();manualSequence.ready=false;manualSequence.size=null;}else if(manualSequence.ready)manualSequence.size={...project.detectorManualSize};
+   if(manualSequence.ready||!last)armSequence();
+  }
+  updateControls();if(reviewOpen){if(pending().length)void openReview();else closeReview();}
+ };
+ const goBefore=go;go=function(view){if(view!=='drawing'&&manualSequence){resetPlacement();setStatus('Placeringen är avslutad. De skapade protokollen finns kvar.');}return goBefore(view);};
  window.SecurityDetectorScan={open:openTool,scan,learn,startLearning,applyHits,boxFor,attachHit,newDetector,openSize,openReview};
 })();

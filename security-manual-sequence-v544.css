@@ -1,0 +1,23 @@
+/* Manual numbering controls only; drawing sizes remain in PDF coordinates. */
+body.securityDetectorScanApp #detectorManualForm{display:flex;flex-wrap:wrap;max-width:680px}
+body.securityDetectorScanApp #detectorManualForm[hidden],#detectorSequencePanel[hidden]{display:none!important}
+body.securityDetectorScanApp #detectorManualForm label{flex:1 1 150px;font-size:var(--cf-label,14px)}
+body.securityDetectorScanApp :is(#detectorManualCode,#detectorManualStep,#detectorSequenceCode){box-sizing:border-box;width:100%;min-width:0;min-height:44px;padding:8px;border:1px solid var(--ta-border,#a7bec9);border-radius:7px;font-size:var(--cf-body,16px);color:var(--ta-ink,#193746);background:var(--ta-card,#fff)}
+body.securityDetectorScanApp :is(#detectorManualCode,#detectorSequenceCode)[aria-invalid=true]{outline:2px solid #b62c38}
+body.securityDetectorScanApp #detectorSequencePanel{display:flex;flex-wrap:wrap;align-items:end;gap:8px;max-width:680px}
+body.securityDetectorScanApp #detectorSequencePanel>label{flex:1 1 140px;min-width:0;font-size:var(--cf-label,14px)}
+body.securityDetectorScanApp #detectorSequencePanel>[role=group]{display:flex;gap:4px}
+body.securityDetectorScanApp :is(#detectorManualForm,#detectorSequencePanel) button{min-width:44px;min-height:44px;padding:8px 12px;font-size:var(--cf-label,14px)}
+body.securityDetectorScanApp #detectorSequencePanel button[aria-pressed=true]{background:var(--ta-blue-dark,#356e86);color:white;border-color:var(--ta-blue-dark,#356e86)}
+body.securityDetectorScanApp #securityDetectorScanPanel.isManualSequence>:is(.detectorScanActions,.detectorModeLabel,#detectorSampleInfo){display:none!important}
+body.securityDetectorScanApp #securityDetectorScanPanel.isManualSequence #detectorScanStatus{font-size:var(--cf-label,14px);overflow-wrap:anywhere}
+body.securityDetectorScanApp #securityDetectorScanPanel.isManualSequence{color:var(--ta-ink,#193746);background:var(--ta-card,#edf5f8)}
+body.securityDetectorScanApp #securityDetectorScanPanel.isManualSequence .detectorPanelHead strong{font-size:var(--cf-label,14px)}
+body.securityDetectorScanApp #securityDetectorScanPanel.isManualSequence #detectorClose{min-width:44px;min-height:44px}
+@media(max-width:420px){body.securityDetectorScanApp #detectorSequencePanel>label{flex-basis:100%}}
+@layer controlflowStandard {
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] :is(#detectorManualForm,#detectorSequencePanel) label{color:var(--ta-ink)!important;font-size:var(--cf-label)!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] :is(#detectorManualForm,#detectorSequencePanel) button{background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border:1px solid var(--ta-border)!important;min-width:44px!important;min-height:44px!important;font-size:var(--cf-label)!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #detectorSequencePanel button[aria-pressed=true]{background:var(--ta-blue-dark)!important;color:var(--ta-card)!important;border-color:var(--ta-blue-dark)!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] :is(#detectorManualForm,#detectorSequencePanel) :is(button,input,select):focus-visible{outline:2px solid var(--ta-blue)!important;outline-offset:2px}
+}
