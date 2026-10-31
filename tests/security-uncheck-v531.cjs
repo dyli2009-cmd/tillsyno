@@ -34,7 +34,7 @@ vm.runInContext(`const ALL_IN_ONE=true; const $=id=>document.getElementById(id);
   let securityCheckEditUid=null,items=[],textNotes=[],drawingExtras=[],project={},logoData='',activeKey='test';
   const APP_STORAGE_PREFIX='security-service:';
   ${source.slice(source.indexOf('const SYSTEMS='), source.indexOf('const DOOR_AUTOMATION_MODELS='))}
-  ${['normalizeSecurityCheckEdits','allChecks','syncStatus','hasSecurityRecordedProblem','isSecurityRemediated','statusOf','save','loadSaved','buildChecklist','updateProgress','issues'].map(productionFunction).join('\n')}
+  ${['normalizeSecurityCheckEdits','securityCustomProtocolLabel','securityDefaultCheckTitle','allChecks','syncStatus','hasSecurityRecordedProblem','isSecurityRemediated','statusOf','save','loadSaved','buildChecklist','updateProgress','issues'].map(productionFunction).join('\n')}
   globalThis.api={SYSTEMS,allChecks,syncStatus,statusOf,buildChecklist,loadSaved,issues,setItem(o){items=[o]}};`, context);
 const api = context.api;
 function descendants(node) {return [node, ...node.children.flatMap(descendants)];}

@@ -382,7 +382,12 @@ function securityWorkspaceTitle(view=document.body.dataset.view){
 function securityProtocolTitle(){return securityWorkspaceTitle('protocol')}
 function refreshTop(){$('securityObject').textContent=securityWorkspaceTitle();$('securityCount').textContent=(ALL_IN_ONE?visibleItems().length:items.length)+' objekt';document.body.classList.toggle('secHasPdf',!!pdf);if($('secChangeDrawing')){$('secChangeDrawing').hidden=!pdf;$('secChangeDrawing').disabled=drawingFileLoading||document.body.classList.contains('exporting')}if($('secCloseDrawing')){$('secCloseDrawing').hidden=!pdf;$('secCloseDrawing').disabled=!pdf||drawingFileLoading||document.body.classList.contains('exporting')}if($('secProtocolTitle'))$('secProtocolTitle').textContent=securityProtocolTitle()}
 function go(view){document.body.dataset.view=view;$('secNavDrawing').classList.toggle('active',view==='drawing');$('secNavProtocol').classList.toggle('active',view==='protocol');$('secNavProject').classList.toggle('active',view==='project');if(view==='protocol'||view==='project')msg('');refreshTop()}
-function allChecks(o){normalizeSecurityCheckEdits(o);const base=(SYSTEMS[o.type]?.checks||[]).filter(([n])=>o.checkEdits[n]!==null).map(([n,title])=>[n,typeof o.checkEdits[n]==='string'?o.checkEdits[n]:title]);return [...base,...(Array.isArray(o.customChecks)?o.customChecks:[]).map(c=>[c.id,c.title])]}
+function securityDefaultCheckTitle(o,id,title){
+ if(o.type!=='detector'||id!=='1.1')return title;
+ const label=securityCustomProtocolLabel(o).replace(/\s*protokoll$/i,'').trim();
+ return label&&!/^detektor(?:er)?$/i.test(label)?'Funktionskontroll av '+label.toLocaleLowerCase('sv'):title;
+}
+function allChecks(o){normalizeSecurityCheckEdits(o);const base=(SYSTEMS[o.type]?.checks||[]).filter(([n])=>o.checkEdits[n]!==null).map(([n,title])=>[n,typeof o.checkEdits[n]==='string'?o.checkEdits[n]:securityDefaultCheckTitle(o,n,title)]);return [...base,...(Array.isArray(o.customChecks)?o.customChecks:[]).map(c=>[c.id,c.title])]}
 function allInOneProtocolActive(type){
  if(!ALL_IN_ONE)return true;
  const selected=window.AllInOneProtocols?.get?.();
@@ -393,7 +398,7 @@ function editSecurityCheck(o,id,title){
  if(typeof title!=='string'||!title.trim())return false;
  normalize(o);const next=title.trim(),custom=o.customChecks.find(c=>c.id===id),base=(SYSTEMS[o.type]?.checks||[]).find(([n])=>n===id);
  if(custom){if(custom.title===next)return false;custom.title=next}
- else if(base){const current=typeof o.checkEdits[id]==='string'?o.checkEdits[id]:base[1];if(current===next)return false;if(next===base[1])delete o.checkEdits[id];else o.checkEdits[id]=next}
+ else if(base){const defaultTitle=securityDefaultCheckTitle(o,id,base[1]),current=typeof o.checkEdits[id]==='string'?o.checkEdits[id]:defaultTitle;if(current===next)return false;if(next===defaultTitle)delete o.checkEdits[id];else o.checkEdits[id]=next}
  else return false;
  o.checks[id]={result:'',note:''};o.manualFail=false;o.remediationDate='';o.remediationSignature='';syncStatus(o);return true;
 }
@@ -1064,7 +1069,7 @@ function showSelected(){
  syncStatus(o);$('secStatus').value=isSecurityRemediated(o)?'ok':o.status;$('secEditChecks').textContent=securityCheckEditUid===o.uid?'Klar':'Redigera kontrollpunkter';renderSecurityPrevious(o);buildChecklist(o)
 }
 ['secLocation','secId','secNotes'].forEach(id=>$(id).oninput=()=>{const o=cur();if(!o)return;if(id==='secLocation')o.location=$(id).value;if(id==='secId'){o.id=$(id).value;if(isDoorAutomationItem(o))o.idMode='manual'}if(id==='secNotes')o.notes=$(id).value;save();drawMarkers();showOverview()});
-$('secType').oninput=()=>{const o=cur();if(o?.type!=='detector')return;securitySessionHistory.record();const value=$('secType').value.trim().normalize('NFC');if(value&&value.toLocaleLowerCase('sv')!==SYSTEMS.detector.label.toLocaleLowerCase('sv'))o.protocolLabel=value;else delete o.protocolLabel;save();drawMarkers();showOverview();};
+$('secType').oninput=()=>{const o=cur();if(o?.type!=='detector')return;securitySessionHistory.record();const value=$('secType').value.trim().normalize('NFC');if(value&&value.toLocaleLowerCase('sv')!==SYSTEMS.detector.label.toLocaleLowerCase('sv'))o.protocolLabel=value;else delete o.protocolLabel;save();buildChecklist(o);drawMarkers();showOverview();};
 $('secType').onchange=()=>{const o=cur();if(o?.type==='detector'){$('secType').oninput();$('secType').value=securityProtocolLabel(o);securitySessionHistory.endGroup();}};
 const automationModelSelect=$('secAutomationModel'),automationSerialInput=$('secAutomationSerial');
 if(automationModelSelect){
