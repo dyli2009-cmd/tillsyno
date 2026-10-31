@@ -23,19 +23,27 @@
  const matchesHit=(a,b)=>core.samePosition({page:a.page,x:a.x,y:a.y,detectorBox:a},b);
  const setStatus=text=>{status.textContent=text;};
  const sizePanel=$('detectorSizePanel'),widthInput=$('detectorWidth'),heightInput=$('detectorHeight'),labelMeasure=document.createElement('canvas').getContext('2d');labelMeasure.font='1px Arial';
- let cancelSizeDrag=null;
- function closeSize(){cancelSizeDrag?.();resizeUid=null;sizePanel.hidden=true;securitySessionHistory.endGroup();for(const b of markers.querySelectorAll('.detectorNumberBox.isSizing')){b.classList.remove('isSizing');const o=items.find(o=>o.uid===b.dataset.detectorUid);if(o)b.title='Öppna detektor '+detectorLabel(o);}}
+ let cancelSizeDrag=null,manualSizeUid=null;
+ // Keep the manual default in PDF units, independent of zoom, screen size and page rotation.
+ function naturalPageSize(){const sideways=drawingRotation()%180!==0,scale=Math.max(.001,baseScale*zoom);return{width:(sideways?pageHeight:pageWidth)/scale,height:(sideways?pageWidth:pageHeight)/scale};}
+ function rememberManualSize(o){const box=boxFor(o),size=naturalPageSize(),vertical=Math.abs(Math.sin((box.angle||0)*Math.PI/180))>.707;project.detectorManualSize={version:1,width:vertical?box.height*size.height:box.width*size.width,height:vertical?box.width*size.width:box.height*size.height,textHeight:box.textHeight*size.height};}
+ function withManualSize(hit){
+  const saved=project.detectorManualSize;if(saved?.version!==1||![saved.width,saved.height,saved.textHeight].every(n=>Number.isFinite(n)&&n>0))return{...hit,manual:true};
+  const size=naturalPageSize(),vertical=Math.abs(Math.sin((hit.angle||0)*Math.PI/180))>.707;
+  return{...hit,width:Math.min(1,(vertical?saved.height:saved.width)/size.width),height:Math.min(1,(vertical?saved.width:saved.height)/size.height),textHeight:saved.textHeight/size.height,manual:true};
+ }
+ function closeSize(){cancelSizeDrag?.();resizeUid=null;manualSizeUid=null;sizePanel.hidden=true;securitySessionHistory.endGroup();for(const b of markers.querySelectorAll('.detectorNumberBox.isSizing')){b.classList.remove('isSizing');const o=items.find(o=>o.uid===b.dataset.detectorUid);if(o)b.title='Öppna detektor '+detectorLabel(o);}}
  function syncSizeControls(){
   const o=items.find(o=>o.uid===resizeUid&&o.type==='detector');if(!pdf||!o||o.page!==page){resizeUid=null;sizePanel.hidden=true;return;}
   sizePanel.hidden=false;$('detectorSizeTitle').textContent='Storlek · '+detectorLabel(o);
   for(const [axis,input,out]of [['width',widthInput,$('detectorWidthValue')],['height',heightInput,$('detectorHeightValue')]]){const percent=core.boxScale(boxFor(o),axis,drawingRotation());input.value=percent;out.value=percent+' %';input.setAttribute('aria-valuetext',percent+' procent');}
  }
- async function openSize(o){
-  if(!pdf||!isBox(o)||busy)return;const doc=pdf,uid=o.uid;resetPlacement();manualForm.hidden=true;securityDrawingTools?.stop();controls.hidden=false;launcher.setAttribute('aria-expanded','true');selected=uid;resizeUid=uid;go('drawing');enableDetectors();if(page!==o.page){page=o.page;await render(true);if(pdf!==doc||resizeUid!==uid)return;}syncSizeControls();drawMarkers();setStatus('Justera bredd och höjd och dra ruta '+detectorLabel(o)+' till rätt plats. Tryck Klar när den passar.');
+ async function openSize(o,remember=false){
+  if(!pdf||!isBox(o)||busy)return;const doc=pdf,uid=o.uid;resetPlacement();manualForm.hidden=true;securityDrawingTools?.stop();controls.hidden=false;launcher.setAttribute('aria-expanded','true');selected=uid;resizeUid=uid;manualSizeUid=remember?uid:null;go('drawing');enableDetectors();if(page!==o.page){page=o.page;await render(true);if(pdf!==doc||resizeUid!==uid)return;}syncSizeControls();drawMarkers();setStatus('Justera bredd och höjd och dra ruta '+detectorLabel(o)+' till rätt plats. '+(remember?'Storleken används för nästa manuella ruta. ':'')+'Tryck Klar när den passar.');
  }
  function changeSize(axis,percent,group){
   const o=items.find(o=>o.uid===resizeUid);if(!pdf||busy||!o||o.page!==page||!Number.isFinite(percent))return;
-  securitySessionHistory.record();o.detectorBox=core.resizeBox(boxFor(o),axis,percent,drawingRotation());securitySessionHistory.record(group);save();drawMarkers();
+  securitySessionHistory.record();o.detectorBox=core.resizeBox(boxFor(o),axis,percent,drawingRotation());if(manualSizeUid===o.uid)rememberManualSize(o);securitySessionHistory.record(group);save();drawMarkers();
  }
  for(const [input,axis]of [[widthInput,'width'],[heightInput,'height']]){input.oninput=()=>changeSize(axis,Number(input.value),input);input.onchange=()=>securitySessionHistory.endGroup();}
  $('detectorSizeDone').onclick=()=>{closeSize();setStatus('Storlek och placering är inställda. Spara PDF för att behålla dem i filen.');};
@@ -203,8 +211,8 @@
   const existing=findExisting(items.filter(o=>o.uid!==moveUid),hit);
   if(existing){selected=existing.uid;resetPlacement();showSelected();go('protocol');setStatus('Den här positionen är redan kopplad till '+detectorLabel(existing)+'.');return;}
   securitySessionHistory.endGroup();securitySessionHistory.record();
-  const o=moving||newDetector(hit);if(moving){const keptBox={...boxFor(o)};o.page=page;attachHit(o,hit);o.detectorBox=keptBox;}
-  selected=o.uid;resetPlacement();save();drawMarkers();showSelected();go('drawing');if(!moving)openSize(o);else setStatus(code+' är flyttad. Storleken är behållen.');
+  const o=moving||newDetector(withManualSize(hit));if(moving){const keptBox={...boxFor(o)};o.page=page;attachHit(o,hit);o.detectorBox=keptBox;}else rememberManualSize(o);
+  selected=o.uid;resetPlacement();save();drawMarkers();showSelected();go('drawing');if(!moving)openSize(o,true);else setStatus(code+' är flyttad. Storleken är behållen.');
  };
  function bindBoxPointer(b,o){
   let pointer=null,moved=false,drag=null;
