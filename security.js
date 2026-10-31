@@ -309,6 +309,7 @@ function statusOf(o){if(isSecurityRemediated(o))return'ok';if(o.status==='fail')
 function securityStatusText(o){if(isSecurityRemediated(o))return'Åtgärdad';return statusOf(o)==='fail'?'Ej godkänd':statusOf(o)==='action'?'Åtgärd krävs':statusOf(o)==='ok'?'Godkänd':'Ej klar'}
 function securityCustomProtocolLabel(o){return o?.type==='detector'&&typeof o.protocolLabel==='string'?o.protocolLabel.trim():''}
 function securityProtocolLabel(o){return securityCustomProtocolLabel(o)||SYSTEMS[o?.type]?.label||''}
+function securityObjectIdentity(o){return [String(o?.id||o?.number||'').trim(),securityCustomProtocolLabel(o)||SYSTEMS[o?.type]?.markerLabel||SYSTEMS[o?.type]?.label||''].filter(Boolean).join(' – ')}
 function customerProtocolTitle(type,o=null){
  const custom=type==='detector'?securityCustomProtocolLabel(o):'';
  if(custom&&!/^detektor(?:er)?$/i.test(custom))return (/protokoll$/i.test(custom)?custom:custom+'protokoll').toLocaleUpperCase('sv');
@@ -1131,14 +1132,14 @@ function showOverview(){
  visible.forEach((o,index)=>{
   const card=document.createElement('article');card.dataset.uid=o.uid;
   const head=document.createElement('div');head.className='secSummaryHead';
-  const h=document.createElement('h3');h.textContent=securityDrawingLabel(o)+' · '+securityProtocolLabel(o);
+  const h=document.createElement('h3');h.textContent=securityObjectIdentity(o);
   const badge=document.createElement('span');head.append(h,badge);card.appendChild(head);syncSecurityOverviewCard(card,badge,o);
   const meta=document.createElement('p');meta.className='secSummaryMeta';meta.textContent=o.location?'Placering: '+o.location:'Placering saknas';card.appendChild(meta);
   const iss=issues(o);if(iss.length){const ul=document.createElement('ul');iss.forEach(t=>{const li=document.createElement('li');li.textContent=t;ul.appendChild(li)});card.appendChild(ul)}else{const p=document.createElement('p');p.textContent=statusOf(o)==='ok'?'Godkänd utan anmärkning':'Inga registrerade anmärkningar.';card.appendChild(p)}
   if(hasSecurityRecordedProblem(o)){
    const actionBlock=document.createElement('section');actionBlock.className='secRemediationDescriptionBlock';
    const actionTitle=document.createElement('h4');actionTitle.textContent='Beskriv åtgärd';
-   const actionText=document.createElement('textarea');actionText.rows=2;actionText.value=o.remediationDescription||'';actionText.placeholder='Beskriv vad som gjordes för att lösa felet…';actionText.setAttribute('aria-label','Beskriv åtgärd för '+securityDrawingLabel(o));
+   const actionText=document.createElement('textarea');actionText.rows=2;actionText.value=o.remediationDescription||'';actionText.placeholder='Beskriv vad som gjordes för att lösa felet…';actionText.setAttribute('aria-label','Beskriv åtgärd för '+securityObjectIdentity(o));
    actionText.onclick=e=>e.stopPropagation();
    actionText.oninput=e=>{e.stopPropagation();o.remediationDescription=actionText.value;save()};
    actionText.onchange=e=>{e.stopPropagation();o.remediationDescription=actionText.value.trim();save();showOverview()};
@@ -1146,7 +1147,7 @@ function showOverview(){
    const grid=document.createElement('div');grid.className='grid2 secRemediationGrid';
    [['remediationDate','Åtgärdat datum','date'],['remediationSignature','Åtgärdssignatur','text']].forEach(([key,title,type])=>{
     const label=document.createElement('label');label.textContent=title;
-    const input=document.createElement('input');input.type=type;input.value=o[key]||'';input.setAttribute('aria-label',title+' för '+securityDrawingLabel(o));
+    const input=document.createElement('input');input.type=type;input.value=o[key]||'';input.setAttribute('aria-label',title+' för '+securityObjectIdentity(o));
     input.onclick=e=>e.stopPropagation();
     input.oninput=e=>{e.stopPropagation();o[key]=input.value;save();syncSecurityOverviewCard(card,badge,o);setSecurityOverviewSummary();drawMarkers()};
     input.onchange=e=>{e.stopPropagation();save();showOverview();drawMarkers()};
@@ -1265,7 +1266,7 @@ function reportDoc(){
 
  const issueRows=[];
  reportItems.filter(hasSecurityRecordedProblem).sort((a,b)=>securityPriority(a)-securityPriority(b)||a.type.localeCompare(b.type)||a.number-b.number).forEach(o=>{
-  const statusLabel=isSecurityRemediated(o)?'Åtgärdat':securityStatusText(o),objectName=isDoorAutomationItem(o)?('Dörrautomatik '+(o.serialNumber||o.number||1)):securityDrawingLabel(o);
+  const statusLabel=isSecurityRemediated(o)?'Åtgärdat':securityStatusText(o),objectName=securityObjectIdentity(o);
   const objectMeta=String(o.location||'').trim();
   let added=false;
   allChecks(o).forEach(([n,title])=>{
@@ -1298,8 +1299,8 @@ function reportDoc(){
   const ws=[9,44,93,40];
   issueRows.forEach((row,rowIndex)=>{
    const st=statusOf(row.o),accent=COLORS[st]||COLORS.untested,statusBg=light[st]||light.untested,remediated=isSecurityRemediated(row.o);
-   doc.setFont('helvetica','bold');doc.setFontSize(7.2);
-   const objectLines=doc.splitTextToSize(row.objectName,ws[1]-5).slice(0,2);
+   doc.setFont('helvetica','bold');doc.setFontSize(7.3);
+   const objectLines=doc.splitTextToSize(row.objectName,ws[1]-5);
    doc.setFont('helvetica','normal');doc.setFontSize(6.2);
    const metaLines=row.objectMeta?doc.splitTextToSize(row.objectMeta,ws[1]-5).slice(0,2):[];
    doc.setFont('helvetica','normal');doc.setFontSize(7.1);
@@ -1356,7 +1357,7 @@ function reportDoc(){
   if(value!==undefined&&value!==null&&String(value)!==''){doc.setFont('helvetica',signature?'italic':(bold?'bold':'normal'));doc.setFontSize(signature?9.1:8.5);doc.setTextColor(...(signature?[70,125,165]:[20,20,20]));doc.text(doc.splitTextToSize(String(value),Math.max(5,w-labelW-3)).slice(0,1),x+1.5+labelW,yy+h/2+1)}
  }
  function detectorIdentityCell(o,x,yy,w){
-  const label='ID / märkning:',value=[String(o.id||o.number||'').trim(),securityCustomProtocolLabel(o)||'Detektor'].filter(Boolean).join(' – ');
+  const label='ID / märkning:',value=securityObjectIdentity(o);
   doc.setFont('helvetica','bold');doc.setFontSize(7.4);const labelW=Math.min(w-7,doc.getTextWidth(label)+2.2);
   doc.setFontSize(8.5);const lines=doc.splitTextToSize(value,Math.max(5,w-labelW-3)),step=8.5*25.4/72*1.15,h=Math.max(8,lines.length*step+3);
   cell(label,'',x,yy,w,h);doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(20,20,20);doc.text(lines,x+1.5+labelW,yy+(h-(lines.length-1)*step)/2+1,{lineHeightFactor:1.15});return h;
