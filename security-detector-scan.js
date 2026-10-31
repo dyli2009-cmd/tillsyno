@@ -34,7 +34,9 @@
   const size=naturalPageSize(),vertical=Math.abs(Math.sin((hit.angle||0)*Math.PI/180))>.707;
   return{...hit,width:Math.min(1,(vertical?saved.height:saved.width)/size.width),height:Math.min(1,(vertical?saved.width:saved.height)/size.height),textHeight:saved.textHeight/size.height,manual:true};
  }
- function closeSize(){cancelSizeDrag?.();resizeUid=null;manualSizeUid=null;sizePanel.hidden=true;securitySessionHistory.endGroup();for(const b of markers.querySelectorAll('.detectorNumberBox.isSizing')){b.classList.remove('isSizing');const o=items.find(o=>o.uid===b.dataset.detectorUid);if(o)b.title='Öppna detektor '+detectorLabel(o);}}
+ function canPositionBox(o){return resizeUid===o.uid||!!(manualSequence?.ready&&manualSequence.doc===pdf&&manualSequence.placed.some(p=>p.uid===o.uid));}
+ function boxDragState(b,o){b.classList.toggle('isSizing',resizeUid===o.uid);b.classList.toggle('isPositioning',resizeUid!==o.uid&&canPositionBox(o));b.title=(canPositionBox(o)?'Dra detektor ':'Öppna detektor ')+detectorLabel(o)+(canPositionBox(o)?' till rätt plats':'');}
+ function closeSize(){cancelSizeDrag?.();resizeUid=null;manualSizeUid=null;sizePanel.hidden=true;securitySessionHistory.endGroup();for(const b of markers.querySelectorAll('.detectorNumberBox')){const o=items.find(o=>o.uid===b.dataset.detectorUid);if(o)boxDragState(b,o);}}
  function syncSizeControls(){
   const o=items.find(o=>o.uid===resizeUid&&o.type==='detector');if(!pdf||!o||o.page!==page){resizeUid=null;sizePanel.hidden=true;return;}
   sizePanel.hidden=false;$('detectorSizeTitle').textContent='Storlek · '+detectorLabel(o);
@@ -209,7 +211,7 @@
   placingCode=sequence.next||'';moveUid=null;addType=placingCode?'detector':null;textMode=false;
   document.body.classList.remove('secTextAdding');document.body.classList.toggle('secAdding',!!placingCode);$('secAddText').classList.remove('primary');$('secHint').hidden=true;
   sequenceCode.value=placingCode;sequenceCode.removeAttribute('aria-invalid');cancelButton.hidden=true;syncSequenceControls();
-  setStatus(message||(placingCode?'Tryck på nästa position för '+placingCode+'. Samma bredd och höjd används.':'Nummer 0 är nått. Välj +1 eller skriv nästa nummer.'));
+  setStatus(message||(placingCode?'Tryck på nästa position för '+placingCode+'. Dra rutorna för att justera placeringen.':'Nummer 0 är nått. Välj +1 eller skriv nästa nummer.'));
  }
  function sequenceDirection(step){
   const sequence=manualSequence;if(!sequence)return;sequence.step=step;manualStep.value=String(step);
@@ -220,7 +222,7 @@
  sequenceCode.oninput=()=>{
   if(!manualSequence)return;const code=sequenceCode.value.trim().normalize('NFC'),valid=SecurityManualNumbering.valid(code);
   manualSequence.next=valid?code:null;placingCode=valid?code:'';addType=valid?'detector':null;document.body.classList.toggle('secAdding',valid);sequenceCode.setAttribute('aria-invalid',String(!valid));
-  setStatus(valid?'Tryck på nästa position för '+code+'. Samma bredd och höjd används.':'Skriv ett nummer eller en märkning som slutar med siffror, till exempel U1033.');
+  setStatus(valid?'Tryck på nästa position för '+code+'. Dra rutorna för att justera placeringen.':'Skriv ett nummer eller en märkning som slutar med siffror, till exempel U1033.');
  };
  $('detectorSequenceDone').onclick=()=>{resetPlacement();setStatus('Placeringen är avslutad. De skapade protokollen finns kvar.');};
  manualButton.onclick=()=>{if(!pdf||busy)return;enableDetectors();resetPlacement();manualForm.hidden=!manualForm.hidden;if(!manualForm.hidden){codeInput.value='';codeInput.removeAttribute('aria-invalid');codeInput.focus();}};
@@ -228,7 +230,7 @@
  manualForm.onsubmit=e=>{
   e.preventDefault();if(!pdf||busy)return;const code=codeInput.value.trim().normalize('NFC'),step=Number(manualStep.value);if(!code)return;
   if(step&&!SecurityManualNumbering.valid(code)){codeInput.setAttribute('aria-invalid','true');setStatus('Löpande numrering behöver siffror sist, till exempel 1037 eller U1033. Välj Ett objekt för fri text.');codeInput.focus();return;}
-  resetPlacement();manualSequence=step?{doc:pdf,step,firstCode:code,next:code,placed:[],ready:false,size:null}:null;
+  resetPlacement();manualSequence=step?{doc:pdf,step,firstCode:code,next:code,placed:[],live:'',ready:false,size:null}:null;
   placingCode=code;moveUid=null;addType='detector';textMode=false;document.body.classList.remove('secTextAdding');$('secAddText').classList.remove('primary');document.body.classList.add('secAdding');manualForm.hidden=true;cancelButton.hidden=false;go('drawing');securityDrawingTools?.stop();$('secHint').textContent='Tryck mitt i nummerrutan '+code+'.';$('secHint').hidden=false;syncSequenceControls();setStatus('Välj position för '+code+'.'+(step?' Justera första rutans storlek och tryck Klar.':''));
  };
  const createBefore=createItem;
@@ -246,7 +248,7 @@
   if(existing){if(sequence){setStatus('Positionen är redan kopplad till '+detectorLabel(existing)+'. Välj en annan position för '+code+'.');return;}selected=existing.uid;resetPlacement();showSelected();go('protocol');setStatus('Den här positionen är redan kopplad till '+detectorLabel(existing)+'.');return;}
   securitySessionHistory.endGroup();securitySessionHistory.record();
   const o=moving||newDetector(withManualSize(hit,sequence?.size||project.detectorManualSize));if(moving){const keptBox={...boxFor(o)};o.page=page;attachHit(o,hit);o.detectorBox=keptBox;}else rememberManualSize(o);
-  if(sequence){sequence.placed=sequence.placed.filter(p=>items.some(o=>o.uid===p.uid));sequence.placed.push({uid:o.uid,code});sequence.next=SecurityManualNumbering.next(code,sequence.step);}
+  if(sequence){sequence.placed=sequence.placed.filter(p=>items.some(o=>o.uid===p.uid));sequence.placed.push({uid:o.uid,code});sequence.live=sequence.placed.map(p=>p.uid).join('|');sequence.next=SecurityManualNumbering.next(code,sequence.step);}
   selected=o.uid;resetPlacement(!!sequence);save();drawMarkers();showSelected();go('drawing');if(sequence?.ready)armSequence();else if(!moving)openSize(o,true,!!sequence);else setStatus(code+' är flyttad. Storleken är behållen.');
  };
  function bindBoxPointer(b,o){
@@ -264,7 +266,7 @@
    if(e.button!==0)return;
    if(drag){e.preventDefault();e.stopPropagation();return;}
    pointer={x:e.clientX,y:e.clientY};moved=false;
-   if(resizeUid!==o.uid||busy)return;
+   if(!canPositionBox(o)||busy||drawingFileLoading||document.body.classList.contains('exporting'))return;
    e.preventDefault();e.stopPropagation();securitySessionHistory.endGroup();securitySessionHistory.record();
    drag={id:e.pointerId,doc:pdf,page:o.page,x:o.x,y:o.y,labelX:o.labelX,labelY:o.labelY,clientX:e.clientX,clientY:e.clientY,threshold:e.pointerType==='mouse'?3:5};
    cancelSizeDrag=()=>finish(false);drawingGestureLocked=true;drawingLockScroll={left:viewer.scrollLeft,top:viewer.scrollTop};pinch=null;panTouch=null;panMouse=null;
@@ -273,14 +275,14 @@
   b.onpointermove=e=>{
    if(!drag){if(pointer&&Math.hypot(e.clientX-pointer.x,e.clientY-pointer.y)>6)moved=true;return;}
    if(e.pointerId!==drag.id)return;e.preventDefault();e.stopPropagation();
-   if(pdf!==drag.doc||page!==drag.page||resizeUid!==o.uid){finish(false);return;}
+   if(pdf!==drag.doc||page!==drag.page||!canPositionBox(o)){finish(false);return;}
    const dx=e.clientX-drag.clientX,dy=e.clientY-drag.clientY;if(!moved&&Math.hypot(dx,dy)<drag.threshold)return;
    moved=true;const at=drawingDragPoint(drag.x,drag.y,dx,dy);o.x=o.labelX=Math.max(0,Math.min(1,at.x));o.y=o.labelY=Math.max(0,Math.min(1,at.y));positionDrawingNode(b,o.x,o.y);b.classList.add('isDragging');
   };
   b.onpointerup=e=>{finish(true,e);pointer=null;};
   b.onpointercancel=e=>{finish(false,e);pointer=null;moved=true;};
   b.onlostpointercapture=e=>finish(false,e);
-  b.onclick=e=>{e.preventDefault();e.stopPropagation();const wasMoved=moved;moved=false;if(resizeUid===o.uid||wasMoved||busy||addType||selectionLayer||reviewHit)return;closeSize();selected=o.uid;showSelected();go('protocol');};
+  b.onclick=e=>{e.preventDefault();e.stopPropagation();const wasMoved=moved;moved=false;if(canPositionBox(o)||manualSequence||wasMoved||busy||addType||selectionLayer||reviewHit)return;closeSize();selected=o.uid;showSelected();go('protocol');};
  }
  const drawBefore=drawMarkers;
  drawMarkers=function(){
@@ -290,7 +292,7 @@
   for(const o of items.filter(o=>isBox(o)&&o.page===page&&allInOneProtocolActive(o.type))){
    const box=boxFor(o),b=document.createElement('button'),span=document.createElement('span');b.type='button';b.className='detectorNumberBox status-'+statusOf(o)+(o.uid===selected?' isSelected':'');b.dataset.detectorUid=o.uid;b.setAttribute('aria-label','Detektor '+detectorLabel(o)+', sida '+o.page+', '+securityStatusText(o));b.title='Öppna detektor '+detectorLabel(o);b.style.setProperty('--detector-status-color','rgb('+COLORS[statusOf(o)].join(',')+')');span.textContent=detectorLabel(o);
    const width=box.width*naturalW,height=box.height*naturalH;b.style.width=(sideways?height:width)+'px';b.style.height=(sideways?width:height)+'px';b.style.fontSize=core.fitLabelSize(box,naturalW,naturalH,labelMeasure.measureText(detectorLabel(o)).width)+'px';span.style.transform='rotate('+((box.angle+rotation)%360)+'deg)';positionDrawingNode(b,o.x,o.y);b.append(span);
-   if(resizeUid===o.uid){b.classList.add('isSizing');b.title='Dra detektor '+detectorLabel(o)+' till rätt plats';}bindBoxPointer(b,o);markers.append(b);
+   boxDragState(b,o);bindBoxPointer(b,o);markers.append(b);
   }
   if(reviewHit&&reviewHit.page===page){const outline=document.createElement('div');outline.className='detectorReviewOutline';outline.style.width=(sideways?reviewHit.height*naturalH:reviewHit.width*naturalW)+'px';outline.style.height=(sideways?reviewHit.width*naturalW:reviewHit.height*naturalH)+'px';positionDrawingNode(outline,reviewHit.x,reviewHit.y);markers.append(outline);}
  };
@@ -324,7 +326,9 @@
   if(manualSequence){
    const present=new Set(items.map(o=>o.uid));let index=manualSequence.placed.length-1;while(index>=0&&!present.has(manualSequence.placed[index].uid))index--;
    const last=manualSequence.placed[index],undone=manualSequence.placed[index+1];
-   manualSequence.next=undone?undone.code:last?SecurityManualNumbering.next(last.code,manualSequence.step):manualSequence.firstCode;
+   const live=manualSequence.placed.filter(p=>present.has(p.uid)).map(p=>p.uid).join('|');
+   if(live!==manualSequence.live)manualSequence.next=undone?undone.code:last?SecurityManualNumbering.next(last.code,manualSequence.step):manualSequence.firstCode;
+   manualSequence.live=live;
    if(!last){closeSize();manualSequence.ready=false;manualSequence.size=null;}else if(manualSequence.ready)manualSequence.size={...project.detectorManualSize};
    if(manualSequence.ready||!last)armSequence();
   }
