@@ -254,7 +254,7 @@
  moveButton.onclick=()=>{const o=cur();if(!o||!isBox(o))return;enableDetectors();controls.hidden=false;launcher.setAttribute('aria-expanded','true');resetPlacement();moveUid=o.uid;placingCode=detectorLabel(o);addType='detector';cancelButton.hidden=false;go('drawing');document.body.classList.add('secAdding');$('secHint').textContent='Tryck på den nya positionen för '+placingCode+'.';$('secHint').hidden=false;setStatus('Välj ny position för '+placingCode+'.');};
  const sizeButton=document.createElement('button');sizeButton.type='button';sizeButton.id='detectorSize';sizeButton.textContent='Ändra storlek';moveButton.after(sizeButton);sizeButton.onclick=()=>openSize(cur());
  const selectedBefore=showSelected;
- showSelected=function(){selectedBefore();const o=cur();moveButton.hidden=sizeButton.hidden=!o||!isBox(o);if(!o)return;$('secNumber').closest('label').hidden=isBox(o);if(isBox(o))$('secProtocolTitle').textContent='Detektor '+detectorLabel(o);};
+ showSelected=function(){selectedBefore();const o=cur();moveButton.hidden=sizeButton.hidden=!o||!isBox(o);if(!o)return;$('secNumber').closest('label').hidden=isBox(o);if(isBox(o))$('secProtocolTitle').textContent=(securityCustomProtocolLabel(o)||'Detektor')+' '+detectorLabel(o);};
  const buildBefore=buildSecurityDrawingPdf;
  buildSecurityDrawingPdf=async function(snapshot=structuredClone({items,textNotes,drawingExtras,project,logoData,drawingRotations}),bytes=sourceBytes.slice()){
   const result=await buildBefore(snapshot,bytes),{rgb,degrees,StandardFonts}=PDFLib,font=await result.out.embedFont(StandardFonts.Helvetica);

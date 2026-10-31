@@ -307,7 +307,11 @@ function isSecurityRemediated(o){return hasSecurityRecordedProblem(o)&&!!String(
 function hasSecurityProblem(o){return hasSecurityRecordedProblem(o)&&!isSecurityRemediated(o)}
 function statusOf(o){if(isSecurityRemediated(o))return'ok';if(o.status==='fail')return'fail';if(Object.values(o.checks||{}).some(c=>c.result==='remark'))return'action';if(o.status==='ok')return'ok';return'untested'}
 function securityStatusText(o){if(isSecurityRemediated(o))return'Åtgärdad';return statusOf(o)==='fail'?'Ej godkänd':statusOf(o)==='action'?'Åtgärd krävs':statusOf(o)==='ok'?'Godkänd':'Ej klar'}
-function customerProtocolTitle(type){
+function securityCustomProtocolLabel(o){return o?.type==='detector'&&typeof o.protocolLabel==='string'?o.protocolLabel.trim():''}
+function securityProtocolLabel(o){return securityCustomProtocolLabel(o)||SYSTEMS[o?.type]?.label||''}
+function customerProtocolTitle(type,o=null){
+ const custom=type==='detector'?securityCustomProtocolLabel(o):'';
+ if(custom&&!/^detektor(?:er)?$/i.test(custom))return (/protokoll$/i.test(custom)?custom:custom+'protokoll').toLocaleUpperCase('sv');
  const titles={
   automation:'CHECKLISTA REVISION DÖRRAUTOMATIK',
   automation_selfcheck:'EGENKONTROLL DÖRRAUTOMATIK',
@@ -1052,7 +1056,7 @@ function renderSecurityPrevious(o){
 function showSelected(){
  const o=cur();$('secNoSelection').hidden=!!o;$('secForm').hidden=!o;$('secProtocolTitle').textContent=securityProtocolTitle();if(!o)return;
  const cfg=SYSTEMS[o.type],automation=isDoorAutomationItem(o),modelField=$('secAutomationModelField'),serialField=$('secAutomationSerialField'),modelSelect=$('secAutomationModel'),serialInput=$('secAutomationSerial'),numberField=$('secNumber')?.closest('label');
- $('secType').value=cfg.label;$('secNumber').value=o.number;$('secLocation').value=o.location;$('secId').value=o.id;$('secNotes').value=o.notes;$('secProtocolSignature').value=project.signature||project.technician||'';
+ $('secType').value=securityProtocolLabel(o);$('secType').readOnly=o.type!=='detector';$('secType').placeholder=o.type==='detector'?'Exempel: Siren':'';$('secType').title=o.type==='detector'?'Ändra namnet för detta objekt och kundprotokollet':'';$('secNumber').value=o.number;$('secLocation').value=o.location;$('secId').value=o.id;$('secNotes').value=o.notes;$('secProtocolSignature').value=project.signature||project.technician||'';
  if(numberField)numberField.hidden=automation;if(modelField)modelField.hidden=!automation;if(serialField)serialField.hidden=!automation;
  if(automation&&modelSelect){const known=DOOR_AUTOMATION_MODELS.some(([code])=>code===o.modelCode);modelSelect.value=known?o.modelCode:(o.modelCode?'custom':'')}
  if(automation&&serialInput)serialInput.value=o.serialNumber||'';
@@ -1060,6 +1064,8 @@ function showSelected(){
  syncStatus(o);$('secStatus').value=isSecurityRemediated(o)?'ok':o.status;$('secEditChecks').textContent=securityCheckEditUid===o.uid?'Klar':'Redigera kontrollpunkter';renderSecurityPrevious(o);buildChecklist(o)
 }
 ['secLocation','secId','secNotes'].forEach(id=>$(id).oninput=()=>{const o=cur();if(!o)return;if(id==='secLocation')o.location=$(id).value;if(id==='secId'){o.id=$(id).value;if(isDoorAutomationItem(o))o.idMode='manual'}if(id==='secNotes')o.notes=$(id).value;save();drawMarkers();showOverview()});
+$('secType').oninput=()=>{const o=cur();if(o?.type!=='detector')return;securitySessionHistory.record();const value=$('secType').value.trim().normalize('NFC');if(value&&value.toLocaleLowerCase('sv')!==SYSTEMS.detector.label.toLocaleLowerCase('sv'))o.protocolLabel=value;else delete o.protocolLabel;save();drawMarkers();showOverview();};
+$('secType').onchange=()=>{const o=cur();if(o?.type==='detector'){$('secType').oninput();$('secType').value=securityProtocolLabel(o);securitySessionHistory.endGroup();}};
 const automationModelSelect=$('secAutomationModel'),automationSerialInput=$('secAutomationSerial');
 if(automationModelSelect){
  DOOR_AUTOMATION_MODELS.forEach(([code,name])=>{const option=document.createElement('option');option.value=code;option.textContent=code+' · '+name;automationModelSelect.appendChild(option)});
@@ -1114,13 +1120,13 @@ function showOverview(){
   if(filter==='problems'&&!hasSecurityProblem(o))return false;
   if(filter==='untested'&&st!=='untested')return false;
   if(filter==='ok'&&st!=='ok')return false;
-  return !query||[o.id,securityDrawingLabel(o),SYSTEMS[o.type]?.label,o.location,o.notes,o.remediationDescription,...issues(o)].join(' ').toLocaleLowerCase('sv').includes(query);
+  return !query||[o.id,securityDrawingLabel(o),securityProtocolLabel(o),SYSTEMS[o.type]?.label,o.location,o.notes,o.remediationDescription,...issues(o)].join(' ').toLocaleLowerCase('sv').includes(query);
  }).sort((a,b)=>securityPriority(a)-securityPriority(b)||a.type.localeCompare(b.type)||a.number-b.number);
  if(!visible.length){const p=document.createElement('p');p.className='overviewEmpty';p.textContent=query?'Inga objekt matchar sökningen.':filter==='problems'?'Inga objekt med öppna fel.':'Inga objekt i det här urvalet.';list.appendChild(p);return}
  visible.forEach((o,index)=>{
   const card=document.createElement('article');card.dataset.uid=o.uid;
   const head=document.createElement('div');head.className='secSummaryHead';
-  const h=document.createElement('h3');h.textContent=securityDrawingLabel(o)+' · '+SYSTEMS[o.type].label;
+  const h=document.createElement('h3');h.textContent=securityDrawingLabel(o)+' · '+securityProtocolLabel(o);
   const badge=document.createElement('span');head.append(h,badge);card.appendChild(head);syncSecurityOverviewCard(card,badge,o);
   const meta=document.createElement('p');meta.className='secSummaryMeta';meta.textContent=o.location?'Placering: '+o.location:'Placering saknas';card.appendChild(meta);
   const iss=issues(o);if(iss.length){const ul=document.createElement('ul');iss.forEach(t=>{const li=document.createElement('li');li.textContent=t;ul.appendChild(li)});card.appendChild(ul)}else{const p=document.createElement('p');p.textContent=statusOf(o)==='ok'?'Godkänd utan anmärkning':'Inga registrerade anmärkningar.';card.appendChild(p)}
@@ -1358,7 +1364,8 @@ function reportDoc(){
  function protocolTop(o,continuation=false){
   doc.setDrawColor(55,55,55);doc.setLineWidth(.22);doc.rect(left,8,width,18);addLogo(left,8,58,18);doc.line(left+58,8,left+58,26);
   txt('Dokumentnr: 2519-1',left+61,12.4,7.8,true,[25,25,25]);
-  txt(customerProtocolTitle(o.type),left+58+(width-58)/2,18.7,11.9,true,[25,25,25],{align:'center'});
+  const protocolTitle=customerProtocolTitle(o.type,o);doc.setFont('helvetica','bold');doc.setFontSize(11.9);const titleSize=securityCustomProtocolLabel(o)?Math.min(11.9,11.9*(width-64)/Math.max(1,doc.getTextWidth(protocolTitle))):11.9;
+  txt(protocolTitle,left+58+(width-58)/2,18.7,titleSize,true,[25,25,25],{align:'center'});
   if(continuation){txt('fortsättning',left+58+(width-58)/2,23,6,false,[70,70,70],{align:'center'});y=31;cell('Objekt:',o.id,left,y,62,8);cell('Placering/Dörrlittra:',o.location,left+62,y,62,8);cell('Ao nummer:',project.order,left+124,y,62,8);y+=12;return}
   txt('SERVICE',left+1.5,36.7,11.4,true,[25,25,25]);y=40;
   cell('Bokat datum:',project.date,left,y,93);cell('Nästa provning:',project.nextDate,left+93,y,93);y+=7;
@@ -1462,7 +1469,7 @@ async function openCustomerPreview(forceReport=false){
    previewMode='drawing';const built=await buildSecurityDrawingPdf();previewStampRects=built.stampRects;previewOverviewLinks=built.overviewLinks;previewPdf=await pdfjsLib.getDocument({data:await built.out.save()}).promise;previewPage=Math.max(1,Math.min(previewPdf.numPages,page));$('secPreviewTitle').textContent='Ritning · sida '+previewPage;
   }else{
    previewMode='report';const report=reportDoc(),pageMap=report.__protocolPages||{},bytes=new Uint8Array(report.output('arraybuffer'));previewPdf=await pdfjsLib.getDocument({data:bytes}).promise;
-   if(!forceReport&&!overviewOpen&&view==='protocol'&&o&&pageMap[o.uid]){previewPage=pageMap[o.uid];$('secPreviewTitle').textContent=SYSTEMS[o.type].label+' · '+o.id}
+   if(!forceReport&&!overviewOpen&&view==='protocol'&&o&&pageMap[o.uid]){previewPage=pageMap[o.uid];$('secPreviewTitle').textContent=securityProtocolLabel(o)+' · '+o.id}
    else{previewPage=1;$('secPreviewTitle').textContent=(forceReport||overviewOpen)?'Objekt och anmärkningar':'Kundrapport'}
   }
   $('secPreviewDialog').showModal();await renderCustomerPreview();
