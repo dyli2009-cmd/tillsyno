@@ -46,3 +46,11 @@ body.securityDetectorScanApp #detectorClose{min-height:30px;min-width:30px;paddi
 .detectorScanLauncher span{font-size:11px;white-space:nowrap}
 .detectorScanLauncher svg{width:22px;height:22px;flex:none}
 @media(max-width:420px){.detectorScanActions{gap:5px}body.securityDetectorScanApp .detectorScanTools button{padding:7px;font-size:11px}#detectorScanStatus{font-size:10px}}
+
+.detectorModeLabel{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:6px;font-size:11px}
+.detectorModeLabel[hidden]{display:none}
+.detectorModeLabel select{font:inherit;min-height:32px;max-width:230px;padding:4px 6px;border:1px solid #a7bec9;border-radius:6px;color:inherit;background:var(--panel,#edf5f8)}
+.detectorModeLabel span{font-size:10px;opacity:.8}
+body.securityDetectorScanApp #detectorSamplePreview{max-width:min(230px,65vw);max-height:95px;image-rendering:auto}
+#detectorSampleForm button[hidden]{display:none!important}
+.detectorReviewOutline{position:absolute;transform:translate(-50%,-50%);border:3px solid #d57400;outline:2px solid white;box-sizing:border-box;z-index:8;pointer-events:none}

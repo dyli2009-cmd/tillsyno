@@ -85,12 +85,28 @@
   if(!validProfile(p)||p.confirmed!==true||p.page!==page||!/^\d+$/.test(p.code)||![p.x,p.y].every(n=>Number.isFinite(n)&&n>=0&&n<=1))return null;
   return{code:p.code,page,x:p.x,y:p.y,width:p.width/viewport.width,height:p.height/viewport.height,textHeight:p.textHeight/viewport.height,angle:p.angle,confirmed:true};
  }
- function consensusNumber(readings){
+ function consensusNumber(readings,{minVotes=2,minFamilies=1,lead=1}={}){
   const votes=new Map();
-  for(const r of readings){const code=String(r?.text||'').trim().replace(/\s+/g,'');if(!/^\d+$/.test(code)||!Number.isFinite(r.confidence)||r.confidence<80)continue;const list=votes.get(code)||[];list.push(r.confidence);votes.set(code,list);}
+  for(const r of readings){const code=String(r?.text||'').trim().replace(/\s+/g,'');if(!/^\d+$/.test(code)||!Number.isFinite(r.confidence)||r.confidence<80)continue;const list=votes.get(code)||[];list.push(r);votes.set(code,list);}
   const ranked=[...votes].sort((a,b)=>b[1].length-a[1].length);
-  if(!ranked.length||ranked[0][1].length<2||ranked[1]?.[1].length===ranked[0][1].length)return null;
-  return{code:ranked[0][0],confidence:Math.min(...ranked[0][1])};
+  if(!ranked.length||ranked[0][1].length<minVotes||ranked[0][1].length-(ranked[1]?.[1].length||0)<lead||new Set(ranked[0][1].map(r=>r.family||'default')).size<minFamilies)return null;
+  return{code:ranked[0][0],confidence:Math.min(...ranked[0][1].map(r=>r.confidence))};
+ }
+ // Local contrast normalization (Otsu) and an optional one-pixel stroke repair.
+ // Keep letters and punctuation: forcing a digit alphabet can invent numbers.
+ function binaryNumber(image,reinforce=false){
+  const {width,height,data}=image,hist=new Uint32Array(256),gray=new Uint8Array(width*height);let sum=0;
+  for(let i=0;i<gray.length;i++){const at=i*4,v=Math.round(255-(255-Math.max(data[at],data[at+1],data[at+2]))*data[at+3]/255);gray[i]=v;hist[v]++;sum+=v;}
+  let count=0,partial=0,best=-1,threshold=160;
+  for(let t=0;t<255;t++){count+=hist[t];partial+=t*hist[t];const rest=gray.length-count;if(!count||!rest)continue;const score=count*rest*(partial/count-(sum-partial)/rest)**2;if(score>best){best=score;threshold=t;}}
+  threshold=Math.max(80,Math.min(220,threshold));const output=new Uint8ClampedArray(data.length).fill(255);
+  for(let y=0;y<height;y++)for(let x=0;x<width;x++){let dark=gray[y*width+x]<=threshold;if(reinforce&&!dark){for(let dy=-1;dy<=1&&!dark;dy++)for(let dx=-1;dx<=1;dx++)if(x+dx>=0&&x+dx<width&&y+dy>=0&&y+dy<height&&gray[(y+dy)*width+x+dx]<=threshold){dark=true;break;}}if(dark){const at=(y*width+x)*4;output[at]=output[at+1]=output[at+2]=0;}}
+  return{width,height,data:output};
+ }
+ function sampleProfiles(project){
+  const list=Array.isArray(project?.detectorSamples)?project.detectorSamples:[],result=[];
+  for(const p of [...list,project?.detectorSample]){if(!validProfile(p))continue;const at=result.findIndex(q=>q.page===p.page&&Math.abs(q.x-p.x)<.00001&&Math.abs(q.y-p.y)<.00001);if(at<0)result.push(p);else result[at]=p;}
+  return result;
  }
  function hasFrameInk(image,box){
   const inset=Math.max(2,Math.min(box.right-box.left,box.bottom-box.top)*.15),left=Math.max(0,Math.ceil(box.left+inset)),right=Math.min(image.width,Math.floor(box.right-inset)),top=Math.max(0,Math.ceil(box.top+inset)),bottom=Math.min(image.height,Math.floor(box.bottom-inset));
@@ -161,5 +177,5 @@
   // Older arrow points sit near their number. Only reuse a nearby, same-code object.
   return items.filter(o=>o.type==='detector'&&!o.detectorBox&&!used.has(o.uid)&&o.page===hit.page&&String(o.id).trim()===hit.code&&Math.hypot((o.x-hit.x)/hit.width,(o.y-hit.y)/hit.height)<5).sort((a,b)=>Math.hypot(a.x-hit.x,a.y-hit.y)-Math.hypot(b.x-hit.x,b.y-hit.y))[0]||null;
  }
- return{boxScale,resizeBox,fitLabelSize,framesFromOperators,framesFromPixels,hasFrameInk,inkBounds,validProfile,similarFrame,filterByProfile,confirmedSampleHit,consensusNumber,textGeometry,matchNumbers,scanPage,samePosition,nearestExisting};
+ return{boxScale,resizeBox,fitLabelSize,framesFromOperators,framesFromPixels,hasFrameInk,inkBounds,validProfile,similarFrame,filterByProfile,confirmedSampleHit,consensusNumber,binaryNumber,sampleProfiles,textGeometry,matchNumbers,scanPage,samePosition,nearestExisting};
 });
