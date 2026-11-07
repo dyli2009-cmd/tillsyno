@@ -1,8 +1,8 @@
 # Kontrollflöde – Säkerhetsservice
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.581 (utgångspunkt 7 november 2026).
-- **Modulversion:** Säkerhetsservice 1.0 (beslutat startvärde, visas när versionsregistret har införts).
+- **Appversion:** Tillsyno v2.4.582 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** Säkerhetsservice 1.0. Versionen finns i `versions.json` och visas med liten text på startsidan, i mappvalet och i modulens sidhuvud.
 - Kontrollflödet är upplåst. Gemensamma regler och filkarta: [README.md](README.md).
 
 ## 2. Arbetsflöde från början till slut

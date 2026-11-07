@@ -84,9 +84,12 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 - PDF-designen ska vara gemensam, men innehållet eget per undermodul. Designen och de två motorerna lämnas orörda tills vidare.
 - Kontrollflödet förblir upplåst (sedan v2.4.581). I stället för låskontroll används en påverkanskontroll utan spärr (alternativ A): varje ändring visar vilka moduler och motorer som påverkas, och de relevanta testerna körs.
 
-### Versionshantering (beslut 7 november 2026, inte infört)
+### Versionshantering (beslut 7 november 2026)
 
-Gäller när versionsregistret `versions.json` införs. Fram till dess gäller DEVELOPMENT_RULES.md avsnitt 4 (en synlig appversion). Ingen versionsändring görs före den uppgiften.
+**Läge v2.4.582:**
+- Modulversionerna finns i `versions.json`. De visas med liten text på startsidan, i Kontrollflödets mappval och i modulernas sidhuvud, via `tillsyno-versions.js`.
+- Kontrollsummor, automatisk höjning och CI-kontroll är **inte** införda ännu (steg 3).
+- Fram till steg 3 höjs versionerna för hand i `versions.json`, i samma PR som ändringen. Testet `tests/module-versions-v582.cjs` kontrollerar att appversionen stämmer överallt.
 
 **Regler:**
 1. **Appversion `2.4.x`:** en för hela appen. Höjs ett steg i varje publicering som ändrar någon publicerad fil.
@@ -113,8 +116,10 @@ Gäller när versionsregistret `versions.json` införs. Fram till dess gäller D
 
 | Modul | Start |
 |---|---|
-| Dörrautomatik, Lås, Säkerhetsservice, Brand | 1.0 |
-| Avläsning | 9.100.35. Etiketten 9.100.17 i `smartmatch-read-main-v524.js` rättas när registret införs. |
+| Dörrautomatik / Lås (en gemensam version, beslut 7 november 2026: grupperas som i mappvalet) | 1.0 |
+| Säkerhetsservice | 1.0 |
+| Brand | 1.0 |
+| Avläsning | 9.100.35 (etiketten 9.100.17 rättad i v2.4.582) |
 | SmartMatch | 1.0 för driftsidan `smartmatch-read-v9-100.html` (egen serie, skild från Avläsning) |
 | Projektering | 2.19.24 |
 | CE-märkning | **Modulversion 1.2**, och **separat dataformat 60** (`VERSION=60`/`FORMAT` i `ce-markning-v1-2.js`, sparformatet). De blandas inte ihop. Dataformatet ändras bara när sparformatet ändras. |
@@ -123,21 +128,23 @@ Gäller när versionsregistret `versions.json` införs. Fram till dess gäller D
 
 **Beslutad arbetsordning:** varje steg är en egen uppgift med egen branch och PR och kräver ägarens godkännande.
 
-- [ ] 1. PR #10 (dokumentationsstrukturen) slås ihop med `main`.
+- [x] 1. PR #10 (dokumentationsstrukturen) sammanslagen 7 november 2026. Utgångsläget har taggen `tillsyno-2.4.581-utgangspunkt`.
+- [x] 1b. Modulversionerna visas i appen (v2.4.582). Det tidigarelades före kraschuppgiften på ägarens beslut.
 - [ ] 2. Krascher i Dörrautomatik, i en ny session.
   - Undersökning utan kodändring: minne, nätverk och service worker med syntetiska testritningar.
   - Undersök bland annat om registreringen `sw.js?v=2.4.567` i `controlflow-revision/offline.js` bidrar. Den ger en ominstallation på ca 19 MB vid varje sidbyte, verifierat i Chromium.
   - Rapport. Därefter beslut om rättning.
-- [ ] 3. Versionsregistret `versions.json`, tillsammans med tester på PR (3B), påverkanskontroll utan spärr (3C), tester för påverkan (3D) och versionstesterna, och ändrade regeltexter. Därefter slår ägaren på skyddet av `main` (3A).
-- [ ] 4. Modulversionerna visas i appen, när registret är verifierat.
+- [ ] 3. Versionsregistret byggs ut (`versions.json` finns): kontrollsummor och automatisk höjning, tillsammans med tester på PR (3B), påverkanskontroll utan spärr (3C), tester för påverkan (3D) och versionstesterna, och ändrade regeltexter. Därefter slår ägaren på skyddet av `main` (3A).
 - [ ] 5. Säkra uppdateringar: service worker, cache och inga blandade versioner, med tester på dator, iPhone och iPad.
 
 **Fynd när funktionsbeskrivningarna skrevs (7 november 2026, inte åtgärdade):**
-- [ ] **CE-märkningens service worker** står på 2.4.570 och visar sidan från cachen i första hand. `ce-markning.html` ändrades i 2.4.578, så enheter kan visa en äldre CE-sida. Hör till steg 5 (säkra uppdateringar).
+- [ ] **CE-märkningens service worker** stod på 2.4.570. **Höjd till 2.4.582 i v2.4.582**, så att enheter får den nya CE-sidan. Kvar till steg 5: dess version måste fortfarande höjas för hand vid varje ändring i CE-märkningen.
 - [ ] ***Rensa enhetens data*** saknar den kontobundna CE-databasen `tillsyno-ce-markning-test-v7-<användar-id>` i sin lista. Den blir kvar i webbläsare utan `indexedDB.databases()`. Egen uppgift (System).
 - [ ] **Delad lagring:** Kontrollflödets båda motorer sparar arbetet under samma nyckel `doorservice-all-in-one:<kontrollsumma>`. Effekten när samma ritning öppnas på båda sidorna är inte verifierad. Ska kontrolleras i kraschuppgiften eller med testerna i 3D.
-- [ ] **Inaktuella etiketter:** Avläsning *9.100.17*, bannern *"Separat test"* på driftsidan och länken *"SmartMatch 1.3"*. Rättas med versionsregistret (steg 3).
-- [ ] **Ritningsverktyg** har ingen beslutad modulversion. Ägaren beslutar, eller så följer modulen appversionen.
+- [ ] **Inaktuella etiketter:** *9.100.17*, *"SmartMatch 1.3"* (nu *SmartMatch TEST 1.5*) och CE-märkningens *"v2.4.359"* är rättade i v2.4.582. Kvar: bannern *"Separat test"* på Avläsningens driftsida.
+- [x] **Ritningsverktyg** följer appversionen och har ingen egen modulversion (ägarens beslut 7 november 2026).
+- [ ] **Tillfälligt testfel:** `ce-file-export-v312` föll en gång i full körning (knappen *Exportera filer* blev inte synlig inom 30 s). Det gick igenom vid omkörning. Undersöks i uppgiften om automatiska tester (steg 3).
+- [ ] **Tidskänsligt testfel:** `controlflow-heavy-zoom-v581` föll i full körning och med 4 parallella jobb, även på `main` utan ändringar (v2.4.581). Testet väntar sig att en A2-ritning *inte* räknas som tung på iPad, men gränsen *mer än 1,5 s att rita* nås när datorn är hårt belastad. Ensamt går det igenom. Undersöks i uppgiften om automatiska tester (steg 3).
 
 **Senare, efter godkännande:**
 - [ ] Nätverkstestet för IT-granskningen (3E).

@@ -54,7 +54,7 @@ För en undermodul i Kontrollflödet: läs undermodulens dokument och [kontrollf
 - **Protokoll flyttas inte mellan undermoduler** utan användarens godkännande. Det gäller till exempel *Checklista revision lås* (Dörrautomatik/Lås) och *Lås & Dörrmiljö* (Säkerhetsservice).
 - **Inga kunddata i repot:** inga kundritningar, ritningsutdrag, kund- eller projektnamn eller objektnummer från kunder. Tester använder genererade data.
 - **Inga hemligheter** (nycklar, lösenord, tokens) i kod, dokument eller chatt. `auth-config.js` innehåller bara den publika nyckeln.
-- **En synlig appversion** för hela Tillsyno (`v2.4.x`). Varje användarsynlig ändring höjer den ett steg. Detaljer finns i DEVELOPMENT_RULES.md avsnitt 4, och den aktuella versionen visas i `app.html`. Beslutat men inte infört: separata modulversioner via versionsregistret, se VANTANDE_PUNKTER.md avsnitt 8. Ändra inga versioner innan den uppgiften.
+- **En synlig appversion** för hela Tillsyno (`v2.4.x`). Varje användarsynlig ändring höjer den ett steg. Detaljer finns i DEVELOPMENT_RULES.md avsnitt 4, och den aktuella versionen visas i `app.html`. Varje modul har dessutom en **modulversion** i `versions.json`, som visas i appen. Kontrollflödet har tre: Dörrautomatik / Lås, Säkerhetsservice och Brand. Regler: VANTANDE_PUNKTER.md avsnitt 8.
 - **Gamla versionsfiler** (`*-v9-94.js`, `*-v524.js` osv.) raderas eller flyttas aldrig utan att användningen först har verifierats och användaren har godkänt. De flesta laddas fortfarande.
 - **Supabase, publicering, GitHub-inställningar och CI** ändras bara efter separat godkännande.
 
@@ -67,8 +67,8 @@ För en undermodul i Kontrollflödet: läs undermodulens dokument och [kontrollf
 5. Kör modulens tester, och vid ändring i en delad fil testerna för alla moduler som använder filen. Se [gemensamt.md](docs/moduler/gemensamt.md).
 6. Kontrollera med `git diff --stat` att inga filer utanför modulen har ändrats.
 7. I samma PR:
-   - Höj appversionen.
-   - Höj modulversionen om funktionens beteende har ändrats (VANTANDE_PUNKTER.md avsnitt 8). Tills versionsregistret finns höjs bara appversionen, och den planerade modulversionen anges i PR:en.
+   - Höj appversionen i `versions.json`, `app.html` (meta och synlig version), `sw.js`, `offline.js`, `auth/admin.html`, `auth/login.html` och `ce-markning-v1-2-sw.js`. `tests/module-versions-v582.cjs` kontrollerar att de stämmer.
+   - Höj modulversionen i `versions.json` om funktionens beteende har ändrats (VANTANDE_PUNKTER.md avsnitt 8). Tills kontrollsummorna finns görs det för hand.
    - **Skriv om** modulens funktionsbeskrivning till det nya nuläget.
    - Kontrollera och uppdatera vid behov beskrivningarna för andra berörda moduler.
    - Bocka av i VANTANDE_PUNKTER.md.

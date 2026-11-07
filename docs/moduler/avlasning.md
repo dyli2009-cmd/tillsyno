@@ -1,10 +1,9 @@
 # Avläsning
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.581 (utgångspunkt 7 november 2026).
-- **Modulversion:** Avläsning 9.100.35.
-  - Sidtiteln och sidfoten (`#pwBuildVersion`) visar redan *SmartMatch · Avläsning 9.100.35*.
-  - Etiketten `SMARTMATCH_TEST_LABEL='Avläsning 9.100.17'` i `smartmatch-read-main-v524.js` är inaktuell. Den rättas när versionsregistret införs.
+- **Appversion:** Tillsyno v2.4.582 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** Avläsning 9.100.35 (`versions.json`). Sidhuvudet visar *Avläsning 9.100.35 · SmartMatch 1.0*, och startsidans kort visar samma versioner.
+  - Etiketten `SMARTMATCH_TEST_LABEL` i `smartmatch-read-main-v524.js` är rättad från 9.100.17 till 9.100.35 (v2.4.582). Den skrivs fortfarande för hand och ska stämma med `versions.json`. Testet `module-versions-v582` kontrollerar det.
 
 ## 2. Arbetsflöde från början till slut
 Avläsning och [SmartMatch](smartmatch.md) körs på **samma sida**: *Avläsning + SmartMatch*, `smartmatch-read-v9-100.html`, som nås från startsidan. Avläsningen är den första delen.
@@ -73,4 +72,4 @@ node tools/run-tests.mjs --modules <mapp>/node_modules smartmatch-read slr-bulk-
 ```
 - Inga kända fel som gäller bara Avläsning.
 - `smartmatch-read-school-v7` och `-v9` hoppas över, eftersom de kräver en riktig ritning.
-- **Inaktuell text:** bannern säger *"Separat test"*, trots att sidan är driftsidan. Det tas upp med versionsregistret.
+- **Inaktuell text:** bannern säger *"Separat test"*, trots att sidan är driftsidan (VANTANDE_PUNKTER.md avsnitt 8).

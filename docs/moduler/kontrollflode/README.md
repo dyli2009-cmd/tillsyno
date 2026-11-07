@@ -1,6 +1,6 @@
 # Kontrollflöde
 
-**Version:** Tillsyno v2.4.581 (utgångspunkt 7 november 2026). Undermodulerna Dörrautomatik, Lås, Säkerhetsservice och Brand har var sin modulversion, med startvärdet 1.0. Den här filen är översikten över motorerna, beroendena och filkartan. Varje undermodul har en egen funktionsbeskrivning med den gemensamma strukturen i CLAUDE.md avsnitt 6.
+**Version:** Tillsyno v2.4.582 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`). Kontrollflödet har tre modulversioner, grupperade som i mappvalet: **Dörrautomatik / Lås 1.0**, **Säkerhetsservice 1.0** och **Brand 1.0** (`versions.json`). De visas i mappvalet och i sidhuvudet på båda sidorna. Den här filen är översikten över motorerna, beroendena och filkartan. Varje undermodul har en egen funktionsbeskrivning med den gemensamma strukturen i CLAUDE.md avsnitt 6.
 
 **Status: UPPLÅST** sedan v2.4.581 (ägarens beslut 7 november 2026). Kontrollflödet ändras som andra moduler, efter beställning. Låset ska inte återinföras, och ingen upplåsningsfras behövs.
 

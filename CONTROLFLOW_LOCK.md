@@ -324,3 +324,16 @@ Detaljer och mätningar finns i [CONTROLFLOW_HEAVY_PDF_PLAN.md](CONTROLFLOW_HEAV
 Den exporterade arbets-PDF:en och Kundmallens ritning är byte för byte desamma som i v2.4.579 och v2.4.580. Stämplar, protokoll och import ändras inte. Detaljer finns i [CONTROLFLOW_HEAVY_PDF_PLAN.md](CONTROLFLOW_HEAVY_PDF_PLAN.md) och UI_RULES.md. Test:
 - `tests/controlflow-heavy-zoom-v581.cjs`;
 - `tests/controlflow-drawing-load-progress-v581.cjs`.
+
+# 2026-11-07 · v2.4.582 · Modulversioner visas
+
+Ägaren beställde att varje modul visar sin version med liten text, grupperad som i mappvalet: Dörrautomatik / Lås, Säkerhetsservice och Brand.
+
+Ändrat:
+- `all-in-one.html` och `controlflow-revision/all-in-one.html`:
+  - liten versionstext under varje mapp i mappvalet och vid CE-länken;
+  - versionstext i sidhuvudet (`headerDetails`);
+  - `tillsyno-versions.js` laddas.
+- Nya filerna `versions.json` och `tillsyno-versions.js` (gemensamma för appen).
+
+Motorerna `security.js` och `controlflow-revision/security-v335.js`, protokoll, kontrollpunkter, stämplar, arbetsfiler, import och exporterad PDF är oförändrade. `controlflow-revision/offline.js` (`?v=2.4.567`) är medvetet oförändrad och hanteras i kraschuppgiften. Test: `tests/module-versions-v582.cjs` och Kontrollflödets tester.

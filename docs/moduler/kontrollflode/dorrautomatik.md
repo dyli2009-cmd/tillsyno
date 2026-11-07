@@ -1,8 +1,8 @@
 # Kontrollflöde – Dörrautomatik
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.581 (utgångspunkt 7 november 2026).
-- **Modulversion:** Dörrautomatik 1.0. Det är det beslutade startvärdet, som visas när versionsregistret har införts (VANTANDE_PUNKTER.md avsnitt 8).
+- **Appversion:** Tillsyno v2.4.582 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** Dörrautomatik / Lås 1.0. Det är en gemensam version för Dörrautomatik och Lås, som grupperas som i mappvalet (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan, i mappvalet och i modulens sidhuvud. Kraschrättningen höjer den till 1.1.
 - Kontrollflödet är upplåst. Gemensamma regler, motorer och filkarta: [README.md](README.md).
 
 ## 2. Arbetsflöde från början till slut

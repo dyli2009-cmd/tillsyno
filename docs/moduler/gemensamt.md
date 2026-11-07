@@ -1,6 +1,6 @@
 # Gemensamma funktioner och delade filer
 
-**Version:** Tillsyno v2.4.581 (utgångspunkt 7 november 2026). Det här är en referens över delade filer, inte en funktionsbeskrivning. Funktionerna beskrivs i respektive moduldokument.
+**Version:** Tillsyno v2.4.582 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`). Det här är en referens över delade filer, inte en funktionsbeskrivning. Funktionerna beskrivs i respektive moduldokument.
 
 En ändring i en fil som flera sidor laddar ska testas mot **alla** sidorna. Tabellen visar vem som laddar vad. Den är framtagen ur sidornas `<script>`- och `<link>`-taggar den 7 november 2026.
 
@@ -37,6 +37,7 @@ Förkortningar:
 | `vendor/jszip-3.10.1.min.js` | CE, Avl+SM, AvlTEST, SM1.5 | `ce-`, `smartmatch-` |
 | Projekteringsfiler som SmartMatch laddar (lista i [projektering.md](projektering.md)) | Proj, Avl+SM, SM1.5 | `smartmatch-projektering sensor-package time-overview smartmatch-` |
 | `smartmatch-pdf-v36-71.js`, `smartmatch-protocol-*`, `smartmatch-slr-test-*`, `smartmatch-stamp-shapes-v36-78.js`, `smartmatch-table-layouts-v36-94.js`, `smartmatch-beslagskod-v36-133.js` | Avl+SM, AvlTEST, SM1.5 | `smartmatch- slr-` |
+| `versions.json`, `tillsyno-versions.js` (modulversionerna) | Hem, KF, KF-rev, Avl+SM, Proj, CE, och båda service workers | `module-versions-v582` + berörda moduler |
 | `sw.js` (offlinelistan `CORE`) | hela appen | `offline-cache app-update app-startup` + `node tools/build-release.mjs` |
 
 Filer som bara används inom Kontrollflödet (KF och KF-rev) står i [kontrollflode/README.md](kontrollflode/README.md).
