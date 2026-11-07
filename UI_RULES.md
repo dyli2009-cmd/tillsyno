@@ -254,7 +254,7 @@ Användarbeslut 7 november 2026 (Kontrollflödet upplåst för denna beställnin
 
 - Kontrollflöde Dörrautomatik känner själv av en tung ritning: minst 30 MB, en bild över 16,7 miljoner pixlar, en sida A1 eller större med minst 2 MB innehåll per sida, eller en sida som tar mer än 1,5 s att rita.
 - I sparläge visar sidraden *Sida X / N · Sparläge*. Rutan förklarar läget när man håller över den, och meddelandet börjar med *Stor ritning – visas i sparläge.*
-- Sidan ritas en gång med högst 3 miljoner pixlar, och zoom förstorar bilden. Kundmall ritas med högst 4 miljoner pixlar.
+- Sidan ritas en gång med högst 3 miljoner pixlar, och zoom förstorar bilden. Kundmall ritas med högst 4 miljoner pixlar. Sedan v2.4.591 ritas dessutom det område som syns skarpt när man har slutat zooma eller flytta (avsnittet *Skarp zoom v2.4.591* nedan).
 - Kan en sida inte ritas visas ett fel i stället för "Ritningen är klar".
 - Kontrollerat i Chromium på 390, 820, 1180 och 1440 px. Sidraden får plats på en rad, utan sidledsrullning.
 - Stämplar, export och protokoll ändras inte.
@@ -276,3 +276,23 @@ Användarbeslut 7 november 2026 (Kontrollflödet upplåst för denna beställnin
 - Filer: `controlflow-revision/drawing-load-progress-v581.js` och `.css`.
 - Kontrollerat i Chromium på 390 px (dimblå och natt), 820 px (sand) och 1440 px (grafit), utan sidledsrullning.
 - Kontrollerat i Chromium med telefoninställning 390×844. Fysisk iPhone är inte verifierad.
+
+## Skarp zoom v2.4.591
+
+Ägarens beslut 7 november 2026: ritningen ska fungera som i Acrobat. Bara det område man har framför sig blir skarpt, och det som inte syns behöver inte vara skarpt. Flyttar man ritningen blir den nya delen skarp efter en kort stund, och appen får inte belastas så att den kraschar. Beslutet ändrar regeln ovan om att zoom i sparläget bara förstorar bilden. Det gäller Dörrautomatik, Lås, Säkerhetsservice och Brand.
+
+- Sidans bild visas som förut. När den inte räcker till för skarp visning ritas bara det område som syns, med en fjärdedels marginal åt varje håll, i full skärpa. Det sker när man har slutat zooma eller flytta: efter 0,22 s, i sparläge 0,45 s.
+- Utanför det skarpa området visas sidans suddiga bild, tills nästa område är ritat. Under en tvåfingerzoom ritas ingen detalj.
+- Detaljbilden har högst 2,6 miljoner pixlar på telefon och 6 miljoner på iPad och dator, och högst 2 bildpunkter per CSS-pixel. Det finns en detaljbild åt gången.
+- Bara en detalj ritas åt gången, och den avbryts inte av zoom eller flyttning. Byte av sida, rotation eller fil avbryter.
+- Säkerhetsspärr i sparläge: en sida som tog mer än 4 s att rita första gången på telefon (8 s på iPad och dator) får inga detaljer. Efter en lika långsam detaljritning ritas inga fler för filen.
+- Detaljen ligger mellan ritningen och stämplarna och tar inte emot tryck. Inga knappar eller texter tillkommer.
+- Säkerhetsservice och Brand har fått samma sparläge och skydd vid snabb zoom som Dörrautomatik (v2.4.580–581), med samma gränser och samma text *· Sparläge* i sidraden. De har ingen laddningsruta.
+- Stämplar, export, Kundmallens innehåll, sparade arbetsfiler och import ändras inte. I Säkerhetsservice och Brand ritas Kundmall i sparläge med högst 4 MP och stängs med rutan, som i Dörrautomatik.
+- Fil: `controlflow-sharp-zoom-v591.js`, som används av `controlflow-revision/security-v335.js` och `security-drawing-view.js`.
+- **Stämplar under gester** (ägarens beslut samma dag, efter krasch vid snabb zoom med cirka 100 stämplar):
+  - Under nyp, mushjul och flyttning är de riktiga stämplarna dolda som med ögat, och en bild av stämplarna i och runt det synliga området visas i stället. Den kan vara suddig.
+  - 0,22 s efter gesten ritas stämplarna om en gång. Stilla visas bara stämplar vars nummer eller pilspets syns, med en halv skärms marginal; den markerade visas alltid.
+  - Text, ritobjekt och detektorrutor syns inte medan gesten pågår. Ritningen tvingas inte in i egna grafiklager.
+  - Fil: `controlflow-stamp-view-v591.js/.css`.
+- Kontrollerat i Chromium med telefon (390×844, DPR 3), iPad (820×1180, DPR 2) och dator. Fysisk iPhone och iPad, och appen i TestFlight, är inte verifierade.

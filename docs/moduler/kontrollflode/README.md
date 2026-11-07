@@ -1,6 +1,6 @@
 # Kontrollflöde
 
-**Version:** Tillsyno v2.4.590 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`). Kontrollflödet har tre modulversioner, grupperade som i mappvalet: **Dörrautomatik / Lås 1.7**, **Säkerhetsservice 1.3** och **Brand 1.0** (`versions.json`). De visas i mappvalet. Huvudsidan visar dessutom versionen i sidhuvudet; revisionssidan gör det inte (v2.4.584). Den här filen är översikten över motorerna, beroendena och filkartan. Varje undermodul har en egen funktionsbeskrivning med den gemensamma strukturen i CLAUDE.md avsnitt 6.
+**Version:** Tillsyno v2.4.591 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`). Kontrollflödet har tre modulversioner, grupperade som i mappvalet: **Dörrautomatik / Lås 1.8**, **Säkerhetsservice 1.4** och **Brand 1.1** (`versions.json`). De visas i mappvalet. Huvudsidan visar dessutom versionen i sidhuvudet; revisionssidan gör det inte (v2.4.584). Den här filen är översikten över motorerna, beroendena och filkartan. Varje undermodul har en egen funktionsbeskrivning med den gemensamma strukturen i CLAUDE.md avsnitt 6.
 
 **Status: UPPLÅST** sedan v2.4.581 (ägarens beslut 7 november 2026). Kontrollflödet ändras som andra moduler, efter beställning. Låset ska inte återinföras, och ingen upplåsningsfras behövs.
 
@@ -40,7 +40,7 @@ Gemensam PDF-design: [pdf-design.md](pdf-design.md).
 |---|---|---|
 | Undermoduler | Säkerhetsservice, Brand | Dörrautomatik, Lås |
 | Sida | `all-in-one.html`, och fristående `security.html` (utan `ALL_IN_ONE`) | `controlflow-revision/all-in-one.html` |
-| Egna funktioner | detektorer: identitetscell, sökning (`detector-scan-*`), numrering | revisionens kundstil, ritad signatur (`revision-signature-v6.js`), revisionsimport (`revision-callout-profile-v4.js`), egen AO-nummerkälla, **sparläge för tunga ritningar, skydd vid snabb zoom och laddningsruta** (v2.4.580–581) |
+| Egna funktioner | detektorer: identitetscell, sökning (`detector-scan-*`), numrering; ritningsvyn `security-drawing-view.js` med **sparläge för tunga ritningar och skydd vid snabb zoom** (v2.4.591) | revisionens kundstil, ritad signatur (`revision-signature-v6.js`), revisionsimport (`revision-callout-profile-v4.js`), egen AO-nummerkälla, **sparläge för tunga ritningar, skydd vid snabb zoom och laddningsruta** (v2.4.580–581) |
 | Egna stödfiler | `security.css`, `style.css`, `tillsyno-appearance.*`, `offline-work.js`, `drawing-transfer.js` i roten | egna kopior av samma filer i `controlflow-revision/` |
 | Delade filer | `controlflow-*` och `security-stamp-selection-v549.*`, `security-detectors-v344.*`, `customer-stamp-editor-v335.js` (se filkartan) | samma |
 
@@ -77,6 +77,8 @@ Den har också egna revisionsfiler: `revision-*`, `service-overview-v12.*`, `cus
 - `security-stamp-selection-v549.*`, `security-detectors-v344.*`
 - `controlflow-revision/customer-stamp-editor-v335.js`, som också laddas av `security.html`
 - `controlflow-previous-v589.css` (historikrutan *Tidigare service* i mörka teman, v2.4.589)
+- `controlflow-stamp-view-v591.js/.css` (v2.4.591): stämplarna visas som en bild under gester och byggs inte om, och stilla visas bara de som syns. Den ersätter `window.ControlflowStampStyle` med en kopia som känner till senaste stämpeldata och inte ändrar stämplarnas storlek under en gest, och kör motorns `drawMarkers` först när gesten har stannat.
+- `controlflow-sharp-zoom-v591.js` (skarp zoom av det område som syns, v2.4.591). Varje motor skapar den med sina egna uppgifter: `security-v335.js` på revisionssidan och `security-drawing-view.js` på huvudsidan och i `security.html`.
 - `controlflow-history-v590.*` (Historik-knappen och historikrutan, v2.4.590). Historiken (`serviceHistory`) sparas av `startNewSecurityService` i båda motorerna.
 
 **Delas med andra moduler:** se [gemensamt.md](../gemensamt.md). `style.css` och `drawing-transfer.js` används även av `app.html`.
@@ -93,6 +95,7 @@ Kontrollflödet har ingen spärr, men varje plan och PR ska visa vad som påverk
 | `controlflow-revision/security-v335.js` eller annat i `controlflow-revision/` | Dörrautomatik och Lås (revisionssidan) |
 | `controlflow-revision/customer-stamp-editor-v335.js` | båda sidorna och `security.html` |
 | `controlflow-*` i roten, `security-stamp-selection-v549.*`, `security-detectors-v344.*` | båda motorerna, alla fyra undermodulerna |
+| `security-drawing-view.js` | ritningsvyn för Säkerhetsservice och Brand (huvudsidan) och fristående `security.html` |
 | `all-in-one.html`, `all-in-one.js` | protokollväljaren och huvudsidan, och vidareskickningen till revisionssidan |
 | `style.css`, `tillsyno-appearance.*`, `offline.js`, `session-history.js`, `drawing-transfer.js` | Kontrollflödet **och** andra moduler, se [gemensamt.md](../gemensamt.md) |
 
@@ -104,15 +107,14 @@ Ett förslag till automatisk påverkanskontroll, utan spärr, finns i [kvalitets
 node tools/run-tests.mjs --modules <mapp>/node_modules controlflow- security- protocol-selection revision-uncheck detector- customer-preview navigation-theme save-theme theme-consistency
 ```
 
-Kör dem före och efter varje ändring i Kontrollflödet. Filtret `controlflow-` omfattar även testerna för tunga ritningar, `controlflow-heavy-drawing-v580`, `controlflow-heavy-zoom-v581` och `controlflow-drawing-load-progress-v581`.
+Kör dem före och efter varje ändring i Kontrollflödet. Filtret `controlflow-` omfattar även testerna för tunga ritningar och skarp zoom, `controlflow-heavy-drawing-v580`, `controlflow-heavy-zoom-v581`, `controlflow-drawing-load-progress-v581`, `controlflow-sharp-zoom-v591` och `controlflow-stamp-view-v591`.
 
 ## Status
 
 - **Fungerar enligt tester:** se testkörningen i [kvalitetskontroller.md](../../kvalitetskontroller.md).
-- **Senast ändrat (v2.4.580–v2.4.581, Dörrautomatik):** sparläge för tunga ritningar, krasch vid snabb zoom på telefon och laddningsruta. Se [dorrautomatik.md](dorrautomatik.md).
+- **Senast ändrat (v2.4.591, alla fyra undermodulerna):** skarp zoom av det område som syns, och stämplar som inte belastar appen vid snabb zoom, i båda motorerna. Säkerhetsservice och Brand har fått samma sparläge och skydd vid snabb zoom som Dörrautomatik fick i v2.4.580–581. Se [dorrautomatik.md](dorrautomatik.md) och [sakerhetsservice.md](sakerhetsservice.md).
 - **Kända fel** (finns i `tests/known-failures.json`): `security-detectors-v344`, `security-uncheck-v531`, `security-drawing-rotation`. Alla tre gäller huvudsidan. `controlflow-customer-floating-v310` är inte längre ett känt fel.
 - **Väntar på beslut** (VANTANDE_PUNKTER.md punkt 6):
-  - sparläge även i Säkerhetsservice (`security.js`),
   - kontrasten i grå hjälptext,
   - förbättringarna P1–P7 av PDF-designen, i båda motorerna: [pdf-design.md](pdf-design.md).
 

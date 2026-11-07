@@ -290,6 +290,14 @@ async function assessHeavyDrawing(bytes,documentPdf){
  try{const first=await documentPdf.getPage(1),natural=first.getViewport({scale:1});return natural.width*natural.height>=HEAVY_PAGE_AREA&&bytes.length/Math.max(1,documentPdf.numPages)>=HEAVY_PAGE_BYTES}catch(_){return false}
 }
 function releaseDrawingMemory(documentPdf){if(documentPdf)documentPdf.cleanup().catch(()=>{})}
+// Skarp zoom (v2.4.591): when the page image is not sharp enough, the visible part is drawn sharp after zoom or panning stops.
+// The detail has a fixed pixel limit and lies between the drawing and the stamps; see controlflow-sharp-zoom-v591.js.
+const sharpZoom=window.ControlflowSharpZoom?.create({viewer,stage:$('secStage'),base:canvas,release:documentPdf=>documentPdf.cleanup(),info:()=>{
+ if(!pdf||!drawingRaster||drawingRaster.document!==pdf||drawingRaster.page!==page||sameRenderTarget()||pinch||pendingZoomGeometry||canvas.style.visibility==='hidden')return null;
+ return {document:pdf,pageNumber:page,scale:baseScale*zoom,width:pageWidth,height:pageHeight,heavy:heavyDrawing,baseMs:drawingRaster.ms||0,baseRatio:drawingRaster.width/Math.max(1,pageWidth)}}});
+// Stämplar utan överbelastning (v2.4.591): under en gest visas stämplarna som en bild och ritas inte om, och stilla
+// visas bara de som syns; see controlflow-stamp-view-v591.js. Created before the engine's own gesture listeners.
+const stampView=window.ControlflowStampView?.create({viewer,stage:$('secStage'),markers,selected:()=>selected,blocked:()=>drawingGestureLocked,resize:()=>window.ControlflowStampStyle?.resizeWorkspace(markers,baseScale*zoom,pageWidth,pageHeight)});
 const PROJECT_FIELDS=['secProjectName','secFacilityNo','secOrder','secDate','secNextDate','secCustomer','secAgreement','secContact','secPhone','secAddress','secCompany','secTechnician','secCompanyContact','secCompanyPhone','secCompanyAddress','secSignature'];
 function localToday(){const d=new Date(),local=new Date(d.getTime()-d.getTimezoneOffset()*60000);return local.toISOString().slice(0,10)}
 function cleanSecurityRemarkText(value){return String(value||'').replace(/\s+[–—-]\s+/g,', ').replace(/\s{2,}/g,' ').trim()}
@@ -577,7 +585,8 @@ function render(fit=false,focus=null,anchor=null){
     // A newer request for the same page still uses this drawing; a drawing of another page or file is dropped.
     if(documentPdf!==pdf||pageNumber!==page)return;
     canvas.width=nextCanvas.width;canvas.height=nextCanvas.height;ctx.drawImage(nextCanvas,0,0);canvas.style.visibility='';
-    drawingRaster={document:documentPdf,page:pageNumber,width:rasterWidth,height:rasterHeight};
+    // ms: the slowest drawing of this page, used by the sharp zoom to leave out details on very heavy pages.
+    drawingRaster={document:documentPdf,page:pageNumber,width:rasterWidth,height:rasterHeight,ms:Math.max(renderMs,drawingRaster?.document===documentPdf&&drawingRaster?.page===pageNumber?drawingRaster.ms||0:0)};
     if(!heavyDrawing&&renderMs>HEAVY_RENDER_MS){
      // Switch to sparläge and draw once more at the sparläge size while the page content is still in memory.
      heavyDrawing=true;showSecurityPageLabel(pageNumber,documentPdf.numPages);if(version===renderVersion)render(false);
@@ -585,7 +594,7 @@ function render(fit=false,focus=null,anchor=null){
    }finally{nextCanvas.width=nextCanvas.height=0}// the temporary canvas is freed at once, also when the drawing is cancelled
    if(version!==renderVersion)return;
   }
-  return true;
+  sharpZoom?.update();return true;
  }).catch(error=>{if(error?.name==='RenderingCancelledException')return;if(heavyDrawing)releaseDrawingMemory(documentPdf);if(version===renderVersion)msg('Kunde inte visa sidan. Prova Passa eller välj en annan sida.',true);return false});
  return renderQueue;
 }
@@ -887,7 +896,7 @@ if($('secChangeDrawing'))$('secChangeDrawing').onclick=()=>$('securityFile').cli
 async function closeRevisionDrawing(){
  if(!pdf||document.querySelector('.cfLoad[data-state="loading"]:not([hidden])')||document.body.classList.contains('exporting'))return false;
  securityDrawingTools?.stop();if(!save())return false;
- const closing=pdf,closingPreview=previewPdf;++renderVersion;if(renderTask)renderTask.cancel();if(previewRenderTask)previewRenderTask.cancel();previewPdf=null;previewStampRects=[];previewOverviewLinks=[];previewBackLinks=[];
+ const closing=pdf,closingPreview=previewPdf;++renderVersion;sharpZoom?.reset();stampView?.reset();if(renderTask)renderTask.cancel();if(previewRenderTask)previewRenderTask.cancel();previewPdf=null;previewStampRects=[];previewOverviewLinks=[];previewBackLinks=[];
  clearTimeout(wheelZoomTimer);wheelZoomTimer=null;wheelZoomTarget=null;wheelZoomFocus=null;wheelZoomAnchor=null;if(zoomFrame)cancelAnimationFrame(zoomFrame);zoomFrame=0;pendingZoomGeometry=null;
  pdf=null;sourceBytes=null;activeKey=null;heavyDrawing=false;renderTarget=null;drawingRaster=null;drawingNatural=null;items=[];textNotes=[];drawingExtras=[];selected=null;project=emptyProject();logoData='';
  page=1;zoom=1;visualZoom=1;baseScale=1;pageWidth=1;pageHeight=1;pinch=null;panTouch=null;panMouse=null;addType=null;textMode=false;lastObjectTap=null;drawingGestureLocked=false;drawingLockScroll=null;
@@ -913,7 +922,7 @@ $('securityFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;cons
  // Drawing has no exact progress in pdf.js: estimate from the content per page (slower on a phone).
  const drawEstimate=(500+drawingBytes.length/Math.max(1,candidate.numPages)/1048576*450)*(PHONE_DEVICE?2:1);
  progress?.step(candidateHeavy?'Ritar sidan i sparläge – en stor ritning kan ta en stund':'Ritar sidan',32,99,drawEstimate);
- if(pdf)try{await pdf.destroy()}catch(_){}
+ sharpZoom?.reset();stampView?.reset();if(pdf)try{await pdf.destroy()}catch(_){}
  // The file's own array is not used elsewhere, so it is kept as is instead of copied once more.
  pdf=candidate;heavyDrawing=candidateHeavy;sourceBytes=drawingBytes===bytes?bytes:drawingBytes.slice();activeKey=key;items=renumberLegacySecurityItems((record?.items||[]).map(normalize));textNotes=Array.isArray(record?.textNotes)?record.textNotes:[];drawingExtras=Array.isArray(record?.drawingExtras)?record.drawingExtras:[];project={...emptyProject(),...(record?.project||{})};project.sourceFileName=f.name;syncAutomationIds();logoData=record?.logoData||'';page=1;zoom=1;visualZoom=1;pinch=null;panTouch=null;panMouse=null;addType=null;textMode=false;applyDrawingOverlayVisibility(false);document.body.classList.remove('secAdding','secTextAdding');$('secAddText').classList.remove('primary');$('secStage').style.transform='';syncProjectInputs();refreshTop();save();let shown=await render(true);
  // A drawing that cannot be shown normally gets one more try in sparläge.
@@ -938,7 +947,7 @@ $('secOpenNewService').onclick=()=>{if(startNewSecurityService(false))$('secOpen
 function changeSecurityPage(delta){
  if(!pdf)return false;
  const next=Math.max(1,Math.min(pdf.numPages,page+delta));if(next===page)return false;
- clearTimeout(wheelZoomTimer);wheelZoomTarget=null;wheelZoomFocus=null;const previous=page,documentPdf=pdf;page=next;zoom=1;visualZoom=1;$('secStage').style.transform='';
+ clearTimeout(wheelZoomTimer);wheelZoomTarget=null;wheelZoomFocus=null;const previous=page,documentPdf=pdf;sharpZoom?.reset();stampView?.reset();page=next;zoom=1;visualZoom=1;$('secStage').style.transform='';
  render(true).then(()=>{if(!heavyDrawing&&pdf===documentPdf&&page!==previous)documentPdf.getPage(previous).then(p=>p.cleanup()).catch(()=>{})});viewer.scrollLeft=0;viewer.scrollTop=0;return true
 }
 $('secPrev').onclick=()=>changeSecurityPage(-1);$('secNext').onclick=()=>changeSecurityPage(1);$('secZoomIn').onclick=()=>{clearTimeout(wheelZoomTimer);wheelZoomTarget=null;setZoom(zoom*1.25)};$('secZoomOut').onclick=()=>{clearTimeout(wheelZoomTimer);wheelZoomTarget=null;setZoom(zoom/1.25)};$('secFit').onclick=$('secFitMobile').onclick=()=>{clearTimeout(wheelZoomTimer);wheelZoomTarget=null;zoom=1;visualZoom=1;$('secStage').style.transform='';render(true)};
@@ -1626,7 +1635,7 @@ async function openCustomerPreview(forceReport=false){
   if(previewPdf){const old=previewPdf;previewPdf=null;try{await old.destroy()}catch(_){}}
   if(!forceReport&&view==='drawing'&&!overviewOpen&&pdf&&sourceBytes){
    // Sparläge: free the drawing's cached content before the customer copy is built and opened.
-   if(heavyDrawing){await renderQueue.catch(()=>{});try{await pdf.cleanup()}catch(_){}}
+   if(heavyDrawing){await renderQueue.catch(()=>{});await sharpZoom?.idle();try{await pdf.cleanup()}catch(_){}}
    previewMode='drawing';const {out,overviewLinks,stampRects}=await buildSecurityDrawingPdf();previewStampRects=stampRects;previewOverviewLinks=overviewLinks;previewPdf=await pdfjsLib.getDocument({data:await out.save()}).promise;previewPage=Math.max(1,Math.min(previewPdf.numPages,page));$('secPreviewTitle').textContent='Ritning · sida '+previewPage;
   }else{
    previewMode='report';await window.RevisionSignature?.prepare();const report=reportDoc(),pageMap=report.__protocolPages||{},bytes=new Uint8Array(report.output('arraybuffer'));previewBackLinks=report.__backLinks||[];previewPdf=await pdfjsLib.getDocument({data:bytes}).promise;

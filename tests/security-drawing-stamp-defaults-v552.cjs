@@ -57,6 +57,7 @@ async function fixture(mode,sourcePdf){
   drawingRaster:null,drawingNatural:null,zoomFrame:0,pendingZoomGeometry:null,pinch:null,panTouch:null,panMouse:null,
   drawingGestureLocked:false,drawingLockScroll:null,suppressPageSwipeUntil:0,MAX_PIXELS:4000000,MAX_SIDE:4096,
   heavyDrawing:false,HEAVY_MAX_PIXELS:3000000,HEAVY_MAX_SIDE:3072,HEAVY_RENDER_MS:1500,performance,// v2.4.580 sparläge (off for these synthetic pages)
+  renderTarget:null,sharpZoom:null,stampView:null,// v2.4.591 skarp zoom (controlflow-sharp-zoom-v591.js is not loaded here)
   
   ALL_IN_ONE:true,DOOR_AUTOMATION_MODELS:[],SYSTEMS:Object.fromEntries(['lock','automation','automation_selfcheck','lock_revision'].map(type=>[type,{label:type,checks:[['a','Kontroll']]}])),
   PDFLib,crypto,devicePixelRatio:1,setTimeout,clearTimeout,requestAnimationFrame:fn=>setTimeout(fn,0),cancelAnimationFrame:clearTimeout,
@@ -68,7 +69,7 @@ async function fixture(mode,sourcePdf){
  state.window=state;
  const context=vm.createContext(state);
  const names=['cleanSecurityRemarkText','normalizeSecurityCheckEdits','isDoorAutomationItem','normalizeAutomationIdentity','normalize','allChecks','syncStatus','nextNumber','nextAutomationSerial','automationProposedId','applyAutomationId','securityDrawingLabel','createItem'];
- if(mode==='security')names.push('securityHasDetectorBox','securityDefaultCheckTitle','securityCustomProtocolLabel');
+ if(mode==='security')names.push('securityHasDetectorBox','securityDefaultCheckTitle','securityCustomProtocolLabel','showSecurityPageLabel','releaseDrawingMemory');
  else names.push('boundedViewport','showSecurityPageLabel','releaseDrawingMemory','securityZoomAnchor','applySecurityDrawingGeometry','flushSecurityZoomGeometry','previewSecurityZoom','cancelSecurityRaster','setZoom','render');
  vm.runInContext(names.map(name=>functionSource(source,name)).join('\n'),context,{filename:sourceFile});
  if(mode==='security')vm.runInContext(fs.readFileSync(path.join(__dirname,'../security-drawing-view.js'),'utf8'),context,{filename:'security-drawing-view.js'});
