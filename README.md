@@ -20,6 +20,8 @@ node tools/build-release.mjs --denylist <fil>     # stoppar bygget om förbjudna
 Inga kundritningar, ritningsutdrag, projektnamn eller objektnummer från kunder får läggas i repot. `.gitignore` stoppar PDF/DWG/DXF m.fl. Tester använder genererade data.
 
 ## Regler för utveckling
+Det som är beslutat men inte klart (SMTP, Microsoft-inloggning, IT-granskning m.m.) och vem som gör vad står i [VANTANDE_PUNKTER.md](VANTANDE_PUNKTER.md).
+
 Läs [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md) före ändringar. Låsta regler: [CONTROLFLOW_LOCK.md](CONTROLFLOW_LOCK.md), [TILLSYNO_LICENSE_RULES_LOCK.md](TILLSYNO_LICENSE_RULES_LOCK.md), [SMARTMATCH_FUNCTION_RULES_LOCK.md](SMARTMATCH_FUNCTION_RULES_LOCK.md), [SMARTMATCH_TABLE_RULE_LOCK.md](SMARTMATCH_TABLE_RULE_LOCK.md), [SMARTMATCH_AUTOMATION_RULE_LOCK.md](SMARTMATCH_AUTOMATION_RULE_LOCK.md), [UI_RULES.md](UI_RULES.md).
 
 Äldre versionsrapporter och tidigare versioner av modulerna finns inte i detta repo. Historiken från det tidigare repot är inte medtagen.
