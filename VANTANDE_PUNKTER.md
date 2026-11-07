@@ -132,6 +132,13 @@ Gäller när versionsregistret `versions.json` införs. Fram till dess gäller D
 - [ ] 4. Modulversionerna visas i appen, när registret är verifierat.
 - [ ] 5. Säkra uppdateringar: service worker, cache och inga blandade versioner, med tester på dator, iPhone och iPad.
 
+**Fynd när funktionsbeskrivningarna skrevs (7 november 2026, inte åtgärdade):**
+- [ ] **CE-märkningens service worker** står på 2.4.570 och visar sidan från cachen i första hand. `ce-markning.html` ändrades i 2.4.578, så enheter kan visa en äldre CE-sida. Hör till steg 5 (säkra uppdateringar).
+- [ ] ***Rensa enhetens data*** saknar den kontobundna CE-databasen `tillsyno-ce-markning-test-v7-<användar-id>` i sin lista. Den blir kvar i webbläsare utan `indexedDB.databases()`. Egen uppgift (System).
+- [ ] **Delad lagring:** Kontrollflödets båda motorer sparar arbetet under samma nyckel `doorservice-all-in-one:<kontrollsumma>`. Effekten när samma ritning öppnas på båda sidorna är inte verifierad. Ska kontrolleras i kraschuppgiften eller med testerna i 3D.
+- [ ] **Inaktuella etiketter:** Avläsning *9.100.17*, bannern *"Separat test"* på driftsidan och länken *"SmartMatch 1.3"*. Rättas med versionsregistret (steg 3).
+- [ ] **Ritningsverktyg** har ingen beslutad modulversion. Ägaren beslutar, eller så följer modulen appversionen.
+
 **Senare, efter godkännande:**
 - [ ] Nätverkstestet för IT-granskningen (3E).
 - [ ] **Ägaren, beslut:** förbättringar av PDF-designen P1–P7 i [pdf-design.md](docs/moduler/kontrollflode/pdf-design.md). Viktigast är P6. Görs likadant i båda motorerna när det beställs.

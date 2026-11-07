@@ -1,31 +1,45 @@
 # Kontrollflöde – Brand
 
-**Upplåst** sedan v2.4.581. Läs först [README.md](README.md), som förklarar motorerna, vad som fortfarande gäller och filkartan.
+## 1. Version
+- **Appversion:** Tillsyno v2.4.581 (utgångspunkt 7 november 2026).
+- **Modulversion:** Brand 1.0 (beslutat startvärde, visas när versionsregistret har införts).
+- Kontrollflödet är upplåst. Gemensamma regler och filkarta: [README.md](README.md).
 
-## Innehåll
+## 2. Arbetsflöde från början till slut
+1. Startsidan → **Kontrollflöde** → mappen *Brandsäkerhet* → välj *Brandcentral*, *Branddetektorer* och/eller *Branddörr / dörrhållning*. Sidan stannar på `all-in-one.html`.
+2. **Öppna PDF**, placera objekt och fyll i kontrollpunkter. Översikt, Kundmall och Spara PDF fungerar som i [Säkerhetsservice](sakerhetsservice.md) avsnitt 2.
 
-| Protokoll | `SYSTEMS`-nyckel | Prefix | Punkter |
-|---|---|---|---|
-| Brandcentral | `fire_panel` | BC | 5 |
-| Branddetektorer | `fire_detector` | BD | 5 |
-| Branddörr / dörrhållning | `fire_door` | BR | 5 |
+## 3. Viktiga funktioner
+- **Protokoll:**
 
-Punkterna är generella: okulär kontroll, indikering eller placering, funktionsprov, strömförsörjning eller skada, och dokumentation av avvikelser. De finns i `security.js` (ca rad 115–144). En identisk kopia finns i `controlflow-revision/security-v335.js`.
+  | Protokoll | Nyckel | Prefix | Punkter |
+  |---|---|---|---|
+  | Brandcentral | `fire_panel` | BC | 5 |
+  | Branddetektorer | `fire_detector` | BD | 5 |
+  | Branddörr / dörrhållning | `fire_door` | BR | 5 |
 
-## Var koden finns
+  Punkterna är okulär kontroll, indikering eller placering, funktionsprov, strömförsörjning eller skada, och dokumentation av avvikelser. De står i `security.js` ca rad 115–144, och rubrikerna i kundprotokollet ca rad 323–325.
+- **Import av äldre PDF:er:** texten tolkas, och ord som brandcentral, rök- och värmedetektor, branddörr, dörrhållning och uppställningsmagnet känns igen (ca rad 736–738). Det gäller bara på huvudsidan och bara för valda protokoll.
+- **Inget annat är brandspecifikt.** Det finns ingen egen sökning och inget eget gränssnitt. Allt annat är Kontrollflödets gemensamma arbetsyta.
 
-- Brand körs på huvudsidan `all-in-one.html` med motorn `security.js`.
-- Det finns ingen Brand-specifik kod utöver `SYSTEMS.fire_*` och rubrikerna i protokolltabellen. Allt annat är Kontrollflödets gemensamma arbetsyta.
+## 4. Kodfiler och motor
+- **Sida:** `all-in-one.html`.
+- **Motor:** `security.js`, som delas med Säkerhetsservice.
+- Posterna `SYSTEMS.fire_*` finns också i `controlflow-revision/security-v335.js`, men används inte där.
 
-## Tester
+## 5. Data: inläsning, behandling, lagring, export
+Detsamma som för Säkerhetsservice, se [sakerhetsservice.md](sakerhetsservice.md) avsnitt 5. Lokal inläsning, lagring under `doorservice-all-in-one:<kontrollsumma>` och i `tillsyno-offline-work`, och export av en PDF med inbäddade arbetsdata under `SecurityServiceWork`.
 
-Det finns inget test som bara gäller Brand. Brand ingår i de gemensamma testerna:
+## 6. Beroenden till andra moduler
+- **Säkerhetsservice:** samma motor och sida. Ändringar i `security.js` påverkar båda.
+- **Dörrautomatik och Lås:** påverkas bara via delade filer och samma lagringsnyckel, se README.md.
 
+## 7. Säkerhet och lagring
+Samma förhållanden som för Säkerhetsservice, se [sakerhetsservice.md](sakerhetsservice.md) avsnitt 7. Det som inte är verifierat är också detsamma.
+
+## 8. Tester och status
 ```sh
 node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-dialogs controlflow-overview controlflow-return-links controlflow-selection-delete controlflow-stamp protocol-selection-scope security-automation-checklist security-stamp-selection
 ```
-
-## Status
-
 - Inga kända fel.
-- **Lucka:** inget test kontrollerar kundprotokollet för Brand. Ett förslag finns i [kvalitetskontroller.md](../../kvalitetskontroller.md).
+- **Lucka:** inget test gäller bara Brand eller kundprotokollet för Brand. Förslag finns i [kvalitetskontroller.md](../../kvalitetskontroller.md) avsnitt 3D.

@@ -1,5 +1,7 @@
 # Kontrollflöde
 
+**Version:** Tillsyno v2.4.581 (utgångspunkt 7 november 2026). Undermodulerna Dörrautomatik, Lås, Säkerhetsservice och Brand har var sin modulversion, med startvärdet 1.0. Den här filen är översikten över motorerna, beroendena och filkartan. Varje undermodul har en egen funktionsbeskrivning med den gemensamma strukturen i CLAUDE.md avsnitt 6.
+
 **Status: UPPLÅST** sedan v2.4.581 (ägarens beslut 7 november 2026). Kontrollflödet ändras som andra moduler, efter beställning. Låset ska inte återinföras, och ingen upplåsningsfras behövs.
 
 Det här gäller fortfarande ([CONTROLFLOW_LOCK.md](../../../CONTROLFLOW_LOCK.md), som nu är en ändringslogg, och DEVELOPMENT_RULES.md avsnitt 3A):
@@ -45,6 +47,8 @@ Gemensam PDF-design: [pdf-design.md](pdf-design.md).
 **Beroenden att känna till:**
 - `SYSTEMS` finns i båda motorerna och är i dag **identiskt**. Det är kontrollerat för alla tio protokolltyperna, också för typer som inte används på sidan.
 - En ändring i den ena motorn slår **inte** igenom i den andra.
+- **Delad lagring på enheten:** båda motorerna körs i `ALL_IN_ONE`-läge och sparar arbetet under samma nyckel, `doorservice-all-in-one:<ritningens kontrollsumma>` i localStorage, och i samma IndexedDB-område (`tillsyno-offline-work`, scope `doorservice-all-in-one`). Öppnas samma ritning på båda sidorna läses och skrivs samma sparade arbete. Effekten är *ej verifierad*.
+- Exporten skriver arbetsdata under `SecurityServiceWork` i PDF:en, i båda motorerna.
 - Ändras en **delad** fil (`controlflow-*` med flera) påverkas båda sidorna.
 - Den gemensamma PDF-designen (lager 1) finns i båda motorerna och har börjat skilja sig åt. Granskningen och förslagen finns i [pdf-design.md](pdf-design.md).
 

@@ -60,14 +60,19 @@ För en undermodul i Kontrollflödet: läs undermodulens dokument och [kontrollf
 
 ## 3. Arbetsflöde för kodändringar
 
-1. Undersök den befintliga funktionen och presentera en ändringsplan (avsnitt 1).
+1. Läs modulens funktionsbeskrivning (avsnitt 6) och undersök den befintliga funktionen. Presentera en ändringsplan (avsnitt 1).
 2. Användaren godkänner planen.
 3. Arbeta i en egen branch, aldrig direkt i `main`. Push till `main` publicerar appen.
-4. Gör minsta möjliga ändring.
+4. Gör minsta möjliga ändring, bara av den beställda funktionen.
 5. Kör modulens tester, och vid ändring i en delad fil testerna för alla moduler som använder filen. Se [gemensamt.md](docs/moduler/gemensamt.md).
 6. Kontrollera med `git diff --stat` att inga filer utanför modulen har ändrats.
-7. Uppdatera modulens dokument (status, kända fel) och bocka av i VANTANDE_PUNKTER.md i samma PR.
-8. Öppna en pull request med en beskrivning av vad som ändrades, **vilka moduler och motorer som påverkas**, vad som testades och vad som inte testades.
+7. I samma PR:
+   - Höj appversionen.
+   - Höj modulversionen om funktionens beteende har ändrats (VANTANDE_PUNKTER.md avsnitt 8). Tills versionsregistret finns höjs bara appversionen, och den planerade modulversionen anges i PR:en.
+   - **Skriv om** modulens funktionsbeskrivning till det nya nuläget.
+   - Kontrollera och uppdatera vid behov beskrivningarna för andra berörda moduler.
+   - Bocka av i VANTANDE_PUNKTER.md.
+8. Öppna en pull request med en beskrivning av vad som ändrades, **vilka moduler och motorer som påverkas**, versioner före och efter, vad som testades och vad som inte testades.
 9. Bara användaren godkänner och för in ändringen i `main`.
 
 ## 4. Tester
@@ -95,3 +100,23 @@ Hur `<mapp>` förbereds står i [tests/README.md](tests/README.md). Kända fel f
 - Läs dem med `grep -n` och `sed -n 'start,slut p'`. Många filer har mycket långa rader, så använd `cut -c1-300`.
 - Låt en Explore-underagent göra bred kartläggning, så att bara slutsatsen hamnar i huvudkontexten.
 - Låsfilerna, ändringsloggen `CONTROLFLOW_LOCK.md` och SMARTMATCH_FORTSATTNING_2026-10-10.md är långa historikloggar. Läs regeln överst och sök sedan i dem, läs dem inte i sin helhet.
+
+## 6. Funktionsbeskrivningar (permanent regel, beslut 7 november 2026)
+
+- Varje huvudmodul och undermodul har **en levande funktionsbeskrivning** i `docs/moduler/`. Den beskriver hur funktionen arbetar i den **aktuella** versionen, inte vilka ändringar som har gjorts.
+- **Gemensam struktur** i varje beskrivning:
+  1. Version: appversion och modulversion.
+  2. Arbetsflöde från början till slut.
+  3. Viktiga funktioner och hur de arbetar.
+  4. Kodfiler och motor.
+  5. Data: inläsning, behandling, lagring och export.
+  6. Beroenden till andra moduler.
+  7. Säkerhet och lagring: verifierat, och vad som är oklart.
+  8. Tester och status (kända fel, beslut som väntar).
+- **Beteende och arbetsflöden beskrivs.** Ikoner, knappar, färger och mindre designjusteringar beskrivs inte.
+- **Beskrivningen skrivs om** när funktionen ändras. Gammal text läggs inte till under den nya, och inga dokumentkopior skapas per version. Tidigare kod och dokumentation finns i Git-historiken.
+- **Underlag för IT-granskning:** avsnitt 5–7 beskriver databehandling, lagring, behörigheter och nätverk. Det som inte är verifierat i kod eller test skrivs som *ej verifierat*.
+- **Historik och återställning:**
+  - Tidigare läge visas med `git log -- <fil>` och `git show <commit>:<fil>`.
+  - Återställning görs med `git revert` i en egen PR, aldrig genom att skriva om `main`.
+  - Godkända utgångslägen märks med Git-taggar, till exempel `tillsyno-2.4.581-utgangspunkt`. Taggar sätts bara efter användarens godkännande.
