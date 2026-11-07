@@ -223,6 +223,7 @@ grant execute on function public.tillsyno_verify_module_code(text, text) to auth
 -- * Ingen tvåstegsverifiering (MFA) används.
 -- * Säkerhetsrådgivaren: VARNING "Leaked Password Protection Disabled".
 --   INFO: tabellerna i tillsyno_read_private har RLS utan policyer (avsiktligt: bara funktioner når dem).
--- * Serverfunktionen tillsyno-admin version 10 körs med verify_jwt=false; funktionen kontrollerar
+-- * Serverfunktionen tillsyno-admin körs med verify_jwt=false (version 10; version 11 med
+--   administratörsloggen driftsattes samma dag, se auth/admin-audit.sql); funktionen kontrollerar
 --   själv token, aktiv session och administratörsroll (supabase/functions/tillsyno-admin/index.ts).
 ------------------------------------------------------------------------------------------
