@@ -6,7 +6,7 @@ const owner='11111111-1111-4111-8111-111111111111',member='22222222-2222-4222-82
 const jwt=id=>'header.'+Buffer.from(JSON.stringify({session_id:id})).toString('base64url')+'.signature';
 const ownerToken=jwt(owner),memberToken=jwt(member),revokedToken=jwt(pending);
 const roles=new Map([[owner,{access_role:'admin',allowed_modules:['smartmatch','control','drawing'],license_expires_at:null}],[member,{access_role:'member',allowed_modules:['smartmatch','control'],license_expires_at:new Date(Date.now()+20*86400000).toISOString()}]]),users=new Map([[owner,{id:owner,email:'owner@example.invalid',email_confirmed_at:'2026-01-01'}],[member,{id:member,email:'member@example.invalid',email_confirmed_at:'2026-01-01'}],[pending,{id:pending,email:'pending@example.invalid'}]]);
-let requests=0,links=0;
+let requests=0,links=0,invites=0,resets=0,mailWorks=false;
 const ok=data=>({data,error:null});
 function query(){let kind='select',id,changes;
  const q={select(){return q},eq(_,value){id=value;return q},delete(){kind='delete';return q},update(data){kind='update';changes=data;return q},maybeSingle:async()=>ok(roles.get(id)||null),
@@ -17,10 +17,11 @@ function query(){let kind='select',id,changes;
   return Promise.resolve(ok([...roles].map(([user_id,row])=>({user_id,...row})))).then(resolve,reject)
  }};return q;
 }
-const api={from:query,rpc:async(_,args)=>ok(args._session_id!==pending),auth:{getUser:async token=>[ownerToken,revokedToken].includes(token)?ok({user:users.get(owner)}):token===memberToken?ok({user:users.get(member)}):{data:{user:null},error:Error('invalid')},admin:{
+const api={from:query,rpc:async(_,args)=>ok(args._session_id!==pending),auth:{getUser:async token=>[ownerToken,revokedToken].includes(token)?ok({user:users.get(owner)}):token===memberToken?ok({user:users.get(member)}):{data:{user:null},error:Error('invalid')},resetPasswordForEmail:async()=>{resets++;return mailWorks?ok({}):{data:null,error:Object.assign(Error('Email rate limit exceeded'),{code:'over_email_send_rate_limit'})}},admin:{
  listUsers:async()=>ok({users:[...users.values()]}),getUserById:async id=>ok({user:users.get(id)}),
  deleteUser:async id=>{users.delete(id);roles.delete(id);return ok(null)},
  updateUserById:async(id,data)=>{if(data.ban_duration)users.get(id).banned_until=data.ban_duration==='none'?null:'2100-01-01';return ok({user:users.get(id)})},
+ inviteUserByEmail:async(email,options)=>{invites++;assert.match(options.redirectTo,/reset-password\.html$/);if(!mailWorks)return {data:{user:null},error:Object.assign(Error('Email address not authorized'),{code:'email_address_not_authorized'})};const id='55555555-5555-4555-8555-555555555555';const user={id,email};users.set(id,user);return ok({user})},
  generateLink:async args=>{links++;const id='44444444-4444-4444-8444-444444444444';const user={id,email:args.email};if(args.type==='invite')users.set(id,user);return ok({user,properties:{action_link:'https://example.invalid/personal-link'}})}
 }}};
 const context={Response,Date,Map,Set,JSON,Error,atob,createClient:()=>api};vm.createContext(context);vm.runInContext(source,context);
@@ -46,6 +47,20 @@ async function call(action,data={},token=ownerToken,origin='https://dyli2009-cmd
  assert.equal((await call('add',{email:'member@example.invalid'})).status,409);assert.equal(links,0,'duplicate does not create link');
  const added=await call('add',{email:'new@example.invalid',name:'New colleague'});assert.equal(added.status,200);assert.equal(links,1);assert.ok(added.data.link);assert.equal(roles.get('44444444-4444-4444-8444-444444444444').access_role,'member');
  assert.equal((await call('link',{userId:member})).status,200);assert.equal(links,2);
+ // E-mail invitation: built-in Supabase mail refuses non-team addresses, so a link is returned instead.
+ roles.delete('44444444-4444-4444-8444-444444444444');users.delete('44444444-4444-4444-8444-444444444444');
+ const fallback=await call('add',{email:'colleague@example.invalid',modules:['control'],licenseDays:30,send:true});
+ assert.equal(fallback.status,200);assert.equal(invites,1);assert.equal(fallback.data.sent,false);assert.equal(fallback.data.mailIssue,'unavailable');assert.ok(fallback.data.link,'fallback returns a personal link');
+ assert.deepEqual([...roles.get('44444444-4444-4444-8444-444444444444').allowed_modules],['control'],'fallback still grants the chosen modules');
+ mailWorks=true;
+ const mailed=await call('add',{email:'mailed@example.invalid',modules:['smartmatch','drawing'],licenseDays:7,send:true});
+ assert.equal(mailed.status,200);assert.equal(mailed.data.sent,true);assert.equal(mailed.data.link,undefined,'a mailed invitation never returns the link');
+ assert.deepEqual([...roles.get('55555555-5555-4555-8555-555555555555').allowed_modules],['smartmatch','drawing']);
+ assert.ok(Math.abs(Date.parse(roles.get('55555555-5555-4555-8555-555555555555').license_expires_at)-(Date.now()+7*86400000))<2000);
+ assert.equal((await call('add',{email:'mailed@example.invalid',send:true})).status,409,'existing address is not invited twice');
+ users.get(member).email_confirmed_at=users.get(member).email_confirmed_at||'2026-01-01';
+ const resent=await call('link',{userId:member,send:true});assert.equal(resent.status,200);assert.equal(resent.data.sent,true);assert.equal(resets,1,'confirmed user gets a password e-mail');
+ mailWorks=false;const resentLink=await call('link',{userId:member,send:true});assert.equal(resentLink.data.sent,false);assert.equal(resentLink.data.mailIssue,'rate');assert.ok(resentLink.data.link);
  const update=await call('update',{userId:member,modules:['smartmatch'],licenseDays:2});
  assert.equal(update.status,200,'admin may edit modules and duration');
  assert.deepEqual([...roles.get(member).allowed_modules],['smartmatch']);

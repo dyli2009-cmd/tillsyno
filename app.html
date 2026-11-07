@@ -1,9 +1,9 @@
-<!doctype html><html lang="sv" data-auth-pending><head><meta name="tillsyno-build" content="2.4.578-20261107-theme-audit"><meta charset="utf-8">
+<!doctype html><html lang="sv" data-auth-pending><head><meta name="tillsyno-build" content="2.4.579-20261107-invite-update"><meta charset="utf-8">
 <script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}var page={ice:'#edf6fb',mist:'#ebf1f5',coast:'#edf7f6',sand:'#f7f5f1',night:'#081523',graphite:'#12151c',pine:'#091c1e'}[theme];document.documentElement.style.setProperty('--tillsyno-route-bg',page);document.documentElement.style.setProperty('background',page,'important');document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script>
 <style id="tillsyno-route-transition">html{background:var(--tillsyno-route-bg,#ebf1f5)!important}#tillsynoNavCurtain{position:fixed;inset:0;z-index:2147483647;background:var(--tillsyno-route-bg,#ebf1f5);opacity:1;pointer-events:auto}html.tillsyno-nav-ready #tillsynoNavCurtain{opacity:0;pointer-events:none}</style>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#132b38"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Tillsyno"><meta name="format-detection" content="telephone=no"><link rel="manifest" href="manifest.webmanifest?v=2.4.578"><link rel="apple-touch-icon" sizes="180x180" href="icon-180.png?v=2.4.3"><link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2.4.3"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Tillsyno</title><script>(function(){try{
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#132b38"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Tillsyno"><meta name="format-detection" content="telephone=no"><link rel="manifest" href="manifest.webmanifest?v=2.4.579"><link rel="apple-touch-icon" sizes="180x180" href="icon-180.png?v=2.4.3"><link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2.4.3"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Tillsyno</title><script>(function(){try{
   var fragment=new URLSearchParams(location.hash.slice(1)),query=new URLSearchParams(location.search);
-  if(fragment.get('type')!=='recovery'&&query.get('type')!=='recovery')return;
+  if(!['recovery','invite'].includes(fragment.get('type'))&&!['recovery','invite'].includes(query.get('type')))return;
   var target=new URL('auth/reset-password.html',location.href);
   target.search=location.search;target.hash=location.hash;
   location.replace(target.href);
@@ -360,7 +360,7 @@ html[data-auth-pending] body{visibility:hidden}
         <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12M18.36 5.64l-2.12 2.12M7.76 16.24l-2.12 2.12"/><circle cx="12" cy="12" r="4"/></svg>
         <span>Mitt konto</span>
       </button>
-      <small class="homeVersion">v2.4.578</small>
+      <small class="homeVersion">v2.4.579</small>
     </div>
     <details id="homeTests" class="homeTests" data-admin-only hidden>
       <summary><span>Testversioner</span><svg class="homeTestsChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></summary>
@@ -466,12 +466,38 @@ html[data-auth-pending] body{visibility:hidden}
 'use strict';
 const current=document.querySelector('meta[name="tillsyno-build"]')?.content;
 if(!current)return;
-let checking=false,notice;
+let checking=false,notice,snoozedUntil=0,updating=false;
+// v2.4.579: progress card. The new service worker reports how many offline files it has
+// stored; without reports the bar advances gently and completes once the release is active.
+const ui={};let shown=0,target=0,reported=false,creep=null,frame=null;
+const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const CSS='.taUpdate{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));margin:auto;max-width:540px;z-index:2147483646;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;padding:14px 14px 14px 16px;box-sizing:border-box;border:1px solid var(--ta-border,#cbdde6);border-radius:16px;background:var(--ta-card,#fff);color:var(--ta-ink,#233f52);box-shadow:0 18px 48px rgb(10 25 40 / .24);font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;animation:taUpdateIn .35s cubic-bezier(.2,.8,.2,1)}'
+ +'.taUpdateIcon{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--ta-soft,#dfeef3);color:var(--ta-blue,#356e86)}.taUpdateIcon svg{width:22px;height:22px}'
+ +'.taUpdate[data-state=updating] .taUpdateIcon svg{animation:taUpdateSpin 1.1s linear infinite}'
+ +'.taUpdateBody{display:grid;gap:2px;min-width:0}.taUpdateHead{display:flex;align-items:baseline;justify-content:space-between;gap:10px}'
+ +'.taUpdateTitle{font-size:15px;font-weight:700}.taUpdatePercent{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ta-blue-dark,#285b73)}'
+ +'.taUpdateText{font-size:13px;color:var(--ta-muted,#617d8d);overflow-wrap:anywhere}'
+ +'.taUpdateTrack{position:relative;height:10px;margin-top:8px;border-radius:999px;background:var(--ta-soft,#dfeef3);overflow:hidden}'
+ +'.taUpdateFill{position:absolute;top:0;bottom:0;left:0;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--ta-blue,#356e86),color-mix(in srgb,var(--ta-blue,#356e86) 55%,#8fdcff));transition:width .25s ease-out;overflow:hidden}'
+ +'.taUpdateFill:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgb(255 255 255 / .5),transparent);transform:translateX(-100%);animation:taUpdateShine 1.4s ease-in-out infinite}'
+ +'.taUpdate[data-state=done] .taUpdateFill:after{animation:none}'
+ +'.taUpdateActions{display:flex;gap:8px}.taUpdate button{min-height:44px;padding:0 16px;border-radius:10px;font:inherit;font-weight:700;cursor:pointer}'
+ +'.taUpdateGo{border:1px solid var(--ta-blue,#356e86);background:var(--ta-blue,#356e86);color:#fff}.taUpdateLater{border:1px solid var(--ta-border,#cbdde6);background:transparent;color:var(--ta-ink,#233f52)}'
+ +'.taUpdate button:disabled{cursor:default;opacity:.75}.taUpdate[data-state=updating] .taUpdateLater,.taUpdate[data-state=done] .taUpdateLater{display:none}'
+ +'.taUpdate button:focus-visible{outline:3px solid var(--ta-blue,#356e86);outline-offset:2px}'
+ +'@media (max-width:520px){.taUpdate{grid-template-columns:auto minmax(0,1fr)}.taUpdateActions{grid-column:1/-1}.taUpdateActions button{flex:1}}'
+ +'@keyframes taUpdateIn{from{opacity:0;transform:translateY(14px)}}@keyframes taUpdateSpin{to{transform:rotate(360deg)}}@keyframes taUpdateShine{to{transform:translateX(100%)}}'
+ +'@media (prefers-reduced-motion:reduce){.taUpdate,.taUpdateIcon svg,.taUpdateFill:after{animation:none!important}.taUpdateFill{transition:none}}';
+function el(tag,className,text){const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=text;return n;}
+function paint(){if(!ui.fill)return;const value=Math.round(shown);ui.fill.style.width=shown.toFixed(1)+'%';ui.track.setAttribute('aria-valuenow',String(value));ui.percent.textContent=value+' %';}
+function step(){frame=null;const gap=target-shown;shown=gap<=.4?target:shown+Math.max(.4,gap*.16);paint();if(shown<target)schedule();}
+function schedule(){if(frame)return;if(reduce||typeof requestAnimationFrame!=='function'){shown=target;paint();return;}frame=requestAnimationFrame(step);}
+function progress(value){target=Math.max(target,Math.min(100,value));schedule();}
 function waitForUpdate(worker){
  return new Promise((resolve,reject)=>{
   let timer;
   function finish(error){clearTimeout(timer);worker.removeEventListener('statechange',changed);worker.removeEventListener('error',failed);error?reject(error):resolve();}
-  function changed(){if(worker.state==='activated')finish();else if(worker.state==='redundant')finish(Error('Uppdateringen kunde inte hämtas. Försök igen.'));}
+  function changed(){if(worker.state==='installed'||worker.state==='activating')progress(Math.max(target,97));if(worker.state==='activated')finish();else if(worker.state==='redundant')finish(Error('Uppdateringen kunde inte hämtas. Försök igen.'));}
   function failed(){finish(Error('Uppdateringen kunde inte hämtas. Försök igen.'));}
   worker.addEventListener('statechange',changed);
   worker.addEventListener('error',failed);
@@ -479,14 +505,20 @@ function waitForUpdate(worker){
   changed();
  });
 }
-function offer(){
- if(notice)return;
- notice=document.createElement('div');notice.setAttribute('role','status');
- notice.style.cssText='position:fixed;bottom:16px;left:16px;right:16px;margin:auto;max-width:490px;z-index:2147483646;background:#16303e;color:#fff;border-radius:12px;padding:14px;box-shadow:0 8px 30px #0005;font:14px system-ui;display:flex;align-items:center;gap:12px';
- const msg=document.createElement('span');msg.textContent='Ny version av Tillsyno finns. Spara ditt arbete innan du uppdaterar.';msg.style.flex='1';
- const btn=document.createElement('button');btn.textContent='Uppdatera';btn.type='button';btn.style.cssText='padding:9px 12px;border:0;border-radius:8px;background:white;color:#16303e;font-weight:700;cursor:pointer';
- btn.onclick=async()=>{
- btn.disabled=true;btn.textContent='Uppdaterar…';
+navigator.serviceWorker?.addEventListener?.('message',event=>{
+ const data=event?.data;
+ if(!updating||!data||data.type!=='tillsyno-update-progress'||!(data.total>0))return;
+ reported=true;progress(Math.min(96,data.done/data.total*96));
+ if(ui.msg&&data.done<data.total)ui.msg.textContent='Hämtar den nya versionen · '+data.done+' av '+data.total+' filer';
+});
+async function update(){
+ if(updating)return;
+ updating=true;reported=false;shown=target=0;
+ notice.setAttribute('data-state','updating');
+ ui.btn.disabled=true;ui.later.disabled=true;ui.btn.textContent='Uppdaterar…';
+ ui.title.textContent='Uppdaterar Tillsyno';ui.msg.textContent='Hämtar den nya versionen…';
+ ui.track.hidden=false;ui.percent.hidden=false;paint();progress(3);
+ creep=setInterval(()=>{if(!reported&&target<85)progress(target+(85-target)*.06);},400);
  try{
   const registration=await navigator.serviceWorker?.getRegistration();
   if(registration){
@@ -494,13 +526,40 @@ function offer(){
    const pending=registration.installing||registration.waiting;
    if(pending)await waitForUpdate(pending);
   }
-  const url=new URL(location.href);url.searchParams.set('tillsyno_update',Date.now());location.replace(url.href);
+  clearInterval(creep);progress(100);
+  notice.setAttribute('data-state','done');
+  ui.title.textContent='Klart';ui.msg.textContent='Den nya versionen är hämtad. Startar om…';ui.btn.textContent='Startar om…';
+  // Let the bar reach 100 % before the page is replaced.
+  setTimeout(()=>{const url=new URL(location.href);url.searchParams.set('tillsyno_update',Date.now());location.replace(url.href);},reduce?150:650);
  }catch(error){
-  msg.textContent=error?.message||'Uppdateringen kunde inte hämtas. Kontrollera anslutningen och försök igen.';
-  btn.disabled=false;btn.textContent='Försök igen';
+  clearInterval(creep);updating=false;
+  notice.setAttribute('data-state','error');
+  ui.title.textContent='Uppdateringen avbröts';
+  ui.msg.textContent=error?.message||'Uppdateringen kunde inte hämtas. Kontrollera anslutningen och försök igen.';
+  ui.track.hidden=true;ui.percent.hidden=true;
+  ui.btn.disabled=false;ui.later.disabled=false;ui.btn.textContent='Försök igen';
  }
-};
- notice.append(msg,btn);document.body.append(notice);
+}
+function offer(){
+ if(notice||Date.now()<snoozedUntil)return;
+ if(document.head&&!document.getElementById?.('tillsynoUpdateStyle')){const style=el('style');style.id='tillsynoUpdateStyle';style.textContent=CSS;document.head.append(style);}
+ notice=el('section','taUpdate');notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');notice.setAttribute('aria-label','Ny version av Tillsyno');notice.setAttribute('data-state','ready');
+ const icon=el('span','taUpdateIcon');icon.setAttribute('aria-hidden','true');
+ icon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.7-4.4L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0 0 14.7 4.4L20 16"/><path d="M20 21v-5h-5"/></svg>';
+ const body=el('div','taUpdateBody'),head=el('div','taUpdateHead');
+ ui.title=el('strong','taUpdateTitle','Ny version av Tillsyno');
+ ui.percent=el('span','taUpdatePercent','0 %');ui.percent.hidden=true;ui.percent.setAttribute('aria-hidden','true');
+ ui.msg=el('span','taUpdateText','Spara ditt arbete innan du uppdaterar.');ui.msg.setAttribute('data-update-part','message');
+ ui.track=el('div','taUpdateTrack');ui.track.hidden=true;ui.track.setAttribute('role','progressbar');ui.track.setAttribute('aria-label','Hämtar ny version');
+ ui.track.setAttribute('aria-valuemin','0');ui.track.setAttribute('aria-valuemax','100');ui.track.setAttribute('aria-valuenow','0');
+ ui.fill=el('span','taUpdateFill');ui.track.append(ui.fill);
+ head.append(ui.title,ui.percent);body.append(head,ui.msg,ui.track);
+ const actions=el('div','taUpdateActions');
+ ui.later=el('button','taUpdateLater','Senare');ui.later.type='button';
+ ui.later.onclick=()=>{if(updating)return;notice.remove?.();notice=null;snoozedUntil=Date.now()+1800000;};
+ ui.btn=el('button','taUpdateGo','Uppdatera');ui.btn.type='button';ui.btn.setAttribute('data-update-part','go');
+ ui.btn.onclick=update;
+ actions.append(ui.later,ui.btn);notice.append(icon,body,actions);document.body.append(notice);
 }
 async function check(){
  if(checking||!navigator.onLine||document.visibilityState==='hidden')return;
