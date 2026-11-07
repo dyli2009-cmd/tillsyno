@@ -1,6 +1,25 @@
 # Väntande punkter – vad som behövs och när
 
-Senast uppdaterad 7 november 2026, Tillsyno v2.4.581.
+Senast uppdaterad 7 november 2026, Tillsyno v2.4.583.
+
+## Senaste läget
+
+*Det här avsnittet skrivs om (läggs inte till) i slutet av varje session och när ägaren säger "spara läget". Det är det första Claude läser när ägaren frågar "vad pratade vi om sist?".*
+
+**Senaste session (7 november 2026):**
+- Grundstrukturen är klar:
+  - `CLAUDE.md`, en funktionsbeskrivning per modul i `docs/moduler/`, och taggen `tillsyno-2.4.581-utgangspunkt`.
+- Modulversionerna visas i appen (`versions.json`). Alla moduler står på 1.0, utom CE-märkning 1.2. Appen är på **v2.4.583**, som är publicerad.
+- **Beslutat:**
+  - En uppgift per session, och ägaren säger *"Vi ska arbeta med [modul] – [del] – [vad]"*.
+  - Arbetssättet i varje beskrivning skrivs om när det ändras. Historiken finns i GitHub.
+- **Pågår:** PR #14, som är dokumentation: iakttagelsen om kraschen på iPhone, och det här avsnittet.
+
+**Nästa steg, i ordning:**
+1. Kraschen på iPhone i Dörrautomatik. Den fungerar på iPad. **Avvaktar ägarens beslut.** Se avsnitt 8, steg 2.
+2. Automatiska tester på PR, med de två tidskänsliga testerna. Se avsnitt 8, steg 3.
+3. Arbetsinstruktion för tekniker per modul, utan teknik. Föreslaget, inte beställt.
+
 
 Den här listan samlar allt som är beslutat men inte klart, och vem som gör vad. När en punkt blir aktuell gör vi den i den ordning som står här. Bocka av med datum och version när den är klar.
 

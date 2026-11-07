@@ -28,6 +28,7 @@ Användaren skriver till exempel *"Vi ska arbeta med Kontrollflöde – Säkerhe
 | Inloggning, admin, licens, Supabase, säkerhet, lagring, GDPR | [docs/moduler/system-sakerhet.md](docs/moduler/system-sakerhet.md) |
 | Teman, startsida, offline/cache, delade filer | [docs/moduler/gemensamt.md](docs/moduler/gemensamt.md) |
 | Tester och automatiska kontroller | [docs/kvalitetskontroller.md](docs/kvalitetskontroller.md), [tests/README.md](tests/README.md) |
+| *"Vad pratade vi om sist?"*, *"kolla det sista på GitHub"* | [VANTANDE_PUNKTER.md](VANTANDE_PUNKTER.md) avsnittet *Senaste läget*, plus `git log --oneline -10 origin/main` och öppna PR:er. Ge en kort sammanfattning och föreslå nästa steg. |
 | Vad som väntar och vem som gör vad | [VANTANDE_PUNKTER.md](VANTANDE_PUNKTER.md) |
 | Versioner, modulversioner, arbetsordning | [VANTANDE_PUNKTER.md](VANTANDE_PUNKTER.md) avsnitt 8 |
 
@@ -87,6 +88,7 @@ Hur `<mapp>` förbereds står i [tests/README.md](tests/README.md). Kända fel f
 ## 5. Kontextfönstret
 
 - En avgränsad uppgift per session. Det som ska överleva sessionen skrivs i moduldokumentet, i PR:en eller i VANTANDE_PUNKTER.md, inte bara i chatten.
+- **Senaste läget:** när ägaren säger *"spara läget"*, eller när sessionen avslutas (till exempel när kontextfönstret är ca 70–80 % fullt), skriver Claude **om** avsnittet *Senaste läget* överst i VANTANDE_PUNKTER.md. Det ska innehålla vad som gjordes, vad som beslutades, vad som pågår och nästa steg. Det committas och pushas, och ägaren får en kort rad att börja nästa session med.
 - Läs inte hela kodbasen. JavaScript-koden är ca 5 MB, alltså mer än hela kontextfönstret.
 - Mycket stora filer ska sökas i, inte läsas i sin helhet:
   - `smartmatch-read-main-v524.js` (610 kB)
