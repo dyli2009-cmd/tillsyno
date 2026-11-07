@@ -883,6 +883,24 @@ async function inspectLegacySecurityLinkedPdf(bytes){
 }
 
 if($('secChangeDrawing'))$('secChangeDrawing').onclick=()=>$('securityFile').click();
+// v2.4.584: Stäng ritning. Arbetet är redan sparat på enheten under ritningens kontrollsumma och kommer tillbaka när samma ritning öppnas.
+async function closeRevisionDrawing(){
+ if(!pdf||document.querySelector('.cfLoad[data-state="loading"]:not([hidden])')||document.body.classList.contains('exporting'))return false;
+ securityDrawingTools?.stop();if(!save())return false;
+ const closing=pdf,closingPreview=previewPdf;++renderVersion;if(renderTask)renderTask.cancel();if(previewRenderTask)previewRenderTask.cancel();previewPdf=null;previewStampRects=[];previewOverviewLinks=[];previewBackLinks=[];
+ clearTimeout(wheelZoomTimer);wheelZoomTimer=null;wheelZoomTarget=null;wheelZoomFocus=null;wheelZoomAnchor=null;if(zoomFrame)cancelAnimationFrame(zoomFrame);zoomFrame=0;pendingZoomGeometry=null;
+ pdf=null;sourceBytes=null;activeKey=null;heavyDrawing=false;renderTarget=null;drawingRaster=null;drawingNatural=null;items=[];textNotes=[];drawingExtras=[];selected=null;project=emptyProject();logoData='';
+ page=1;zoom=1;visualZoom=1;baseScale=1;pageWidth=1;pageHeight=1;pinch=null;panTouch=null;panMouse=null;addType=null;textMode=false;lastObjectTap=null;drawingGestureLocked=false;drawingLockScroll=null;
+ document.body.classList.remove('secAdding','secTextAdding');viewer.classList.remove('mousePanning','arrowDragging');window.ServicePrecisionPointer?.hide?.();applyDrawingOverlayVisibility(false);
+ $('secAddText').classList.remove('primary');const stage=$('secStage');stage.style.transform='';stage.style.width='0px';stage.style.height='0px';stage.style.marginTop=stage.style.marginBottom='0px';canvas.width=canvas.height=0;canvas.style.width=canvas.style.height='0px';viewer.scrollLeft=viewer.scrollTop=0;
+ for(const id of ['securityOverview','secPreviewDialog','secOpenWorkDialog','secSaveDialog'])if($(id)?.open)$(id).close();
+ $('secHint').hidden=true;$('securityFile').value='';$('secPage').textContent='Ingen ritning';$('secZoom').textContent='100%';$('secPage').classList.remove('secPageHeavy');
+ syncProjectInputs();drawMarkers();showSelected();showOverview();go('drawing');save();msg('Ritningen är stängd. Arbetet finns kvar på enheten och kommer tillbaka när du öppnar samma ritning.');
+ window.dispatchEvent(new Event('revision-drawing-closed'));
+ try{await closing.destroy()}catch(_){}if(closingPreview)try{await closingPreview.destroy()}catch(_){}
+ return true;
+}
+window.closeRevisionDrawing=closeRevisionDrawing;
 $('securityFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;const progress=window.DrawingLoadProgress;try{
  msg('Laddar ritning…');progress?.start(f.name);const bytes=new Uint8Array(await f.arrayBuffer()),sizeMB=bytes.length/1048576;
  progress?.step('Kontrollerar arbetsfil och tidigare protokoll',5,25,400+sizeMB*80);
@@ -1552,7 +1570,7 @@ async function exportPdf(saveMode='work',fileName=null){if(!pdf||!sourceBytes)re
  const dataRef=out.context.register(out.context.flateStream(new TextEncoder().encode(JSON.stringify(state)))),drawingRef=out.context.register(out.context.flateStream(originalBytes));
  out.catalog.set(PDFName.of('SecurityServiceWork'),out.context.register(out.context.obj({Version:2,Data:dataRef,Drawing:drawingRef})));
  out.setTitle(APP_LABEL+' – '+(snapshot.project.projectName||snapshot.project.facilityNo||'Service'));out.setSubject('Ritning, anmärkningsöversikt och protokoll. Arbets-PDF för '+APP_LABEL+'.');out.setCreator('Dörrservice '+APP_LABEL);
- const bytes=await out.save();if(window.RevisionNativeExport?.available()){await window.RevisionNativeExport.save(bytes,fileName||securityPdfName());msg('');return}const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');a.href=url;a.download=fileName||securityPdfName();a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);msg('')}catch(e){console.error(e);msg(e.message||'Kunde inte skapa arbets-PDF.',true)}}
+ const bytes=await out.save();if(window.RevisionNativeExport?.available()){await window.RevisionNativeExport.save(bytes,fileName||securityPdfName());msg('');(()=>{try{if(typeof CustomEvent==='function')window.dispatchEvent(new CustomEvent('revision-pdf-saved',{detail:{snapshot}}))}catch(_){}})();return}const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');a.href=url;a.download=fileName||securityPdfName();a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);msg('');(()=>{try{if(typeof CustomEvent==='function')window.dispatchEvent(new CustomEvent('revision-pdf-saved',{detail:{snapshot}}))}catch(_){}})()}catch(e){console.error(e);msg(e.message||'Kunde inte skapa arbets-PDF.',true)}}
 
 let previewStampRects=[];
 let previewPdf=null,previewPage=1,previewRenderTask=null,previewMode='report',previewBackLinks=[],previewOverviewLinks=[];

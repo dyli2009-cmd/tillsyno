@@ -32,13 +32,7 @@ window.installServiceHistory=function({scope,capture,restore,wrapSave,blocked}){
  redo.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 7 5 5-5 5"/><path d="M19 12h-8a6 6 0 0 0-6 6"/></svg>';
  undo.title='Ångra';redo.title='Gör om';undo.setAttribute('aria-label','Ångra');redo.setAttribute('aria-label','Gör om');
  center.append(undo,redo);
- const textControls=document.createElement('span');textControls.className='historyTextControls';textControls.setAttribute('role','group');textControls.setAttribute('aria-label','Textstorlek i arbetsytan');
- const textSmaller=document.createElement('button'),textLarger=document.createElement('button');
- textSmaller.type=textLarger.type='button';textSmaller.className=textLarger.className='historyTextButton';
- textSmaller.textContent='A−';textLarger.textContent='A+';
- textSmaller.setAttribute('data-app-text-smaller','');textLarger.setAttribute('data-app-text-larger','');
- textSmaller.title='Mindre text i arbetsytan';textLarger.title='Större text i arbetsytan';
- textControls.append(textSmaller,textLarger);center.appendChild(textControls);
+ // v2.4.584: Dörrautomatik / Lås har ingen egen textstorlek i verktygsraden (A− / A+ borttagna).
  const addButton=document.getElementById('mobileAdd');
  if(addButton){
   addButton.classList.add('historyAddButton');

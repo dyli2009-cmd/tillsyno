@@ -1,8 +1,8 @@
 # Kontrollflöde – Dörrautomatik
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.583 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
-- **Modulversion:** Dörrautomatik / Lås 1.0. Det är en gemensam version för Dörrautomatik och Lås, som grupperas som i mappvalet (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan, i mappvalet och i modulens sidhuvud. Kraschrättningen höjer den till 1.1.
+- **Appversion:** Tillsyno v2.4.584 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** Dörrautomatik / Lås 1.1. Det är en gemensam version för Dörrautomatik och Lås, som grupperas som i mappvalet (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (ägarens beslut, v2.4.584). Nästa funktionsändring, till exempel kraschrättningen, höjer den till 1.2.
 - Kontrollflödet är upplåst. Gemensamma regler, motorer och filkarta: [README.md](README.md).
 
 ## 2. Arbetsflöde från början till slut
@@ -24,6 +24,10 @@
 5. **Översikt** (`showOverview`) visar alla objekt och deras status.
 6. **Kundmall** (`openCustomerPreview`) är en förhandsvisning av ritningssidorna och kundprotokollet. Den har ingen egen nedladdning.
 7. **Spara PDF:** *Spara arbete* (`exportPdf('work')`) eller *Spara som ny PDF* (`newSecurityPdf`, som frågar efter filnamn).
+8. **Lämna ritningen:** *Hem* går till startsidan och *Stäng ritning* går tillbaka till *Välj ritning*.
+   - Har arbetet ändrats sedan PDF:en sparades eller ritningen öppnades, frågas först: *Spara PDF*, *Lämna (Stäng) utan att spara PDF* eller *Avbryt*.
+   - *Spara PDF* öppnar den vanliga sparrutan. När PDF:en är sparad frågar appen om användaren vill gå vidare eller stanna kvar.
+   - Utan ändringar går knapparna direkt. Utan öppen ritning är *Hem* en vanlig länk.
 
 ## 3. Viktiga funktioner
 - **Protokoll:**
@@ -42,6 +46,12 @@
   - **Laddningsrutan** (`drawing-load-progress-v581.*`) visar filnamn, procent och steg, och når 100 % först när sidan visas.
   - Detaljer: [CONTROLFLOW_HEAVY_PDF_PLAN.md](../../../CONTROLFLOW_HEAVY_PDF_PLAN.md).
 - **Ångra och gör om:** upp till 30 steg, bara i minnet (`session-history.js`).
+- **Sidhuvud och verktyg (v2.4.584, `revision-header-v584.*`):**
+  - En rad: *Hem*, filnamnet, och till höger *Öppna ritning*, *Stäng ritning*, *Mall* och *PDF*. På telefon står filnamnet i raden med antal objekt. Versionsraden finns inte i sidhuvudet.
+  - Verktygsraden har *Ångra*, *Gör om* och *Verktyg*, med verktygsikon. Textstorleken (A− / A+) finns inte, och texten visas alltid i 100 %. En större textstorlek som valts i Säkerhetsservice ligger kvar sparad där men används inte här.
+  - Verktygsmenyn har ritverktygen och *Precision*, och under dem två rader: *Justera / lås stämplar* och *Lägg till serviceöversikt*. Zoomknapparna finns inte; zoom görs med fingrarna eller mushjulet (motorns `setZoom` är oförändrad).
+  - **Stäng ritning** (`closeRevisionDrawing` i motorn) sparar arbetet, släpper ritningen och minnet och visar *Välj ritning*. Arbetet ligger kvar på enheten och kommer tillbaka när samma ritning öppnas.
+  - **Ändringskontrollen** jämför arbetet (objekt, anteckningar, ritobjekt, projektuppgifter, logotyp) med läget när ritningen öppnades eller PDF:en senast sparades. Motorn meddelar en sparad PDF med händelsen `revision-pdf-saved`.
 
 ## 4. Kodfiler och motor
 - **Sida:** `controlflow-revision/all-in-one.html`.
@@ -52,6 +62,7 @@
   - `service-overview-v12.*`
   - `customer-preview-v310.*`
   - `drawing-load-progress-v581.*`
+  - `revision-header-v584.*` (sidhuvud, verktygsmeny och frågan innan ritningen lämnas)
   - kopior av `legacy-door-import.js`, `offline-work-v2.js`, `drawing-transfer-v2.js`, `session-history.js`, `drawing-annotations.js` och `tillsyno-appearance*`
 - **Delade Kontrollflödesfiler:** `controlflow-*` och `security-stamp-selection-v549.*`, `security-detectors-v344.*`. Se README.md.
 - **Äldre dörrkod på startsidan** (`app.js`, `v2.js`, `reports.js`): har en egen kopia av de 18 punkterna. Om den koden används är *ej verifierat*. Ändra den inte som följd av ändringar här.
@@ -70,6 +81,7 @@
   - Filnamn: originalfilens namn, annars `allt-i-ett-<objekt>-<datum>.pdf`.
   - Användaren väljer själv var filen sparas.
 - **Öppna igen:** arbetsdata i PDF:en går före sparad data på enheten för samma ritning, och sist kommer importen av äldre protokoll.
+- **Ändringskontrollen** inför *Hem* och *Stäng ritning* finns bara i minnet och sparar inget på enheten.
 
 ## 6. Beroenden till andra moduler
 - **Lås** körs på samma sida och i samma motor. Ändringar i motorn eller sidan påverkar båda.
@@ -87,9 +99,10 @@
 
 ## 8. Tester och status
 ```sh
-node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress security-automation-checklist revision-uncheck controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
+node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress security-automation-checklist revision-uncheck revision-header controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
 ```
-- **Senaste körning:** godkänd (v2.4.581), se [kvalitetskontroller.md](../../kvalitetskontroller.md).
+- **Senaste körning:** godkänd (v2.4.584), se [kvalitetskontroller.md](../../kvalitetskontroller.md). `revision-header-v584` provar sidhuvudet, verktygsmenyn och frågan innan ritningen lämnas på telefon, iPad och dator.
+- **Ej verifierat på riktig enhet:** sidhuvudet och frågan på iPhone och iPad med Safari, och att nedladdningen av PDF:en blir klar innan användaren väljer att lämna.
 - **Kända fel:** inga egna.
 - **Pågår separat:** krascher med stora ritningar på riktiga enheter (VANTANDE_PUNKTER.md avsnitt 8, steg 2).
 - **Kvar som egna beslut:** läsa texten en gång i `legacy-door-import.js`, prova en nyare pdf.js, och mycket tunga ritningar på äldre iPad.

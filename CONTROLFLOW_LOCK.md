@@ -341,3 +341,20 @@ Motorerna `security.js` och `controlflow-revision/security-v335.js`, protokoll, 
 # 2026-11-07 · v2.4.583 · Modulversioner från 1.0
 
 Ägaren beslutade att alla moduler börjar på 1.0, så att versionerna blir små och går uppåt vid varje ändring. Kontrollflödets versioner var redan 1.0 och är oförändrade: Dörrautomatik / Lås, Säkerhetsservice och Brand. I `all-in-one.html` och `controlflow-revision/all-in-one.html` ändrades bara cacheparametern för `tillsyno-versions.js` till `?v=2.4.583`. Motorer, protokoll, stämplar, arbetsfiler, import och exporterad PDF är oförändrade.
+
+# 2026-11-07 · v2.4.584 · Dörrautomatik / Lås: sidhuvud, verktyg och fråga innan ritningen lämnas
+
+Ägaren beställde ändringar i Dörrautomatik, på telefon, iPad och dator. Ändringarna gäller också Lås, eftersom Lås körs på samma sida (ägarens godkännande). Modulversion Dörrautomatik / Lås 1.0 → 1.1.
+
+Ändrat, bara i `controlflow-revision/`:
+- `all-in-one.html`: versionsraden i sidhuvudet är borttagen. Versionen visas kvar i mappvalet och på startsidan. De nya filerna laddas.
+- Nya `revision-header-v584.js/.css`:
+  - en rad i sidhuvudet: *Hem*, filnamnet, *Öppna ritning*, ny knapp *Stäng ritning*, *Mall* och *PDF*. På telefon står filnamnet i raden med antal objekt;
+  - verktygsknappen har en verktygsikon. Zoomknapparna är borttagna ur verktygsmenyn, och zoom görs med fingrarna eller mushjulet;
+  - *Justera / lås stämplar* och *Lägg till serviceöversikt* är egna rader i menyn. Felet där texten bröts lodrätt på dator är rättat;
+  - texten visas alltid i 100 %;
+  - *Hem* och *Stäng ritning* frågar först om arbetet har ändrats sedan PDF:en sparades: *Spara PDF*, *Lämna utan att spara PDF* eller *Avbryt*.
+- `session-history.js` (revisionssidans kopia): A− / A+ är borttagna (ägarens beslut).
+- `security-v335.js`: ny `closeRevisionDrawing` (Stäng ritning), och händelsen `revision-pdf-saved` när en PDF har sparats. Exporten i övrigt är oförändrad.
+
+Oförändrat: delade filer (`controlflow-*`, `security-stamp-selection-v549.*` med flera), `security.js`, Säkerhetsservice och Brand. Protokoll, kontrollpunkter, stämplarnas placering och storlek, arbetsfiler, import av äldre protokoll och den exporterade PDF:en är också oförändrade. Den textstorlek som är sparad för Säkerhetsservice ligger kvar. Test: `tests/revision-header-v584.cjs` och Kontrollflödets tester.
