@@ -125,9 +125,10 @@
   html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityStampSelecting #secViewer {
     cursor: crosshair;
   }
-  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #secStage :is(.secMarker,.detectorNumberBox).securityStampLocked {
-    outline: 1px dashed #173f55 !important;
-    outline-offset: 2px;
+  /* v2.4.586 (ägarens beslut): a locked stamp has no frame on the drawing. The 44 px touch box made a large
+     dashed square when zoomed out. The lock still works and is shown in the selection panel (· N låsta). */
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #secStage :is(.secMarker,.detectorNumberBox).securityStampLocked:not(.securityStampChosen) {
+    outline: none !important;
     cursor: pointer;
   }
   html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #secStage :is(.secMarker,.secTarget,.detectorNumberBox).securityStampChosen {

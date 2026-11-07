@@ -370,3 +370,13 @@ Oförändrat: delade filer (`controlflow-*`, `security-stamp-selection-v549.*` m
 - `all-in-one.html` har ny cacheparameter för filen.
 
 Låsa stämplar fanns redan (*Justera / lås stämplar*, låsta stämplar går att trycka på) och är oförändrat. Oförändrat i övrigt: motorn `security-v335.js`, huvudsidans och rotens ritverktyg, Säkerhetsservice och Brand. Stämplar, protokoll, arbetsfiler, import och exporterad PDF är också oförändrade. Test: `tests/revision-draw-delete-v585.cjs` och Kontrollflödets tester.
+
+# 2026-11-07 · v2.4.586 · Låsta stämplar utan ram
+
+Ägaren rapporterade att den streckade fyrkanten runt en låst stämpel blev stor när man zoomade ut och tog plats på ritningen, både i Dörrautomatik och i Säkerhetsservice. Orsaken var att fyrkanten följde tryckytan (minst 44 × 44 px) och inte själva stämpeln. Ägarens beslut: låset ska inte synas på ritningen, men det ska fortfarande gå att låsa.
+
+Ändrat:
+- `security-stamp-selection-v549.css` (delad): låsta stämplar och detektornummer har ingen ram. Den blå ramen för valda stämplar i *Justera / lås stämplar* finns kvar.
+- Ny cacheparameter i `all-in-one.html` och `controlflow-revision/all-in-one.html`.
+
+Modulversioner: Dörrautomatik / Lås 1.2 → 1.3, Säkerhetsservice 1.1. Brand har inga låsbara stämplar och är oförändrad. Låsfunktionen, motorerna, stämplarnas placering och storlek, arbetsfiler och exporterad PDF är oförändrade. Test: `tests/stamp-lock-frame-v586.cjs` och Kontrollflödets tester.

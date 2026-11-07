@@ -1,4 +1,4 @@
-const VERSION='2.4.585';
+const VERSION='2.4.586';
 const CACHE='tillsyno-offline-'+VERSION;
 const BASE=new URL('./',self.location.href);
 const CORE=[

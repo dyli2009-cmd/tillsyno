@@ -1,8 +1,8 @@
 # Kontrollflöde – Lås
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.585 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
-- **Modulversion:** Dörrautomatik / Lås 1.2. Lås har ingen egen version, eftersom den delar mapp, sida och motor med Dörrautomatik (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (v2.4.584).
+- **Appversion:** Tillsyno v2.4.586 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** Dörrautomatik / Lås 1.3. Lås har ingen egen version, eftersom den delar mapp, sida och motor med Dörrautomatik (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (v2.4.584).
 - **Sidhuvud, verktygsmeny, frågan innan ritningen lämnas och *Ta bort* för ritobjekt** är gemensamma med Dörrautomatik och beskrivs i [dorrautomatik.md](dorrautomatik.md), avsnitt 3.
 - Kontrollflödet är upplåst. Gemensamma regler och filkarta: [README.md](README.md).
 

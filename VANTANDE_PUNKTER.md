@@ -87,9 +87,9 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 
 ### Versionshantering (beslut 7 november 2026)
 
-**Läge v2.4.585:**
+**Läge v2.4.586:**
 - Modulversionerna finns i `versions.json`. De visas med liten text på startsidan, i Kontrollflödets mappval och i modulernas sidhuvud, via `tillsyno-versions.js`. Undantag: Dörrautomatik / Lås visar ingen version i sidhuvudet (ägarens beslut, v2.4.584).
-- Dörrautomatik / Lås är 1.2 (v2.4.585). Övriga moduler har sina startversioner.
+- Dörrautomatik / Lås är 1.3 och Säkerhetsservice 1.1 (v2.4.586). Övriga moduler har sina startversioner.
 - Kontrollsummor, automatisk höjning och CI-kontroll är **inte** införda ännu (steg 3).
 - Fram till steg 3 höjs versionerna för hand i `versions.json`, i samma PR som ändringen. Testet `tests/module-versions-v582.cjs` kontrollerar att appversionen stämmer överallt.
 
@@ -157,6 +157,7 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 
 ## Avbockat
 
+- 2026-11-07, v2.4.586: låsta stämplar har ingen ram på ritningen, i Dörrautomatik / Lås (1.3) och Säkerhetsservice (1.1). Den streckade fyrkanten följde tryckytan på 44 px och blev för stor när man zoomade ut. Låset fungerar som förut.
 - 2026-11-07, v2.4.585: Dörrautomatik / Lås 1.2. En markerad text, pil, linje eller dörrsymbol har en liten *Ta bort*-knapp bredvid sig på ritningen (bara ikon på telefon). Borttagning frågar alltid först, även från verktygsmenyn, och kan ångras. Låsa stämplar fanns redan (*Justera / lås stämplar*).
 - 2026-11-07, v2.4.584: Dörrautomatik / Lås 1.1. Sidhuvudet är en rad med *Öppna ritning* och en ny knapp, *Stäng ritning*, bredvid *Mall* och *PDF*. Versionsraden, A− / A+ och zoomknapparna i verktygsmenyn är borttagna, och verktygsknappen har en verktygsikon. *Justera / lås stämplar* och *Lägg till serviceöversikt* är egna rader i menyn. *Hem* och *Stäng ritning* frågar om PDF:en ska sparas när arbetet har ändrats.
 - 2026-11-07, v2.4.581: krasch vid snabb zoom på telefon i Dörrautomatik. Zoom startar inte om en pågående ritning, tillfälliga ritytor frigörs, Safaris egen sidzoom är avstängd på ritningen och sparläget börjar tidigare på telefon.

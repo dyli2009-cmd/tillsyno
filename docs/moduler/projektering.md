@@ -1,7 +1,7 @@
 # Projektering (Tillsyno Projekt)
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.585 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Appversion:** Tillsyno v2.4.586 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
 - **Modulversion:** Projektering 1.0 (`versions.json`). Den nya serien började i v2.4.583 och ersatte 2.19.24 (ägarens beslut: alla moduler börjar på 1.0). Den visas på startsidans kort, i sidhuvudet, i sidtiteln och i versionsraden längst ner.
   - **Oförändrat:** skaparen i exporterade PDF:er (*Tillsyno Projektering 2.19*, dold metadata), `Proj2App.version` och `?v=2.19.24` i filernas adresser. Det är interna värden och inga versioner som syns.
 
