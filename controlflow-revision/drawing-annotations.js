@@ -58,7 +58,7 @@ function doorGeometry(item,w,h){
 function injectStyle(){
  if(document.getElementById('serviceDrawingToolsStyle'))return;
  const style=document.createElement('style');style.id='serviceDrawingToolsStyle';style.textContent=`
-.serviceDrawingOverlay{position:absolute;inset:0;width:100%;height:100%;z-index:6;overflow:visible;pointer-events:none;touch-action:none}
+.serviceDrawingOverlay{position:absolute;inset:0;width:100%;height:100%;z-index:6;overflow:visible;pointer-events:none;touch-action:none}\n.drawQuickDelete{position:absolute;z-index:8;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:36px;height:36px;margin:0;padding:0 10px;box-sizing:border-box;border:1px solid #d9a3a6;border-radius:18px;background:#fff;color:#ad2938;font:600 13px/1 system-ui,sans-serif;box-shadow:0 4px 14px #06182930;cursor:pointer;touch-action:manipulation;pointer-events:auto}\n.drawQuickDelete[hidden]{display:none!important}\n.drawQuickDelete svg{width:18px;height:18px;flex:none;pointer-events:none}\n@media(max-width:800px){.drawQuickDelete{width:36px;padding:0}.drawQuickDelete span{display:none}}
 .serviceDrawingOverlay.placing{pointer-events:auto;cursor:crosshair}
 .serviceDrawingOverlay .drawHit,.serviceDrawingOverlay .drawDoorHit,.serviceDrawingOverlay .drawHandle,.serviceDrawingOverlay .drawTextHit{pointer-events:all}
 .serviceDrawingOverlay .drawHit{stroke:transparent;stroke-width:18;fill:none}\n.serviceDrawingOverlay .drawDoorHit{fill:transparent;stroke:none}
@@ -175,6 +175,51 @@ function create(cfg){
  }
  function notify(text){if(text)cfg.message?.(text)}
  function changed(text){cfg.onChange?.();render(page,w,h);if(text)notify(text)}
+ // v2.4.585: Dörrautomatik / Lås. A selected drawing object has a small Ta bort button next to it on the drawing.
+ // Every removal asks first, in the app's own confirmation box. Ångra restores the object.
+ const DELETE_NAMES={'door-single':'dörrsymbolen','door-double':'dörrsymbolen',line:'linjen',arrow:'pilen',text:'texten','text-arrow':'texten med pil'};
+ let deleteAsking=false;
+ async function confirmDelete(uid){
+  const item=items().find(x=>x.uid===uid);if(!item||deleteAsking)return false;
+  const name=DELETE_NAMES[item.type]||'ritobjektet',dialogs=window.ControlflowDialogs;
+  deleteAsking=true;quickDelete.hidden=true;
+  let ok=false;
+  try{
+   const options={title:'Ta bort '+name+'?',description:'Är du säker? Du kan ångra med Ångra.',confirmLabel:'Ta bort'};
+   ok=dialogs?.enabled?.()?await dialogs.confirm(options):window.confirm(options.title+' '+options.description);
+  }catch(_){ok=false}finally{deleteAsking=false}
+  if(!ok||!items().some(x=>x.uid===uid)){render(page,w,h);return false}
+  cfg.setItems?.(items().filter(x=>x.uid!==uid));if(selected===uid)selected=null;
+  changed(name.charAt(0).toUpperCase()+name.slice(1)+' är borttagen.');
+  return true;
+ }
+ const quickDelete=document.createElement('button');quickDelete.type='button';quickDelete.className='drawQuickDelete';quickDelete.hidden=true;
+ quickDelete.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span>Ta bort</span>';
+ for(const type of ['pointerdown','pointerup','touchstart','dblclick'])quickDelete.addEventListener(type,e=>{e.stopPropagation()},{passive:true});
+ quickDelete.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(selected)void confirmDelete(selected)});
+ stage.appendChild(quickDelete);
+ function placeQuickDelete(){
+  const item=current();
+  if(!item||mode||drag||deleteAsking||item.page!==page){quickDelete.hidden=true;return}
+  const name=DELETE_NAMES[item.type]||'ritobjektet';quickDelete.title='Ta bort '+name;quickDelete.setAttribute('aria-label','Ta bort '+name);
+  let box=null;
+  // A text with an arrow is anchored at its text box, not at the far end of the arrow.
+  const uid=CSS.escape(item.uid),anchors=item.type.startsWith('text')?'.drawTextHit[data-draw-uid="'+uid+'"]':'[data-draw-uid="'+uid+'"],.drawSelected,.drawHandle';
+  for(const node of svg.querySelectorAll(anchors)){
+   let b;try{b=node.getBBox()}catch(_){continue}
+   if(!b||!(b.width||b.height))continue;
+   box=box?{x1:Math.min(box.x1,b.x),y1:Math.min(box.y1,b.y),x2:Math.max(box.x2,b.x+b.width),y2:Math.max(box.y2,b.y+b.height)}:{x1:b.x,y1:b.y,x2:b.x+b.width,y2:b.y+b.height};
+  }
+  if(!box){quickDelete.hidden=true;return}
+  quickDelete.hidden=false;
+  const unit=(svg.clientWidth||w)/w,size=quickDelete.offsetWidth||36,height=quickDelete.offsetHeight||36,gap=6;
+  let left=box.x2*unit+gap,top=box.y1*unit-height-gap;
+  if(top<2)top=box.y2*unit+gap;
+  if(left+size>w*unit-2)left=box.x1*unit-size-gap;
+  left=clamp(left,2,Math.max(2,w*unit-size-2));top=clamp(top,2,Math.max(2,h*unit-height-2));
+  // The overlay covers the stage from its top left corner (inset:0), so stage and overlay share coordinates.
+  quickDelete.style.left=left+'px';quickDelete.style.top=top+'px';
+ }
  let activeTextEditor=null;
  function closeInlineEditor(commit=true){
   if(!activeTextEditor)return;
@@ -201,7 +246,7 @@ function create(cfg){
   if(activeTextEditor)closeInlineEditor(true);
   mode=mode===next?null:next;draft=null;selected=null;svg.classList.toggle('placing',!!mode);
   if(toolBtn)toolBtn.classList.toggle('serviceToolActive',!!mode);
-  updateMenu();
+  updateMenu();placeQuickDelete();
   if(mode){cfg.activateDrawing?.();notify(({line:'Dra ett streck där väggen/linjen ska vara.',arrow:'Dra från start till den punkt pilen ska peka på.','door-single':'Tryck där enkeldörren ska placeras.','door-double':'Tryck där dubbeldörren ska placeras.',text:'Tryck där texten ska ligga.','text-arrow':'Tryck där pilen ska peka; texten placeras bredvid.'})[mode]);}
  }
  function addArrowMarker(defs,id){
@@ -278,7 +323,7 @@ function create(cfg){
     const a=pt(draft.x1,draft.y1,w,h),b=pt(draft.x2,draft.y2,w,h),ln=el('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,class:'drawVisible'});if(draft.type==='arrow')ln.setAttribute('marker-end','url(#drawToolArrow)');svg.appendChild(ln);
    }
   }
-  updateMenu();
+  updateMenu();placeQuickDelete();
  }
  svg.addEventListener('pointerdown',e=>{
   if(!mode||e.button!==0)return;e.preventDefault();e.stopPropagation();
@@ -368,7 +413,7 @@ function create(cfg){
    iconAction('smaller','Mindre',()=>editSelected(s=>{if(s.type.startsWith('door-'))s.size=clamp((s.size||.08)*.88,.02,.3)})),
    iconAction('larger','Större',()=>editSelected(s=>{if(s.type.startsWith('door-'))s.size=clamp((s.size||.08)*1.12,.02,.3)})),
    iconAction('edit','Ändra text',()=>{const s=current();if(!s||!s.type.startsWith('text'))return;menu.hidden=true;editTextInline(s,false)}),
-   iconAction('delete','Ta bort',()=>{const s=current();if(!s)return;cfg.setItems?.(items().filter(x=>x.uid!==s.uid));selected=null;changed('Ritobjektet är borttaget.')},'dangerTool')
+   iconAction('delete','Ta bort',()=>{const s=current();if(!s)return;menu.hidden=true;void confirmDelete(s.uid)},'dangerTool')
   );
   menu.appendChild(selectedBox);wrap.append(toolBtn,menu);
   const addButton=target.querySelector('.historyAddButton');addButton?target.insertBefore(wrap,addButton):target.appendChild(wrap);
@@ -387,7 +432,7 @@ function create(cfg){
    return;
   }
   if(!selected||mode)return;
-  if(e.target.closest?.('.serviceToolsWrap'))return;
+  if(e.target.closest?.('.serviceToolsWrap,.drawQuickDelete,#controlflowAppDialog'))return;
   const own=e.target.closest?.('[data-draw-uid]');
   if(own?.dataset?.drawUid===selected)return;
   selected=null;render(page,w,h);updateMenu();

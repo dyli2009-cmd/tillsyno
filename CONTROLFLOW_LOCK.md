@@ -358,3 +358,15 @@ Motorerna `security.js` och `controlflow-revision/security-v335.js`, protokoll, 
 - `security-v335.js`: ny `closeRevisionDrawing` (Stäng ritning), och händelsen `revision-pdf-saved` när en PDF har sparats. Exporten i övrigt är oförändrad.
 
 Oförändrat: delade filer (`controlflow-*`, `security-stamp-selection-v549.*` med flera), `security.js`, Säkerhetsservice och Brand. Protokoll, kontrollpunkter, stämplarnas placering och storlek, arbetsfiler, import av äldre protokoll och den exporterade PDF:en är också oförändrade. Den textstorlek som är sparad för Säkerhetsservice ligger kvar. Test: `tests/revision-header-v584.cjs` och Kontrollflödets tester.
+
+# 2026-11-07 · v2.4.585 · Dörrautomatik / Lås: Ta bort vid markerat ritobjekt
+
+Ägaren beställde att ritobjekt ska gå att ta bort direkt på ritningen, med en fråga först, och att det ska vara kompakt på telefon. Det gäller alla ritobjekt: text, text med pil, linje, pil, enkeldörr och dubbeldörr. Lås körs på samma sida och får samma ändring. Modulversion Dörrautomatik / Lås 1.1 → 1.2.
+
+Ändrat, bara i `controlflow-revision/drawing-annotations.js` (revisionssidans egen kopia):
+- En liten *Ta bort*-knapp visas bredvid det markerade ritobjektet. På telefon är den en ikon på 36 px.
+- *Ta bort* frågar alltid först i Kontrollflödets bekräftelseruta, med *Avbryt* och *Ta bort*. Det gäller också papperskorgen i verktygsmenyn, som tidigare tog bort direkt.
+- Borttagningen sparas och kan ångras.
+- `all-in-one.html` har ny cacheparameter för filen.
+
+Låsa stämplar fanns redan (*Justera / lås stämplar*, låsta stämplar går att trycka på) och är oförändrat. Oförändrat i övrigt: motorn `security-v335.js`, huvudsidans och rotens ritverktyg, Säkerhetsservice och Brand. Stämplar, protokoll, arbetsfiler, import och exporterad PDF är också oförändrade. Test: `tests/revision-draw-delete-v585.cjs` och Kontrollflödets tester.
