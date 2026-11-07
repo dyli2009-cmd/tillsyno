@@ -1,10 +1,10 @@
 # SmartMatch
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.581 (utgångspunkt 7 november 2026).
-- **Modulversion:** SmartMatch 1.0 för driftsidan. Det är en ny egen serie, beslutad 7 november 2026, och visas när versionsregistret har införts.
+- **Appversion:** Tillsyno v2.4.582 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** SmartMatch 1.0 för driftsidan. Det är en egen serie (`versions.json`), som visas i sidhuvudet efter Avläsningens version och på startsidans kort.
 - **SmartMatch TEST 1.5** (`smartmatch-slr-test.html`, bara för administratörer) behålls separat och oförändrad.
-- Driftsidan har i dag en länk med texten *"SmartMatch 1.3"* till testsidan. Den tas upp med versionsregistret.
+- Länken till testsidan heter *SmartMatch TEST 1.5* (rättad från *"SmartMatch 1.3"* i v2.4.582).
 
 ## 2. Arbetsflöde från början till slut
 SmartMatch körs på samma sida som [Avläsning](avlasning.md), `smartmatch-read-v9-100.html`, och tar vid när dörrkorten är lästa.

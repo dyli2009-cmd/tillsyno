@@ -1,12 +1,12 @@
 # CE-märkning
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.581 (utgångspunkt 7 november 2026).
-- **Modulversion:** CE-märkning 1.2. Det är modulens version, som visas i länken *CE-märkning version 1.2* och finns i filnamnen `ce-markning-v1-2*`.
+- **Appversion:** Tillsyno v2.4.582 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** CE-märkning 1.2 (`versions.json`). Den visas som *CE-märkning 1.2 · Tillsyno v2.4.x* i sidhuvudet och på startvyn, som tidigare visade den inaktuella *v2.4.359*, och vid CE-länken i Kontrollflödets mappval.
 - **Dataformat:** 60 (`VERSION=60`, `FORMAT='Tillsyno CE-märkning TEST 60'` i `ce-markning-v1-2.js`).
   - Dataformatet är **sparformatet**, inte modulens version.
   - Det ändras bara när sparformatet ändras och blandas inte ihop med modulversionen (beslut 7 november 2026).
-- **Egen service worker:** `ce-markning-v1-2-sw.js`, med versionen **2.4.570** (se avsnitt 7).
+- **Egen service worker:** `ce-markning-v1-2-sw.js`, med versionen **2.4.582**. Den höjdes från 2.4.570, se avsnitt 7.
 
 ## 2. Arbetsflöde från början till slut
 Sidan `ce-markning.html` öppnas från Kontrollflödets mapp *Dörrautomatik / Lås* som en separat modul.
@@ -79,7 +79,10 @@ Sidan `ce-markning.html` öppnas från Kontrollflödets mapp *Dörrautomatik / L
 ## 7. Säkerhet och lagring
 - **Verifierat i koden** (7 november 2026): CE-modulerna gör inga nätverksanrop utöver service workerns hämtning av appfiler och inloggningen och behörigheten via Supabase. Service workern cachar inte konto- eller arbetsdata.
 - **Kontobunden lagring:** projekten ligger i en databas per konto, och förvalen per konto och enhet. Lagringen kräver inloggning.
-- **Risk, verifierad i koden men inte provad på enhet:** CE-märkningens service worker har versionen 2.4.570 och visar sidan från sin cache i första hand. `ce-markning.html` ändrades i v2.4.578 (temafilen), men service workerns version höjdes inte. **En enhet som redan har CE-modulen offline kan fortsätta visa sidan från 2.4.570.** Det hanteras i uppgiften om säkra uppdateringar (VANTANDE_PUNKTER.md avsnitt 8, steg 5).
+- **Service workern visar sidan från sin cache i första hand.**
+  - Den stod på 2.4.570, trots att `ce-markning.html` ändrades i v2.4.578.
+  - I v2.4.582 höjdes den till 2.4.582. Temafilen och versionsfilerna lades till i dess offlinelista, så enheter får den aktuella CE-sidan vid nästa uppdatering.
+  - **Kvar:** versionen måste fortfarande höjas för hand vid varje ändring i CE-märkningen. Det hanteras i uppgiften om säkra uppdateringar (VANTANDE_PUNKTER.md avsnitt 8, steg 5).
 - **Rensa enhetens data:** den kontobundna databasen finns inte i listan över kända databaser. Den raderas bara i webbläsare som stöder `indexedDB.databases()`. Se [system-sakerhet.md](system-sakerhet.md).
 - **Ej verifierat:** nätverkstestet (kvalitetskontroller.md avsnitt 3E).
 

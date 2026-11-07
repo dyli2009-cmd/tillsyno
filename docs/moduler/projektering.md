@@ -1,8 +1,8 @@
 # Projektering (Tillsyno Projekt)
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.581 (utgångspunkt 7 november 2026).
-- **Modulversion:** Projektering 2.19.24. Den visas i sidtiteln och skrivs som skapare i exporterade PDF:er (*Tillsyno Projektering 2.19*).
+- **Appversion:** Tillsyno v2.4.582 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** Projektering 2.19.24 (`versions.json`). Den visas på startsidans kort och i sidhuvudet. Sidtiteln och skaparen i exporterade PDF:er (*Tillsyno Projektering 2.19*) skrivs fortfarande för hand.
 
 ## 2. Arbetsflöde från början till slut
 Sidan är `smartmatch-projektering.html` och nås från startsidan som **Tillsyno Projekt**. Den startar först när behörigheten är kontrollerad (händelsen `tillsyno-authorized`).

@@ -6,7 +6,7 @@ Det här dokumentet beskriver vilka kontroller som finns i dag (avsnitt 1) och v
 
 | Kontroll | Var | Körs när |
 |---|---|---|
-| Testsviten, 112 tester (Playwright, Chromium och Node) | `tools/run-tests.mjs`, `tests/` | Manuellt |
+| Testsviten, 113 tester (Playwright, Chromium och Node). Sedan v2.4.582 ingår `module-versions-v582`, som kontrollerar att appversionen stämmer överallt och att modulversionerna visas. | `tools/run-tests.mjs`, `tests/` | Manuellt |
 | Kända fel som inte fäller körningen | `tests/known-failures.json` | Med testsviten |
 | Bara använda filer publiceras, inga `.md`, `.pdf`, `.dwg` | `tools/build-release.mjs`, `.github/workflows/pages.yml` | Vid push till `main`, **det publicerar direkt** |
 | Valfri denylist mot kundnamn | `build-release.mjs --denylist <fil>` | Manuellt |

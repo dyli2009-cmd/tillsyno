@@ -3,7 +3,7 @@
 Inloggning, behörighet, licens, administration, lagring på enheten, cache och publicering. Det här är granskningsområdet för IT och underlaget till IT-granskningen.
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.581 (utgångspunkt 7 november 2026).
+- **Appversion:** Tillsyno v2.4.582 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
 - **Serverfunktionen `tillsyno-admin`:** version 12 i drift enligt VANTANDE_PUNKTER.md, medan README.md nämner version 11. *Kontrollera* (förslag R6).
 - **Databasregler:** som i `supabase/schema/tillsyno-security-2026-11-07.sql`.
 - **Låst regel:** [TILLSYNO_LICENSE_RULES_LOCK.md](../../TILLSYNO_LICENSE_RULES_LOCK.md).
@@ -94,7 +94,7 @@ Alla sidor utom integritetssidan laddar `auth-config.js`, `auth/client.js` och `
 |---|---|---|
 | Inget data lämnar enheten | Bara kodgranskat | Nätverkstestet (kvalitetskontroller.md avsnitt 3E) |
 | *Rensa enhetens data* | Raderar alla IndexedDB-databaser som webbläsaren listar, plus en lista över kända databaser, och all localStorage och sessionStorage utom tre inställningar för utseende. **Den kontobundna CE-databasen finns inte i listan**, så den blir kvar i webbläsare utan `indexedDB.databases()`. Cache Storage rensas inte, men den innehåller bara appfiler. | Lägg till CE-databasen i listan (egen uppgift) |
-| Uppdateringar | Kontrollflödets revisionssida registrerar `sw.js?v=2.4.567`, och resten av appen `?v=2.4.581`. Det ger en ominstallation på ca 19 MB vid sidbyte, mätt i Chromium. CE:s service worker står på 2.4.570 och kan visa en äldre CE-sida. | Kraschuppgiften (steg 2) och säkra uppdateringar (steg 5) |
+| Uppdateringar | Kontrollflödets revisionssida registrerar `sw.js?v=2.4.567`, och resten av appen `?v=2.4.581`. Det ger en ominstallation på ca 19 MB vid sidbyte, mätt i Chromium. CE:s service worker är höjd till 2.4.582 (v2.4.582), men höjs fortfarande för hand. | Kraschuppgiften (steg 2) och säkra uppdateringar (steg 5) |
 | Autentisering | Ingen MFA. *Leaked password protection* är avstängd och kräver Supabase Pro. | Beslut inför IT-granskningen. SSO med Microsoft Entra ID (VANTANDE_PUNKTER.md punkt 2). |
 | Förlorad enhet | Offline gäller högst 7 dagar, men lokal data ligger kvar tills någon rensar den | Rutin för förlorad enhet, beslutas med IT |
 | Internetexponering | GitHub Pages och Supabase. Ingen CSP i sidorna. | Bedömning med IT |

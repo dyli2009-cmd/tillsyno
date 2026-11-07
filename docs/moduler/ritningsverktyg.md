@@ -1,8 +1,8 @@
 # Ritningsverktyg
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.581 (utgångspunkt 7 november 2026).
-- **Modulversion:** ingen egen serie är beslutad. Tills vidare följer modulen appversionen.
+- **Appversion:** Tillsyno v2.4.582 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** ingen egen. Modulen följer appversionen (ägarens beslut 7 november 2026).
 
 ## 2. Arbetsflöde från början till slut
 Sidan `drawing-tools.html` ligger under **Verktyg** på startsidan och kräver modulen `drawing`. Den kan ha ett kodlås.

@@ -116,17 +116,17 @@ Kontrollflödet ändras som andra moduler, efter beställning. Följande gäller
 - Kör Kontrollflödets tester före och efter (`node tools/run-tests.mjs controlflow security revision`).
 - Skriv varje ändring i ändringsloggen `CONTROLFLOW_LOCK.md`, med datum, version och vad som ändrats.
 
-## 4. En gemensam synlig appversion
+## 4. Appversion och modulversioner
 
-Tillsyno ska ha **en enda synlig versionsserie** för hela appen.
+Tillsyno har **en gemensam appversion** (`v2.4.x`) och **separata modulversioner** (ägarens beslut 7 november 2026, infört i v2.4.582). Modulversionerna finns i `versions.json` och visas i appen av `tillsyno-versions.js`. Reglerna för när de höjs står i VANTANDE_PUNKTER.md avsnitt 8.
 
-Aktuell version: **v2.4.398**
+Aktuell version visas i `app.html` och i `versions.json`.
 
 Beställd CE-uppdatering 15 oktober 2026: se [CE_DESKTOP_357.md](CE_DESKTOP_357.md). Delad/flyttbar/storleksjusterbar vy gäller endast dator. Samma enkla Ny dörr-ikon och temakopplad underskrift gäller även iPhone/iPad enligt den kompletterade beställningen. CE-data, PDF-beräkningar, övriga moduler och authregler bevaras. Kontrollflödet är fortsatt låst utanför den fristående CE-modulen.
 
 Regler:
-- Samma appversion gäller Kontrollflöde, Dörrautomatik, Säkerhetsservice, Brand, Projektflöde och Ritningsverktyg.
-- Visa inte separata versionsnummer för enskilda moduler.
+- Samma appversion gäller hela appen. Varje modul har dessutom en egen modulversion i `versions.json`. Kontrollflödet har tre: Dörrautomatik / Lås, Säkerhetsservice och Brand. Ritningsverktyg följer appversionen.
+- Modulversionen höjs bara när modulens funktion ändras. Den visas med liten text på startsidan, i Kontrollflödets mappval och i modulens sidhuvud.
 - Varje användarsynlig uppdatering ska höja Tillsyno-versionen med ett steg.
 - Exempel: v2.4.244 → v2.4.245 → v2.4.247.
 - Versionsnumret ska visas på Home så att det är enkelt att kontrollera vilken uppdatering som körs.
