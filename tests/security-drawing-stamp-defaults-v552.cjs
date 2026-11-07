@@ -19,7 +19,7 @@ function functionSource(source,name){
 class Element{
  constructor(document,tag='div'){
   this.ownerDocument=document;this.tagName=tag;this.children=[];this.parentNode=null;this.attributes={};this.listeners={};this.dataset={};this.classNames=new Set();
-  this.style={setProperty(key,value){this[key]=String(value);}};this.classList={add:(...names)=>names.forEach(n=>this.classNames.add(n)),remove:(...names)=>names.forEach(n=>this.classNames.delete(n)),contains:name=>this.classNames.has(name)};
+  this.style={setProperty(key,value){this[key]=String(value);}};this.classList={add:(...names)=>names.forEach(n=>this.classNames.add(n)),remove:(...names)=>names.forEach(n=>this.classNames.delete(n)),contains:name=>this.classNames.has(name),toggle:(name,force)=>{const on=force===undefined?!this.classNames.has(name):!!force;if(on)this.classNames.add(name);else this.classNames.delete(name);return on;}};
   this.clientWidth=960;this.clientHeight=700;this.scrollLeft=0;this.scrollTop=0;this.offsetLeft=0;this.offsetTop=0;this.width=1;this.height=1;
  }
  set id(value){this._id=value;this.ownerDocument.nodes.set(value,this);}get id(){return this._id;}
@@ -56,6 +56,8 @@ async function fixture(mode,sourcePdf){
   items:[],project:{},selected:null,addType:null,pageWidth:1,pageHeight:1,renderVersion:0,renderTask:null,renderQueue:Promise.resolve(),
   drawingRaster:null,drawingNatural:null,zoomFrame:0,pendingZoomGeometry:null,pinch:null,panTouch:null,panMouse:null,
   drawingGestureLocked:false,drawingLockScroll:null,suppressPageSwipeUntil:0,MAX_PIXELS:4000000,MAX_SIDE:4096,
+  heavyDrawing:false,HEAVY_MAX_PIXELS:3000000,HEAVY_MAX_SIDE:3072,HEAVY_RENDER_MS:1500,performance,// v2.4.580 sparläge (off for these synthetic pages)
+  
   ALL_IN_ONE:true,DOOR_AUTOMATION_MODELS:[],SYSTEMS:Object.fromEntries(['lock','automation','automation_selfcheck','lock_revision'].map(type=>[type,{label:type,checks:[['a','Kontroll']]}])),
   PDFLib,crypto,devicePixelRatio:1,setTimeout,clearTimeout,requestAnimationFrame:fn=>setTimeout(fn,0),cancelAnimationFrame:clearTimeout,
   ResizeObserver:class{observe(){}},$:id=>document.getElementById(id),drawingRotation:()=>0,updateDrawingRotationButton(){},
@@ -67,7 +69,7 @@ async function fixture(mode,sourcePdf){
  const context=vm.createContext(state);
  const names=['cleanSecurityRemarkText','normalizeSecurityCheckEdits','isDoorAutomationItem','normalizeAutomationIdentity','normalize','allChecks','syncStatus','nextNumber','nextAutomationSerial','automationProposedId','applyAutomationId','securityDrawingLabel','createItem'];
  if(mode==='security')names.push('securityHasDetectorBox','securityDefaultCheckTitle','securityCustomProtocolLabel');
- else names.push('boundedViewport','securityZoomAnchor','applySecurityDrawingGeometry','flushSecurityZoomGeometry','previewSecurityZoom','cancelSecurityRaster','setZoom','render');
+ else names.push('boundedViewport','showSecurityPageLabel','releaseDrawingMemory','securityZoomAnchor','applySecurityDrawingGeometry','flushSecurityZoomGeometry','previewSecurityZoom','cancelSecurityRaster','setZoom','render');
  vm.runInContext(names.map(name=>functionSource(source,name)).join('\n'),context,{filename:sourceFile});
  if(mode==='security')vm.runInContext(fs.readFileSync(path.join(__dirname,'../security-drawing-view.js'),'utf8'),context,{filename:'security-drawing-view.js'});
  return {state,counters};

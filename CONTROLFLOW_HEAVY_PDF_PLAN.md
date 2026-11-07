@@ -1,14 +1,12 @@
-# Tunga ritningar i Kontrollflöde Dörrautomatik – utredning och plan
+# Tunga ritningar i Kontrollflöde Dörrautomatik – utredning, plan och genomförande
 
-7 november 2026, Tillsyno v2.4.579.
-
-**Status:** utredd, inget ändrat. Kontrollflödet är LÅST. Ändringarna nedan görs först när ägaren skriver **"Lås upp Kontrollflödet"**.
+Utredd 7 november 2026 (v2.4.579). Genomförd samma dag i **v2.4.580**, efter att ägaren skrev **"Lås upp Kontrollflödet"**. Krasch vid snabb zoom på telefon och laddningsruta i **v2.4.581**. Ägaren tog samtidigt bort låset på Kontrollflödet.
 
 ## Vad som händer
 
 Dörrautomatik i `all-in-one.html` skickas vidare till `controlflow-revision/all-in-one.html`, som kör `controlflow-revision/security-v335.js`. Kraschen på iPad beror med största sannolikhet på att fliken använder för mycket minne. Då stänger iOS den. Det är inte en enskild ritningsyta som är för stor.
 
-Uppmätt i Chromium med syntetiska ritningar, iPad-emulering (DPR 2) och WebKits gränser för ritytor:
+Uppmätt i Chromium med syntetiska ritningar, iPad-emulering (DPR 2) och WebKits gränser för ritytor, före ändringen:
 
 | Testritning | Storlek | Öppnas på | Minne vid öppning | Efter zoom eller Kundmall |
 |---|---|---|---|---|
@@ -19,50 +17,138 @@ Uppmätt i Chromium med syntetiska ritningar, iPad-emulering (DPR 2) och WebKits
 | 20 sidor A0 | 9 MB | 3,8 s | 0,2 GB | 0,6 GB efter alla sidor |
 | 8 sidor A1, foton | 82 MB | 5,3 s | 0,8 GB | 0,9 GB |
 
-En iPad-flik orkar ungefär 1–1,5 GB, äldre modeller mindre. Stora ritningar ligger alltså i det område där iOS stänger fliken. På äldre iOS utan OffscreenCanvas kan stora bilder också ge en **tom ritning**, och då visas ändå meddelandet "Ritningen är klar".
+En iPad-flik orkar ungefär 1–1,5 GB, äldre modeller mindre. Stora ritningar ligger alltså i det område där iOS stänger fliken. På äldre iOS utan OffscreenCanvas kan stora bilder också ge en **tom ritning**, och då visades ändå meddelandet "Ritningen är klar".
 
 ## Orsaker, viktigast först
 
-1. **Ritningens innehåll ritas med pdf.js** och sparas i minnet för varje sida man har tittat på. `page.cleanup()` och `pdf.cleanup()` anropas aldrig.
+1. **Ritningens innehåll ritas med pdf.js** och sparas i minnet för varje sida man har tittat på. `page.cleanup()` och `pdf.cleanup()` anropades aldrig. Varje zoomsteg ritade dessutom om sidan i högre upplösning.
 2. **Dubbelarbete när ritningen öppnas:**
-   - samma fil tolkas 6 gånger med pdf-lib;
+   - samma fil tolkades 6 gånger med pdf-lib;
    - 3 extra pdf.js-dokument öppnas och kastas;
    - texten på varje sida läses två gånger (i `legacy-door-import.js`);
-   - 3–5 extra kopior av filen hålls i minnet.
-3. **Kundmall** bygger en helt ny PDF och öppnar den som ett andra dokument medan det första ligger kvar. Det kostar +0,5–0,9 GB.
-4. **Ett ritfel döljs:** meddelandet från `security-v335.js:553` skrivs över av "Ritningen är klar…" (rad 858).
+   - 3–5 extra kopior av filen hölls i minnet.
+3. **Kundmall** bygger en helt ny PDF och öppnar den som ett andra dokument medan det första ligger kvar. Dokumentet stängdes först nästa gång Kundmall öppnades. Det kostade +0,5–0,9 GB.
+4. **Ett ritfel doldes:** meddelandet "Kunde inte visa sidan" skrevs över av "Ritningen är klar…".
 
-## Plan (i den här ordningen)
+## Genomfört i v2.4.580
 
-1. **Tolka filen en gång.**
-   - Filer: `security-v335.js:848-861` (och samma mönster i `security.js:895-906`).
-   - Gör en pdf-lib-tolkning och öppna ett pdf.js-dokument. Dela båda med alla importkontroller: `revision-callout-profile-v4.js`, `legacy-door-import.js` och `inspectLegacySecurityLinkedPdf`.
-   - Läs varje sidas text bara en gång.
-   - Ta bort den överflödiga kopian (rad 851).
-   - Spara ritningen som Blob i `offline-work-v2.js`, och rensa gamla ritningar ur lagringen.
-   - Ungefär 60–120 rader i 4–5 filer.
-2. **Frigör minne.**
-   - Anropa `page.cleanup()` efter ritning och vid sidbyte.
-   - Anropa `pdf.cleanup()` innan Kundmall byggs, och stäng Kundmalls dokument när rutan stängs.
-   - Ungefär 20–40 rader.
-3. **"Stor ritning – visas i sparläge".**
-   - Appen känner av en tung PDF när filen öppnas, genom att läsa uppgifter ur PDF:en utan att avkoda något. Kännetecken:
-     - filen är större än ca 30 MB;
-     - en sida är A0 eller större och har mycket innehåll;
-     - en bild är större än 16,7 miljoner pixlar;
-     - första ritningen tar mer än ca 1,5 sekunder.
-   - I sparläge ritas sidan med lägre upplösning, högst 2,5–4 miljoner pixlar, en gång i stället för vid varje zoomsteg. Minnet frigörs efter varje ritning, och Kundmall begränsas på samma sätt.
-   - En kort rad visar *Stor ritning – visas i sparläge*.
-   - Ungefär 80–150 rader.
-4. **Visa ritfel** i stället för att skriva över dem, och försök igen i sparläge. Ungefär 10 rader.
-5. **Senare, som eget beslut:** prova en nyare pdf.js. `vendor/` delas av alla moduler.
+Allt nedan finns i `controlflow-revision/security-v335.js` om inget annat anges.
 
-## Får inte ändras
+**Appen känner av en tung ritning** när filen öppnas, utan att avkoda något. En ritning räknas som tung om något av följande gäller:
 
-- **Stämplarnas placering och storlek.** De sparas i PDF-punkter respektive 0–1-koordinater, oberoende av ritytans upplösning.
-- **Den exporterade arbets-PDF:en** ska vara byte för byte densamma, bortsett från exporttiden. Den byggs från `sourceBytes`, som inte ska röras.
-- **Importen av äldre arbetsfiler och protokoll** ska ge exakt samma resultat. Kör Kontrollflödets tester (`node tools/run-tests.mjs controlflow security`) före och efter.
+- filen är minst 30 MB;
+- en bild i PDF:en är större än 16,7 miljoner pixlar (storleken läses ur bildens uppgifter i filen);
+- första sidan är A1 eller större och filen har minst 2 MB innehåll per sida;
+- en sida tar mer än 1,5 sekunder att rita (då byter appen till sparläge direkt efter).
+
+**Sparläge:**
+
+- Sidan ritas en gång med högst 3 miljoner pixlar. Zoom förstorar den bilden i stället för att rita om sidan.
+- pdf.js-minnet frigörs efter varje ritning (`pdf.cleanup()`).
+- Sidraden visar *Sida 1 / 1 · Sparläge*, och meddelandet börjar med *Stor ritning – visas i sparläge.*
+- Raden får plats på telefon, iPad och dator.
+
+**Övrigt:**
+
+- När man byter sida frigörs den sida man lämnar, även för vanliga ritningar.
+- **Ritfel visas.** Kan sidan inte ritas görs ett nytt försök i sparläge. Lyckas inte heller det visas ett tydligt fel i stället för "Ritningen är klar".
+- **Mindre dubbelarbete vid öppning:**
+  - de två kontrollerna av arbetsfiler delar en pdf-lib-tolkning, så det blir 5 tolkningar i stället för 6;
+  - filen kopieras inte en extra gång när den sparas som källa till exporten.
+- **Kundmall:**
+  - i sparläge frigörs ritningens minne innan Kundmall byggs;
+  - förhandsvisningen ritas med högst 4 miljoner pixlar;
+  - Kundmalls PDF stängs när rutan stängs.
+- **Lagring på enheten** (`offline-work-v2.js`): ritningen kopieras inte före lagring, och bara den senaste ritningen per område sparas. Tidigare sparades varje ritning man någon gång öppnat.
+
+### Resultat
+
+Mätt i Chromium med iPad-storlek (DPR 2), utan mätverktyg i sidan, A0 med 1 miljon linjer:
+
+| Steg | Före (v2.4.579) | Efter (v2.4.580) |
+|---|---|---|
+| Öppna ritningen | 1,21 GB | 1,30 GB |
+| Zooma 2×, 4×, 8× | 1,96 GB | 1,28 GB (ritas inte om) |
+| Öppna Kundmall | 2,48 GB | 1,98 GB |
+| Stäng och öppna Kundmall igen | 2,56 GB | 2,05 GB |
+
+Mätt med iPad-emulering och WebKits gränser för ritytor, högsta minnet inklusive zoom:
+
+| Testritning | Före | Efter | Öppnas på, före → efter |
+|---|---|---|---|
+| A3, enkel (vanligt läge) | 0,18 GB | 0,19 GB | 1,3 → 1,0 s |
+| A0, 300 000 linjer | 0,67 GB | 0,59 GB | 4,6 → 3,5 s |
+| A0, 1 miljon linjer | 1,60 GB | 1,11 GB | 16,6 → 9,4 s |
+| A0, foto 9000×6000 px | 1,01 GB | 1,00 GB (0,62 GB efter öppning, före 0,83) | 8,8 → 5,4 s |
+| 8 sidor A1, foton | 0,78 GB | 0,63 GB | 5,3 → 3,4 s |
+
+**Det som inte ändras:** första gången en extremt tung sida ritas behöver pdf.js lika mycket minne som förut. Ett exempel är 1 miljon separata linjer, där toppen är cirka 1,1 GB. Det går inte att sänka utan att byta eller ändra pdf.js (punkt 5 nedan). Sparläget tar bort de extra topparna efteråt (zoom, Kundmall, sidbyten) och frigör minnet efter varje ritning. En så tung ritning kan alltså fortfarande vara på gränsen för en äldre iPad. Den bör delas upp i mindre PDF-filer, eller sparas om som bild-PDF med lägre upplösning.
+
+Jag provade också att begränsa bildstorleken i pdf.js (`canvasMaxAreaInBytes`). Det höjde minnet vid öppning för fotot (från 0,72 till 0,99 GB), så det används inte. Jag provade även en gemensam pdf.js-worker för ritningen och Kundmall, men det gav ingen mätbar skillnad och togs bort.
+
+### Får inte ändras – kontrollerat
+
+- **Stämplarnas placering och storlek** sparas i PDF-punkter och 0–1-koordinater. De påverkas inte av ritytans upplösning.
+- **Den exporterade arbets-PDF:en och Kundmallens ritning** är byte för byte desamma som i v2.4.579 med låst klocka. Det är kontrollerat med en vanlig A3-ritning och med A0 300 000 linjer i sparläge.
+- **Importen av äldre arbetsfiler och protokoll** ändras inte. `legacy-door-import.js` och `revision-callout-profile-v4.js` är orörda. Kontrollflödets tester går igenom som förut, se nedan.
+
+### Test
+
+`tests/controlflow-heavy-drawing-v580.cjs` provar:
+
+- bildavläsningen;
+- att en vanlig ritning visas som förut;
+- sparläge för en A0-sida med mycket linjer och för ett foto på 20 MP;
+- att zoom inte ritar om och att minnet frigörs;
+- att Kundmall blir mindre och stängs med rutan;
+- nytt försök och synligt fel när en sida inte kan ritas;
+- att bara en ritning per område sparas.
+
+## Rättat i v2.4.581: krasch vid snabb zoom på telefon
+
+Ägaren rapporterade att ritningen höll längre i v2.4.580, men att appen kraschade på telefonen när man zoomade snabbt.
+
+**Orsaker:**
+
+1. Varje zoom avbröt en pågående ritning av samma sida. pdf.js läste då in hela sidan igen. I testet gav tolv snabba zoomningar medan en tung sida ritades 13 inläsningar i v2.4.580. I v2.4.581 blir det en.
+2. Den tillfälliga ritytan frigjordes inte när en ritning avbröts. Den låg kvar tills webbläsaren städade.
+3. Safaris egen sidzoom var inte avstängd på ritningen. En snabb tvåfingerzoom kunde förstora hela sidan ovanpå appens zoom.
+4. En telefon har ungefär hälften så mycket minne som en iPad, men sparläget slog till vid samma gränser.
+
+**Ändringar** (`security-v335.js`):
+
+- **Pågående ritningar får rita klart.** En ritning av den sida som visas avbryts inte längre av zoom. Bara byte av sida eller fil avbryter. Är ritningen klar efter en zoom används den direkt, och i vanligt läge ritas sidan sedan en gång till i den nya storleken.
+- **Den tillfälliga ritytan frigörs alltid,** även när ritningen avbryts eller misslyckas.
+- **Safaris egen sidzoom** (`gesturestart`, `gesturechange`) stoppas på ritningen. Appens egen zoom fungerar som förut.
+- **Byte till sparläge vid långsam sida:** när en sida visar sig vara långsam ritas den en gång till i sparlägets storlek. Det sker medan innehållet fortfarande finns i minnet, så sidan läses inte in igen. Sedan frigörs minnet.
+- **Tidigare sparläge på telefon:**
+  - fil på minst 15 MB;
+  - bild över 8,4 MP;
+  - A2 eller större med minst 1 MB per sida;
+  - en sida som tar mer än 0,8 s att rita.
+
+  Telefon känns igen på pekskärm och en skärm som är högst 600 px på kortaste sidan.
+
+**Mätt med telefoninställning** (390×844, DPR 3) i Chromium, 30 zoomningar med 0,12 s mellanrum:
+
+| Testritning | v2.4.580 | v2.4.581 |
+|---|---|---|
+| A0, 50 000 linjer (vanligt läge) | 0,84 GB | 0,48 GB |
+| A0, 300 000 linjer (sparläge) | 0,54–0,67 GB, ingen ökning vid zoom | 0,66–0,67 GB, ingen ökning vid zoom |
+| A0, 1 miljon linjer (sparläge) | 1,28 GB, ingen ökning vid zoom | 1,31 GB, ingen ökning vid zoom |
+
+Värdet vid öppning varierar mellan körningar med ungefär 0,1 GB. Exporten är oförändrad.
+
+**Laddningsruta (samma version):** i stället för bara *Laddar ritning…* visas en ruta med stapel till 100 %, steg och filnamn. Den täcker sidan medan ritningen laddas, så det går inte längre att zooma innan sidan är klar. Det tar också bort den situation som gav flest omritningar. Se UI_RULES.md.
+
+Test: `tests/controlflow-heavy-zoom-v581.cjs` och `tests/controlflow-drawing-load-progress-v581.cjs`. Testet fallerar på v2.4.580 med 13 inläsningar och går igenom på v2.4.581.
+
+## Kvar, som egna beslut
+
+- **Läsa sidornas text en gång** i `legacy-door-import.js`, och dela pdf.js-dokumentet mellan importkontrollerna. Det ger kortare öppningstid men påverkar inte toppen. Det rör importen av äldre protokoll, så det görs bara med eget test av äldre filer.
+- **Prova en nyare pdf.js.** `vendor/` delas av alla moduler, så det kräver test av hela appen.
+- **Säkerhetsservice** (`security.js`) har samma mönster men omfattades inte av beställningen.
 
 ## Underlag
 
-Mätskripten och resultaten skapades i en tillfällig mapp under utredningen och finns inte i repot. Mätningarna gjordes i Chromium på Linux med syntetiska ritningar. Ingen riktig iPad eller WebKit-build har använts, och riktiga CAD-ritningar med många objekt gör varje tolkning långsammare än i testerna.
+Mätskripten och resultaten skapades i en tillfällig mapp och finns inte i repot. Mätningarna gjordes i Chromium på Linux med syntetiska ritningar. Ingen riktig iPad eller WebKit-build har använts, och riktiga CAD-ritningar med många objekt gör varje tolkning långsammare än i testerna. Prova gärna med en riktig ritning som har kraschat, men först när IT har godkänt att kundritningar används.

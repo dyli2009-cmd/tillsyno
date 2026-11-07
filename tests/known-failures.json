@@ -1,8 +1,7 @@
 {
- "controlflow-customer-floating-v310.cjs": "Kontrollflödet (låst): på iPad-bredd (768 px) stängs kundmallens förhandsvisning ibland inte vid första tryck på ×. Undersöks när Kontrollflödet låses upp.",
- "security-detectors-v344.cjs": "Kontrollflödet (låst): testet hittar ingen detektor efter tryck på ritningen; flödet för att placera detektorer behöver jämföras med testet.",
- "security-uncheck-v531.cjs": "Kontrollflödet (låst): andra trycket på samma svar avmarkerar nu kontrollpunkten, testet väntar sig att svaret ligger kvar. Önskat beteende behöver bekräftas.",
- "security-drawing-rotation.cjs": "Kontrollflödet (låst): testets syntetiska ritning öppnas inte via filfältet i all-in-one.html, så rotationen kan inte provas. Undersöks när Kontrollflödet låses upp.",
+ "security-detectors-v344.cjs": "Kontrollflödet: testet hittar ingen detektor efter tryck på ritningen; flödet för att placera detektorer behöver jämföras med testet.",
+ "security-uncheck-v531.cjs": "Kontrollflödet: andra trycket på samma svar avmarkerar nu kontrollpunkten, testet väntar sig att svaret ligger kvar. Önskat beteende behöver bekräftas.",
+ "security-drawing-rotation.cjs": "Kontrollflödet: testets syntetiska ritning öppnas inte via filfältet i all-in-one.html, så rotationen kan inte provas. Undersöks som egen punkt.",
  "smartmatch-position-changes-ui-v9-100.cjs": "SmartMatch: en återställd produktändring visas inte längre som 'Återställd' i listan, testet väntar sig raden. Beslut behövs om raden ska visas.",
  "drawing-ocr-swedish.cjs": "Ritningsverktyg, textigenkänning: ibland läses 'Dörrcentral' som 'Dérrcentral' med så hög säkerhet att ordet inte visas för granskning. Varierar mellan körningar; granskningsgränsen kan behöva skärpas."
 }

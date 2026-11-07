@@ -247,3 +247,32 @@ Användarbeslut 7 november 2026:
 - **Bjud in användare** (administrationen): knapp i användarlistans rubrik, dialog med e-post, namn, moduler, licenstid och val mellan *E-post från Tillsyno* och *Personlig länk*. Resultatet visas i samma dialog, med länk, *Kopiera länk* och *Öppna i e-post* när länken ska skickas manuellt. Stilar i `auth/admin-invite-v579.css`; 44 px tryckytor och 16 px fält. Kontrollerat i Chromium på 1440, 820, 390 och 320 px i ljusa och mörka teman, utan sidledsrullning. Regler: TILLSYNO_LICENSE_RULES_LOCK.md avsnitt 15.
 - **Uppdateringsrutan** på startsidan är ett kort i valt tema med *Senare* och *Uppdatera*. Vid uppdatering visas en förloppsstapel med procent och antal hämtade filer. Den nya service workern rapporterar varje sparad offlinefil, och sidan startar om först när stapeln nått 100 % och den nya versionen är aktiv. Fel visas i kortet med *Försök igen*; inget osparat arbete går förlorat. Rörelser stängs av vid *minska rörelse*. Eftersom rapporteringen finns i den nya versionen syns det verkliga förloppet från uppdateringen efter 2.4.579; den första uppdateringen till 2.4.579 visar den gamla rutan.
 - Kontrollerat i Chromium med en simulerad ny version: stapeln steg i jämn takt till 100 % före omstart (dator i dimblå och midnattsblå, 390 px telefon i mörkgrön). `tests/app-update-handoff.cjs` kräver nu att stapeln når 100 % innan sidan byts. Fysisk iPhone/iPad är inte verifierad.
+
+## Sparläge för tunga ritningar v2.4.580
+
+Användarbeslut 7 november 2026 (Kontrollflödet upplåst för denna beställning, se CONTROLFLOW_LOCK.md):
+
+- Kontrollflöde Dörrautomatik känner själv av en tung ritning: minst 30 MB, en bild över 16,7 miljoner pixlar, en sida A1 eller större med minst 2 MB innehåll per sida, eller en sida som tar mer än 1,5 s att rita.
+- I sparläge visar sidraden *Sida X / N · Sparläge*. Rutan förklarar läget när man håller över den, och meddelandet börjar med *Stor ritning – visas i sparläge.*
+- Sidan ritas en gång med högst 3 miljoner pixlar, och zoom förstorar bilden. Kundmall ritas med högst 4 miljoner pixlar.
+- Kan en sida inte ritas visas ett fel i stället för "Ritningen är klar".
+- Kontrollerat i Chromium på 390, 820, 1180 och 1440 px. Sidraden får plats på en rad, utan sidledsrullning.
+- Stämplar, export och protokoll ändras inte.
+- Fysisk iPhone och iPad är inte verifierad.
+
+## Zoom på telefon med tunga ritningar v2.4.581
+
+- En zoom avbryter inte en pågående ritning av samma sida. Ritningen blir klar och visas, och i vanligt läge ritas sidan därefter en gång i den nya storleken.
+- Safaris egen sidzoom är avstängd på ritningsytan. Appens tvåfingerzoom och knapparna fungerar som förut.
+- På telefon börjar sparläget tidigare än på iPad och dator: vid 15 MB, en bild över 8,4 MP, A2 eller större med minst 1 MB per sida, eller en sida som tar mer än 0,8 s att rita.
+- **Laddningsruta:** när en ritning öppnas visas en ruta i valt tema. Den visar *Laddar ritning*, filnamnet, en stapel med procent och vilket steg som pågår:
+  - *Kontrollerar arbetsfil och tidigare protokoll*, med sidnummer när äldre PDF:er analyseras;
+  - *Öppnar ritningen*;
+  - *Ritar sidan*, eller *Ritar sidan i sparläge – en stor ritning kan ta en stund*;
+  - *Klart*.
+- Stegen är verkliga. Under själva ritandet ger pdf.js inget exakt förlopp, så stapeln rör sig mot slutet av steget utifrån filens storlek. Den når 100 % först när sidan visas.
+- Rutan täcker sidan medan ritningen laddas, så ritningen kan inte zoomas under tiden. Vid fel stängs den direkt och felet visas.
+- Rutan är 380 px bred, och smalare på telefon med 16 px marginal. Den har inga rörelser vid *minska rörelse*.
+- Filer: `controlflow-revision/drawing-load-progress-v581.js` och `.css`.
+- Kontrollerat i Chromium på 390 px (dimblå och natt), 820 px (sand) och 1440 px (grafit), utan sidledsrullning.
+- Kontrollerat i Chromium med telefoninställning 390×844. Fysisk iPhone är inte verifierad.

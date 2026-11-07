@@ -1,20 +1,16 @@
-# Kontrollflöde – LÅST
+# Kontrollflöde – ändringslogg (låset borttaget)
 
-Status: **LÅST**
+Status: **UPPLÅST sedan 7 november 2026, Tillsyno v2.4.581.**
 
-Låst från och med: **Tillsyno v2.4.215**
+Ägaren skrev: ”Lås upp Kontrollflödet men vi behöver inte ha låst mer då så du kan publicera”. Mellan v2.4.215 och v2.4.580 var Kontrollflödet låst, och varje ändring krävde frasen ”Lås upp Kontrollflödet”. Det krävs inte längre.
 
-Kontrollflöde får inte ändras förrän användaren uttryckligen säger att det ska låsas upp.
+Kontrollflödet ändras nu som andra moduler, efter beställning. Följande gäller fortfarande:
+- Ändra bara det som är beställt, och använd inte en ändring i en annan modul för att samtidigt ändra Kontrollflödet.
+- Stämplarnas placering och storlek, sparade arbetsfiler, import av äldre protokoll och den exporterade PDF:en ska fungera som förut, om inget annat är beställt.
+- Kör Kontrollflödets tester före och efter.
+- Skriv varje ändring nedan med datum, version och vad som ändrats.
 
-Godkänd upplåsning är en tydlig instruktion som exempelvis:
-**"Lås upp Kontrollflödet."**
-
-Efter den beställda ändringen ska Kontrollflödet åter betraktas som låst, om användaren inte uttryckligen säger annat.
-
-När låset är aktivt:
-- ändra inte Kontrollflödets UI, funktioner, navigation, översikt, protokoll, kundmall eller PDF-logik
-- ändra inte delad kod på ett sätt som påverkar Kontrollflöde
-- håll Projektflöde och andra moduler separata
+Posterna nedan är historik från tiden med lås. Formuleringar som ”Kontrollflödet är åter LÅST” gällde då.
 
 ## Senaste beställda ändring
 
@@ -295,3 +291,36 @@ Omfattning, verifieringsplan och begränsningar finns i [CONTROLFLOW_TEXT_PARITY
 2026-11-07, Tillsyno v2.4.578: färgtemagranskning av hela appen på användarens beställning. Kontrollflödet granskades i alla sju teman och följer temat; inga Kontrollflödesfiler eller gemensamma temafiler ändrades. Rättningarna gäller Projektering, SmartMatch, CE-märkning, Ritningsverktyg och kontosidor genom egna lager som Kontrollflödet inte laddar (se UI_RULES.md). **Kontrollflödet är fortsatt LÅST.**
 
 2026-11-07, Tillsyno v2.4.579: utredning av kraschar med stora ritningar i Dörrautomatik (minnesanvändning, upprepad tolkning av PDF:en, Kundmall). Plan och mätningar finns i [CONTROLFLOW_HEAVY_PDF_PLAN.md](CONTROLFLOW_HEAVY_PDF_PLAN.md). Inga Kontrollflödesfiler ändrades. Testsviten städades samma dag; Kontrollflödets kvarvarande testavvikelser står i `tests/known-failures.json`. **Kontrollflödet är fortsatt LÅST.**
+
+# 2026-11-07 · v2.4.580 · Sparläge för tunga ritningar i Dörrautomatik
+
+Användaren skrev uttryckligen **”Lås upp Kontrollflödet”** för den beställda ändringen: stora ritningar ska inte krascha i Kontrollflöde Dörrautomatik, och appen ska själv känna av tunga PDF-filer. Undantaget omfattar bara:
+
+- `controlflow-revision/security-v335.js`: avkänning av tung ritning, sparläge, minnesfrigöring, synligt ritfel med nytt försök i sparläge, en gemensam pdf-lib-tolkning för arbetsfilskontrollerna och mindre Kundmall i sparläge som stängs med rutan.
+- `controlflow-revision/offline-work-v2.js`: ingen extra kopia av ritningen före lagring, och bara den senaste ritningen per område sparas.
+- Cachemärkningen i `controlflow-revision/all-in-one.html`.
+
+Stämplarnas placering och storlek, kontrollpunkter, protokoll, arbetsdataformat och import av äldre filer ändras inte. Den exporterade arbets-PDF:en och Kundmallens ritning är byte för byte desamma som i v2.4.579 med låst klocka, både för en vanlig ritning och för en ritning i sparläge. Säkerhetsservice (`security.js`) och övriga moduler omfattas inte.
+
+Kundmallens × stängde redan rätt. Felet låg i testet, som bara tryckte på × vid datorbredd. Testet är rättat och ingen appfil behövde ändras för det.
+
+Detaljer och mätningar finns i [CONTROLFLOW_HEAVY_PDF_PLAN.md](CONTROLFLOW_HEAVY_PDF_PLAN.md). Test: `tests/controlflow-heavy-drawing-v580.cjs`. **Kontrollflödet är åter LÅST efter denna beställda ändring.**
+
+# 2026-11-07 · v2.4.581 · Snabb zoom på telefon, laddningsruta – låset borttaget
+
+Ägaren rapporterade att en stor ritning höll längre i v2.4.580, men att appen kraschade på telefonen vid snabb zoom. Ägaren bad också om en stapel som fylls till 100 % när ritningen laddas. Därefter skrev ägaren ”Lås upp Kontrollflödet men vi behöver inte ha låst mer då så du kan publicera”, och låset togs bort (se överst).
+
+Ändrat:
+- `controlflow-revision/security-v335.js`:
+  - zoom avbryter inte en pågående ritning av samma sida;
+  - den tillfälliga ritytan frigörs alltid;
+  - Safaris egen sidzoom stoppas på ritningen;
+  - en långsam sida ritas en gång till i sparläge medan innehållet finns kvar i minnet;
+  - sparläget börjar tidigare på telefon;
+  - laddningsrutan får besked om varje steg.
+- Nya filerna `controlflow-revision/drawing-load-progress-v581.js` och `.css`: laddningsrutan.
+- `all-in-one.html` och `sw.js`: de nya filerna och cachemärkningen.
+
+Den exporterade arbets-PDF:en och Kundmallens ritning är byte för byte desamma som i v2.4.579 och v2.4.580. Stämplar, protokoll och import ändras inte. Detaljer finns i [CONTROLFLOW_HEAVY_PDF_PLAN.md](CONTROLFLOW_HEAVY_PDF_PLAN.md) och UI_RULES.md. Test:
+- `tests/controlflow-heavy-zoom-v581.cjs`;
+- `tests/controlflow-drawing-load-progress-v581.cjs`.
