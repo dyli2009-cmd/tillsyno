@@ -55,11 +55,13 @@ Den här listan samlar allt som är beslutat men inte klart, och vem som gör va
   - färgteman i Projektering och SmartMatch;
   - *Rensa enhetens data*;
   - öppna en stor ritning i Kontrollflöde Dörrautomatik, även på telefon. Sidraden ska visa *· Sparläge*. Kontrollera att laddningsrutan fylls till 100 %, zooma snabbt och öppna Kundmall.
+  - **Skarp zoom (v2.4.591), också i appen i TestFlight:** öppna den tunga ritningen i Säkerhetsservice, Brand och Dörrautomatik. Zooma in på ett område och vänta: området ska bli skarpt efter en kort stund. Flytta åt höger och vänster: den nya delen är suddig och blir skarp när du stannar. Zooma snabbt fram och tillbaka och kontrollera att appen inte stängs. Säg till om det tar för lång tid att bli skarpt.
+  - **Färgen i den tunga ritningen:** syns färgerna nu i Säkerhetsservice när ritningen öppnas? Om inte: säg om filen är sparad från Tillsyno tidigare, ett äldre Bluebeam-protokoll eller en ren ritning från kunden, och om de färgade delarna står under *Kommentarer* i Acrobat.
   - Dörrautomatik (v2.4.584–590): sidhuvudet på en rad, *Stäng ritning*, verktygsmenyn, *Ta bort* vid markerat ritobjekt, frågan vid *Hem*, *Historik* och *Mall*-rutan. Kontrollera särskilt att nyp-zoom i *Mall* inte zoomar hela sidan i Safari. Välj *Spara PDF* i frågan och kontrollera att PDF:en blir sparad innan du går vidare.
 
 ## 6. Beslut som väntar på ägaren
 
-- [ ] **Säkerhetsservice och stora ritningar:** sparläget finns nu i Dörrautomatik (v2.4.580). Säkerhetsservice (`security.js`) har samma mönster. Säg till om den också ska få sparläge.
+- [x] **Säkerhetsservice och stora ritningar:** ägaren beställde det 7 november 2026. Säkerhetsservice och Brand har sparläge och skydd vid snabb zoom sedan v2.4.591 (`security-drawing-view.js`).
 - [ ] **Extremt tunga ritningar:** första gången en mycket tung sida ritas behöver appen fortfarande cirka 1,1 GB, till exempel för en A0 med 1 miljon linjer. Kraschar en sådan ritning ändå på äldre iPad, prova en nyare pdf.js som eget beslut. Se [CONTROLFLOW_HEAVY_PDF_PLAN.md](CONTROLFLOW_HEAVY_PDF_PLAN.md).
 - [ ] **Svag grå hjälptext i ljusa teman:** kontrasten är 3,7–3,9:1 i hela appen. Färgen sitter i den gemensamma temafilen och påverkar hela appen. Säg till om den ska bli mörkare.
 - [ ] **SmartMatch *Uppdatera och fortsätt*:** har ingen förloppsstapel ännu. Säg till om den ska få samma stapel som startsidan.
@@ -157,6 +159,7 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 
 ## Avbockat
 
+- 2026-11-07, v2.4.591: skarp zoom som i Acrobat, i Dörrautomatik / Lås (1.8), Säkerhetsservice (1.4) och Brand (1.1). Bara det område som syns ritas skarpt när man slutar zooma eller flytta, med en fast pixelgräns. Säkerhetsservice och Brand har fått sparläge för tunga ritningar och avbryter inte längre en pågående ritning vid varje zoomsteg.
 - 2026-11-07, v2.4.590: Historik över de senaste 10 servicetillfällena (status och anmärkningar) med en gul *Historik*-knapp, i Dörrautomatik / Lås (1.7) och Säkerhetsservice (1.3). *Mall* i Dörrautomatik är en flyttbar ruta som kan ändra storlek, utan A− / A+, och zoomen gäller bara rutan.
 - 2026-11-07, v2.4.589: historikrutan *Tidigare service / anmärkningar* är läsbar i mörka teman, i Dörrautomatik / Lås (1.6) och Säkerhetsservice (1.2), och upprepar inte punktens namn. I Dörrautomatik har *Öppna* / *Stäng ritning* samma färg som *Mall*, ögat och sidpilarna som *Ångra*, och *Signatur och logga* är kompakt.
 - 2026-11-07, v2.4.588: Dörrautomatik / Lås 1.5. Inga förklaringstexter (fel visas). Filnamn och antal objekt i sidraden, ögat i verktygsraden, sidpilar och öga följer färgtemat. Översikt börjar på *Objekt med anmärkning*, är kompakt och saknar *Tillbaka* och *Kundmall*. Projekt utan modulrubrik, kryss och rubriken *Service*; *Starta ny service* sist.

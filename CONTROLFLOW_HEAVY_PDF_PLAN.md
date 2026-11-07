@@ -143,11 +143,42 @@ Värdet vid öppning varierar mellan körningar med ungefär 0,1 GB. Exporten ä
 
 Test: `tests/controlflow-heavy-zoom-v581.cjs` och `tests/controlflow-drawing-load-progress-v581.cjs`. Testet fallerar på v2.4.580 med 13 inläsningar och går igenom på v2.4.581.
 
+## v2.4.591: skarp zoom, och sparläge i Säkerhetsservice och Brand
+
+Ägaren beställde en ritning som fungerar som i Acrobat: det område man har framför sig blir skarpt efter en kort stund, resten behöver inte vara skarpt, och appen får inte krascha. Ägaren rapporterade också att Säkerhetsservice och Brand inte klarade en tung ritning.
+
+**Orsak i Säkerhetsservice och Brand:** ritningsvyn `security-drawing-view.js` ersätter motorns ritning. Den avbröt den pågående ritningen vid varje zoomsteg och flyttning, ritade om sidans bild vid zoom och frigjorde aldrig pdf.js-minnet. Det är samma mönster som gav krascherna i Dörrautomatik före v2.4.580–581.
+
+**Ändringar:**
+- Ny delad `controlflow-sharp-zoom-v591.js`. Den ritar bara det område som syns, i full skärpa, när man har slutat zooma eller flytta. Samma princip använder pdf.js sedan 2025 (detaljvyn, PR 19128), som Firefox använder.
+- Detaljbilden har en fast gräns: 2,6 MP på telefon och 6 MP på iPad och dator.
+- Det finns en detaljritning åt gången, och den avbryts inte av zoom.
+- I sparläge behålls pdf.js-minnet 5 s på telefon och 9 s på iPad och dator efter en detaljritning, och frigörs sedan.
+- Säkerhetsservice och Brand har fått samma sparläge och skydd som Dörrautomatik.
+
+**Mätt** i Chromium med syntetiska ritningar. Värdet är det högsta minnet för alla webbläsarens processer under 24 snabba zoom- och flyttsteg, med en paus efter vart fjärde, och i parentes antalet pdf.js-ritningar under stegen:
+
+| Testritning, modul | Telefon v2.4.590 | Telefon v2.4.591 | iPad v2.4.590 | iPad v2.4.591 |
+|---|---|---|---|---|
+| A0, 300 000 linjer, Säkerhetsservice | 3,03 GB (19) | 1,28–1,40 GB (4) | 3,01 GB (27) | 1,87 GB (6) |
+| A0, 300 000 linjer, Dörrautomatik | 0,96 GB (0) | 1,45–2,06 GB (5–6) | 1,11 GB (0) | 1,45 GB (5) |
+| A0, foto 20 MP, Säkerhetsservice | 0,86 GB (16) | 0,87 GB (4) | 0,91 GB (24) | 0,91 GB (6) |
+| A0, foto 20 MP, Dörrautomatik | 0,74 GB (0) | 0,93 GB (4) | 0,72 GB (0) | 1,03 GB (6) |
+
+- **Säkerhetsservice** använder mindre än hälften så mycket minne som förut med tunga linjeritningar och ritar sidan 4–6 gånger i stället för 16–27.
+- **Dörrautomatik** blev aldrig skarp förut, och minnet ökade då inte vid zoom. Nu kostar den skarpa detaljen minne: pdf.js måste gå igenom hela sidan igen, ungefär som när ritningen öppnas. Det går inte att undvika med pdf.js 3.11.
+- Värdena varierar mellan körningar med upp till 0,6 GB för Dörrautomatik.
+- En detaljritning tog 0,6–0,9 s för 300 000 linjer och 0,02 s för fotot, på datorns processor.
+
+**Säkerhetsspärr i sparläge:** en sida som tog mer än 4 s att rita första gången på telefon (8 s på iPad och dator) får inga skarpa detaljer, och visas som förut. Tar en detaljritning lika lång tid ritas inga fler för filen. Den mycket tunga sidan visas då som i sparläget före v2.4.591.
+
+**Ej verifierat:** riktig iPhone och iPad, appen i TestFlight och ägarens tunga ritning. Mätningen är gjord i Chromium på Linux, och WebKit hanterar minnet annorlunda. Gränserna (4 s och 8 s, 2,6 och 6 MP) kan behöva justeras efter prov på riktig enhet.
+
 ## Kvar, som egna beslut
 
 - **Läsa sidornas text en gång** i `legacy-door-import.js`, och dela pdf.js-dokumentet mellan importkontrollerna. Det ger kortare öppningstid men påverkar inte toppen. Det rör importen av äldre protokoll, så det görs bara med eget test av äldre filer.
 - **Prova en nyare pdf.js.** `vendor/` delas av alla moduler, så det kräver test av hela appen.
-- **Säkerhetsservice** (`security.js`) har samma mönster men omfattades inte av beställningen.
+- **Nyare pdf.js** (5.x) har detaljvy och kan hoppa över det som ligger utanför området. Det skulle göra den skarpa zoomen billigare för mycket tunga sidor, men `vendor/` delas av alla moduler.
 
 ## Underlag
 

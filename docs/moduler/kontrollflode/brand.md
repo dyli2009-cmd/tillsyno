@@ -1,8 +1,8 @@
 # Kontrollflöde – Brand
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.590 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
-- **Modulversion:** Brand 1.0. Versionen finns i `versions.json` och visas med liten text på startsidan, i mappvalet och i modulens sidhuvud.
+- **Appversion:** Tillsyno v2.4.591 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** Brand 1.1 (v2.4.591: sparläge för tunga ritningar och skarp zoom, samma ritvy som Säkerhetsservice). Versionen finns i `versions.json` och visas med liten text på startsidan, i mappvalet och i modulens sidhuvud.
 - Kontrollflödet är upplåst. Gemensamma regler och filkarta: [README.md](README.md).
 
 ## 2. Arbetsflöde från början till slut
@@ -20,11 +20,12 @@
 
   Punkterna är okulär kontroll, indikering eller placering, funktionsprov, strömförsörjning eller skada, och dokumentation av avvikelser. De står i `security.js` ca rad 115–144, och rubrikerna i kundprotokollet ca rad 323–325.
 - **Import av äldre PDF:er:** texten tolkas, och ord som brandcentral, rök- och värmedetektor, branddörr, dörrhållning och uppställningsmagnet känns igen (ca rad 736–738). Det gäller bara på huvudsidan och bara för valda protokoll.
+- **Ritningsvyn är densamma som i Säkerhetsservice** (`security-drawing-view.js`): sparläge för tunga ritningar och skarp zoom av det område som syns. Se [sakerhetsservice.md](sakerhetsservice.md) avsnitt 3.
 - **Inget annat är brandspecifikt.** Det finns ingen egen sökning och inget eget gränssnitt. Allt annat är Kontrollflödets gemensamma arbetsyta.
 
 ## 4. Kodfiler och motor
 - **Sida:** `all-in-one.html`.
-- **Motor:** `security.js`, som delas med Säkerhetsservice.
+- **Motor:** `security.js`, som delas med Säkerhetsservice. Ritningen visas av `security-drawing-view.js` och den delade `controlflow-sharp-zoom-v591.js`.
 - Posterna `SYSTEMS.fire_*` finns också i `controlflow-revision/security-v335.js`, men används inte där.
 
 ## 5. Data: inläsning, behandling, lagring, export
@@ -39,7 +40,8 @@ Samma förhållanden som för Säkerhetsservice, se [sakerhetsservice.md](sakerh
 
 ## 8. Tester och status
 ```sh
-node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-dialogs controlflow-overview controlflow-return-links controlflow-selection-delete controlflow-stamp protocol-selection-scope security-automation-checklist security-stamp-selection
+node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-dialogs controlflow-overview controlflow-return-links controlflow-selection-delete controlflow-stamp protocol-selection-scope security-automation-checklist security-stamp-selection controlflow-sharp-zoom
 ```
 - Inga kända fel.
+- `controlflow-sharp-zoom-v591` provar skarp zoom och sparläge också med Brand valt.
 - **Lucka:** inget test gäller bara Brand eller kundprotokollet för Brand. Förslag finns i [kvalitetskontroller.md](../../kvalitetskontroller.md) avsnitt 3D.

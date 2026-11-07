@@ -1,8 +1,8 @@
 # Kontrollflöde – Dörrautomatik
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.590 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
-- **Modulversion:** Dörrautomatik / Lås 1.7. Det är en gemensam version för Dörrautomatik och Lås, som grupperas som i mappvalet (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (ägarens beslut, v2.4.584). Nästa funktionsändring, till exempel kraschrättningen, höjer den till 1.8.
+- **Appversion:** Tillsyno v2.4.591 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** Dörrautomatik / Lås 1.8 (v2.4.591: skarp zoom). Det är en gemensam version för Dörrautomatik och Lås, som grupperas som i mappvalet (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (ägarens beslut, v2.4.584). Nästa funktionsändring höjer den till 1.9.
 - Kontrollflödet är upplåst. Gemensamma regler, motorer och filkarta: [README.md](README.md).
 
 ## 2. Arbetsflöde från början till slut
@@ -49,10 +49,20 @@
   - Pilar som inte kan kopplas visas för manuell koppling (`RevisionImportReview`).
 - **Tunga ritningar (v2.4.580–581):**
   - **Sparläge** slår till vid ≥ 30 MB, en bild över 16,7 MP, A1 eller större med ≥ 2 MB per sida, eller när en sida tar mer än 1,5 s att rita. På telefon slår det till tidigare: 15 MB, 8,4 MP, A2 med 1 MB per sida, eller 0,8 s.
-  - I sparläget ritas sidan en gång med högst 3 MP, och zoom förstorar bilden. Minnet frigörs efter varje ritning och vid sidbyte, och Kundmall ritas med högst 4 MP.
+  - I sparläget ritas sidans bild en gång med högst 3 MP, och zoom förstorar den bilden. Minnet frigörs efter varje ritning och vid sidbyte, och Kundmall ritas med högst 4 MP.
   - En zoom avbryter inte en pågående ritning. Safaris egen sidzoom är avstängd på ritningsytan.
   - **Laddningsrutan** (`drawing-load-progress-v581.*`) visar filnamn, procent och steg, och når 100 % först när sidan visas.
   - Detaljer: [CONTROLFLOW_HEAVY_PDF_PLAN.md](../../../CONTROLFLOW_HEAVY_PDF_PLAN.md).
+- **Skarp zoom (v2.4.591, `controlflow-sharp-zoom-v591.js`, delad med Säkerhetsservice och Brand):** samma princip som Acrobat och pdf.js.
+  - Sidans bild visas som förut och räcker vid normal zoom. När den inte räcker till för skarp visning (inzoomat, framför allt A1 och A0) ritas **bara det område som syns**, med en marginal på en fjärdedel åt varje håll, i full skärpa. Det sker när man har slutat zooma eller flytta: efter 0,22 s, i sparläge 0,45 s.
+  - Flyttar man ritningen visas sidans suddiga bild utanför det skarpa området tills nästa område är ritat. Under en tvåfingerzoom ritas ingen detalj.
+  - Detaljbilden har en fast gräns: högst 2,6 miljoner pixlar på telefon och 6 miljoner på iPad och dator, med högst 2 bildpunkter per CSS-pixel. Det finns bara en detaljbild åt gången, och den förra frigörs när en ny visas.
+  - Detaljen ligger mellan ritningen och stämplarna och tar inte emot tryck. Den tas bort direkt vid sidbyte, ny fil och *Stäng ritning*, och när man zoomar ut så att sidans bild räcker.
+  - Bara en detalj ritas åt gången, och den avbryts inte av zoom eller flyttning. Efter den ritas det senast begärda området.
+  - **I sparläge** behålls pdf.js-minnet efter en detaljritning i 5 s på telefon och 9 s på iPad och dator, så att nästa flyttning går fort. Sedan frigörs det, och även när appen läggs i bakgrunden. Sidans bild ritas inte om.
+  - Kan en detalj inte ritas visas sidans vanliga bild, och inga fler detaljer ritas för den filen.
+  - **Säkerhetsspärr i sparläge:** en detalj kostar ungefär lika mycket minne som att öppna sidan. En sida som tog mer än 4 s att rita första gången på telefon (8 s på iPad och dator) får därför inga detaljer och visas som i sparläget förut. Tar en detaljritning så lång tid ritas inga fler för filen. Mätningar: [CONTROLFLOW_HEAVY_PDF_PLAN.md](../../../CONTROLFLOW_HEAVY_PDF_PLAN.md).
+  - Stämplar, export, Kundmall, sparade arbetsfiler och import ändras inte.
 - **Ångra och gör om:** upp till 30 steg, bara i minnet (`session-history.js`).
 - **Sidhuvud och verktyg (v2.4.584, `revision-header-v584.*`):**
   - En rad: *Hem*, filnamnet, och till höger *Öppna ritning*, *Stäng ritning*, *Mall* och *PDF*. På telefon står filnamnet i raden med antal objekt. Versionsraden finns inte i sidhuvudet.
@@ -81,6 +91,7 @@
   - `service-overview-v12.*`
   - `customer-preview-v310.*`
   - `drawing-load-progress-v581.*`
+  - den delade `controlflow-sharp-zoom-v591.js` i roten (skarp zoom, också i Säkerhetsservice och Brand)
   - `revision-header-v584.*` (sidhuvud, verktygsmeny och frågan innan ritningen lämnas)
   - `revision-protocol-v587.*` (checklistvyn: rubrik, infällda objektuppgifter med varning)
   - `revision-views-v588.*` (Ritning, Översikt och Projekt: meddelanden, sidrad, öga, översiktens filter, Starta ny service sist)
@@ -123,9 +134,9 @@
 
 ## 8. Tester och status
 ```sh
-node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress security-automation-checklist revision-uncheck revision-header revision-draw-delete stamp-lock-frame revision-protocol revision-views controlflow-polish controlflow-history-preview controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
+node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress controlflow-sharp-zoom security-automation-checklist revision-uncheck revision-header revision-draw-delete stamp-lock-frame revision-protocol revision-views controlflow-polish controlflow-history-preview controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
 ```
-- **Senaste körning:** godkänd (v2.4.585), se [kvalitetskontroller.md](../../kvalitetskontroller.md). `revision-header-v584` provar sidhuvudet, verktygsmenyn och frågan innan ritningen lämnas på telefon, iPad och dator. `revision-draw-delete-v585` provar *Ta bort* för alla sex ritobjekt på telefon och dator. `revision-protocol-v587` provar checklistvyn på telefon, iPad och dator. `revision-views-v588` provar Ritning, Översikt och Projekt på telefon, iPad och dator, i ljust och mörkt tema.
+- **Senaste körning:** v2.4.591, hela testsviten: 121 tester, 114 godkända, 5 kända fel och 2 överhoppade (de behöver en riktig ritning). `controlflow-sharp-zoom-v591` provar skarp zoom, flyttning, sidbyte, telefonens gräns, sparläget och säkerhetsspärren i Dörrautomatik, Säkerhetsservice och Brand. Se också [kvalitetskontroller.md](../../kvalitetskontroller.md). `revision-header-v584` provar sidhuvudet, verktygsmenyn och frågan innan ritningen lämnas på telefon, iPad och dator. `revision-draw-delete-v585` provar *Ta bort* för alla sex ritobjekt på telefon och dator. `revision-protocol-v587` provar checklistvyn på telefon, iPad och dator. `revision-views-v588` provar Ritning, Översikt och Projekt på telefon, iPad och dator, i ljust och mörkt tema.
 - **Ej verifierat på riktig enhet:** sidhuvudet och frågan på iPhone och iPad med Safari, och att nedladdningen av PDF:en blir klar innan användaren väljer att lämna.
 - **Kända fel:** inga egna.
 - **Pågår separat:** krascher med stora ritningar på riktiga enheter (VANTANDE_PUNKTER.md avsnitt 8, steg 2).

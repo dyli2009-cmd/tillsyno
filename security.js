@@ -291,6 +291,32 @@ function saveDrawingViewExtras(){drawingExtras=projectDrawingExtras(drawingViewE
 function prepareDrawingViewExtras(){const key=JSON.stringify(drawingRotations);if(drawingExtrasSource!==drawingExtras||drawingExtrasRotationKey!==key){drawingViewExtras=projectDrawingExtras(drawingExtras);drawingExtrasSource=drawingExtras;drawingExtrasRotationKey=key}}
 const MAX_PIXELS=4000000,MAX_SIDE=4096;
 function boundedViewport(p,scale,rotation=p.rotate){const natural=p.getViewport({scale:1,rotation});return p.getViewport({scale:Math.min(scale,Math.sqrt(MAX_PIXELS/(natural.width*natural.height)),MAX_SIDE/natural.width,MAX_SIDE/natural.height),rotation})}
+// Sparläge för tunga ritningar (v2.4.591, samma utformning som Dörrautomatik v2.4.580–581). Sidan ritas av
+// security-drawing-view.js: i sparläge en gång med högst HEAVY_MAX_PIXELS, zoom ritar inte om sidan och minnet frigörs
+// efter varje ritning. En telefon har ungefär hälften så mycket minne som en iPad, så sparläget börjar tidigare där.
+const PHONE_DEVICE=(()=>{try{return matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<=600}catch(_){return false}})();
+const HEAVY_MAX_PIXELS=3000000,HEAVY_MAX_SIDE=3072,HEAVY_FILE_BYTES=(PHONE_DEVICE?15:30)*1024*1024,HEAVY_IMAGE_PIXELS=PHONE_DEVICE?8388608:16777216,HEAVY_PAGE_AREA=PHONE_DEVICE?2000000:4000000,HEAVY_PAGE_BYTES=(PHONE_DEVICE?1:2)*1024*1024,HEAVY_RENDER_MS=PHONE_DEVICE?800:1500;
+let heavyDrawing=false,renderTarget=null;
+// Reads image sizes from the uncompressed image dictionaries without decoding anything.
+function largestPdfImagePixels(bytes){
+ let largest=0;const n=bytes.length,decoder=new TextDecoder('latin1');
+ for(let i=bytes.indexOf(47);i>=0&&i<n-6;i=bytes.indexOf(47,i+1)){
+  if(bytes[i+1]!==73||bytes[i+2]!==109||bytes[i+3]!==97||bytes[i+4]!==103||bytes[i+5]!==101)continue;// "/Image"
+  const after=bytes[i+6];if((after>=65&&after<=90)||(after>=97&&after<=122))continue;// /ImageB, /ImageC, /ImageI
+  const text=decoder.decode(bytes.subarray(Math.max(0,i-400),Math.min(n,i+400))),width=/\/Width\s+(\d+)(?![\d.])(?!\s+\d+\s+R)/.exec(text),height=/\/Height\s+(\d+)(?![\d.])(?!\s+\d+\s+R)/.exec(text);
+  if(width&&height)largest=Math.max(largest,Number(width[1])*Number(height[1]));
+ }
+ return largest;
+}
+async function assessHeavyDrawing(bytes,documentPdf){
+ if(bytes.length>=HEAVY_FILE_BYTES)return true;
+ if(largestPdfImagePixels(bytes)>HEAVY_IMAGE_PIXELS)return true;
+ try{const first=await documentPdf.getPage(1),natural=first.getViewport({scale:1});return natural.width*natural.height>=HEAVY_PAGE_AREA&&bytes.length/Math.max(1,documentPdf.numPages)>=HEAVY_PAGE_BYTES}catch(_){return false}
+}
+function releaseDrawingMemory(documentPdf){if(documentPdf)documentPdf.cleanup().catch(()=>{})}
+function showSecurityPageLabel(pageNumber,pageCount){const label=$('secPage');label.textContent='Sida '+pageNumber+' / '+pageCount+(heavyDrawing?' · Sparläge':'');label.title=heavyDrawing?'Stor ritning – visas i sparläge med lägre upplösning så att appen inte stängs.':'';label.classList.toggle('secPageHeavy',heavyDrawing)}
+// Skarp zoom (v2.4.591): created by security-drawing-view.js, which draws the page in Säkerhetsservice and Brand.
+let sharpZoom=null;
 const PROJECT_FIELDS=['secProjectName','secFacilityNo','secOrder','secDate','secNextDate','secCustomer','secAgreement','secContact','secPhone','secAddress','secCompany','secTechnician','secCompanyContact','secCompanyPhone','secCompanyAddress','secSignature'];
 function localToday(){const d=new Date(),local=new Date(d.getTime()-d.getTimezoneOffset()*60000);return local.toISOString().slice(0,10)}
 function cleanSecurityRemarkText(value){return String(value||'').replace(/\s+[–—-]\s+/g,', ').replace(/\s{2,}/g,' ').trim()}
@@ -584,6 +610,8 @@ viewer.addEventListener('wheel',e=>{
  wheelZoomTimer=setTimeout(()=>{const target=wheelZoomTarget,finalFocus=wheelZoomFocus;wheelZoomTarget=null;wheelZoomFocus=null;wheelZoomTimer=null;setZoom(target,finalFocus)},180);
 },{passive:false});
 
+// iOS Safari: a fast two-finger pinch could start Safari's own page zoom on top of the drawing zoom.
+for(const type of ['gesturestart','gesturechange'])viewer.addEventListener(type,e=>e.preventDefault(),{passive:false});
 viewer.addEventListener('pointerdown',e=>{
  if(!pdf||drawingGestureLocked||addType||textMode||e.button!==0||e.pointerType==='touch'||(e.target.closest('.secMarker,.secTarget,.precisionPointGrab,.secTextNote,.secTextTarget,.serviceDrawingOverlay,.detectorNumberBox')&&!window.SecurityStampSelection?.panFrom(e.target)))return;
  panMouse={pointer:e.pointerId,x:e.clientX,y:e.clientY,left:viewer.scrollLeft,top:viewer.scrollTop,fromStamp:!!window.SecurityStampSelection?.panFrom(e.target),moved:false};
@@ -666,10 +694,10 @@ function endTouch(e){
 viewer.addEventListener('touchend',endTouch,{passive:true});
 viewer.addEventListener('touchcancel',endTouch,{passive:true});
 
-async function inspectSecurityWorkPdf(bytes){
+async function inspectSecurityWorkPdf(bytes,parsed=null){
  if(!window.PDFLib)throw new Error('PDF-biblioteket är inte tillgängligt.');
  const {PDFDocument,PDFName,PDFDict,PDFNumber,PDFRawStream,decodePDFRawStream}=PDFLib;
- const doc=await PDFDocument.load(bytes,{updateMetadata:false}),ownRef=doc.catalog.get(PDFName.of(APP_WORK_KEY)),securityRef=ALL_IN_ONE?doc.catalog.get(PDFName.of('SecurityServiceWork')):null,testRef=doc.catalog.get(PDFName.of('SecurityDetectorTestWork')),ref=ownRef||securityRef||testRef;if(!ref)return null;
+ const doc=parsed||await PDFDocument.load(bytes,{updateMetadata:false}),ownRef=doc.catalog.get(PDFName.of(APP_WORK_KEY)),securityRef=ALL_IN_ONE?doc.catalog.get(PDFName.of('SecurityServiceWork')):null,testRef=doc.catalog.get(PDFName.of('SecurityDetectorTestWork')),ref=ownRef||securityRef||testRef;if(!ref)return null;
  const metadata=doc.context.lookup(ref);if(!(metadata instanceof PDFDict))throw new Error(APP_LABEL+'-arbetsfilens uppgifter är skadade.');
  const version=metadata.lookup(PDFName.of('Version'),PDFNumber).asNumber();if(version<2)throw new Error(APP_LABEL+'-arbetsfilen har en äldre dataversion.');
  const data=metadata.lookup(PDFName.of('Data'),PDFRawStream),drawing=metadata.lookup(PDFName.of('Drawing'),PDFRawStream);
@@ -681,10 +709,10 @@ async function inspectSecurityWorkPdf(bytes){
 }
 
 
-async function inspectDoorAutomationWorkPdfForAllInOne(bytes){
+async function inspectDoorAutomationWorkPdfForAllInOne(bytes,parsed=null){
  if(!ALL_IN_ONE||!window.PDFLib)return null;
  try{
-  const {PDFDocument,PDFName,PDFDict,PDFNumber,PDFRawStream,decodePDFRawStream}=PDFLib,doc=await PDFDocument.load(bytes,{updateMetadata:false}),ref=doc.catalog.get(PDFName.of('DorrserviceWork'));if(!ref)return null;
+  const {PDFDocument,PDFName,PDFDict,PDFNumber,PDFRawStream,decodePDFRawStream}=PDFLib,doc=parsed||await PDFDocument.load(bytes,{updateMetadata:false}),ref=doc.catalog.get(PDFName.of('DorrserviceWork'));if(!ref)return null;
   const metadata=doc.context.lookup(ref);if(!(metadata instanceof PDFDict))return null;
   const version=metadata.lookup(PDFName.of('Version'),PDFNumber).asNumber();if(version<2)return null;
   const data=metadata.lookup(PDFName.of('Data'),PDFRawStream),drawing=metadata.lookup(PDFName.of('Drawing'),PDFRawStream);
@@ -878,9 +906,9 @@ async function closeSecurityDrawing(){
  if(!pdf||drawingFileLoading||document.body.classList.contains('exporting'))return;
  securityDrawingTools?.stop();if(!save())return;
  try{localStorage.setItem(APP_STORAGE_PREFIX+activeKey+':closed-file',openedDrawingFileKey||'')}catch(_){msg('Kunde inte spara återöppningsläget. Spara PDF innan du stänger ritningen.',true);return}
- const closing=pdf,closingPreview=previewPdf;++renderVersion;if(renderTask)renderTask.cancel();if(previewRenderTask)previewRenderTask.cancel();previewPdf=null;previewStampRects=[];previewOverviewLinks=[];
+ const closing=pdf,closingPreview=previewPdf;++renderVersion;sharpZoom?.reset();if(renderTask)renderTask.cancel();if(previewRenderTask)previewRenderTask.cancel();previewPdf=null;previewStampRects=[];previewOverviewLinks=[];
  clearTimeout(wheelZoomTimer);wheelZoomTimer=null;wheelZoomTarget=null;wheelZoomFocus=null;
- pdf=null;sourceBytes=null;activeKey=null;openedDrawingFileKey=null;drawingRaster=null;drawingRotations={};items=[];textNotes=[];drawingExtras=[];selected=null;project=emptyProject();logoData='';
+ pdf=null;sourceBytes=null;activeKey=null;openedDrawingFileKey=null;heavyDrawing=false;renderTarget=null;drawingRaster=null;drawingRotations={};items=[];textNotes=[];drawingExtras=[];selected=null;project=emptyProject();logoData='';
  page=1;zoom=1;visualZoom=1;baseScale=1;pageWidth=1;pageHeight=1;pinch=null;panTouch=null;panMouse=null;addType=null;textMode=false;textPointerStart=null;lastObjectTap=null;drawingGestureLocked=false;drawingLockScroll=null;
  document.body.classList.remove('secAdding','secTextAdding');viewer.classList.remove('mousePanning','arrowDragging');window.ServicePrecisionPointer?.hide();applyDrawingOverlayVisibility(false);
  $('secAddText').classList.remove('primary');const stage=$('secStage');stage.style.transform='';stage.style.width='0px';stage.style.height='0px';stage.style.marginTop=stage.style.marginBottom='0px';canvas.width=canvas.height=0;canvas.style.width=canvas.style.height='0px';viewer.scrollLeft=viewer.scrollTop=0;
@@ -893,16 +921,25 @@ if($('secCloseDrawing'))$('secCloseDrawing').onclick=closeSecurityDrawing;
 if($('secChangeDrawing'))$('secChangeDrawing').onclick=()=>$('securityFile').click();
 // Restore explicit work-PDF metadata only; an original drawing always starts without cached connections.
 $('securityFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;drawingFileLoading=true;refreshTop();try{
- msg('Laddar ritning…');const bytes=new Uint8Array(await f.arrayBuffer()),imported=await inspectSecurityWorkPdf(bytes),doorImported=!imported?await inspectDoorAutomationWorkPdfForAllInOne(bytes):null,legacyDoorImported=!imported&&!doorImported&&ALL_IN_ONE&&allInOneProtocolActive('automation')&&window.inspectLegacyLinkedPdf?await window.inspectLegacyLinkedPdf(bytes,f.name,message=>msg(message)):null,legacyImported=!imported&&!doorImported&&!legacyDoorImported?await inspectLegacySecurityLinkedPdf(bytes):null,drawingBytes=imported?.drawingBytes||doorImported?.drawingBytes||legacyDoorImported?.drawingBytes||legacyImported?.drawingBytes||bytes,key=await fingerprint(drawingBytes),fileKey=drawingBytes===bytes?key:await fingerprint(bytes),record=imported?.work||doorImported?.work||(legacyDoorImported?{items:(legacyDoorImported.work?.doors||[]).map((d,index)=>({...d,type:'automation',number:index+1})),textNotes:legacyDoorImported.work?.textNotes||[],drawingExtras:legacyDoorImported.work?.drawingExtras||[],project:{...emptyProject(),...(legacyDoorImported.work?.project||{})},logoData:legacyDoorImported.work?.logoData||''}:null)||legacyImported?.work||null,candidate=await pdfjsLib.getDocument({data:drawingBytes.slice()}).promise;
- if(pdf)try{await pdf.destroy()}catch(_){}
- pdf=candidate;sourceBytes=drawingBytes.slice();activeKey=key;openedDrawingFileKey=fileKey;try{localStorage.removeItem(APP_STORAGE_PREFIX+key+':closed-file')}catch(_){}loadDrawingRotations(record?.drawingRotations||{});items=renumberLegacySecurityItems((record?.items||[]).map(normalize));textNotes=Array.isArray(record?.textNotes)?record.textNotes:[];drawingExtras=Array.isArray(record?.drawingExtras)?record.drawingExtras:[];project={...emptyProject(),...(record?.project||{}),sourceFileName:f.name};syncAutomationIds();logoData=record?.logoData||'';page=1;zoom=1;visualZoom=1;pinch=null;panTouch=null;panMouse=null;addType=null;textMode=false;applyDrawingOverlayVisibility(false);document.body.classList.remove('secAdding','secTextAdding');$('secAddText').classList.remove('primary');$('secStage').style.transform='';syncProjectInputs();refreshTop();save();go('drawing');await render(true);viewer.scrollLeft=0;viewer.scrollTop=0;
- const activeCount=visibleItems().length;
+ msg('Laddar ritning…');const bytes=new Uint8Array(await f.arrayBuffer());
+ // One pdf-lib parse is shared by both work-file checks and released before the drawing is shown.
+ let parsed=window.PDFLib?await PDFLib.PDFDocument.load(bytes,{updateMetadata:false}):null;
+ const imported=await inspectSecurityWorkPdf(bytes,parsed),doorImported=!imported?await inspectDoorAutomationWorkPdfForAllInOne(bytes,parsed):null;parsed=null;
+ const legacyDoorImported=!imported&&!doorImported&&ALL_IN_ONE&&allInOneProtocolActive('automation')&&window.inspectLegacyLinkedPdf?await window.inspectLegacyLinkedPdf(bytes,f.name,message=>msg(message)):null,legacyImported=!imported&&!doorImported&&!legacyDoorImported?await inspectLegacySecurityLinkedPdf(bytes):null,drawingBytes=imported?.drawingBytes||doorImported?.drawingBytes||legacyDoorImported?.drawingBytes||legacyImported?.drawingBytes||bytes,key=await fingerprint(drawingBytes),fileKey=drawingBytes===bytes?key:await fingerprint(bytes),record=imported?.work||doorImported?.work||(legacyDoorImported?{items:(legacyDoorImported.work?.doors||[]).map((d,index)=>({...d,type:'automation',number:index+1})),textNotes:legacyDoorImported.work?.textNotes||[],drawingExtras:legacyDoorImported.work?.drawingExtras||[],project:{...emptyProject(),...(legacyDoorImported.work?.project||{})},logoData:legacyDoorImported.work?.logoData||''}:null)||legacyImported?.work||null,candidate=await pdfjsLib.getDocument({data:drawingBytes.slice()}).promise,candidateHeavy=await assessHeavyDrawing(drawingBytes,candidate);
+ sharpZoom?.reset();if(pdf)try{await pdf.destroy()}catch(_){}
+ // The file's own array is not used elsewhere, so it is kept as is instead of copied once more.
+ pdf=candidate;heavyDrawing=candidateHeavy;renderTarget=null;sourceBytes=drawingBytes===bytes?bytes:drawingBytes.slice();activeKey=key;openedDrawingFileKey=fileKey;try{localStorage.removeItem(APP_STORAGE_PREFIX+key+':closed-file')}catch(_){}loadDrawingRotations(record?.drawingRotations||{});items=renumberLegacySecurityItems((record?.items||[]).map(normalize));textNotes=Array.isArray(record?.textNotes)?record.textNotes:[];drawingExtras=Array.isArray(record?.drawingExtras)?record.drawingExtras:[];project={...emptyProject(),...(record?.project||{}),sourceFileName:f.name};syncAutomationIds();logoData=record?.logoData||'';page=1;zoom=1;visualZoom=1;pinch=null;panTouch=null;panMouse=null;addType=null;textMode=false;applyDrawingOverlayVisibility(false);document.body.classList.remove('secAdding','secTextAdding');$('secAddText').classList.remove('primary');$('secStage').style.transform='';syncProjectInputs();refreshTop();save();go('drawing');let shown=await render(true);
+ // A drawing that cannot be shown normally gets one more try in sparläge.
+ if(shown===false&&!heavyDrawing&&pdf===candidate){heavyDrawing=true;try{await candidate.cleanup()}catch(_){}shown=await render(true)}
+ viewer.scrollLeft=0;viewer.scrollTop=0;
+ const activeCount=visibleItems().length,heavyNote=heavyDrawing?'Stor ritning – visas i sparläge. ':'',notShown='Ritningen öppnades, men sidan kunde inte visas, inte heller i sparläge. Prova Passa eller en annan sida. Fungerar det inte, dela upp ritningen i mindre PDF-filer.';
  if((imported||doorImported)&&activeCount){
   $('secOpenWorkMeta').textContent=[project.projectName||project.facilityNo||APP_LABEL,activeCount+' objekt',project.date?'senaste service '+project.date:''].filter(Boolean).join(' · ');
   $('secOpenWorkDialog').showModal();
-  msg('Arbets-PDF öppnad. Välj Ny service eller Fortsätt / ändra.');
- }else if(legacyImported&&activeCount)msg(ALL_IN_ONE?'Äldre PDF öppnad. '+activeCount+' objekt återställda för valda protokoll.':legacyImported.summaryText);
- else msg(((imported||doorImported)?'Arbets-PDF öppnad. ':'Ritningen är klar. ')+(activeCount?activeCount+' objekt återställda.':(ALL_IN_ONE?'Börja markera valda protokoll.':'Lägg till Inbrottslarm, Lås & Dörrmiljö eller Passer.')));
+  if(shown===false)msg(notShown,true);else msg(heavyNote+'Arbets-PDF öppnad. Välj Ny service eller Fortsätt / ändra.');
+ }else if(shown===false)msg(notShown,true);
+ else if(legacyImported&&activeCount)msg(heavyNote+(ALL_IN_ONE?'Äldre PDF öppnad. '+activeCount+' objekt återställda för valda protokoll.':legacyImported.summaryText));
+ else msg(heavyNote+((imported||doorImported)?'Arbets-PDF öppnad. ':'Ritningen är klar. ')+(activeCount?activeCount+' objekt återställda.':(ALL_IN_ONE?'Börja markera valda protokoll.':'Lägg till Inbrottslarm, Lås & Dörrmiljö eller Passer.')));
  try{await window.TillsynoOfflineWork?.remember(APP_STATE_NAME,key,f.name,sourceBytes)}catch(error){console.error(error);msg('Arbetsdata sparas, men ritningen kunde inte sparas lokalt. Spara en arbets-PDF innan du stänger appen.',true)}
  }catch(err){console.error(err);msg(err.message||'Kunde inte öppna PDF-filen.',true)}finally{e.target.value='';drawingFileLoading=false;refreshTop()}};
 $('secOpenWorkDialog').addEventListener('cancel',e=>e.preventDefault());
@@ -916,7 +953,7 @@ async function rotateSecurityDrawing(direction=1){
  securityDrawingTools?.stop();securityDrawingTools?.deselect();
  clearTimeout(wheelZoomTimer);wheelZoomTimer=null;wheelZoomTarget=null;wheelZoomFocus=null;
  const previous=drawingRotation(),rotatedPage=page,rotatedKey=activeKey;drawingRotations[rotatedPage]=(previous+(direction<0?-90:90)+360)%360;
- zoom=1;visualZoom=1;pinch=null;panTouch=null;panMouse=null;lastObjectTap=null;
+ zoom=1;visualZoom=1;pinch=null;panTouch=null;panMouse=null;lastObjectTap=null;sharpZoom?.reset();
  $('secStage').style.transform='';$('secRotate').disabled=true;
  const rendered=await render(true);if(pdf!==source||activeKey!==rotatedKey)return false;
  if(rendered===false&&page===rotatedPage){drawingRotations[rotatedPage]=previous;await render(true)}
@@ -929,7 +966,8 @@ if($('secRotate'))$('secRotate').onclick=()=>rotateSecurityDrawing(1);
 function changeSecurityPage(delta){
  if(!pdf)return false;
  const next=Math.max(1,Math.min(pdf.numPages,page+delta));if(next===page)return false;
- clearTimeout(wheelZoomTimer);wheelZoomTarget=null;wheelZoomFocus=null;page=next;zoom=1;visualZoom=1;$('secStage').style.transform='';render(true);viewer.scrollLeft=0;viewer.scrollTop=0;return true
+ clearTimeout(wheelZoomTimer);wheelZoomTarget=null;wheelZoomFocus=null;const previous=page,documentPdf=pdf;sharpZoom?.reset();page=next;zoom=1;visualZoom=1;$('secStage').style.transform='';
+ render(true).then(()=>{if(!heavyDrawing&&pdf===documentPdf&&page!==previous)documentPdf.getPage(previous).then(p=>p.cleanup()).catch(()=>{})});viewer.scrollLeft=0;viewer.scrollTop=0;return true
 }
 $('secPrev').onclick=()=>changeSecurityPage(-1);$('secNext').onclick=()=>changeSecurityPage(1);$('secZoomIn').onclick=()=>{clearTimeout(wheelZoomTimer);wheelZoomTarget=null;setZoom(zoom*1.25)};$('secZoomOut').onclick=()=>{clearTimeout(wheelZoomTimer);wheelZoomTarget=null;setZoom(zoom/1.25)};$('secFit').onclick=$('secFitMobile').onclick=()=>{clearTimeout(wheelZoomTimer);wheelZoomTarget=null;zoom=1;visualZoom=1;$('secStage').style.transform='';render(true)};
 function openDrawingVisibility(){
@@ -1577,13 +1615,18 @@ if(secPreviewTextLarger)secPreviewTextLarger.onclick=()=>{secPreviewTextLevel=Ma
 applySecPreviewTextLevel();
 let customerPreviewZoom=1;
 async function renderCustomerPreview(){
- if(!previewPdf)return;
+ const documentPdf=previewPdf;if(!documentPdf)return;
  if(previewRenderTask)try{await previewRenderTask.cancel()}catch(_){}
- const p=await previewPdf.getPage(previewPage),wrap=$('secPreviewWrap'),natural=p.getViewport({scale:1}),fitScale=Math.max(.2,Math.min((wrap.clientWidth-24)/natural.width,(wrap.clientHeight-24)/natural.height)),scale=Math.max(.2,Math.min(8,fitScale*secPreviewScaleFactor()*(previewMode==='drawing'?customerPreviewZoom:1))),dpr=Math.min(Math.max(2.5,(window.devicePixelRatio||1)*1.6),4,Math.sqrt(16000000/(natural.width*natural.height*scale*scale))),vp=p.getViewport({scale:scale*dpr}),cssVp=p.getViewport({scale});
- const cv=$('secPreviewCanvas');cv.width=Math.ceil(vp.width);cv.height=Math.ceil(vp.height);cv.style.width=cssVp.width+'px';cv.style.height=cssVp.height+'px';
- const previewCtx=cv.getContext('2d');previewCtx.imageSmoothingEnabled=true;previewCtx.imageSmoothingQuality='high';previewRenderTask=p.render({canvasContext:previewCtx,viewport:vp});try{await previewRenderTask.promise}catch(e){if(e.name!=='RenderingCancelledException')throw e}
- $('secPreviewPage').textContent=previewPage+' / '+previewPdf.numPages;
- $('secPreviewPrev').disabled=previewPage<=1;$('secPreviewNext').disabled=previewPage>=previewPdf.numPages;
+ // Sparläge: the customer drawing is drawn smaller (at most 4 MP) and its memory is freed after each drawing.
+ const heavyPreview=previewMode==='drawing'&&heavyDrawing;let p;
+ try{
+  p=await documentPdf.getPage(previewPage);const wrap=$('secPreviewWrap'),natural=p.getViewport({scale:1}),fitScale=Math.max(.2,Math.min((wrap.clientWidth-24)/natural.width,(wrap.clientHeight-24)/natural.height)),scale=Math.max(.2,Math.min(8,fitScale*secPreviewScaleFactor()*(previewMode==='drawing'?customerPreviewZoom:1))),dpr=Math.min(heavyPreview?Math.min(2,window.devicePixelRatio||1):Math.max(2.5,(window.devicePixelRatio||1)*1.6),4,Math.sqrt((heavyPreview?4000000:16000000)/(natural.width*natural.height*scale*scale))),vp=p.getViewport({scale:scale*dpr}),cssVp=p.getViewport({scale});
+  const cv=$('secPreviewCanvas');cv.width=Math.ceil(vp.width);cv.height=Math.ceil(vp.height);cv.style.width=cssVp.width+'px';cv.style.height=cssVp.height+'px';
+  const previewCtx=cv.getContext('2d');previewCtx.imageSmoothingEnabled=true;previewCtx.imageSmoothingQuality='high';previewRenderTask=p.render({canvasContext:previewCtx,viewport:vp});try{await previewRenderTask.promise}catch(e){if(e.name!=='RenderingCancelledException')throw e}
+ }catch(e){if(previewPdf!==documentPdf)return;throw e}// The preview was closed or replaced while it was drawn.
+ finally{if(heavyPreview&&p)p.cleanup()}
+ $('secPreviewPage').textContent=previewPage+' / '+documentPdf.numPages;
+ $('secPreviewPrev').disabled=previewPage<=1;$('secPreviewNext').disabled=previewPage>=documentPdf.numPages;
 }
 async function returnFromCustomerProtocol(link){
  if(!link||!pdf||!Number.isInteger(link.drawingPage)||link.drawingPage<1||link.drawingPage>pdf.numPages)return false;
@@ -1603,8 +1646,10 @@ async function openCustomerPreview(forceReport=false){
  try{
   const view=document.body.dataset.view||'drawing',overviewOpen=$('securityOverview')?.open,o=cur();
   previewBackLinks=[];previewOverviewLinks=[];
-  if(previewPdf)try{await previewPdf.destroy()}catch(_){}
+  if(previewPdf){const old=previewPdf;previewPdf=null;try{await old.destroy()}catch(_){}}
   if(!forceReport&&view==='drawing'&&!overviewOpen&&pdf&&sourceBytes){
+   // Sparläge: free the drawing's cached content before the customer copy is built and opened.
+   if(heavyDrawing){await renderQueue.catch(()=>{});await sharpZoom?.idle();try{await pdf.cleanup()}catch(_){}}
    previewMode='drawing';const built=await buildSecurityDrawingPdf();previewStampRects=built.stampRects;previewOverviewLinks=built.overviewLinks;previewPdf=await pdfjsLib.getDocument({data:await built.out.save()}).promise;previewPage=Math.max(1,Math.min(previewPdf.numPages,page));$('secPreviewTitle').textContent='Ritning · sida '+previewPage;
   }else{
    previewMode='report';const report=reportDoc(),pageMap=report.__protocolPages||{},bytes=new Uint8Array(report.output('arraybuffer'));previewBackLinks=report.__backLinks||[];previewPdf=await pdfjsLib.getDocument({data:bytes}).promise;
@@ -1636,7 +1681,8 @@ $('secPreviewCanvas').addEventListener('click',async event=>{
 $('secPreviewClose').onclick=()=>$('secPreviewDialog').close();
 $('secPreviewPrev').onclick=()=>{if(previewPdf&&previewPage>1){previewPage--;if(previewMode==='drawing')$('secPreviewTitle').textContent='Ritning · sida '+previewPage;renderCustomerPreview()}};
 $('secPreviewNext').onclick=()=>{if(previewPdf&&previewPage<previewPdf.numPages){previewPage++;if(previewMode==='drawing')$('secPreviewTitle').textContent='Ritning · sida '+previewPage;renderCustomerPreview()}};
-$('secPreviewDialog').addEventListener('close',()=>{if(previewRenderTask)try{previewRenderTask.cancel()}catch(_){}});
+// The customer copy is a second full PDF document: close it with the dialog instead of keeping it until the next opening.
+$('secPreviewDialog').addEventListener('close',()=>{if(previewRenderTask)try{previewRenderTask.cancel()}catch(_){}const closing=$('secPreviewDialog').open?null:previewPdf;if(!closing)return;previewPdf=null;setTimeout(()=>closing.destroy().catch(()=>{}),0)});
 window.addEventListener('resize',()=>{if($('secPreviewDialog').open)renderCustomerPreview()});
 const secSaveDialog=$('secSaveDialog');
 $('securityExport').onclick=()=>{if(!pdf||!sourceBytes)return msg('Öppna en ritning först.',true);secSaveDialog.showModal()};
