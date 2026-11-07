@@ -2,6 +2,8 @@
  * This is a legible raster fixture, not a guarantee for every customer scan.
  * Optional QA output directory: DRAWING_OCR_SWEDISH_QA_DIR. */
 'use strict';
+// The test intercepts requests (page.route); Playwright cannot intercept requests that the
+// app's service worker answers, so service workers are blocked here.
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),os=require('node:os');
 const {PDFDocument}=require('../vendor/pdf-lib.min.js'),writer=require('../drawing-ocr-pdf.js');
@@ -32,7 +34,7 @@ async function inspect(page,bytes){
  },Buffer.from(bytes).toString('base64'));
 }
 async function actualTool(browser,source){
- const context=await browser.newContext({viewport:{width:1366,height:1000}}),page=await context.newPage(),errors=[],remote=[];
+ const context=await browser.newContext({viewport:{width:1366,height:1000},serviceWorkers:'block'}),page=await context.newPage(),errors=[],remote=[];
  try{
   // Only this isolated test browser substitutes the guard; real authorization
   // and all OCR/model/controller code remain untouched.
@@ -94,7 +96,7 @@ async function run(){
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));let browser;
  try{
   browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
-  const context=await browser.newContext({viewport:{width:1100,height:1000}}),page=await context.newPage(),errors=[],remote=[],models=[];
+  const context=await browser.newContext({viewport:{width:1100,height:1000},serviceWorkers:'block'}),page=await context.newPage(),errors=[],remote=[],models=[];
   page.on('pageerror',error=>errors.push(error.message));
   page.on('request',request=>{const url=request.url();if(!/^(http:\/\/127\.0\.0\.1:|blob:|data:)/.test(url))remote.push(url);if(/\.traineddata/.test(url))models.push(url);});
   await page.goto('http://127.0.0.1:'+server.address().port+'/qa');

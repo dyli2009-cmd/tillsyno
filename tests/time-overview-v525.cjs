@@ -12,5 +12,10 @@ const root=element();X.render(root,snapshot,String,positions);assert(root.childr
 const fs=require('node:fs'),vm=require('node:vm');
 (async()=>{for(const file of ['smartmatch-main-v524.js','smartmatch-read-main-v524.js']){
 const src=fs.readFileSync(file,'utf8'),a=src.indexOf('async function renderTimeReport(){'),b=src.indexOf('\nasync function openTimeReport()',a),el=Object.fromEntries(['timeRows','timeTotal','timeDone','timeLeft','timeProgress','timeUnknown','timeSummaryText'].map(k=>[k,element()]));
-const ctx=vm.createContext({pdf:true,el,smartProjectTimeConfig:{projectionMaterial:snapshot},window:{TillsynoProjectMaterial:X},formatWorkMinutes:String,instances:positions,protocolDef:async()=>({}),effectiveChecks:p=>p.items});vm.runInContext(src.slice(a,b),ctx);await vm.runInContext('renderTimeReport()',ctx);assert.equal(el.timeTotal.textContent,'211.2');assert.equal(el.timeDone.textContent,'165.6');assert.equal(el.timeProgress.textContent,'78%');}
+const ctx=vm.createContext({pdf:true,el,smartProjectTimeConfig:{projectionMaterial:snapshot},window:{TillsynoProjectMaterial:X},formatWorkMinutes:String,instances:positions,protocolDef:async()=>({}),effectiveChecks:p=>p.items,
+ // renderTimeReport resolves item times through resolveItemMinutes (added after this test was written).
+ // Explicit item minutes are used as is; product times come from the projection snapshot under test.
+ resolveItemMinutes:item=>item?.minutes!==null&&item?.minutes!==''&&Number.isFinite(Number(item?.minutes))?{minutes:Math.max(0,Number(item.minutes)),source:'item',category:null}:{minutes:null,source:'none',category:null},
+ // SmartMatch Avläsning also reports how much of each item is done (real module).
+ workCompletion:require('../smartmatch-work-completion-v9-100-17.js')});vm.runInContext(src.slice(a,b),ctx);await vm.runInContext('renderTimeReport()',ctx);assert.equal(el.timeTotal.textContent,'211.2');assert.equal(el.timeDone.textContent,'165.6');assert.equal(el.timeProgress.textContent,'78%');}
 console.log('PASS positions, AK quantities, extra time/comments, unknown and unlinked times, collapsed groups, both app renderers');})().catch(e=>{console.error(e);process.exitCode=1});

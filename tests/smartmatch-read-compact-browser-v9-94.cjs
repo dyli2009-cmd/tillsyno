@@ -4,6 +4,8 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {PDFDocument,PDFName,PDFHexString,StandardFonts,rgb}=require('../vendor/pdf-lib.min.js');
 const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
 const root=path.resolve(__dirname,'..'),entry=process.env.SMARTMATCH_ENTRY||'smartmatch-read-test.html';
+// Screenshots go outside the repository (set SMARTMATCH_QA_DIR to keep them).
+const shotDir=process.env.SMARTMATCH_QA_DIR||fs.mkdtempSync(path.join(require('node:os').tmpdir(),'compact94-'));
 const devices=[
  {name:'desktop',width:1366,height:900},
  {name:'iphone',width:390,height:844,touch:true,agent:'iPhone'},
@@ -44,7 +46,7 @@ async function layout(page,device,label){
  assert(state.documentWidth<=state.width+1,device.name+' page overflow '+label+': '+JSON.stringify(state));
  if(state.dialog){assert(state.dialog.left>=-1&&state.dialog.right<=state.width+1,device.name+' dialog fits '+label);assert(state.dialog.scroll<=state.dialog.client+1,device.name+' dialog overflow '+label+': '+JSON.stringify(state));}
  assert.deepEqual(state.oversized,[],device.name+' controls fit '+label);
- await page.screenshot({path:path.join(root,'work/compact94-'+device.name+'-'+label+'.png')});
+ await page.screenshot({path:path.join(shotDir,'compact94-'+device.name+'-'+label+'.png')});
 }
 async function test(browser,device,bytes){
  const context=await browser.newContext({viewport:{width:device.width,height:device.height},isMobile:!!device.touch,hasTouch:!!device.touch,userAgent:device.agent?'Mozilla/5.0 ('+device.agent+'; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1':undefined});

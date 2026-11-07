@@ -106,7 +106,9 @@ function fixture(html, core) {
     const lineEnd = core.indexOf('\n', start), end = core[lineEnd - 1] === '}' ? lineEnd : core.indexOf('\n}', start) + 2;
     return core.slice(start, end);
   }
-  const context = vm.createContext({console, document, innerWidth: 390, innerHeight: 844, MutationObserver: class {observe() {}}, requestAnimationFrame: fn => fn(), addEventListener() {}, openSecurityCheckEditor() {}, cleanSecurityRemarkText: s => s, refreshTop() {}, drawMarkers() {}, showOverview() {}, save() {}, removeSecurityCheck: () => false});
+  const context = vm.createContext({console, document, innerWidth: 390, innerHeight: 844,
+ // security.js now reads the module mode from this constant (window.DOORSERVICE_APP_MODE==='all-in-one').
+ ALL_IN_ONE: true, MutationObserver: class {observe() {}}, requestAnimationFrame: fn => fn(), addEventListener() {}, openSecurityCheckEditor() {}, cleanSecurityRemarkText: s => s, refreshTop() {}, drawMarkers() {}, showOverview() {}, save() {}, removeSecurityCheck: () => false});
   context.window = context;
   vm.runInContext(`
     const $=id=>document.getElementById(id); let selectedItem=null,securityCheckEditUid=null;

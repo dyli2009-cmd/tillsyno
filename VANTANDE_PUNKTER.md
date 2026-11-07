@@ -1,6 +1,6 @@
 # Väntande punkter – vad som behövs och när
 
-Senast uppdaterad 7 november 2026, Tillsyno v2.4.579.
+Senast uppdaterad 7 november 2026, Tillsyno v2.4.579 (tester städade samma dag).
 
 Den här listan samlar allt som är beslutat men inte klart, och vem som gör vad. När en punkt blir aktuell gör vi den i den ordning som står här. Bocka av med datum och version när den är klar.
 
@@ -53,21 +53,27 @@ Den här listan samlar allt som är beslutat men inte klart, och vem som gör va
 
 ## 6. Beslut som väntar på ägaren
 
-- [ ] **Svag grå hjälptext i ljusa teman:** kontrasten är 3,7–3,9:1 i hela appen. Färgen sitter i den gemensamma temafilen som även Kontrollflödet använder. En ändring kräver att du skriver **"Lås upp Kontrollflödet"**.
-- [ ] **SmartMatch *Uppdatera och fortsätt*:** har ingen förloppsstapel ännu, eftersom det är ett eget flöde som sparar arbetet först. Säg till om den ska få samma stapel som startsidan.
+- [ ] **Stora ritningar kraschar i Kontrollflöde Dörrautomatik:** orsaken är utredd och en plan i fyra steg är klar, se [CONTROLFLOW_HEAVY_PDF_PLAN.md](CONTROLFLOW_HEAVY_PDF_PLAN.md). Den innehåller bland annat att filen tolkas en gång, att minnet frigörs och ett sparläge för tunga ritningar. Kräver **"Lås upp Kontrollflödet"**.
+- [ ] **Svag grå hjälptext i ljusa teman:** kontrasten är 3,7–3,9:1 i hela appen. Färgen sitter i den gemensamma temafilen, så en ändring kräver **"Lås upp Kontrollflödet"**.
+- [ ] **SmartMatch *Uppdatera och fortsätt*:** har ingen förloppsstapel ännu. Säg till om den ska få samma stapel som startsidan.
+- [ ] **Ritningsverktyg → Dörrautomatik/Säkerhetsservice:** knapparna *Öppna i Dörrautomatik* och *Öppna i Säkerhetsservice* finns inte längre, och ingen modul använder överföringen. Du sparar PDF:en och öppnar den i modulen. Säg till om knapparna ska tillbaka.
+- [ ] **SmartMatch, återställd produktändring:** en ändring som ångras försvinner nu ur listan *Ändringar · pos.* i stället för att visas som *Återställd*. Vilket är rätt?
 
-## 7. Teknisk skuld (Claude, när det passar)
+## 7. Tester som väntar (Claude)
 
-Följande tester fallerar likadant på main och har inget med de senaste ändringarna att göra:
+Testsviten är städad 7 november 2026: `node tools/run-tests.mjs`, se [tests/README.md](tests/README.md). Följande fel ligger i [tests/known-failures.json](tests/known-failures.json) och tas när det blir aktuellt:
 
-- [ ] De äldre temafeltesterna (`theme-consistency-v319`, `navigation-theme-v320`, `save-theme-v321`, `customer-preview-theme-v322`, `ce-signature-theme-v357`) stoppas av kodlåset för moduler (v2.4.562) och väntar sig ett körfel som inte längre finns.
-- [ ] `tillsyno-admin-auth`: sista delen väntar sig att inloggningen leder till `index.html`, men den leder nu till `app.html`.
-- [ ] `offline-cache-performance-browser`, `controlflow-revision-copy-v1`, `smartmatch-projektering-v2-8-suggest` och `time-overview-v525` fallerar. `smartmatch-read-appearances-v9-93` saknar modulen `@napi-rs/canvas`.
+- [ ] Kontrollflödet (låst): kundmallens × på iPad-bredd stänger ibland inte förhandsvisningen vid första trycket (`controlflow-customer-floating-v310`).
+- [ ] Kontrollflödet (låst): placering av detektorer (`security-detectors-v344`), andra tryck på samma svar (`security-uncheck-v531`) och rotation med testritning (`security-drawing-rotation`).
+- [ ] SmartMatch: raden *Återställd*, se punkt 6 (`smartmatch-position-changes-ui-v9-100`).
+- [ ] Ritningsverktyg, textigenkänning: ett felläst ord (*Dérrcentral* i stället för *Dörrcentral*) kan ibland godkännas utan att visas för granskning (`drawing-ocr-swedish`).
 - [ ] SmartMatch Version 1.5 (`smartmatch-slr-test.html`) länkar till `project-workspace-smartmatch-test.html`, som inte publiceras.
 
 ---
 
 ## Avbockat
+
+- 2026-11-07: testsviten städad och körbar med ett kommando (`tools/run-tests.mjs`). Kraschen med stora ritningar är utredd (plan klar).
 
 - 2026-11-07, v2.4.579: *Bjud in användare* i administrationen (e-post eller personlig länk) och uppdateringsruta med förlopp till 100 %. Serverfunktionen är version 12.
 - 2026-11-07, v2.4.578: färgtemat gäller i hela appen.
