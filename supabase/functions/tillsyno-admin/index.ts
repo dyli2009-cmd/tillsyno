@@ -72,6 +72,31 @@ export function makeHandler(clientFactory, getEnv) {
      status:Date.parse(u.banned_until||'')>Date.now()?'removed':roles.has(u.id)?(Date.parse(roles.get(u.id)?.license_expires_at||'')===Date.parse(CANCELLED)?'revoked':roles.get(u.id)?.license_expires_at&&Date.parse(roles.get(u.id).license_expires_at)<=Date.now()?'expired':u.email_confirmed_at?'active':'invited'):'pending',
      emailVerified:!!u.email_confirmed_at,createdAt:u.created_at,lastSignIn:u.last_sign_in_at||null,protected:roles.get(u.id)?.access_role==='admin'||u.id===identity.user.id}))});
    }
+   if(body.action==='codeSettings'){
+    const rows=checked(await admin.from('tillsyno_module_codes').select('module_key,enabled,pin_hash,updated_at').order('module_key'))||[];
+    return reply({settings:rows.map(row=>({module:row.module_key,enabled:!!row.enabled,hasCode:!!row.pin_hash,updatedAt:row.updated_at||null}))});
+   }
+   if(body.action==='saveCodeSettings'){
+    const settings=body.settings;
+    const allowedCodeModules=['read','control','project','drawing'];
+    if(!Array.isArray(settings)||settings.length<1||settings.length>4||new Set(settings.map(x=>x?.module)).size!==settings.length)
+     return reply({error:'Ogiltiga kodinställningar.'},400);
+    const currentRows=checked(await admin.from('tillsyno_module_codes').select('module_key,pin_hash'))||[];
+    const existing=new Map(currentRows.map(row=>[row.module_key,!!row.pin_hash]));
+    for(const setting of settings){
+     if(!setting||!allowedCodeModules.includes(setting.module)||typeof setting.enabled!=='boolean')
+      return reply({error:'Ogiltig modul i kodinställningarna.'},400);
+     const pin=setting.pin===undefined||setting.pin===null||setting.pin===''?null:String(setting.pin);
+     if(pin!==null&&!/^[0-9]{4}$/.test(pin))return reply({error:'Koden måste bestå av exakt fyra siffror.'},400);
+     if(setting.enabled&&!pin&&!existing.get(setting.module))
+      return reply({error:'Ange en fyrsiffrig kod innan kodlåset slås på.'},400);
+    }
+    for(const setting of settings){
+     const pin=setting.pin===undefined||setting.pin===null||setting.pin===''?null:String(setting.pin);
+     checked(await admin.rpc('tillsyno_admin_set_module_code',{p_module:setting.module,p_enabled:setting.enabled,p_pin:pin}));
+    }
+    return reply({ok:true,message:'Kodlåsen har sparats.'});
+   }
    if(body.action==='add'){
     const modules=body.modules===undefined?kinds:body.modules,days=body.licenseDays===undefined?30:body.licenseDays;
     if(!goodModules(modules)||!goodDays(days))return reply({error:'Välj moduler och en giltig licenstid.'},400);
