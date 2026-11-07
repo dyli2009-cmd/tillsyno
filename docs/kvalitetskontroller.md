@@ -12,11 +12,17 @@ Det här dokumentet beskriver vilka kontroller som finns i dag (avsnitt 1) och v
 | Valfri denylist mot kundnamn | `build-release.mjs --denylist <fil>` | Manuellt |
 | `.gitignore` stoppar PDF, DWG, DXF m.fl. | `.gitignore` | Vid commit |
 
-### Testkörning 7 november 2026 (appkod som i `main`)
+### Testkörning 7 november 2026, v2.4.581 (`main` 3a8190f, plus dokumentationen i PR #10)
 
-- **102 passerade, 5 kända fel, 2 hoppades över, 0 föll.** Körtid ca 4 minuter med 4 parallella jobb.
-- De som hoppades över är `smartmatch-read-school-v7` och `-v9`. De behöver en riktig ritning via `SMARTMATCH_SCHOOL_PDF`.
-- `drawing-ocr-swedish` gick igenom den här gången (FIXED). Felet varierar mellan körningar, så låt det stå kvar i `known-failures.json` tills det har gått igenom flera gånger i rad.
+| Resultat | Antal | Tester |
+|---|---|---|
+| Godkända | 105 | bland annat de nya `controlflow-heavy-drawing-v580`, `controlflow-heavy-zoom-v581` och `controlflow-drawing-load-progress-v581` |
+| Kända fel (KNOWN) | 4 | `security-detectors-v344`, `security-uncheck-v531`, `security-drawing-rotation`, `smartmatch-position-changes-ui-v9-100` |
+| Känt fel som gick igenom (FIXED) | 1 | `drawing-ocr-swedish`. Felet varierar mellan körningar, så låt det stå kvar i `known-failures.json` tills det har gått igenom flera gånger i rad. |
+| Överhoppade | 2 | `smartmatch-read-school-v7` och `-v9` (kräver en riktig ritning via `SMARTMATCH_SCHOOL_PDF`) |
+| Nya fel | **0** | |
+
+Totalt 112 tester, körtid ca 4,5 minuter med 4 parallella jobb.
 
 Två saker att känna till när miljön sätts upp:
 - Använd **`pdfjs-dist@4.10.38`**, som tests/README.md säger. Kommentaren i `tools/run-tests.mjs` anger 3.11.174. Med den versionen faller tre tester, eftersom `legacy/build/pdf.mjs` saknas.
@@ -87,7 +93,7 @@ jobs:
         run: node tools/build-release.mjs --out "$RUNNER_TEMP/release"
 ```
 
-- Hela sviten körs på varje PR (ca 4 minuter plus installation).
+- Hela sviten körs på varje PR (ca 4,5 minuter plus installation).
 - Ingen nyckel och ingen åtkomst till Supabase behövs. Testerna använder bara testdata.
 - Workflowen publicerar ingenting.
 - **Behöver provas:** att Chromium i GitHubs miljö ger samma resultat som här. Det görs på den första PR:en.
