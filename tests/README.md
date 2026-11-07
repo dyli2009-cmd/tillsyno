@@ -34,7 +34,7 @@ Kodlåset öppnas med ett skript i sidan, inte genom att avlyssna nätverket, ef
 ## SKIP och kända fel
 
 - **SKIP:** testet behöver något som inte finns i repot, till exempel en riktig ritning som anges med en miljövariabel. Testet hoppar då över sig självt.
-- **KNOWN:** felet finns i [`known-failures.json`](known-failures.json), med orsak. Det gäller fel som väntar på ett beslut eller på att Kontrollflödet låses upp. De fäller inte körningen. Går ett sådant test igenom igen, visas det som FIXED och kan tas bort ur listan.
+- **KNOWN:** felet finns i [`known-failures.json`](known-failures.json), med orsak. Det gäller fel som väntar på ett beslut eller på en egen rättning. De fäller inte körningen. Går ett sådant test igenom igen, visas det som FIXED och kan tas bort ur listan.
 
 ## Städning 7 november 2026
 

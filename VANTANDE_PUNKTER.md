@@ -1,6 +1,6 @@
 # Väntande punkter – vad som behövs och när
 
-Senast uppdaterad 7 november 2026, Tillsyno v2.4.580.
+Senast uppdaterad 7 november 2026, Tillsyno v2.4.581.
 
 Den här listan samlar allt som är beslutat men inte klart, och vem som gör vad. När en punkt blir aktuell gör vi den i den ordning som står här. Bocka av med datum och version när den är klar.
 
@@ -54,13 +54,13 @@ Den här listan samlar allt som är beslutat men inte klart, och vem som gör va
   - uppdatera med förloppsstapeln;
   - färgteman i Projektering och SmartMatch;
   - *Rensa enhetens data*;
-  - öppna en stor ritning i Kontrollflöde Dörrautomatik. Sidraden ska visa *· Sparläge*. Zooma och öppna Kundmall.
+  - öppna en stor ritning i Kontrollflöde Dörrautomatik, även på telefon. Sidraden ska visa *· Sparläge*. Kontrollera att laddningsrutan fylls till 100 %, zooma snabbt och öppna Kundmall.
 
 ## 6. Beslut som väntar på ägaren
 
-- [ ] **Säkerhetsservice och stora ritningar:** sparläget finns nu i Dörrautomatik (v2.4.580). Säkerhetsservice (`security.js`) har samma mönster. Säg till om den också ska få sparläge. Det kräver **"Lås upp Kontrollflödet"**.
+- [ ] **Säkerhetsservice och stora ritningar:** sparläget finns nu i Dörrautomatik (v2.4.580). Säkerhetsservice (`security.js`) har samma mönster. Säg till om den också ska få sparläge.
 - [ ] **Extremt tunga ritningar:** första gången en mycket tung sida ritas behöver appen fortfarande cirka 1,1 GB, till exempel för en A0 med 1 miljon linjer. Kraschar en sådan ritning ändå på äldre iPad, prova en nyare pdf.js som eget beslut. Se [CONTROLFLOW_HEAVY_PDF_PLAN.md](CONTROLFLOW_HEAVY_PDF_PLAN.md).
-- [ ] **Svag grå hjälptext i ljusa teman:** kontrasten är 3,7–3,9:1 i hela appen. Färgen sitter i den gemensamma temafilen, så en ändring kräver **"Lås upp Kontrollflödet"**.
+- [ ] **Svag grå hjälptext i ljusa teman:** kontrasten är 3,7–3,9:1 i hela appen. Färgen sitter i den gemensamma temafilen och påverkar hela appen. Säg till om den ska bli mörkare.
 - [ ] **SmartMatch *Uppdatera och fortsätt*:** har ingen förloppsstapel ännu. Säg till om den ska få samma stapel som startsidan.
 - [ ] **Ritningsverktyg → Dörrautomatik/Säkerhetsservice:** knapparna *Öppna i Dörrautomatik* och *Öppna i Säkerhetsservice* finns inte längre, och ingen modul använder överföringen. Du sparar PDF:en och öppnar den i modulen. Säg till om knapparna ska tillbaka.
 - [ ] **SmartMatch, återställd produktändring:** en ändring som ångras försvinner nu ur listan *Ändringar · pos.* i stället för att visas som *Återställd*. Vilket är rätt?
@@ -69,7 +69,7 @@ Den här listan samlar allt som är beslutat men inte klart, och vem som gör va
 
 Testsviten är städad 7 november 2026: `node tools/run-tests.mjs`, se [tests/README.md](tests/README.md). Följande fel ligger i [tests/known-failures.json](tests/known-failures.json) och tas när det blir aktuellt:
 
-- [ ] Kontrollflödet (låst): placering av detektorer (`security-detectors-v344`), andra tryck på samma svar (`security-uncheck-v531`) och rotation med testritning (`security-drawing-rotation`).
+- [ ] Kontrollflödet: placering av detektorer (`security-detectors-v344`), andra tryck på samma svar (`security-uncheck-v531`) och rotation med testritning (`security-drawing-rotation`).
 - [ ] SmartMatch: raden *Återställd*, se punkt 6 (`smartmatch-position-changes-ui-v9-100`).
 - [ ] Ritningsverktyg, textigenkänning: ett felläst ord (*Dérrcentral* i stället för *Dörrcentral*) kan ibland godkännas utan att visas för granskning (`drawing-ocr-swedish`).
 - [ ] SmartMatch Version 1.5 (`smartmatch-slr-test.html`) länkar till `project-workspace-smartmatch-test.html`, som inte publiceras.
@@ -78,6 +78,9 @@ Testsviten är städad 7 november 2026: `node tools/run-tests.mjs`, se [tests/RE
 
 ## Avbockat
 
+- 2026-11-07, v2.4.581: krasch vid snabb zoom på telefon i Dörrautomatik. Zoom startar inte om en pågående ritning, tillfälliga ritytor frigörs, Safaris egen sidzoom är avstängd på ritningen och sparläget börjar tidigare på telefon.
+- 2026-11-07, v2.4.581: låset på Kontrollflödet är borttaget enligt ägarens beslut. Ändringar kräver inte längre frasen ”Lås upp Kontrollflödet”.
+- 2026-11-07, v2.4.581: laddningsruta i Dörrautomatik. När en ritning öppnas fylls en stapel till 100 %, med steg och filnamn.
 - 2026-11-07, v2.4.580: Kontrollflöde Dörrautomatik känner av tunga ritningar och visar dem i sparläge. Ritningen ritas en gång, minnet frigörs, Kundmall blir mindre och stängs med rutan, och ritfel visas. Exporten är oförändrad. Kundmallens × var ett fel i testet, inte i appen; testet är rättat.
 - 2026-11-07: testsviten städad och körbar med ett kommando (`tools/run-tests.mjs`). Kraschen med stora ritningar är utredd (plan klar).
 

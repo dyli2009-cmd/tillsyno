@@ -1,6 +1,6 @@
 # Tunga ritningar i Kontrollflöde Dörrautomatik – utredning, plan och genomförande
 
-Utredd 7 november 2026 (v2.4.579). Genomförd samma dag i **v2.4.580**, efter att ägaren skrev **"Lås upp Kontrollflödet"**. Kontrollflödet är åter LÅST.
+Utredd 7 november 2026 (v2.4.579). Genomförd samma dag i **v2.4.580**, efter att ägaren skrev **"Lås upp Kontrollflödet"**. Krasch vid snabb zoom på telefon och laddningsruta i **v2.4.581**. Ägaren tog samtidigt bort låset på Kontrollflödet.
 
 ## Vad som händer
 
@@ -103,6 +103,45 @@ Jag provade också att begränsa bildstorleken i pdf.js (`canvasMaxAreaInBytes`)
 - att Kundmall blir mindre och stängs med rutan;
 - nytt försök och synligt fel när en sida inte kan ritas;
 - att bara en ritning per område sparas.
+
+## Rättat i v2.4.581: krasch vid snabb zoom på telefon
+
+Ägaren rapporterade att ritningen höll längre i v2.4.580, men att appen kraschade på telefonen när man zoomade snabbt.
+
+**Orsaker:**
+
+1. Varje zoom avbröt en pågående ritning av samma sida. pdf.js läste då in hela sidan igen. I testet gav tolv snabba zoomningar medan en tung sida ritades 13 inläsningar i v2.4.580. I v2.4.581 blir det en.
+2. Den tillfälliga ritytan frigjordes inte när en ritning avbröts. Den låg kvar tills webbläsaren städade.
+3. Safaris egen sidzoom var inte avstängd på ritningen. En snabb tvåfingerzoom kunde förstora hela sidan ovanpå appens zoom.
+4. En telefon har ungefär hälften så mycket minne som en iPad, men sparläget slog till vid samma gränser.
+
+**Ändringar** (`security-v335.js`):
+
+- **Pågående ritningar får rita klart.** En ritning av den sida som visas avbryts inte längre av zoom. Bara byte av sida eller fil avbryter. Är ritningen klar efter en zoom används den direkt, och i vanligt läge ritas sidan sedan en gång till i den nya storleken.
+- **Den tillfälliga ritytan frigörs alltid,** även när ritningen avbryts eller misslyckas.
+- **Safaris egen sidzoom** (`gesturestart`, `gesturechange`) stoppas på ritningen. Appens egen zoom fungerar som förut.
+- **Byte till sparläge vid långsam sida:** när en sida visar sig vara långsam ritas den en gång till i sparlägets storlek. Det sker medan innehållet fortfarande finns i minnet, så sidan läses inte in igen. Sedan frigörs minnet.
+- **Tidigare sparläge på telefon:**
+  - fil på minst 15 MB;
+  - bild över 8,4 MP;
+  - A2 eller större med minst 1 MB per sida;
+  - en sida som tar mer än 0,8 s att rita.
+
+  Telefon känns igen på pekskärm och en skärm som är högst 600 px på kortaste sidan.
+
+**Mätt med telefoninställning** (390×844, DPR 3) i Chromium, 30 zoomningar med 0,12 s mellanrum:
+
+| Testritning | v2.4.580 | v2.4.581 |
+|---|---|---|
+| A0, 50 000 linjer (vanligt läge) | 0,84 GB | 0,48 GB |
+| A0, 300 000 linjer (sparläge) | 0,54–0,67 GB, ingen ökning vid zoom | 0,66–0,67 GB, ingen ökning vid zoom |
+| A0, 1 miljon linjer (sparläge) | 1,28 GB, ingen ökning vid zoom | 1,31 GB, ingen ökning vid zoom |
+
+Värdet vid öppning varierar mellan körningar med ungefär 0,1 GB. Exporten är oförändrad.
+
+**Laddningsruta (samma version):** i stället för bara *Laddar ritning…* visas en ruta med stapel till 100 %, steg och filnamn. Den täcker sidan medan ritningen laddas, så det går inte längre att zooma innan sidan är klar. Det tar också bort den situation som gav flest omritningar. Se UI_RULES.md.
+
+Test: `tests/controlflow-heavy-zoom-v581.cjs` och `tests/controlflow-drawing-load-progress-v581.cjs`. Testet fallerar på v2.4.580 med 13 inläsningar och går igenom på v2.4.581.
 
 ## Kvar, som egna beslut
 

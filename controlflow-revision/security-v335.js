@@ -268,8 +268,10 @@ const canvas=$('secCanvas'),ctx=canvas.getContext('2d'),markers=$('secMarkers'),
 let drawingRaster=null,drawingNatural=null,zoomFrame=0,pendingZoomGeometry=null,suppressObjectTapUntil=0,suppressDrawingClick=null;
 const MAX_PIXELS=4000000,MAX_SIDE=4096;
 // Sparläge för tunga ritningar: sidan ritas en gång med högst HEAVY_MAX_PIXELS och minnet frigörs efter varje ritning.
-const HEAVY_MAX_PIXELS=3000000,HEAVY_MAX_SIDE=3072,HEAVY_FILE_BYTES=30*1024*1024,HEAVY_IMAGE_PIXELS=16777216,HEAVY_PAGE_AREA=4000000,HEAVY_PAGE_BYTES=2*1024*1024,HEAVY_RENDER_MS=1500;
-let heavyDrawing=false;
+// A phone has about half the memory of an iPad, so sparläge starts earlier there (v2.4.581).
+const PHONE_DEVICE=(()=>{try{return matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<=600}catch(_){return false}})();
+const HEAVY_MAX_PIXELS=3000000,HEAVY_MAX_SIDE=3072,HEAVY_FILE_BYTES=(PHONE_DEVICE?15:30)*1024*1024,HEAVY_IMAGE_PIXELS=PHONE_DEVICE?8388608:16777216,HEAVY_PAGE_AREA=PHONE_DEVICE?2000000:4000000,HEAVY_PAGE_BYTES=(PHONE_DEVICE?1:2)*1024*1024,HEAVY_RENDER_MS=PHONE_DEVICE?800:1500;
+let heavyDrawing=false,renderTarget=null;
 function boundedViewport(p,scale){const natural=p.getViewport({scale:1}),maxPixels=heavyDrawing?HEAVY_MAX_PIXELS:MAX_PIXELS,maxSide=heavyDrawing?HEAVY_MAX_SIDE:MAX_SIDE;return p.getViewport({scale:Math.min(scale,Math.sqrt(maxPixels/(natural.width*natural.height)),maxSide/natural.width,maxSide/natural.height)})}
 // Reads image sizes from the uncompressed image dictionaries without decoding anything.
 function largestPdfImagePixels(bytes){
@@ -548,11 +550,14 @@ function previewSecurityZoom(z,focus,anchor){
  if(!zoomFrame)zoomFrame=requestAnimationFrame(flushSecurityZoomGeometry);
  $('secZoom').textContent=Math.round(zoom*100)+'%';
 }
-function cancelSecurityRaster(){renderVersion++;if(renderTask)renderTask.cancel();}
+// A drawing of the page that is still shown is allowed to finish: cancelling it on every zoom step made pdf.js read the
+// whole page again each time, which piled up memory on fast zooming (v2.4.581). Only a page or document change cancels.
+function sameRenderTarget(){return !!renderTarget&&renderTarget.document===pdf&&renderTarget.page===page}
+function cancelSecurityRaster(){renderVersion++;if(renderTask&&!sameRenderTarget())renderTask.cancel();}
 function showSecurityPageLabel(pageNumber,pageCount){const label=$('secPage');label.textContent='Sida '+pageNumber+' / '+pageCount+(heavyDrawing?' · Sparläge':'');label.title=heavyDrawing?'Stor ritning – visas i sparläge med lägre upplösning så att appen inte stängs.':'';label.classList.toggle('secPageHeavy',heavyDrawing)}
 function render(fit=false,focus=null,anchor=null){
  if(!pdf)return Promise.resolve();const version=++renderVersion,documentPdf=pdf,pageNumber=page;
- if(renderTask)renderTask.cancel();
+ if(renderTask&&!sameRenderTarget())renderTask.cancel();
  renderQueue=renderQueue.catch(()=>{}).then(async()=>{
   if(version!==renderVersion)return;
   const p=await documentPdf.getPage(pageNumber);window.ControlflowStampStyle?.rememberPageSize(documentPdf,pageNumber,p);await window.ControlflowStampStyle?.prepare(PDFLib);if(version!==renderVersion)return;
@@ -565,14 +570,20 @@ function render(fit=false,focus=null,anchor=null){
   const raster=boundedViewport(p,heavyDrawing?Infinity:baseScale*zoom*Math.min(window.devicePixelRatio||1,2)),rasterWidth=Math.ceil(raster.width),rasterHeight=Math.ceil(raster.height);
   if(!drawingRaster||drawingRaster.document!==documentPdf||drawingRaster.page!==pageNumber||drawingRaster.width!==rasterWidth||drawingRaster.height!==rasterHeight){
    const nextCanvas=document.createElement('canvas');nextCanvas.width=rasterWidth;nextCanvas.height=rasterHeight;
-   const started=performance.now(),task=p.render({canvasContext:nextCanvas.getContext('2d'),viewport:raster});renderTask=task;
-   try{await task.promise}finally{if(renderTask===task)renderTask=null}
-   const renderMs=performance.now()-started;
-   if(version!==renderVersion){nextCanvas.width=nextCanvas.height=0;return}
-   canvas.width=nextCanvas.width;canvas.height=nextCanvas.height;ctx.drawImage(nextCanvas,0,0);canvas.style.visibility='';nextCanvas.width=nextCanvas.height=0;
-   drawingRaster={document:documentPdf,page:pageNumber,width:rasterWidth,height:rasterHeight};
-   if(!heavyDrawing&&documentPdf===pdf&&renderMs>HEAVY_RENDER_MS){heavyDrawing=true;showSecurityPageLabel(pageNumber,documentPdf.numPages)}
-   if(heavyDrawing)releaseDrawingMemory(documentPdf);
+   try{
+    const started=performance.now(),task=p.render({canvasContext:nextCanvas.getContext('2d'),viewport:raster});renderTask=task;renderTarget={document:documentPdf,page:pageNumber};
+    try{await task.promise}finally{if(renderTask===task){renderTask=null;renderTarget=null}}
+    const renderMs=performance.now()-started;
+    // A newer request for the same page still uses this drawing; a drawing of another page or file is dropped.
+    if(documentPdf!==pdf||pageNumber!==page)return;
+    canvas.width=nextCanvas.width;canvas.height=nextCanvas.height;ctx.drawImage(nextCanvas,0,0);canvas.style.visibility='';
+    drawingRaster={document:documentPdf,page:pageNumber,width:rasterWidth,height:rasterHeight};
+    if(!heavyDrawing&&renderMs>HEAVY_RENDER_MS){
+     // Switch to sparläge and draw once more at the sparläge size while the page content is still in memory.
+     heavyDrawing=true;showSecurityPageLabel(pageNumber,documentPdf.numPages);if(version===renderVersion)render(false);
+    }else if(heavyDrawing)releaseDrawingMemory(documentPdf);
+   }finally{nextCanvas.width=nextCanvas.height=0}// the temporary canvas is freed at once, also when the drawing is cancelled
+   if(version!==renderVersion)return;
   }
   return true;
  }).catch(error=>{if(error?.name==='RenderingCancelledException')return;if(heavyDrawing)releaseDrawingMemory(documentPdf);if(version===renderVersion)msg('Kunde inte visa sidan. Prova Passa eller välj en annan sida.',true);return false});
@@ -659,6 +670,8 @@ function endTouch(e){
  }
 }
 viewer.addEventListener('touchend',endTouch,{passive:true});
+// iOS Safari: a fast two-finger pinch could start Safari's own page zoom on top of the drawing zoom (v2.4.581).
+for(const type of ['gesturestart','gesturechange'])viewer.addEventListener(type,e=>e.preventDefault(),{passive:false});
 viewer.addEventListener('touchcancel',endTouch,{passive:true});
 
 async function inspectSecurityWorkPdf(bytes,parsed=null){
@@ -870,17 +883,24 @@ async function inspectLegacySecurityLinkedPdf(bytes){
 }
 
 if($('secChangeDrawing'))$('secChangeDrawing').onclick=()=>$('securityFile').click();
-$('securityFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{
- msg('Laddar ritning…');const bytes=new Uint8Array(await f.arrayBuffer());
+$('securityFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;const progress=window.DrawingLoadProgress;try{
+ msg('Laddar ritning…');progress?.start(f.name);const bytes=new Uint8Array(await f.arrayBuffer()),sizeMB=bytes.length/1048576;
+ progress?.step('Kontrollerar arbetsfil och tidigare protokoll',5,25,400+sizeMB*80);
  // One pdf-lib parse is shared by both work-file checks and released before the drawing is shown.
  let parsed=window.PDFLib?await PDFLib.PDFDocument.load(bytes,{updateMetadata:false}):null;
  const imported=await inspectSecurityWorkPdf(bytes,parsed),doorImported=!imported?await inspectDoorAutomationWorkPdfForAllInOne(bytes,parsed):null;parsed=null;
- const legacyDoorImported=!imported&&!doorImported&&ALL_IN_ONE&&allInOneProtocolActive('automation')&&window.RevisionImportProfiles?await window.RevisionImportProfiles.inspect(bytes,f.name,message=>msg(message)):null,legacyImported=!imported&&!doorImported&&!legacyDoorImported?await inspectLegacySecurityLinkedPdf(bytes):null,drawingBytes=imported?.drawingBytes||doorImported?.drawingBytes||legacyDoorImported?.drawingBytes||legacyImported?.drawingBytes||bytes,key=await fingerprint(drawingBytes),saved=loadSaved(key),record=imported?.work||doorImported?.work||(legacyDoorImported?{items:(legacyDoorImported.work?.doors||[]).map((d,index)=>({...d,type:'automation',number:index+1})),textNotes:legacyDoorImported.work?.textNotes||[],drawingExtras:legacyDoorImported.work?.drawingExtras||[],project:{...emptyProject(),...(legacyDoorImported.work?.project||{})},logoData:legacyDoorImported.work?.logoData||''}:null)||(saved?.items?.length?saved:legacyImported?.work)||legacyImported?.work||saved,candidate=await pdfjsLib.getDocument({data:drawingBytes.slice()}).promise,candidateHeavy=await assessHeavyDrawing(drawingBytes,candidate);
+ const legacyDoorImported=!imported&&!doorImported&&ALL_IN_ONE&&allInOneProtocolActive('automation')&&window.RevisionImportProfiles?await window.RevisionImportProfiles.inspect(bytes,f.name,message=>{msg(message);progress?.note(message)}):null,legacyImported=!imported&&!doorImported&&!legacyDoorImported?await inspectLegacySecurityLinkedPdf(bytes):null,drawingBytes=imported?.drawingBytes||doorImported?.drawingBytes||legacyDoorImported?.drawingBytes||legacyImported?.drawingBytes||bytes,key=await fingerprint(drawingBytes),saved=loadSaved(key),record=imported?.work||doorImported?.work||(legacyDoorImported?{items:(legacyDoorImported.work?.doors||[]).map((d,index)=>({...d,type:'automation',number:index+1})),textNotes:legacyDoorImported.work?.textNotes||[],drawingExtras:legacyDoorImported.work?.drawingExtras||[],project:{...emptyProject(),...(legacyDoorImported.work?.project||{})},logoData:legacyDoorImported.work?.logoData||''}:null)||(saved?.items?.length?saved:legacyImported?.work)||legacyImported?.work||saved;
+ progress?.step('Öppnar ritningen',25,32,300+drawingBytes.length/1048576*20);
+ const candidate=await pdfjsLib.getDocument({data:drawingBytes.slice()}).promise,candidateHeavy=await assessHeavyDrawing(drawingBytes,candidate);
+ // Drawing has no exact progress in pdf.js: estimate from the content per page (slower on a phone).
+ const drawEstimate=(500+drawingBytes.length/Math.max(1,candidate.numPages)/1048576*450)*(PHONE_DEVICE?2:1);
+ progress?.step(candidateHeavy?'Ritar sidan i sparläge – en stor ritning kan ta en stund':'Ritar sidan',32,99,drawEstimate);
  if(pdf)try{await pdf.destroy()}catch(_){}
  // The file's own array is not used elsewhere, so it is kept as is instead of copied once more.
  pdf=candidate;heavyDrawing=candidateHeavy;sourceBytes=drawingBytes===bytes?bytes:drawingBytes.slice();activeKey=key;items=renumberLegacySecurityItems((record?.items||[]).map(normalize));textNotes=Array.isArray(record?.textNotes)?record.textNotes:[];drawingExtras=Array.isArray(record?.drawingExtras)?record.drawingExtras:[];project={...emptyProject(),...(record?.project||{})};project.sourceFileName=f.name;syncAutomationIds();logoData=record?.logoData||'';page=1;zoom=1;visualZoom=1;pinch=null;panTouch=null;panMouse=null;addType=null;textMode=false;applyDrawingOverlayVisibility(false);document.body.classList.remove('secAdding','secTextAdding');$('secAddText').classList.remove('primary');$('secStage').style.transform='';syncProjectInputs();refreshTop();save();let shown=await render(true);
  // A drawing that cannot be shown normally gets one more try in sparläge.
- if(shown===false&&!heavyDrawing&&pdf===candidate){heavyDrawing=true;try{await candidate.cleanup()}catch(_){}shown=await render(true)}
+ if(shown===false&&!heavyDrawing&&pdf===candidate){heavyDrawing=true;progress?.step('Ritar sidan i sparläge – en stor ritning kan ta en stund',0,99,drawEstimate);try{await candidate.cleanup()}catch(_){}shown=await render(true)}
+ if(shown===false)progress?.close();else progress?.done();
  viewer.scrollLeft=0;viewer.scrollTop=0;
  const activeCount=visibleItems().length,heavyNote=heavyDrawing?'Stor ritning – visas i sparläge. ':'',notShown='Ritningen öppnades, men sidan kunde inte visas, inte heller i sparläge. Prova Passa eller en annan sida. Fungerar det inte, dela upp ritningen i mindre PDF-filer.';
  if((imported||doorImported)&&activeCount){
@@ -892,7 +912,7 @@ $('securityFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{
  else msg(heavyNote+((imported||doorImported)?'Arbets-PDF öppnad. ':'Ritningen är klar. ')+(activeCount?activeCount+' objekt återställda.':(ALL_IN_ONE?'Börja markera valda protokoll.':'Lägg till Inbrottslarm, Lås & Dörrmiljö eller Passer.')));
  window.dispatchEvent(new Event('revision-work-loaded'));
  try{await window.TillsynoOfflineWork?.remember(APP_STATE_NAME,key,f.name,sourceBytes)}catch(error){console.error(error);msg('Arbetsdata sparas, men ritningen kunde inte sparas lokalt. Spara en arbets-PDF innan du stänger appen.',true)}
- }catch(err){console.error(err);msg(err.message||'Kunde inte öppna PDF-filen.',true)}finally{e.target.value=''}};
+ }catch(err){console.error(err);msg(err.message||'Kunde inte öppna PDF-filen.',true)}finally{progress?.close();e.target.value=''}};
 $('secOpenWorkDialog').addEventListener('cancel',e=>e.preventDefault());
 $('secOpenContinue').onclick=()=>{$('secOpenWorkDialog').close();go('drawing');msg('')};
 $('secOpenNewService').onclick=()=>{if(startNewSecurityService(false))$('secOpenWorkDialog').close()};
