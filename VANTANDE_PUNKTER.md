@@ -87,9 +87,9 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 
 ### Versionshantering (beslut 7 november 2026)
 
-**Läge v2.4.587:**
+**Läge v2.4.588:**
 - Modulversionerna finns i `versions.json`. De visas med liten text på startsidan, i Kontrollflödets mappval och i modulernas sidhuvud, via `tillsyno-versions.js`. Undantag: Dörrautomatik / Lås visar ingen version i sidhuvudet (ägarens beslut, v2.4.584).
-- Dörrautomatik / Lås är 1.4 (v2.4.587) och Säkerhetsservice 1.1 (v2.4.586). Övriga moduler har sina startversioner.
+- Dörrautomatik / Lås är 1.5 (v2.4.588) och Säkerhetsservice 1.1 (v2.4.586). Övriga moduler har sina startversioner.
 - Kontrollsummor, automatisk höjning och CI-kontroll är **inte** införda ännu (steg 3).
 - Fram till steg 3 höjs versionerna för hand i `versions.json`, i samma PR som ändringen. Testet `tests/module-versions-v582.cjs` kontrollerar att appversionen stämmer överallt.
 
@@ -157,6 +157,7 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 
 ## Avbockat
 
+- 2026-11-07, v2.4.588: Dörrautomatik / Lås 1.5. Inga förklaringstexter (fel visas). Filnamn och antal objekt i sidraden, ögat i verktygsraden, sidpilar och öga följer färgtemat. Översikt börjar på *Objekt med anmärkning*, är kompakt och saknar *Tillbaka* och *Kundmall*. Projekt utan modulrubrik, kryss och rubriken *Service*; *Starta ny service* sist.
 - 2026-11-07, v2.4.587: Dörrautomatik / Lås 1.4, checklistvyn. Liten rubrik med bara protokollnamnet. Raden med filnamn, projekt och antal objekt, krysset och den gamla versionstexten i hörnet är borttagna. *Objektuppgifter* ligger överst, är infällda och visar en varning när något saknas.
 - 2026-11-07, v2.4.586: låsta stämplar har ingen ram på ritningen, i Dörrautomatik / Lås (1.3) och Säkerhetsservice (1.1). Den streckade fyrkanten följde tryckytan på 44 px och blev för stor när man zoomade ut. Låset fungerar som förut.
 - 2026-11-07, v2.4.585: Dörrautomatik / Lås 1.2. En markerad text, pil, linje eller dörrsymbol har en liten *Ta bort*-knapp bredvid sig på ritningen (bara ikon på telefon). Borttagning frågar alltid först, även från verktygsmenyn, och kan ångras. Låsa stämplar fanns redan (*Justera / lås stämplar*).

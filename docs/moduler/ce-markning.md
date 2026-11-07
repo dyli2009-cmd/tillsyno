@@ -1,7 +1,7 @@
 # CE-märkning
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.587 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Appversion:** Tillsyno v2.4.588 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
 - **Modulversion:** CE-märkning 1.2 (`versions.json`). Den visas som *CE-märkning 1.2 · Tillsyno v2.4.x* i sidhuvudet och på startvyn, som tidigare visade den inaktuella *v2.4.359*, och vid CE-länken i Kontrollflödets mappval.
 - **Dataformat:** 60 (`VERSION=60`, `FORMAT='Tillsyno CE-märkning TEST 60'` i `ce-markning-v1-2.js`).
   - Dataformatet är **sparformatet**, inte modulens version.

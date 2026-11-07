@@ -1,8 +1,8 @@
 # Kontrollflöde – Dörrautomatik
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.587 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
-- **Modulversion:** Dörrautomatik / Lås 1.4. Det är en gemensam version för Dörrautomatik och Lås, som grupperas som i mappvalet (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (ägarens beslut, v2.4.584). Nästa funktionsändring, till exempel kraschrättningen, höjer den till 1.5.
+- **Appversion:** Tillsyno v2.4.588 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** Dörrautomatik / Lås 1.5. Det är en gemensam version för Dörrautomatik och Lås, som grupperas som i mappvalet (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (ägarens beslut, v2.4.584). Nästa funktionsändring, till exempel kraschrättningen, höjer den till 1.6.
 - Kontrollflödet är upplåst. Gemensamma regler, motorer och filkarta: [README.md](README.md).
 
 ## 2. Arbetsflöde från början till slut
@@ -25,7 +25,9 @@
      - Saknas uppgifter (till exempel objektnummer eller typ av automatik) visar den infällda raden en röd varning. Nyckeln (egen kontrollpunkt, redigera kontrollpunkter) är oförändrad.
    - För varje punkt väljs *OK*, *Anmärkning* eller *Ej aktuell*, med felval och anmärkningstext.
    - Ett nytt tryck på ett valt svar avmarkerar det, och åtgärdsdatum och signatur rensas då.
-5. **Översikt** (`showOverview`) visar alla objekt och deras status.
+5. **Översikt** (`showOverview`) visar objekten och deras status.
+   - Den börjar varje gång på *Objekt med anmärkning* (objekt med anmärkning eller fel som inte är åtgärdat). Under *Visa* kan *Alla objekt* väljas.
+   - Rubriken är liten och siffrorna kompakta på telefon. *Tillbaka* och *Kundmall* bredvid rubriken finns inte; *Mall* finns i sidhuvudet (v2.4.588, `revision-views-v588.*`).
 6. **Kundmall** (`openCustomerPreview`) är en förhandsvisning av ritningssidorna och kundprotokollet. Den har ingen egen nedladdning.
 7. **Spara PDF:** *Spara arbete* (`exportPdf('work')`) eller *Spara som ny PDF* (`newSecurityPdf`, som frågar efter filnamn).
 8. **Lämna ritningen:** *Hem* går till startsidan och *Stäng ritning* går tillbaka till *Välj ritning*.
@@ -57,6 +59,11 @@
   - **Stäng ritning** (`closeRevisionDrawing` i motorn) sparar arbetet, släpper ritningen och minnet och visar *Välj ritning*. Arbetet ligger kvar på enheten och kommer tillbaka när samma ritning öppnas.
   - **Ta bort ritobjekt (v2.4.585, `drawing-annotations.js`):** när en text, text med pil, linje, pil eller dörrsymbol är markerad visas en liten *Ta bort*-knapp bredvid den på ritningen. På telefon är knappen bara en ikon. Knappen, och papperskorgen i verktygsmenyn, frågar alltid först: *Ta bort texten? Är du säker? Du kan ångra med Ångra.* med *Avbryt* och *Ta bort*. Knappen döljs när inget är markerat, medan ett objekt dras och när ett ritverktyg används. *Ångra* återställer objektet.
   - **Låsa stämplar** (`security-stamp-selection-v549.*`, delad): *Verktyg → Justera / lås stämplar*. Välj alla, en sida eller enskilda stämplar och tryck *Lås placering*. En låst stämpel kan inte flyttas, men dragning på den panorerar ritningen, och ett tryck markerar den. Ett dubbeltryck öppnar protokollet. Låset syns inte på ritningen (ingen ram, ägarens beslut v2.4.586). Det visas i panelen som *· N låsta*. Valda stämplar får en blå ram medan panelen är öppen.
+  - **Ritning, Översikt och Projekt (v2.4.588, `revision-views-v588.*`):**
+    - Meddelanderaden visar bara fel (röda) och pågående arbete (text som slutar med …). Förklaringar som *"Tryck där pilen ska peka …"* visas inte.
+    - Filnamn och antal objekt står i sidraden bredvid sidpilarna, på dator i verktygsraden. Raden med objekt finns inte längre, och inte heller *Svep*.
+    - Ögat (visa/dölj markeringar) ligger i verktygsraden mellan *Gör om* och *Verktyg*. Sidpilarna och ögat följer färgtemat.
+    - *Projekt*: ingen modulrubrik, inget kryss och ingen rubrik *Service*. Rubriken *Projekt* och alla formulär finns kvar. *Starta ny service* ligger sist, efter *Beställare*.
   - **Ändringskontrollen** jämför arbetet (objekt, anteckningar, ritobjekt, projektuppgifter, logotyp) med läget när ritningen öppnades eller PDF:en senast sparades. Motorn meddelar en sparad PDF med händelsen `revision-pdf-saved`.
 
 ## 4. Kodfiler och motor
@@ -70,6 +77,7 @@
   - `drawing-load-progress-v581.*`
   - `revision-header-v584.*` (sidhuvud, verktygsmeny och frågan innan ritningen lämnas)
   - `revision-protocol-v587.*` (checklistvyn: rubrik, infällda objektuppgifter med varning)
+  - `revision-views-v588.*` (Ritning, Översikt och Projekt: meddelanden, sidrad, öga, översiktens filter, Starta ny service sist)
   - kopior av `legacy-door-import.js`, `offline-work-v2.js`, `drawing-transfer-v2.js`, `session-history.js`, `drawing-annotations.js` och `tillsyno-appearance*`
 - **Delade Kontrollflödesfiler:** `controlflow-*` och `security-stamp-selection-v549.*`, `security-detectors-v344.*`. Se README.md.
 - **Äldre dörrkod på startsidan** (`app.js`, `v2.js`, `reports.js`): har en egen kopia av de 18 punkterna. Om den koden används är *ej verifierat*. Ändra den inte som följd av ändringar här.
@@ -106,9 +114,9 @@
 
 ## 8. Tester och status
 ```sh
-node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress security-automation-checklist revision-uncheck revision-header revision-draw-delete stamp-lock-frame revision-protocol controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
+node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress security-automation-checklist revision-uncheck revision-header revision-draw-delete stamp-lock-frame revision-protocol revision-views controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
 ```
-- **Senaste körning:** godkänd (v2.4.585), se [kvalitetskontroller.md](../../kvalitetskontroller.md). `revision-header-v584` provar sidhuvudet, verktygsmenyn och frågan innan ritningen lämnas på telefon, iPad och dator. `revision-draw-delete-v585` provar *Ta bort* för alla sex ritobjekt på telefon och dator. `revision-protocol-v587` provar checklistvyn på telefon, iPad och dator.
+- **Senaste körning:** godkänd (v2.4.585), se [kvalitetskontroller.md](../../kvalitetskontroller.md). `revision-header-v584` provar sidhuvudet, verktygsmenyn och frågan innan ritningen lämnas på telefon, iPad och dator. `revision-draw-delete-v585` provar *Ta bort* för alla sex ritobjekt på telefon och dator. `revision-protocol-v587` provar checklistvyn på telefon, iPad och dator. `revision-views-v588` provar Ritning, Översikt och Projekt på telefon, iPad och dator, i ljust och mörkt tema.
 - **Ej verifierat på riktig enhet:** sidhuvudet och frågan på iPhone och iPad med Safari, och att nedladdningen av PDF:en blir klar innan användaren väljer att lämna.
 - **Kända fel:** inga egna.
 - **Pågår separat:** krascher med stora ritningar på riktiga enheter (VANTANDE_PUNKTER.md avsnitt 8, steg 2).

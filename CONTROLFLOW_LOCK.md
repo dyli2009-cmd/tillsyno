@@ -393,3 +393,18 @@ Modulversioner: Dörrautomatik / Lås 1.2 → 1.3, Säkerhetsservice 1.1. Brand 
 - Den gamla versionstexten i hörnet (*v2.4.559*) visas inte på revisionssidan.
 
 Oförändrat: kontrollpunkter, protokollinnehåll, motorn `security-v335.js`, delade filer, Säkerhetsservice och Brand, stämplar, arbetsfiler, import och exporterad PDF. Test: `tests/revision-protocol-v587.cjs` och Kontrollflödets tester.
+
+# 2026-11-07 · v2.4.588 · Dörrautomatik / Lås: Ritning, Översikt och Projekt
+
+Ägaren beställde förenklingar i Ritning, Översikt och Projekt på telefon, iPad och dator. Lås körs på samma sida och får samma ändringar. Modulversion Dörrautomatik / Lås 1.4 → 1.5.
+
+Ändrat, bara i `controlflow-revision/`:
+- Nya `revision-views-v588.js/.css`:
+  - meddelanderaden visar bara fel och pågående arbete, inga förklaringar;
+  - filnamn och antal objekt i sidraden (på dator i verktygsraden); raden med objekt och *Svep* är borttagna;
+  - ögat i verktygsraden mellan *Gör om* och *Verktyg*; sidpilarna och ögat följer färgtemat (de var vita i mörka teman);
+  - Översikt: inget *Tillbaka*, ingen *Kundmall* vid rubriken, liten rubrik, kompakta siffror på telefon, börjar på *Objekt med anmärkning* (tidigare *Objekt med fel*); åtgärdsfälten följer det mörka temat;
+  - Projekt: ingen modulrubrik, inget kryss, ingen rubrik *Service*; rubriken *Projekt* och alla formulär är kvar; *Starta ny service* sist.
+- `revision-header-v584.js`: filnamnet placeras i sidraden.
+
+Säkerhetsservice har redan temafärgade sidpilar och öga och ändras inte. Oförändrat: motorn, delade filer, Brand, kontrollpunkter, protokoll, stämplar, arbetsfiler, import och exporterad PDF. Test: `tests/revision-views-v588.cjs`, uppdaterat `tests/revision-header-v584.cjs` och Kontrollflödets tester.

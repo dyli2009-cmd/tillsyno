@@ -1,7 +1,7 @@
 # Ritningsverktyg
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.587 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Appversion:** Tillsyno v2.4.588 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
 - **Modulversion:** ingen egen. Modulen följer appversionen (ägarens beslut 7 november 2026).
 
 ## 2. Arbetsflöde från början till slut
