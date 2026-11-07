@@ -1,6 +1,6 @@
 # Kontrollflöde
 
-**Version:** Tillsyno v2.4.583 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`). Kontrollflödet har tre modulversioner, grupperade som i mappvalet: **Dörrautomatik / Lås 1.0**, **Säkerhetsservice 1.0** och **Brand 1.0** (`versions.json`). De visas i mappvalet och i sidhuvudet på båda sidorna. Den här filen är översikten över motorerna, beroendena och filkartan. Varje undermodul har en egen funktionsbeskrivning med den gemensamma strukturen i CLAUDE.md avsnitt 6.
+**Version:** Tillsyno v2.4.584 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`). Kontrollflödet har tre modulversioner, grupperade som i mappvalet: **Dörrautomatik / Lås 1.1**, **Säkerhetsservice 1.0** och **Brand 1.0** (`versions.json`). De visas i mappvalet. Huvudsidan visar dessutom versionen i sidhuvudet; revisionssidan gör det inte (v2.4.584). Den här filen är översikten över motorerna, beroendena och filkartan. Varje undermodul har en egen funktionsbeskrivning med den gemensamma strukturen i CLAUDE.md avsnitt 6.
 
 **Status: UPPLÅST** sedan v2.4.581 (ägarens beslut 7 november 2026). Kontrollflödet ändras som andra moduler, efter beställning. Låset ska inte återinföras, och ingen upplåsningsfras behövs.
 
@@ -66,7 +66,7 @@ Gemensam PDF-design: [pdf-design.md](pdf-design.md).
 - `tillsyno-appearance.css` och `tillsyno-appearance-v16.js`
 - `legacy-door-import.js`, `drawing-annotations.js`, `offline-work-v2.js`, `drawing-transfer-v2.js`
 
-Den har också egna revisionsfiler: `revision-*`, `service-overview-v12.*`, `customer-preview-v310.*`, `all-in-one-v2.js` och `drawing-load-progress-v581.*` (laddningsrutan, v2.4.581).
+Den har också egna revisionsfiler: `revision-*`, `service-overview-v12.*`, `customer-preview-v310.*`, `all-in-one-v2.js`, `drawing-load-progress-v581.*` (laddningsrutan, v2.4.581) och `revision-header-v584.*` (sidhuvud, verktygsmeny och frågan innan ritningen lämnas, v2.4.584). Revisionssidans egen `session-history.js` har ingen textstorlek (A− / A+) sedan v2.4.584.
 
 **Delas av båda sidorna:**
 - `controlflow-ui.css`, `controlflow-ui-scale.js`, `controlflow-responsive-v547.css`

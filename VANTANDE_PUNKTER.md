@@ -55,6 +55,7 @@ Den här listan samlar allt som är beslutat men inte klart, och vem som gör va
   - färgteman i Projektering och SmartMatch;
   - *Rensa enhetens data*;
   - öppna en stor ritning i Kontrollflöde Dörrautomatik, även på telefon. Sidraden ska visa *· Sparläge*. Kontrollera att laddningsrutan fylls till 100 %, zooma snabbt och öppna Kundmall.
+  - Dörrautomatik (v2.4.584): sidhuvudet på en rad, *Stäng ritning*, verktygsmenyn och frågan vid *Hem*. Välj *Spara PDF* i frågan och kontrollera att PDF:en blir sparad innan du går vidare.
 
 ## 6. Beslut som väntar på ägaren
 
@@ -86,8 +87,9 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 
 ### Versionshantering (beslut 7 november 2026)
 
-**Läge v2.4.583:**
-- Modulversionerna finns i `versions.json`. De visas med liten text på startsidan, i Kontrollflödets mappval och i modulernas sidhuvud, via `tillsyno-versions.js`.
+**Läge v2.4.584:**
+- Modulversionerna finns i `versions.json`. De visas med liten text på startsidan, i Kontrollflödets mappval och i modulernas sidhuvud, via `tillsyno-versions.js`. Undantag: Dörrautomatik / Lås visar ingen version i sidhuvudet (ägarens beslut, v2.4.584).
+- Dörrautomatik / Lås är 1.1 (v2.4.584). Övriga moduler har sina startversioner.
 - Kontrollsummor, automatisk höjning och CI-kontroll är **inte** införda ännu (steg 3).
 - Fram till steg 3 höjs versionerna för hand i `versions.json`, i samma PR som ändringen. Testet `tests/module-versions-v582.cjs` kontrollerar att appversionen stämmer överallt.
 
@@ -155,6 +157,7 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 
 ## Avbockat
 
+- 2026-11-07, v2.4.584: Dörrautomatik / Lås 1.1. Sidhuvudet är en rad med *Öppna ritning* och en ny knapp, *Stäng ritning*, bredvid *Mall* och *PDF*. Versionsraden, A− / A+ och zoomknapparna i verktygsmenyn är borttagna, och verktygsknappen har en verktygsikon. *Justera / lås stämplar* och *Lägg till serviceöversikt* är egna rader i menyn. *Hem* och *Stäng ritning* frågar om PDF:en ska sparas när arbetet har ändrats.
 - 2026-11-07, v2.4.581: krasch vid snabb zoom på telefon i Dörrautomatik. Zoom startar inte om en pågående ritning, tillfälliga ritytor frigörs, Safaris egen sidzoom är avstängd på ritningen och sparläget börjar tidigare på telefon.
 - 2026-11-07, v2.4.581: låset på Kontrollflödet är borttaget enligt ägarens beslut. Ändringar kräver inte längre frasen ”Lås upp Kontrollflödet”.
 - 2026-11-07, v2.4.581: laddningsruta i Dörrautomatik. När en ritning öppnas fylls en stapel till 100 %, med steg och filnamn.
