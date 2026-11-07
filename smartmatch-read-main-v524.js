@@ -1,7 +1,7 @@
 (() => {
 'use strict';
 const SMARTMATCH_RELEASE='36.239-READ-TEST';
-const SMARTMATCH_TEST_LABEL='Avläsning 9.100.35';
+const SMARTMATCH_TEST_LABEL='Avläsning 1.0';
 const workCompletion=window.SmartMatchWorkCompletion;
 let smartExportRevision=0,smartExportCached=null,smartExportTask=null,smartExportBytesVersion=-1,smartExportProjectEpoch=0;
 let manualPositions=[],positionEdits={},placement=null;

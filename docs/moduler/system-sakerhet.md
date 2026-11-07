@@ -3,7 +3,7 @@
 Inloggning, behörighet, licens, administration, lagring på enheten, cache och publicering. Det här är granskningsområdet för IT och underlaget till IT-granskningen.
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.582 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Appversion:** Tillsyno v2.4.583 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
 - **Serverfunktionen `tillsyno-admin`:** version 12 i drift enligt VANTANDE_PUNKTER.md, medan README.md nämner version 11. *Kontrollera* (förslag R6).
 - **Databasregler:** som i `supabase/schema/tillsyno-security-2026-11-07.sql`.
 - **Låst regel:** [TILLSYNO_LICENSE_RULES_LOCK.md](../../TILLSYNO_LICENSE_RULES_LOCK.md).

@@ -86,7 +86,7 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 
 ### Versionshantering (beslut 7 november 2026)
 
-**Läge v2.4.582:**
+**Läge v2.4.583:**
 - Modulversionerna finns i `versions.json`. De visas med liten text på startsidan, i Kontrollflödets mappval och i modulernas sidhuvud, via `tillsyno-versions.js`.
 - Kontrollsummor, automatisk höjning och CI-kontroll är **inte** införda ännu (steg 3).
 - Fram till steg 3 höjs versionerna för hand i `versions.json`, i samma PR som ändringen. Testet `tests/module-versions-v582.cjs` kontrollerar att appversionen stämmer överallt.
@@ -112,16 +112,16 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 - *Funktionsändring* avgör versionshöjning.
 - *Kontrollsumma* avgör spårbarheten till publicerad kod.
 
-**Godkända startversioner:**
+**Godkända startversioner** (ägarens beslut 7 november 2026: alla moduler börjar på 1.0, utom CE-märkning som behåller 1.2. Varje funktionsändring höjer 1.0 → 1.1 → 1.2. Appversionen fortsätter i sin egen serie, 2.4.x, och går bara uppåt):
 
 | Modul | Start |
 |---|---|
 | Dörrautomatik / Lås (en gemensam version, beslut 7 november 2026: grupperas som i mappvalet) | 1.0 |
 | Säkerhetsservice | 1.0 |
 | Brand | 1.0 |
-| Avläsning | 9.100.35 (etiketten 9.100.17 rättad i v2.4.582) |
+| Avläsning | 1.0 (från v2.4.583, ersatte 9.100.35) |
 | SmartMatch | 1.0 för driftsidan `smartmatch-read-v9-100.html` (egen serie, skild från Avläsning) |
-| Projektering | 2.19.24 |
+| Projektering | 1.0 (från v2.4.583, ersatte 2.19.24) |
 | CE-märkning | **Modulversion 1.2**, och **separat dataformat 60** (`VERSION=60`/`FORMAT` i `ce-markning-v1-2.js`, sparformatet). De blandas inte ihop. Dataformatet ändras bara när sparformatet ändras. |
 
 **SmartMatch TEST 1.5** (`smartmatch-slr-test.html`) och övriga befintliga testversioner behålls oförändrade. Övergången från nya filkopior till registret görs först när registret är verifierat och ägaren har godkänt den.
