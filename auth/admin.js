@@ -5,6 +5,8 @@
  let pendingRemove = null, editingUser = null, editingApproval = null;
  const labels = {active:'Godkänd', invited:'Bekräfta e-post', pending:'Väntar på beslut', removed:'Åtkomst borttagen', expired:'Licens utgången', revoked:'Licens avslutad'};
  const moduleNames = {smartmatch:'SmartMatch', control:'Kontrollflöde', drawing:'Ritningsverktyg'};
+ const auditNames = {add:'Lade till användare', approve:'Godkände användare', update:'Ändrade behörighet', extend:'Förlängde licens', cancelLicense:'Avslutade licens', delete:'Raderade konto', link:'Skapade inloggningslänk', saveCodeSettings:'Sparade kodlås'};
+ const codeNames = {read:'Avläsning + SmartMatch', control:'Kontrollflöde', project:'Tillsyno Projekt', drawing:'Ritningsverktyg'};
  const node = (tag, className, text) => {
   const el = document.createElement(tag);
   if (className) el.className = className;
@@ -152,10 +154,44 @@
   try {
    users = (await window.TillsynoAuth.admin('list')).users.sort((a,b) => priority(a) - priority(b) || a.email.localeCompare(b.email, 'sv'));
    loaded = true; loadError = '';
+   void loadAudit();
   } catch (error) {
    loadError = 'Listan kunde inte hämtas. Tryck på Uppdatera för att försöka igen.';
    notice(error.message, 'error');
   } finally { setBusy(false); }
+ }
+ function auditDetail(entry) {
+  const d = entry.details || {}, parts = [];
+  if (Array.isArray(d.modules)) parts.push('Moduler: ' + d.modules.map(m => moduleNames[m] || m).join(', '));
+  if (Number.isInteger(d.licenseDays)) parts.push(d.licenseDays + ' dagar');
+  if (d.licenseExpiresAt) parts.push('Till och med ' + date(d.licenseExpiresAt));
+  if (d.type) parts.push(d.type === 'recovery' ? 'Återställningslänk' : 'Inbjudningslänk');
+  if (Array.isArray(d.settings)) parts.push(d.settings.map(s => (codeNames[s.module] || s.module) + ': ' + (s.enabled ? 'på' : 'av') + (s.codeChanged ? ', ny kod' : '')).join(' · '));
+  return parts.join(' · ');
+ }
+ async function loadAudit() {
+  const list = $('auditList'), empty = $('auditEmpty');
+  if (!list) return;
+  try {
+   const entries = (await window.TillsynoAuth.admin('audit')).entries || [];
+   list.replaceChildren(...entries.map(entry => {
+    const item = node('li', 'auditRow');
+    const when = new Date(entry.at).toLocaleString('sv-SE', {timeZone:'Europe/Stockholm', dateStyle:'short', timeStyle:'short'});
+    item.append(node('span', 'auditWhen', when), node('strong', 'auditWhat', auditNames[entry.action] || entry.action),
+     node('span', 'auditWho', [entry.target_email, auditDetail(entry)].filter(Boolean).join(' · ')),
+     node('small', 'auditBy', 'av ' + (entry.actor_email || 'okänd administratör')));
+    return item;
+   }));
+   empty.textContent = entries.length ? '' : 'Inga händelser ännu.';
+   empty.hidden = entries.length > 0;
+  } catch (error) {
+   list.replaceChildren();
+   // An older server function does not know the action yet.
+   empty.textContent = /Okänd åtgärd/.test(error?.message || '')
+    ? 'Administratörsloggen aktiveras när serverfunktionen har uppdaterats.'
+    : 'Loggen kunde inte hämtas. Tryck på Uppdatera för att försöka igen.';
+   empty.hidden = false;
+  }
  }
  function hideCancelConfirmation() {
   $('cancelLicenseConfirm').hidden = true;
@@ -255,6 +291,7 @@
  document.querySelectorAll('[data-user-filter]').forEach(b => b.addEventListener('click', () => { filter = b.dataset.userFilter; render(); }));
  $('search').addEventListener('input', render);
  $('refresh').addEventListener('click', () => void load());
+ $('auditRefresh').addEventListener('click', () => void loadAudit());
  window.addEventListener('tillsyno-authorized', () => { void load(); void loadCodeSettings(); });
  if (window.TillsynoCurrentAccess) { void load(); void loadCodeSettings(); }
 })();

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="sv"><head><meta charset="utf-8">
+<script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}var page={ice:'#edf6fb',mist:'#ebf1f5',coast:'#edf7f6',sand:'#f7f5f1',night:'#081523',graphite:'#12151c',pine:'#091c1e'}[theme];document.documentElement.style.setProperty('--tillsyno-route-bg',page);document.documentElement.style.setProperty('background',page,'important');document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);})();</script><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><title>Integritet och data – Tillsyno</title><link rel="stylesheet" href="admin.css?v=2.4.282">
+<link rel="stylesheet" href="../tillsyno-appearance.css?v=2.4.359">
+<style>
+.privacycard{width:min(720px,100%);text-align:left}
+.privacycard h2{font-size:17px;margin:22px 0 8px}
+.privacycard p,.privacycard li{line-height:1.5}
+.privacycard ul{padding-left:20px;margin:6px 0}
+.privacytable{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0}
+.privacytable th,.privacytable td{text-align:left;vertical-align:top;padding:8px 6px;border-bottom:1px solid var(--ta-border,#d6e0e5);overflow-wrap:anywhere}
+.privacytable th{font-size:13px}
+@media (max-width:560px){.privacytable thead{display:none}.privacytable tr{display:block;padding:8px 0;border-bottom:1px solid var(--ta-border,#d6e0e5)}.privacytable td{display:block;border:0;padding:2px 0}.privacytable td::before{content:attr(data-label) ': ';font-weight:650}}
+</style>
+</head>
+<body class="loginbody"><main class="loginshell"><div class="brand loginbrand ta-brandlockup"><span class="ta-brandmark" aria-hidden="true">T</span><span class="ta-brandcopy"><strong>Tillsyno</strong><small>Kontroll · dokumentation · tillsyn</small></span></div>
+<section class="logincard privacycard">
+<h1>Integritet och data</h1>
+<p><strong>Ritningar och protokoll stannar på din enhet.</strong> Tillsynos server sparar bara ditt konto: namn, e-post och vilka moduler du har tillgång till. Senast uppdaterad 7 november 2026.</p>
+
+<h2>Vilka uppgifter som sparas</h2>
+<table class="privacytable">
+<thead><tr><th>Uppgifter</th><th>Var</th><th>Varför</th><th>Hur länge</th></tr></thead>
+<tbody>
+<tr><td data-label="Uppgifter">Namn, e-post, lösenord (lagras krypterat), roll, moduler och licenstid</td><td data-label="Var">Supabase, Frankfurt (EU)</td><td data-label="Varför">Inloggning och behörighet</td><td data-label="Hur länge">Tills administratören raderar kontot</td></tr>
+<tr><td data-label="Uppgifter">Inloggningshändelser (tid, IP-adress, webbläsare)</td><td data-label="Var">Supabase, Frankfurt (EU)</td><td data-label="Varför">Säkerhet och felsökning</td><td data-label="Hur länge">Enligt Supabases loggregler</td></tr>
+<tr><td data-label="Uppgifter">Administratörslogg: vem som lade till, godkände, ändrade eller raderade ett konto och när</td><td data-label="Var">Supabase, Frankfurt (EU)</td><td data-label="Varför">Spårbarhet</td><td data-label="Hur länge">12 månader</td></tr>
+<tr><td data-label="Uppgifter">Ritningar, protokoll, projekt, kund- och objektuppgifter, signaturer</td><td data-label="Var">Bara i webbläsaren på din enhet</td><td data-label="Varför">Ditt arbete, även utan internet</td><td data-label="Hur länge">Tills du loggar ut eller väljer Rensa enhetens data</td></tr>
+<tr><td data-label="Uppgifter">Filer du exporterar (PDF, ZIP)</td><td data-label="Var">Där du själv sparar eller skickar dem</td><td data-label="Varför">Leverans till kund och arkiv</td><td data-label="Hur länge">Enligt din organisations regler</td></tr>
+<tr><td data-label="Uppgifter">Tekniska uppgifter när sidan hämtas (bland annat IP-adress)</td><td data-label="Var">GitHub Pages, som levererar webbsidan</td><td data-label="Varför">Leverera appens filer</td><td data-label="Hur länge">Enligt GitHubs regler</td></tr>
+</tbody>
+</table>
+<p>Tillsyno skickar inga ritningar eller protokoll till någon server. Textigenkänning (OCR) görs på enheten. Appen har ingen statistik, reklam eller spårning.</p>
+
+<h2>Vem som ansvarar</h2>
+<p>Den organisation som har gett dig ditt konto, oftast din arbetsgivare, ansvarar för uppgifterna om dig och om kunderna i protokollen. Tillsyno behandlar kontouppgifterna för deras räkning. Underleverantörer är Supabase (konton, EU) och GitHub (webbsidan).</p>
+
+<h2>Dina rättigheter</h2>
+<ul>
+<li>Du kan få veta vilka uppgifter som finns om dig, få dem rättade och få kontot raderat. Kontakta din administratör.</li>
+<li>Administratören kan radera kontot helt. Uppgifter på din enhet raderar du själv med <strong>Logga ut</strong> eller <strong>Rensa enhetens data</strong> i Mitt konto.</li>
+<li>Du kan klaga hos Integritetsskyddsmyndigheten (<a href="https://www.imy.se" rel="noopener">imy.se</a>).</li>
+</ul>
+
+<h2>Lagring i webbläsaren</h2>
+<p>Appen använder webbläsarens lagring för inloggningen och för att arbetet ska fungera utan internet. Den lagringen används inte för spårning.</p>
+</section>
+<p class="loginhelp"><a href="login.html">Till inloggningen</a> · <a href="../app.html">Till Tillsyno</a></p></main>
+<script src="../tillsyno-appearance.js?v=2.4.359"></script>
+</body></html>

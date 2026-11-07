@@ -135,3 +135,12 @@ html[data-tillsyno-theme] body.adminPage .notice.error{background:var(--admin-ba
  html[data-tillsyno-theme] body.adminPage .toplinks :is(a,button){padding:8px;font-size:11px}
  body.adminPage .shell{padding-left:12px;padding-right:12px}
 }
+
+/* v2.4.575 administratörslogg */
+.auditList{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.auditRow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 12px;padding:10px 12px;border:1px solid var(--ta-border,#d6e0e5);border-radius:10px;background:var(--ta-card,#fff);color:var(--ta-ink,#193746)}
+.auditWhen{grid-row:span 3;font-size:13px;font-variant-numeric:tabular-nums;color:var(--ta-muted,#55707d);white-space:nowrap}
+.auditWhat{font-size:14px}
+.auditWho{font-size:13px;overflow-wrap:anywhere}
+.auditBy{grid-column:2;font-size:12px;color:var(--ta-muted,#55707d);overflow-wrap:anywhere}
+@media (max-width:520px){.auditRow{grid-template-columns:minmax(0,1fr)}.auditWhen{grid-row:auto}.auditBy{grid-column:1}}

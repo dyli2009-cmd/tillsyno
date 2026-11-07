@@ -6,7 +6,7 @@ Webbapp (PWA) för tillsyn, kontroll och dokumentation: Kontrollflöde, Avläsni
 - Ritningar och protokoll öppnas och bearbetas **lokalt i webbläsaren** (pdf.js, pdf-lib, Tesseract OCR från `vendor/`). Inga ritningar skickas till någon server.
 - Arbetsdata sparas lokalt i webbläsaren (IndexedDB/localStorage) tills användaren exporterar PDF/ZIP. **Logga ut** och **Rensa enhetens data** raderar den efter bekräftelse (`auth/clear-device.html`).
 - Inloggning, roller, modulbehörighet och licenstid hanteras i Supabase (`auth/`, `supabase/functions/tillsyno-admin`). Konton skapas av administratören; självregistrering är stängd.
-- Databasens säkerhetsregler som de ser ut i drift (Supabase, region eu-central-1/EU): [`supabase/schema/tillsyno-security-2026-11-07.sql`](supabase/schema/tillsyno-security-2026-11-07.sql). `supabase/functions/tillsyno-admin/index.ts` motsvarar version 10 i drift.
+- Databasens säkerhetsregler som de ser ut i drift (Supabase, region eu-central-1/EU): [`supabase/schema/tillsyno-security-2026-11-07.sql`](supabase/schema/tillsyno-security-2026-11-07.sql). `supabase/functions/tillsyno-admin/index.ts` innehåller administratörsloggen (v2.4.575); version 10 i drift saknar den tills funktionen har driftsatts. Loggtabellen: [`auth/admin-audit.sql`](auth/admin-audit.sql).
 
 ## Publicering
 `.github/workflows/pages.yml` bygger med `tools/build-release.mjs` och publicerar **bara de filer appen använder** till GitHub Pages. Dokument, tester och serverkod i repot publiceras inte.
