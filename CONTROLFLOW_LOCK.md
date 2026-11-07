@@ -337,3 +337,7 @@ Den exporterade arbets-PDF:en och Kundmallens ritning är byte för byte desamma
 - Nya filerna `versions.json` och `tillsyno-versions.js` (gemensamma för appen).
 
 Motorerna `security.js` och `controlflow-revision/security-v335.js`, protokoll, kontrollpunkter, stämplar, arbetsfiler, import och exporterad PDF är oförändrade. `controlflow-revision/offline.js` (`?v=2.4.567`) är medvetet oförändrad och hanteras i kraschuppgiften. Test: `tests/module-versions-v582.cjs` och Kontrollflödets tester.
+
+# 2026-11-07 · v2.4.583 · Modulversioner från 1.0
+
+Ägaren beslutade att alla moduler börjar på 1.0, så att versionerna blir små och går uppåt vid varje ändring. Kontrollflödets versioner var redan 1.0 och är oförändrade: Dörrautomatik / Lås, Säkerhetsservice och Brand. I `all-in-one.html` och `controlflow-revision/all-in-one.html` ändrades bara cacheparametern för `tillsyno-versions.js` till `?v=2.4.583`. Motorer, protokoll, stämplar, arbetsfiler, import och exporterad PDF är oförändrade.

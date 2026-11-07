@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#173e3a">
   <script id="tillsyno-appearance-early">(function(){var theme='mist',device='auto';try{var saved=JSON.parse(localStorage.getItem('tillsyno-ui-appearance-v1')||'null');if(saved&&['ice','mist','coast','sand','night','graphite','pine'].indexOf(saved.theme)>=0)theme=saved.theme;if(saved&&['auto','phone','tablet','desktop'].indexOf(saved.device)>=0)device=saved.device;}catch(_){}var page={ice:'#edf6fb',mist:'#ebf1f5',coast:'#edf7f6',sand:'#f7f5f1',night:'#081523',graphite:'#12151c',pine:'#091c1e'}[theme];document.documentElement.style.setProperty('--tillsyno-route-bg',page);document.documentElement.style.setProperty('background',page,'important');document.documentElement.setAttribute('data-tillsyno-theme',theme);document.documentElement.setAttribute('data-tillsyno-device',device);var meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute('content',page);})();</script>
   <meta name="description" content="Projektera dörrar på egna PDF-ritningar med stenciler, gemensamma dörrkort och sökbar PDF-export.">
-  <title>Projektering 2.19.24 | Tillsyno</title>
+  <title>Projektering 1.0 | Tillsyno</title>
   <style>html[data-auth-pending] body{visibility:hidden!important}</style>
   <script src="vendor/supabase-2.49.10.min.js"></script>
   <script src="auth-config.js"></script>
@@ -73,7 +73,7 @@
   </defs></svg>
 
   <header class="app-header">
-    <a class="brand" href="app.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small data-tillsyno-version="projektering">Projektering 2.19.24</small></span></a>
+    <a class="brand" href="app.html" aria-label="Till Tillsynos startsida"><span class="brand-mark"><svg><use href="#i-plan"/></svg></span><span>Tillsyno<small data-tillsyno-version="projektering">Projektering 1.0</small></span></a>
     <div class="project-name"><label for="projectName">Projekt</label><input id="projectName" value="Nytt projekt" maxlength="120" aria-label="Projektnamn" autocomplete="off"><button id="projectDetails" type="button" class="icon-button" title="Projektuppgifter och logga" aria-label="Projektuppgifter och logga"><svg aria-hidden="true"><use href="#i-edit"/></svg></button></div>
     <div class="header-status"><span class="status-dot" aria-hidden="true"></span><output id="saveStatus" aria-live="polite">Öppna en ritning för att börja</output></div>
     <button id="help" class="icon-button" type="button" aria-label="Öppna guiden" title="Guide och kortkommandon"><svg><use href="#i-help"/></svg></button>
@@ -269,8 +269,8 @@
     <div class="dialog-actions"><button id="cancelImport" type="button" class="button">Avbryt</button><button id="acceptImport" type="button" class="button primary">Öppna konverterat projekt</button></div>
   </dialog>
   <noscript><p class="noscript">Aktivera JavaScript för att använda projekteringsappen.</p></noscript>
-<span class="projektering-version" aria-label="Version 2.19.24">v2.19.24</span>
-<script src="tillsyno-versions.js?v=2.4.582" defer></script></body>
+<span class="projektering-version" aria-label="Projektering 1.0">Projektering 1.0</span>
+<script src="tillsyno-versions.js?v=2.4.583" defer></script></body>
 </html>
 
 

@@ -1,12 +1,12 @@
 {
-  "app": "2.4.582",
+  "app": "2.4.583",
   "modules": {
     "dorrautomatik-las": {"name": "Dörrautomatik / Lås", "version": "1.0"},
     "sakerhetsservice": {"name": "Säkerhetsservice", "version": "1.0"},
     "brand": {"name": "Brand", "version": "1.0"},
-    "avlasning": {"name": "Avläsning", "version": "9.100.35"},
+    "avlasning": {"name": "Avläsning", "version": "1.0"},
     "smartmatch": {"name": "SmartMatch", "version": "1.0"},
-    "projektering": {"name": "Projektering", "version": "2.19.24"},
+    "projektering": {"name": "Projektering", "version": "1.0"},
     "ce-markning": {"name": "CE-märkning", "version": "1.2", "dataformat": 60}
   }
 }

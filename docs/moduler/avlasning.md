@@ -1,9 +1,9 @@
 # Avläsning
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.582 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
-- **Modulversion:** Avläsning 9.100.35 (`versions.json`). Sidhuvudet visar *Avläsning 9.100.35 · SmartMatch 1.0*, och startsidans kort visar samma versioner.
-  - Etiketten `SMARTMATCH_TEST_LABEL` i `smartmatch-read-main-v524.js` är rättad från 9.100.17 till 9.100.35 (v2.4.582). Den skrivs fortfarande för hand och ska stämma med `versions.json`. Testet `module-versions-v582` kontrollerar det.
+- **Appversion:** Tillsyno v2.4.583 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** Avläsning 1.0 (`versions.json`). Den nya serien började i v2.4.583 och ersatte 9.100.35 (ägarens beslut: alla moduler börjar på 1.0). Sidhuvudet och sidtiteln visar *Avläsning 1.0 · SmartMatch 1.0*, och startsidans kort visar samma versioner.
+  - Etiketten `SMARTMATCH_TEST_LABEL` i `smartmatch-read-main-v524.js` och skriptet `smartmatch-visual-release-v1-3` i sidan skriver *Avläsning 1.0*. De skrivs fortfarande för hand och ska stämma med `versions.json`. Testet `module-versions-v582` kontrollerar `SMARTMATCH_TEST_LABEL`.
 
 ## 2. Arbetsflöde från början till slut
 Avläsning och [SmartMatch](smartmatch.md) körs på **samma sida**: *Avläsning + SmartMatch*, `smartmatch-read-v9-100.html`, som nås från startsidan. Avläsningen är den första delen.
