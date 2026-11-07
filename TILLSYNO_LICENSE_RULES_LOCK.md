@@ -124,4 +124,4 @@ Beslutat av användaren inför IT-säkerhetsgranskningen. Ersätter självregist
 - Tabellen har RLS utan klientåtkomst; serverrollen får bara läsa, lägga till och radera (inte ändra). Administrationssidan visar de 200 senaste händelserna under **Administratörslogg**. Se `auth/admin-audit.sql`.
 - Loggningen stoppar aldrig själva ändringen. Om loggen inte kan skrivas får administratören ett meddelande om det.
 - **Integritetssida:** `auth/integritet.html` (öppen utan inloggning, länkad från inloggningen, Mitt konto och Administration) beskriver vilka uppgifter som sparas, var, varför och hur länge, vem som ansvarar och användarens rättigheter.
-- Driftsättningen av serverfunktionen med loggen görs separat i Supabase. Tills dess visar administrationssidan att loggen aktiveras när funktionen har uppdaterats.
+- Serverfunktionen med loggen driftsattes i Supabase som version 11 den 7 november 2026. Om en äldre funktion skulle köras visar administrationssidan att loggen aktiveras när funktionen har uppdaterats.
