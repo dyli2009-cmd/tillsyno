@@ -28,7 +28,7 @@ const leaveQuestion=page=>page.locator('.revLeaveCard');
    return {order,headerHeight:header.getBoundingClientRect().height,scale:getComputedStyle(document.documentElement).getPropertyValue('--cf-text-scale').trim(),
     large:document.documentElement.hasAttribute('data-cf-large-text'),textSize:document.body.dataset.appTextSize,stored:localStorage.getItem('tillsyno-controlflow-text-level-v1'),
     textButtons:[...document.querySelectorAll('[data-app-text-smaller],[data-app-text-larger],[data-app-text-reset]')].filter(visible).length,
-    fileIn:line?.closest('.objectBar')?'objectBar':line?.closest('.secAppHeader')?'header':'none',fileName:line?.textContent.trim(),
+    fileIn:line?.closest('.pagebar')?'pagebar':line?.closest('.objectBar')?'objectBar':line?.closest('.secAppHeader')?'header':'none',fileName:line?.textContent.trim(),
     toolIcon:!!launcher?.querySelector('svg[data-rev-icon="tools"]'),toolLabel:launcher?.getAttribute('aria-label'),
     overflow:document.documentElement.scrollWidth>innerWidth};
   });
@@ -36,7 +36,8 @@ const leaveQuestion=page=>page.locator('.revLeaveCard');
   assert.ok(layout.headerHeight<72,label+': one header row, '+layout.headerHeight);
   assert.equal(layout.scale,'1');assert.equal(layout.large,false);assert.equal(layout.textSize,'0');assert.equal(layout.stored,'3',label+': stored text level left for Säkerhetsservice');
   assert.equal(layout.textButtons,0,label+': no A− / A+');
-  assert.equal(layout.fileIn,label==='phone'?'objectBar':'header');assert.equal(layout.fileName,'Testritning 11.pdf');
+  // Since v2.4.588 the file name and count are in the page row on every device.
+  assert.equal(layout.fileIn,'pagebar');assert.equal(layout.fileName,'Testritning 11.pdf');
   assert.ok(layout.toolIcon,label+': tool icon');assert.equal(layout.toolLabel,'Verktyg');assert.equal(layout.overflow,false,label+': no horizontal scroll');
 
   await page.locator('.serviceToolLauncher').click();
@@ -54,6 +55,8 @@ const leaveQuestion=page=>page.locator('.revLeaveCard');
   await page.waitForFunction(()=>!document.body.classList.contains('secHasPdf'));
   assert.equal(await leaveQuestion(page).count(),0,label+': no question without changes');
   assert.ok(await page.locator('#secEmpty').isVisible(),label+': back to Välj ritning');
+  // The header follows the drawing state on the next frame.
+  await page.waitForFunction(()=>document.getElementById('revCloseDrawing').hidden);
   assert.equal(await page.locator('#revCloseDrawing').isVisible(),false);
 
   // A change asks first. Avbryt stays, Stäng utan att spara PDF closes, and the work comes back with the same drawing.

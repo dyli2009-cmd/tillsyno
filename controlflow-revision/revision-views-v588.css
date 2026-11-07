@@ -1,0 +1,186 @@
+/* v2.4.588: Dörrautomatik / Lås – Ritning, Översikt och Projekt. Bara revisionssidan.
+   Samma lager som de delade reglerna, med högre specificitet. */
+@layer controlflowStandard {
+  /* Messages: no explanations. Errors (red) and ongoing work (…) are still shown. */
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityMessage:is([data-rev-kind="info"], [data-rev-kind="empty"]) {
+    display: none !important;
+  }
+  /* The object row is gone on every view; file name and count are in the page row. */
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] .objectBar {
+    display: none !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] .pagebar .mobileSwipeHint {
+    display: none !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityDrawing .pagebar .revPageInfo {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    max-width: min(420px, calc(100vw - 200px));
+    margin-left: 4px;
+    font-size: .78rem !important;
+    line-height: 1.2;
+    color: var(--ta-muted, #4d6878) !important;
+    white-space: nowrap;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"]:not(.secHasPdf) .pagebar .revPageInfo {
+    display: none !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityDrawing .pagebar .revPageInfo .workspaceFileLine {
+    display: inline-flex !important;
+    min-width: 0;
+    flex: 0 1 auto;
+    margin: 0 !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityDrawing .pagebar .revPageInfo .workspaceFileName {
+    flex: 0 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    display: block !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: inherit !important;
+    font-weight: 600 !important;
+    color: var(--ta-ink, #173f55) !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityDrawing .pagebar .revPageInfo #securityCount {
+    flex: none;
+    font-size: inherit !important;
+    color: inherit !important;
+    white-space: nowrap;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityDrawing .pagebar .revPageInfo #securityCount::before {
+    content: "·";
+    margin-right: 6px;
+  }
+  /* Page buttons and the eye follow the theme (they were white in the dark themes). */
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] :is(#secPrev, #secNext, #secToggleOverlays) {
+    color: var(--ta-ink, #173f55) !important;
+    background: var(--ta-soft2, #f4f8fa) !important;
+    border: 1px solid var(--ta-border, #cfdae0) !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #secToggleOverlays:is(.active, [aria-pressed="true"]) {
+    color: #fff !important;
+    background: var(--ta-blue, #2f6f8f) !important;
+    border-color: var(--ta-blue, #2f6f8f) !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] .sessionHistoryCenter > #secToggleOverlays {
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    border-radius: 10px !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"]:not(.secHasPdf) .sessionHistoryCenter > #secToggleOverlays {
+    display: none !important;
+  }
+
+  /* Header on Översikt and Projekt: only the buttons, no module title or protocol name. */
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"]:is([data-view="overview"], [data-view="project"], [data-rev-panel="securityOverview"]) .secAppHeader .cfHeaderContext {
+    display: none !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"]:is([data-view="overview"], [data-view="project"], [data-rev-panel="securityOverview"]) .secAppHeader.cfNavigationHeader {
+    grid-template-columns: auto minmax(0, 1fr) !important;
+    padding-bottom: 8px !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"]:is([data-view="overview"], [data-view="project"], [data-rev-panel="securityOverview"]) .cfNavigationHeader > .headerActions {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    justify-self: end;
+  }
+
+  /* Översikt: no Tillbaka, no Kundmall next to the title, small title, compact numbers. */
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #revisionInlineWorkspace[data-panel="securityOverview"] > .revisionInlineNavigation,
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityOverview #secOverviewCustomerPreview,
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityOverview .overviewHead .eyebrow {
+    display: none !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityOverview .overviewHead {
+    min-height: 0 !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityOverview .overviewHead h2 {
+    margin: 0 !important;
+    font-size: .95rem !important;
+    line-height: 1.3 !important;
+  }
+  @media (max-width: 800px) {
+    html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityOverview #secOverviewSummary {
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 6px !important;
+    }
+    html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityOverview #secOverviewSummary .overviewStat {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 4px !important;
+      min-height: 0 !important;
+      height: auto !important;
+      padding: 5px 6px !important;
+      min-width: 0 !important;
+    }
+    html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityOverview #secOverviewSummary .overviewStat strong {
+      font-size: 1rem !important;
+      line-height: 1.1 !important;
+      flex: none;
+    }
+    html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityOverview #secOverviewSummary .overviewStat small {
+      min-width: 0 !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: normal !important;
+      overflow-wrap: normal !important;
+      word-break: normal !important;
+      hyphens: none !important;
+      font-size: .64rem !important;
+      line-height: 1.15 !important;
+    }
+  }
+
+  /* Projekt: small title, no ×, no Service heading, Starta ny service last across the full width. */
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityProject > .sheetHead {
+    min-height: 0 !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityProject > .sheetHead h2 {
+    margin: 0 !important;
+    font-size: .95rem !important;
+    line-height: 1.3 !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityProject #secCloseProject,
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityProject .revisionColumnHead:has(#revisionServiceTitle) {
+    display: none !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityProject .projectSections > .secNewServiceCard {
+    grid-column: 1 / -1 !important;
+  }
+  /* Översikt in the dark themes: the remediation fields follow the theme (they were white). */
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityOverview :is(.secRemediationDescriptionBlock, .secRemediationGrid) {
+    color: var(--ta-ink, #173f55) !important;
+    background: var(--ta-soft, #eef5f8) !important;
+    border-color: var(--ta-border, #cfdae0) !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] #securityOverview :is(.secRemediationDescriptionBlock, .secRemediationGrid) :is(h4, label) {
+    color: var(--ta-ink, #173f55) !important;
+  }
+}

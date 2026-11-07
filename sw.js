@@ -1,4 +1,4 @@
-const VERSION='2.4.587';
+const VERSION='2.4.588';
 const CACHE='tillsyno-offline-'+VERSION;
 const BASE=new URL('./',self.location.href);
 const CORE=[
@@ -66,6 +66,8 @@ const CORE=[
  "controlflow-revision/revision-header-v584.js",
  "controlflow-revision/revision-protocol-v587.css",
  "controlflow-revision/revision-protocol-v587.js",
+ "controlflow-revision/revision-views-v588.css",
+ "controlflow-revision/revision-views-v588.js",
  "controlflow-revision/offline-work-v2.js",
  "controlflow-revision/offline.js",
  "controlflow-revision/revision-callout-profile-v4.js",

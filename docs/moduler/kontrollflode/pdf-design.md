@@ -1,6 +1,6 @@
 # Kontrollflöde – gemensam PDF-design
 
-**Version:** Tillsyno v2.4.587 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`). Det här dokumentet beskriver den gemensamma PDF-designen för alla fyra undermodulerna.
+**Version:** Tillsyno v2.4.588 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`). Det här dokumentet beskriver den gemensamma PDF-designen för alla fyra undermodulerna.
 
 Kontrollflödet är **upplåst** sedan v2.4.581. **Inga förslag i det här dokumentet är införda**, och PDF-designen lämnas orörd tills ägaren beställer en ändring (beslut 7 november 2026).
 

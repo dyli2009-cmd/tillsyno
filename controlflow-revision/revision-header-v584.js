@@ -52,7 +52,10 @@
   const line=document.querySelector('.workspaceFileLine'),details=document.querySelector('.secAppHeader .headerDetails'),bar=document.querySelector('.objectBar');
   if(!line||!details||!bar)return;
   const small=compact();body.toggleAttribute('data-rev-compact',small);
-  if(small){if(line.parentNode!==bar)bar.prepend(line);}
+  // v2.4.588: the file name and count are in the page row (revision-views-v588.js) on every device.
+  const info=document.querySelector('#securityDrawing .pagebar .revPageInfo');
+  if(info){if(line.parentNode!==info)info.prepend(line);}
+  else if(small){if(line.parentNode!==bar)bar.prepend(line);}
   else if(line.parentNode!==details)details.append(line);
   if(closeButton){const loaded=body.classList.contains('secHasPdf');if(closeButton.hidden===loaded)closeButton.hidden=!loaded;}
  }
