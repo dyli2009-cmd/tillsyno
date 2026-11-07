@@ -1,8 +1,8 @@
 # Kontrollflöde – Dörrautomatik
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.586 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
-- **Modulversion:** Dörrautomatik / Lås 1.3. Det är en gemensam version för Dörrautomatik och Lås, som grupperas som i mappvalet (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (ägarens beslut, v2.4.584). Nästa funktionsändring, till exempel kraschrättningen, höjer den till 1.4.
+- **Appversion:** Tillsyno v2.4.587 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** Dörrautomatik / Lås 1.4. Det är en gemensam version för Dörrautomatik och Lås, som grupperas som i mappvalet (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (ägarens beslut, v2.4.584). Nästa funktionsändring, till exempel kraschrättningen, höjer den till 1.5.
 - Kontrollflödet är upplåst. Gemensamma regler, motorer och filkarta: [README.md](README.md).
 
 ## 2. Arbetsflöde från början till slut
@@ -19,6 +19,10 @@
    - Är det en arbets-PDF med objekt väljer användaren mellan *Fortsätt / ändra* och *Ny service*.
 3. **Placera dörrautomatiker** på ritningen (`createItem`). De numreras *D1, D2 …* (`nextAutomationSerial`) och får modell, maskintyp och serienummer (`normalizeAutomationIdentity`).
 4. **Fyll i kontrollpunkter:** 18 punkter i revisionen och 6 i egenkontrollen.
+   - Checklistvyn (v2.4.587, `revision-protocol-v587.*`):
+     - Rubriken är bara det öppna objektets protokollnamn, i liten text. Raden med filnamn, projekt och antal objekt visas inte här, och inte heller krysset *Till ritningen*. Fliken *Ritning* leder tillbaka.
+     - *Objektuppgifter* ligger överst och är infällda varje gång ett objekt öppnas. Kontrollpunkterna följer direkt under.
+     - Saknas uppgifter (till exempel objektnummer eller typ av automatik) visar den infällda raden en röd varning. Nyckeln (egen kontrollpunkt, redigera kontrollpunkter) är oförändrad.
    - För varje punkt väljs *OK*, *Anmärkning* eller *Ej aktuell*, med felval och anmärkningstext.
    - Ett nytt tryck på ett valt svar avmarkerar det, och åtgärdsdatum och signatur rensas då.
 5. **Översikt** (`showOverview`) visar alla objekt och deras status.
@@ -65,6 +69,7 @@
   - `customer-preview-v310.*`
   - `drawing-load-progress-v581.*`
   - `revision-header-v584.*` (sidhuvud, verktygsmeny och frågan innan ritningen lämnas)
+  - `revision-protocol-v587.*` (checklistvyn: rubrik, infällda objektuppgifter med varning)
   - kopior av `legacy-door-import.js`, `offline-work-v2.js`, `drawing-transfer-v2.js`, `session-history.js`, `drawing-annotations.js` och `tillsyno-appearance*`
 - **Delade Kontrollflödesfiler:** `controlflow-*` och `security-stamp-selection-v549.*`, `security-detectors-v344.*`. Se README.md.
 - **Äldre dörrkod på startsidan** (`app.js`, `v2.js`, `reports.js`): har en egen kopia av de 18 punkterna. Om den koden används är *ej verifierat*. Ändra den inte som följd av ändringar här.
@@ -101,9 +106,9 @@
 
 ## 8. Tester och status
 ```sh
-node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress security-automation-checklist revision-uncheck revision-header revision-draw-delete stamp-lock-frame controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
+node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress security-automation-checklist revision-uncheck revision-header revision-draw-delete stamp-lock-frame revision-protocol controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
 ```
-- **Senaste körning:** godkänd (v2.4.585), se [kvalitetskontroller.md](../../kvalitetskontroller.md). `revision-header-v584` provar sidhuvudet, verktygsmenyn och frågan innan ritningen lämnas på telefon, iPad och dator. `revision-draw-delete-v585` provar *Ta bort* för alla sex ritobjekt på telefon och dator.
+- **Senaste körning:** godkänd (v2.4.585), se [kvalitetskontroller.md](../../kvalitetskontroller.md). `revision-header-v584` provar sidhuvudet, verktygsmenyn och frågan innan ritningen lämnas på telefon, iPad och dator. `revision-draw-delete-v585` provar *Ta bort* för alla sex ritobjekt på telefon och dator. `revision-protocol-v587` provar checklistvyn på telefon, iPad och dator.
 - **Ej verifierat på riktig enhet:** sidhuvudet och frågan på iPhone och iPad med Safari, och att nedladdningen av PDF:en blir klar innan användaren väljer att lämna.
 - **Kända fel:** inga egna.
 - **Pågår separat:** krascher med stora ritningar på riktiga enheter (VANTANDE_PUNKTER.md avsnitt 8, steg 2).
