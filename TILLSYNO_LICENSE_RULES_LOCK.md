@@ -125,3 +125,12 @@ Beslutat av användaren inför IT-säkerhetsgranskningen. Ersätter självregist
 - Loggningen stoppar aldrig själva ändringen. Om loggen inte kan skrivas får administratören ett meddelande om det.
 - **Integritetssida:** `auth/integritet.html` (öppen utan inloggning, länkad från inloggningen, Mitt konto och Administration) beskriver vilka uppgifter som sparas, var, varför och hur länge, vem som ansvarar och användarens rättigheter.
 - Serverfunktionen med loggen driftsattes i Supabase som version 11 den 7 november 2026. Om en äldre funktion skulle köras visar administrationssidan att loggen aktiveras när funktionen har uppdaterats.
+
+## 15. Inbjudan från administrationen – beslut 7 november 2026 (v2.4.579)
+- Eftersom självregistreringen är stängd skapas nya konton genom **Bjud in användare** på administrationssidan. Administratören anger e-postadress, valfritt namn, moduler och licenstid (7/30/90/365 dagar). Åtkomstraden skapas direkt med de valda modulerna; ingen annan väg ger licens.
+- **E-post från Tillsyno:** serverfunktionen ber Supabase skicka inbjudan. Supabases inbyggda e-posttjänst skickar bara till projektets teammedlemmar och några få mejl per timme. Tills en egen e-postserver (SMTP) är inställd i Supabase returnerar funktionen i stället en **personlig länk**, och administrationssidan visar *Kopiera länk* och *Öppna i e-post*, så att administratören skickar länken från sin egen e-post.
+- Länken är personlig, fungerar en gång och har begränsad giltighetstid. Den visas bara för administratören, sparas aldrig i loggen och töms när dialogen stängs.
+- Mottagaren väljer lösenord på `auth/reset-password.html`, som nu godtar både inbjudnings- och återställningslänkar. Därefter loggar personen in som vanligt.
+- I användarlistan visas sådana konton som **Inbjuden** tills lösenordet är valt. Menyn ⋯ har *Skicka inbjudan igen* respektive *Skicka ny inloggningslänk*, med samma reservlänk om e-post inte kan skickas.
+- Administratörsloggen visar om inbjudan gick med e-post eller som personlig länk.
+- Serverfunktionen driftsattes i Supabase som version 12 den 7 november 2026.

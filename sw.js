@@ -1,4 +1,4 @@
-const VERSION='2.4.578';
+const VERSION='2.4.579';
 const CACHE='tillsyno-offline-'+VERSION;
 const BASE=new URL('./',self.location.href);
 const CORE=[
@@ -10,6 +10,7 @@ const CORE=[
  "app.js",
  "auth-config.js",
  "auth/admin-compact-v577.css",
+ "auth/admin-invite-v579.css",
  "auth/admin-ui-v359.css",
  "auth/admin.css",
  "auth/admin.html",
@@ -291,7 +292,15 @@ const canonical=request=>{const url=new URL(request.url);url.search='';url.hash=
 const CORE_URLS=new Set(CORE.map(path=>new URL(path,BASE).href));
 self.addEventListener('install',event=>event.waitUntil((async()=>{
  const cache=await caches.open(CACHE),urls=[...CORE_URLS];
- let next=0,failure=null;
+ let next=0,done=0,reportedPercent=-1,failure=null;
+ // Tell open pages how far the download has come, so the update card can show real progress.
+ const report=async force=>{
+  const percent=Math.floor(done*100/urls.length);
+  if(!force&&percent===reportedPercent)return;
+  reportedPercent=percent;
+  try{for(const client of await self.clients.matchAll({type:'window',includeUncontrolled:true}))
+   client.postMessage({type:'tillsyno-update-progress',version:VERSION,done,total:urls.length});}catch(_){}
+ };
  async function preload(){
   while(!failure&&next<urls.length){
    const url=urls[next++];
@@ -299,12 +308,14 @@ self.addEventListener('install',event=>event.waitUntil((async()=>{
     const response=await fetch(url,{cache:'reload',priority:'low'});
     if(!response.ok)throw Error('Offline file missing: '+url);
     await cache.put(url,response);
+    done++;void report(false);
    }catch(error){failure=error;}
   }
  }
  // Leave connections available for the module the user is opening.
  await Promise.all(Array.from({length:Math.min(4,urls.length)},preload));
  if(failure)throw failure;
+ await report(true);
  await cache.put(readyURL,new Response(VERSION));await self.skipWaiting();
 })()));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{

@@ -239,3 +239,11 @@ De här rättningarna ligger i `tillsyno-theme-fix-v578.css`, som laddas av Smar
 Medvetet oförändrat: den neutrala grå ytan runt PDF-sidan i Kontrollflödet, kundmallens förhandsvisning och SmartMatch-protokollet är samma i alla teman, så att ritningens vita papper syns likadant. Godkänn-knappens gröna färg och de gula stämplarna har en egen betydelse. Startsidans gamla Dörrservice-dialoger går inte att nå från appen. Temats grå hjälptext har i de ljusa temana kontrasten 3,7–3,9:1 i hela appen; att ändra den kräver ändring i den gemensamma temafilen och därmed upplåsning av Kontrollflödet.
 
 Kontrollflödet granskades också, i alla teman, och följer temat. Inga Kontrollflödesfiler ändrades. Kontrollerat i Chromium på dator (1280 px) och för Projektering även 390 px telefon; inga nya körfel. Fysisk iPhone/iPad är inte verifierad.
+
+## Inbjudan och uppdateringsruta v2.4.579
+
+Användarbeslut 7 november 2026:
+
+- **Bjud in användare** (administrationen): knapp i användarlistans rubrik, dialog med e-post, namn, moduler, licenstid och val mellan *E-post från Tillsyno* och *Personlig länk*. Resultatet visas i samma dialog, med länk, *Kopiera länk* och *Öppna i e-post* när länken ska skickas manuellt. Stilar i `auth/admin-invite-v579.css`; 44 px tryckytor och 16 px fält. Kontrollerat i Chromium på 1440, 820, 390 och 320 px i ljusa och mörka teman, utan sidledsrullning. Regler: TILLSYNO_LICENSE_RULES_LOCK.md avsnitt 15.
+- **Uppdateringsrutan** på startsidan är ett kort i valt tema med *Senare* och *Uppdatera*. Vid uppdatering visas en förloppsstapel med procent och antal hämtade filer. Den nya service workern rapporterar varje sparad offlinefil, och sidan startar om först när stapeln nått 100 % och den nya versionen är aktiv. Fel visas i kortet med *Försök igen*; inget osparat arbete går förlorat. Rörelser stängs av vid *minska rörelse*. Eftersom rapporteringen finns i den nya versionen syns det verkliga förloppet från uppdateringen efter 2.4.579; den första uppdateringen till 2.4.579 visar den gamla rutan.
+- Kontrollerat i Chromium med en simulerad ny version: stapeln steg i jämn takt till 100 % före omstart (dator i dimblå och midnattsblå, 390 px telefon i mörkgrön). `tests/app-update-handoff.cjs` kräver nu att stapeln når 100 % innan sidan byts. Fysisk iPhone/iPad är inte verifierad.

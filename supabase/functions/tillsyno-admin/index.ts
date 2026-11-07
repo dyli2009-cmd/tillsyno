@@ -49,6 +49,8 @@ export function makeHandler(clientFactory, getEnv) {
     }catch(_){return false;}
    };
    const logged=(ok,message)=>ok?message:message+' Händelsen kunde inte skrivas till administratörsloggen.';
+   // Why Supabase could not send an e-mail, without exposing provider details.
+   const mailProblem=error=>/rate_limit|rate limit/i.test(String(error?.code||'')+' '+String(error?.message||''))?'rate':'unavailable';
    const kinds=['smartmatch','control','drawing'];
    const goodModules=v=>Array.isArray(v)&&v.length>0&&v.length<=3&&new Set(v).size===v.length&&v.every(x=>kinds.includes(x));
    const goodDays=v=>Number.isInteger(v)&&v>=1&&v<=3650;
@@ -122,11 +124,26 @@ export function makeHandler(clientFactory, getEnv) {
     const email=String(body.email||'').trim().toLowerCase(),name=String(body.name||'').trim().slice(0,100);
     if(email.length>254||!/^\S+@\S+\.\S+$/.test(email))return reply({error:'Skriv en giltig e-postadress.'},400);
     if((await allUsers()).some(u=>u.email?.toLowerCase()===email))return reply({error:'Kontot finns redan. Använd knapparna i användarlistan.'},409);
+    const grant=userId=>admin.from('tillsyno_access').upsert({user_id:userId,access_role:'member',allowed_modules:modules,license_expires_at:expiration(days)});
+    let mailIssue=null;
+    if(body.send===true){
+     // Supabase sends the invitation. Its built-in e-mail service only reaches the project's
+     // team members until custom SMTP is configured; then a personal link is returned instead.
+     const sent=await admin.auth.admin.inviteUserByEmail(email,{redirectTo,data:{name}}).catch(error=>({error}));
+     if(!sent.error&&sent.data?.user?.id){
+      checked(await grant(sent.data.user.id));
+      const auditOk=await audit('add',{id:sent.data.user.id,email},{modules,licenseDays:days,sent:true});
+      return reply({ok:true,email,sent:true,message:logged(auditOk,'Inbjudan är skickad till '+email+'. Personen väljer lösenord via länken i mejlet.')});
+     }
+     mailIssue=mailProblem(sent.error);
+    }
     const data=checked(await admin.auth.admin.generateLink({type:'invite',email,options:{redirectTo,data:{name}}}));
     if(!data?.user?.id||!data.properties?.action_link)throw Error('Länken kunde inte skapas.');
-    checked(await admin.from('tillsyno_access').upsert({user_id:data.user.id,access_role:'member',allowed_modules:modules,license_expires_at:expiration(days)}));
-    const auditOk=await audit('add',{id:data.user.id,email},{modules,licenseDays:days});
-    return reply({ok:true,email,link:data.properties.action_link,message:logged(auditOk,'Användaren är tillagd. Dela den personliga länken så att användaren kan välja lösenord.')});
+    checked(await grant(data.user.id));
+    const auditOk=await audit('add',{id:data.user.id,email},{modules,licenseDays:days,sent:false});
+    return reply({ok:true,email,sent:false,mailIssue,link:data.properties.action_link,message:logged(auditOk,mailIssue
+     ?'Användaren är tillagd, men Tillsyno kunde inte skicka e-post. Skicka den personliga länken själv.'
+     :'Användaren är tillagd. Skicka den personliga länken så att användaren kan välja lösenord.')});
    }
    if(!['approve','remove','delete','link','update','extend','cancelLicense'].includes(body.action))return reply({error:'Okänd åtgärd.'},400);
    if(typeof body.userId!=='string'||!body.userId.match(/^[0-9a-f-]{36}$/i))return reply({error:'Välj en användare.'},400);
@@ -196,9 +213,22 @@ export function makeHandler(clientFactory, getEnv) {
    }
    if(targetAccess?.access_role!=='member'||Date.parse(target.banned_until||'')>Date.now())return reply({error:'Godkänn användaren innan du skapar en länk.'},409);
    const linkType=target.email_confirmed_at?'recovery':'invite';
+   let mailIssue=null;
+   if(body.send===true){
+    const sent=await (linkType==='invite'
+     ?admin.auth.admin.inviteUserByEmail(target.email,{redirectTo})
+     :admin.auth.resetPasswordForEmail(target.email,{redirectTo})).catch(error=>({error}));
+    if(!sent.error){
+     const auditOk=await audit('link',target,{type:linkType,sent:true});
+     return reply({ok:true,email:target.email,sent:true,message:logged(auditOk,(linkType==='invite'?'En ny inbjudan':'En länk för att välja nytt lösenord')+' är skickad till '+target.email+'.')});
+    }
+    mailIssue=mailProblem(sent.error);
+   }
    const data=checked(await admin.auth.admin.generateLink({type:linkType,email:target.email,options:{redirectTo}}));
-   const auditOk=await audit('link',target,{type:linkType});
-   return reply({ok:true,email:target.email,link:data.properties.action_link,message:logged(auditOk,'Dela den personliga länken med användaren.')});
+   const auditOk=await audit('link',target,{type:linkType,sent:false});
+   return reply({ok:true,email:target.email,sent:false,mailIssue,link:data.properties.action_link,message:logged(auditOk,mailIssue
+    ?'Tillsyno kunde inte skicka e-post. Skicka den personliga länken själv.'
+    :'Skicka den personliga länken till användaren.')});
   }catch(error){
    // Never log session tokens or generated invitation links.
    return reply({error:'Åtgärden kunde inte slutföras. Ladda om listan och försök igen.'},500);

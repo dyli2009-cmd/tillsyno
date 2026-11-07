@@ -1,0 +1,27 @@
+/* Administration v2.4.579 – invite users. Same palette tokens as the rest of the page. */
+html[data-tillsyno-theme] body.adminPage .panelhead .inviteOpen{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;width:auto;margin:0;flex:none}
+html[data-tillsyno-theme] body.adminPage .inviteOpen svg{width:18px;height:18px;flex:none}
+html[data-tillsyno-theme] body.adminPage .notice.warning{background:color-mix(in srgb,#d99a2b 18%,var(--ta-card,#fff))!important;color:var(--ta-ink,#233f52)!important;border:1px solid color-mix(in srgb,#d99a2b 45%,var(--ta-border,#cbdde6))}
+html[data-tillsyno-theme] body.adminPage #inviteDialog{width:min(540px,calc(100% - 24px));background:var(--ta-card);color:var(--ta-ink)}
+html[data-tillsyno-theme] body.adminPage #inviteForm>label:first-child{margin-top:4px}
+html[data-tillsyno-theme] body.adminPage #inviteDialog .optional{font-weight:400;color:var(--ta-muted)}
+html[data-tillsyno-theme] body.adminPage #inviteDialog select{width:100%;min-height:44px;font-size:16px}
+html[data-tillsyno-theme] body.adminPage #inviteDialog .moduleGroup{margin-top:16px}
+html[data-tillsyno-theme] body.adminPage .inviteHow{border:0;padding:0;margin:16px 0 0;display:grid;gap:8px;min-width:0}
+html[data-tillsyno-theme] body.adminPage .inviteHow legend{font-size:13px;font-weight:650;margin:0 0 7px;padding:0;color:var(--ta-ink)}
+html[data-tillsyno-theme] body.adminPage .inviteHow .checkRow{display:flex;align-items:flex-start;gap:10px;margin:0;padding:10px 12px;min-height:44px;border:1px solid var(--ta-border);border-radius:10px;background:var(--ta-card);color:var(--ta-ink);cursor:pointer}
+html[data-tillsyno-theme] body.adminPage .inviteHow .checkRow:has(input:checked){border-color:var(--ta-blue);background:var(--ta-highlight)}
+html[data-tillsyno-theme] body.adminPage .inviteHow input{width:20px;height:20px;margin:1px 0 0;padding:0;flex:none;accent-color:var(--ta-blue)}
+html[data-tillsyno-theme] body.adminPage .inviteHow strong{display:block;font-size:14px}
+html[data-tillsyno-theme] body.adminPage .inviteHow small{display:block;margin-top:2px;font-size:12px;font-weight:400;color:var(--ta-muted)}
+html[data-tillsyno-theme] body.adminPage .inviteResult{padding-top:4px}
+html[data-tillsyno-theme] body.adminPage .inviteResult .notice{margin:0 0 6px}
+html[data-tillsyno-theme] body.adminPage .inviteLinkBox input{font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;background:var(--ta-soft2);color:var(--ta-ink)}
+html[data-tillsyno-theme] body.adminPage .inviteLinkActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+html[data-tillsyno-theme] body.adminPage .inviteLinkActions>*{flex:1 1 160px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;text-align:center;box-sizing:border-box}
+html[data-tillsyno-theme] body.adminPage .inviteLinkBox .licenseHint{margin:10px 0 0;font-size:12px}
+@media(max-width:560px){
+ html[data-tillsyno-theme] body.adminPage .userlist+.empty{margin:0}
+ html[data-tillsyno-theme] body.adminPage .panelhead:has(.inviteOpen){flex-wrap:wrap}
+ html[data-tillsyno-theme] body.adminPage .panelhead .inviteOpen{order:3;width:100%}
+}

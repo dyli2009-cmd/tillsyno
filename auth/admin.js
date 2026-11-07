@@ -3,9 +3,9 @@
  const $ = id => document.getElementById(id);
  let users = [], busy = false, loaded = false, loadError = '', filter = 'all';
  let pendingRemove = null, editingUser = null, editingApproval = null;
- const labels = {active:'Godkänd', invited:'Bekräfta e-post', pending:'Väntar på beslut', removed:'Åtkomst borttagen', expired:'Licens utgången', revoked:'Licens avslutad'};
+ const labels = {active:'Godkänd', invited:'Inbjuden', pending:'Väntar på beslut', removed:'Åtkomst borttagen', expired:'Licens utgången', revoked:'Licens avslutad'};
  const moduleNames = {smartmatch:'SmartMatch', control:'Kontrollflöde', drawing:'Ritningsverktyg'};
- const auditNames = {add:'Lade till användare', approve:'Godkände användare', update:'Ändrade behörighet', extend:'Förlängde licens', cancelLicense:'Avslutade licens', delete:'Raderade konto', link:'Skapade inloggningslänk', saveCodeSettings:'Sparade kodlås'};
+ const auditNames = {add:'Bjöd in användare', approve:'Godkände användare', update:'Ändrade behörighet', extend:'Förlängde licens', cancelLicense:'Avslutade licens', delete:'Raderade konto', link:'Skickade inloggningslänk', saveCodeSettings:'Sparade kodlås'};
  const codeNames = {read:'Avläsning + SmartMatch', control:'Kontrollflöde', project:'Tillsyno Projekt', drawing:'Ritningsverktyg'};
  const node = (tag, className, text) => {
   const el = document.createElement(tag);
@@ -24,6 +24,7 @@
  }
  function accessNote(user) {
   if (user.protected) return 'Alla moduler · ingen tidsgräns';
+  if (user.status === 'invited') return 'Har inte valt lösenord ännu' + (user.expiresAt ? ' · licens till ' + date(user.expiresAt) : '');
   if (user.status === 'pending') return user.emailVerified ? 'Välj moduler och licenstid för att godkänna.' : 'Personen behöver bekräfta sin e-postadress först.';
   if (user.status === 'removed') return 'Godkänn igen för att ge ny åtkomst.';
   if (user.status === 'revoked') return 'Kontot finns kvar. En ny licens kan tilldelas.';
@@ -81,6 +82,11 @@
     toggle.addEventListener('click', event => { if (busy) event.preventDefault(); });
     menu.addEventListener('toggle', () => { if (menu.open) document.querySelectorAll('.userMenu[open]').forEach(other => { if (other !== menu) other.open = false; }); });
     const options = node('div', 'userMenuOptions');
+    if (['active','invited','expired','revoked'].includes(user.status)) {
+     const link = node('button', '', user.status === 'invited' ? 'Skicka inbjudan igen' : 'Skicka ny inloggningslänk'); link.type = 'button'; link.disabled = busy;
+     link.addEventListener('click', () => { menu.open = false; void perform('link', user); });
+     options.append(link);
+    }
     const remove = node('button', 'danger', 'Radera konto'); remove.type = 'button'; remove.disabled = busy;
     remove.addEventListener('click', () => { menu.open = false; void perform('delete', user); });
     options.append(remove); menu.append(toggle, options); actions.append(menu);
@@ -169,6 +175,7 @@
   if (Number.isInteger(d.licenseDays)) parts.push(d.licenseDays + ' dagar');
   if (d.licenseExpiresAt) parts.push('Till och med ' + date(d.licenseExpiresAt));
   if (d.type) parts.push(d.type === 'recovery' ? 'Återställningslänk' : 'Inbjudningslänk');
+  if (d.sent === true) parts.push('Skickad med e-post'); else if (d.sent === false) parts.push('Personlig länk');
   if (Array.isArray(d.settings)) parts.push(d.settings.map(s => (codeNames[s.module] || s.module) + ': ' + (s.enabled ? 'på' : 'av') + (s.codeChanged ? ', ny kod' : '')).join(' · '));
   return parts.join(' · ');
  }
@@ -224,6 +231,16 @@
    document.querySelectorAll('#licenseForm input[name="modules"]').forEach(c => c.checked = (user.modules || []).includes(c.value));
    $('licenseDialog').showModal(); return;
   }
+  if (action === 'link') {
+   setBusy(true);
+   try {
+    const result = await window.TillsynoAuth.admin('link', {userId:user.id, send:true});
+    showInviteResult(result, user.status === 'invited' ? 'Inbjudan skickad igen' : 'Ny inloggningslänk');
+    $('inviteDialog').showModal(); notice(result.message, result.sent ? 'success' : 'warning');
+   } catch (error) { notice(error.message, 'error'); }
+   finally { setBusy(false); await load(); }
+   return;
+  }
   if (action === 'delete') {
    pendingRemove = user;
    $('confirmDeleteEmail').value = ''; $('confirmRemove').disabled = true;
@@ -232,6 +249,59 @@
    $('confirmDialog').showModal();
   }
  }
+
+ // Invitations (v2.4.579). Supabase can only e-mail non-team addresses once custom SMTP is
+ // configured; until then the server returns a personal link that the administrator sends.
+ const inviteHow = () => $('inviteForm').querySelector('input[name="inviteHow"]:checked')?.value || 'mail';
+ const updateInviteButton = () => { $('inviteSend').textContent = inviteHow() === 'mail' ? 'Skicka inbjudan' : 'Skapa länk'; };
+ function inviteError(text) { $('inviteError').textContent = text; $('inviteError').hidden = false; }
+ function showInviteResult(result, title) {
+  $('inviteTitle').textContent = title;
+  $('inviteForm').hidden = true; $('inviteResult').hidden = false;
+  const extra = result.mailIssue === 'unavailable' ? ' För att Tillsyno ska kunna mejla själv behöver en e-postserver (SMTP) ställas in i Supabase.'
+   : result.mailIssue === 'rate' ? ' För många mejl har skickats den senaste timmen.' : '';
+  $('inviteResultText').textContent = (result.message || '') + extra;
+  $('inviteResultText').className = 'notice ' + (result.mailIssue ? 'warning' : 'success');
+  const box = $('inviteLinkBox');
+  if (result.link) {
+   box.hidden = false; $('inviteLink').value = result.link; $('inviteLinkEmail').textContent = result.email;
+   const login = new URL('login.html', location.href).href;
+   const body = 'Hej!\n\nDu har fått ett konto i Tillsyno. Öppna länken nedan och välj ett lösenord:\n\n' + result.link +
+    '\n\nLänken är personlig och slutar gälla efter en tid. Därefter loggar du in med din e-postadress här:\n' + login + '\n';
+   $('inviteMail').href = 'mailto:' + encodeURIComponent(result.email).replace('%40', '@') + '?subject=' + encodeURIComponent('Inbjudan till Tillsyno') + '&body=' + encodeURIComponent(body);
+  } else { box.hidden = true; $('inviteLink').value = ''; $('inviteMail').href = '#'; }
+ }
+ $('inviteOpen').addEventListener('click', () => {
+  if (busy) return;
+  $('inviteForm').reset(); $('inviteForm').hidden = false; $('inviteResult').hidden = true; $('inviteError').hidden = true;
+  $('inviteTitle').textContent = 'Bjud in användare'; $('inviteLink').value = ''; updateInviteButton();
+  $('inviteDialog').showModal(); $('inviteEmail').focus();
+ });
+ $('inviteForm').addEventListener('change', event => { if (event.target.name === 'inviteHow') updateInviteButton(); });
+ $('inviteForm').addEventListener('submit', async event => {
+  event.preventDefault(); if (busy) return;
+  $('inviteError').hidden = true;
+  const email = $('inviteEmail').value.trim(), name = $('inviteName').value.trim();
+  const modules = [...$('inviteForm').querySelectorAll('input[name="modules"]:checked')].map(x => x.value);
+  if (email.length > 254 || !/^\S+@\S+\.\S+$/.test(email)) { inviteError('Skriv en giltig e-postadress.'); $('inviteEmail').focus(); return; }
+  if (!modules.length) { inviteError('Välj minst en modul.'); return; }
+  if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) { inviteError('Det finns redan ett konto med den adressen. Använd ⋯ vid användaren i listan.'); return; }
+  const send = inviteHow() === 'mail';
+  setBusy(true); $('inviteSend').textContent = send ? 'Skickar…' : 'Skapar länk…';
+  try {
+   const result = await window.TillsynoAuth.admin('add', {email, name, modules, licenseDays:Number($('inviteDays').value), send});
+   showInviteResult(result, result.sent ? 'Inbjudan skickad' : 'Skicka länken');
+   notice(result.message, result.mailIssue ? 'warning' : 'success');
+  } catch (error) { inviteError(error.message); }
+  finally { setBusy(false); updateInviteButton(); await load(); }
+ });
+ $('inviteCopy').addEventListener('click', async () => {
+  const value = $('inviteLink').value; if (!value) return;
+  try { await navigator.clipboard.writeText(value); $('inviteCopy').textContent = 'Kopierad ✓'; }
+  catch (_) { $('inviteLink').focus(); $('inviteLink').select(); $('inviteCopy').textContent = 'Markerad – kopiera'; }
+  setTimeout(() => { $('inviteCopy').textContent = 'Kopiera länk'; }, 2500);
+ });
+ $('inviteDialog').addEventListener('close', () => { $('inviteLink').value = ''; $('inviteMail').href = '#'; });
  $('approvalForm').addEventListener('submit', async event => {
   event.preventDefault(); if (busy || !editingApproval) return;
   const modules = [...$('approvalForm').querySelectorAll('input[name="modules"]:checked')].map(x => x.value);
