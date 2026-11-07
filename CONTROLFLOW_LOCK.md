@@ -295,3 +295,17 @@ Omfattning, verifieringsplan och begränsningar finns i [CONTROLFLOW_TEXT_PARITY
 2026-11-07, Tillsyno v2.4.578: färgtemagranskning av hela appen på användarens beställning. Kontrollflödet granskades i alla sju teman och följer temat; inga Kontrollflödesfiler eller gemensamma temafiler ändrades. Rättningarna gäller Projektering, SmartMatch, CE-märkning, Ritningsverktyg och kontosidor genom egna lager som Kontrollflödet inte laddar (se UI_RULES.md). **Kontrollflödet är fortsatt LÅST.**
 
 2026-11-07, Tillsyno v2.4.579: utredning av kraschar med stora ritningar i Dörrautomatik (minnesanvändning, upprepad tolkning av PDF:en, Kundmall). Plan och mätningar finns i [CONTROLFLOW_HEAVY_PDF_PLAN.md](CONTROLFLOW_HEAVY_PDF_PLAN.md). Inga Kontrollflödesfiler ändrades. Testsviten städades samma dag; Kontrollflödets kvarvarande testavvikelser står i `tests/known-failures.json`. **Kontrollflödet är fortsatt LÅST.**
+
+# 2026-11-07 · v2.4.580 · Sparläge för tunga ritningar i Dörrautomatik
+
+Användaren skrev uttryckligen **”Lås upp Kontrollflödet”** för den beställda ändringen: stora ritningar ska inte krascha i Kontrollflöde Dörrautomatik, och appen ska själv känna av tunga PDF-filer. Undantaget omfattar bara:
+
+- `controlflow-revision/security-v335.js`: avkänning av tung ritning, sparläge, minnesfrigöring, synligt ritfel med nytt försök i sparläge, en gemensam pdf-lib-tolkning för arbetsfilskontrollerna och mindre Kundmall i sparläge som stängs med rutan.
+- `controlflow-revision/offline-work-v2.js`: ingen extra kopia av ritningen före lagring, och bara den senaste ritningen per område sparas.
+- Cachemärkningen i `controlflow-revision/all-in-one.html`.
+
+Stämplarnas placering och storlek, kontrollpunkter, protokoll, arbetsdataformat och import av äldre filer ändras inte. Den exporterade arbets-PDF:en och Kundmallens ritning är byte för byte desamma som i v2.4.579 med låst klocka, både för en vanlig ritning och för en ritning i sparläge. Säkerhetsservice (`security.js`) och övriga moduler omfattas inte.
+
+Kundmallens × stängde redan rätt. Felet låg i testet, som bara tryckte på × vid datorbredd. Testet är rättat och ingen appfil behövde ändras för det.
+
+Detaljer och mätningar finns i [CONTROLFLOW_HEAVY_PDF_PLAN.md](CONTROLFLOW_HEAVY_PDF_PLAN.md). Test: `tests/controlflow-heavy-drawing-v580.cjs`. **Kontrollflödet är åter LÅST efter denna beställda ändring.**
