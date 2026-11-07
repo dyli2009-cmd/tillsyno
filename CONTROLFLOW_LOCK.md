@@ -419,3 +419,14 @@ Säkerhetsservice har redan temafärgade sidpilar och öga och ändras inte. Of�
 - Ny `controlflow-revision/revision-polish-v589.css`: *Öppna ritning* och *Stäng ritning* har samma färger som *Mall*, ögat och sidpilarna samma som *Ångra*. *Signatur och logga* har mindre knappar bredvid varandra och mindre hjälptexter.
 
 Oförändrat: historikdata, kontrollpunkter, protokoll, stämplar, arbetsfiler, import och exporterad PDF; Brand. Test: `tests/controlflow-polish-v589.cjs` (alla sju teman, båda sidorna) och Kontrollflödets tester.
+
+# 2026-11-07 · v2.4.590 · Historik över flera år och Mall som flyttbar ruta
+
+Ägaren beställde en Historik-knapp i stället för den alltid synliga rutan *Tidigare service / anmärkningar*, med historik från flera år (de senaste 10, bara status och anmärkningar), i både Dörrautomatik / Lås och Säkerhetsservice. Ägaren beställde också att *Mall* i Dörrautomatik ska vara en flyttbar ruta som kan ändra storlek, utan A− / A+, där zoom bara gäller rutan. Modulversioner: Dörrautomatik / Lås 1.6 → 1.7, Säkerhetsservice 1.2 → 1.3.
+
+Ändrat:
+- `security.js` och `controlflow-revision/security-v335.js`, samma ändring i båda: `startNewSecurityService` sparar den avslutade servicen i `serviceHistory` (datum, status, anmärkningar, allmän anmärkning; högst 10, nyast först). En fil från före v2.4.590 får sin senaste service (`previous*`) som första tidigare post. `normalize` kontrollerar `serviceHistory`. Fälten `previous*` finns kvar som förut.
+- Ny delad `controlflow-history-v590.js/.css`: gul *Historik*-knapp bredvid nyckeln när objektet har historik, flyttbar ruta med alla servicetillfällen. Den gamla rutan visas inte.
+- Ny `controlflow-revision/revision-preview-v590.js/.css`: *Mall* är en ruta mindre än skärmen med handtag för storlek, *‹ 1 / 1 ›* i mitten, inga A− / A+ (textnivån används inte), zoom med två fingrar och mushjul bara i rutan, också på protokollsidorna.
+
+Arbetsfilens format får fältet `serviceHistory`; äldre filer öppnas som förut. Kundprotokollet och den exporterade PDF:ens sidor, kontrollpunkter, stämplar och import är oförändrade. Test: `tests/controlflow-history-preview-v590.cjs` och Kontrollflödets tester. Ej verifierat: att Safari på riktig iPhone och iPad inte zoomar sidan vid nyp-zoom i *Mall*.

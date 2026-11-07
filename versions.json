@@ -1,8 +1,8 @@
 {
-  "app": "2.4.589",
+  "app": "2.4.590",
   "modules": {
-    "dorrautomatik-las": {"name": "Dörrautomatik / Lås", "version": "1.6"},
-    "sakerhetsservice": {"name": "Säkerhetsservice", "version": "1.2"},
+    "dorrautomatik-las": {"name": "Dörrautomatik / Lås", "version": "1.7"},
+    "sakerhetsservice": {"name": "Säkerhetsservice", "version": "1.3"},
     "brand": {"name": "Brand", "version": "1.0"},
     "avlasning": {"name": "Avläsning", "version": "1.0"},
     "smartmatch": {"name": "SmartMatch", "version": "1.0"},

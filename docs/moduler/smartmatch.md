@@ -1,7 +1,7 @@
 # SmartMatch
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.589 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Appversion:** Tillsyno v2.4.590 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
 - **Modulversion:** SmartMatch 1.0 för driftsidan. Det är en egen serie (`versions.json`), som visas i sidhuvudet efter Avläsningens version och på startsidans kort.
 - **SmartMatch TEST 1.5** (`smartmatch-slr-test.html`, bara för administratörer) behålls separat och oförändrad.
 - Länken till testsidan heter *SmartMatch TEST 1.5* (rättad från *"SmartMatch 1.3"* i v2.4.582).

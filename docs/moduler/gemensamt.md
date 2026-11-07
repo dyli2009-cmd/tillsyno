@@ -1,6 +1,6 @@
 # Gemensamma funktioner och delade filer
 
-**Version:** Tillsyno v2.4.589 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`). Det här är en referens över delade filer, inte en funktionsbeskrivning. Funktionerna beskrivs i respektive moduldokument.
+**Version:** Tillsyno v2.4.590 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`). Det här är en referens över delade filer, inte en funktionsbeskrivning. Funktionerna beskrivs i respektive moduldokument.
 
 En ändring i en fil som flera sidor laddar ska testas mot **alla** sidorna. Tabellen visar vem som laddar vad. Den är framtagen ur sidornas `<script>`- och `<link>`-taggar den 7 november 2026.
 

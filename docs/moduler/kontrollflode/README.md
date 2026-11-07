@@ -1,6 +1,6 @@
 # Kontrollflöde
 
-**Version:** Tillsyno v2.4.589 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`). Kontrollflödet har tre modulversioner, grupperade som i mappvalet: **Dörrautomatik / Lås 1.6**, **Säkerhetsservice 1.2** och **Brand 1.0** (`versions.json`). De visas i mappvalet. Huvudsidan visar dessutom versionen i sidhuvudet; revisionssidan gör det inte (v2.4.584). Den här filen är översikten över motorerna, beroendena och filkartan. Varje undermodul har en egen funktionsbeskrivning med den gemensamma strukturen i CLAUDE.md avsnitt 6.
+**Version:** Tillsyno v2.4.590 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`). Kontrollflödet har tre modulversioner, grupperade som i mappvalet: **Dörrautomatik / Lås 1.7**, **Säkerhetsservice 1.3** och **Brand 1.0** (`versions.json`). De visas i mappvalet. Huvudsidan visar dessutom versionen i sidhuvudet; revisionssidan gör det inte (v2.4.584). Den här filen är översikten över motorerna, beroendena och filkartan. Varje undermodul har en egen funktionsbeskrivning med den gemensamma strukturen i CLAUDE.md avsnitt 6.
 
 **Status: UPPLÅST** sedan v2.4.581 (ägarens beslut 7 november 2026). Kontrollflödet ändras som andra moduler, efter beställning. Låset ska inte återinföras, och ingen upplåsningsfras behövs.
 
@@ -77,6 +77,7 @@ Den har också egna revisionsfiler: `revision-*`, `service-overview-v12.*`, `cus
 - `security-stamp-selection-v549.*`, `security-detectors-v344.*`
 - `controlflow-revision/customer-stamp-editor-v335.js`, som också laddas av `security.html`
 - `controlflow-previous-v589.css` (historikrutan *Tidigare service* i mörka teman, v2.4.589)
+- `controlflow-history-v590.*` (Historik-knappen och historikrutan, v2.4.590). Historiken (`serviceHistory`) sparas av `startNewSecurityService` i båda motorerna.
 
 **Delas med andra moduler:** se [gemensamt.md](../gemensamt.md). `style.css` och `drawing-transfer.js` används även av `app.html`.
 
