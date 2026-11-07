@@ -74,6 +74,76 @@ Testsviten är städad 7 november 2026: `node tools/run-tests.mjs`, se [tests/RE
 - [ ] Ritningsverktyg, textigenkänning: ett felläst ord (*Dérrcentral* i stället för *Dörrcentral*) kan ibland godkännas utan att visas för granskning (`drawing-ocr-swedish`).
 - [ ] SmartMatch Version 1.5 (`smartmatch-slr-test.html`) länkar till `project-workspace-smartmatch-test.html`, som inte publiceras.
 
+## 8. Utvecklingsstrategi – nästa steg
+
+Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringarna finns i [docs/kvalitetskontroller.md](docs/kvalitetskontroller.md) avsnitt 3. Varje punkt godkänns separat.
+
+**Beslutat 7 november 2026:**
+- De två motorerna i Kontrollflödet (`security.js` och `controlflow-revision/security-v335.js`) behålls. De slås inte ihop, och funktioner flyttas inte mellan dem.
+- Båda låsprotokollen behålls där de ligger: *Checklista revision lås* under Dörrautomatik/Lås och *Lås & Dörrmiljö* under Säkerhetsservice.
+- PDF-designen ska vara gemensam, men innehållet eget per undermodul. Designen och de två motorerna lämnas orörda tills vidare.
+- Kontrollflödet förblir upplåst (sedan v2.4.581). I stället för låskontroll används en påverkanskontroll utan spärr (alternativ A): varje ändring visar vilka moduler och motorer som påverkas, och de relevanta testerna körs.
+
+### Versionshantering (beslut 7 november 2026, inte infört)
+
+Gäller när versionsregistret `versions.json` införs. Fram till dess gäller DEVELOPMENT_RULES.md avsnitt 4 (en synlig appversion). Ingen versionsändring görs före den uppgiften.
+
+**Regler:**
+1. **Appversion `2.4.x`:** en för hela appen. Höjs ett steg i varje publicering som ändrar någon publicerad fil.
+2. **Modulversion `X.Y`:** egen per modul och undermodul.
+   - Y höjs när modulens **funktion** ändras för användaren. Det gäller också en felrättning som märks.
+   - X höjs bara efter ägarens beslut.
+   - Bara den modul vars funktion ändras höjs. En rättning i Dörrautomatik höjer inte Säkerhetsservice eller Brand.
+   - Varje modul vars kontrollsumma ändras markeras i PR:en som *funktionsändring* (då höjs den) eller *endast kodberoende*.
+3. **Kontrollsumma:**
+   - Räknas ut automatiskt över alla filer som modulens sidor laddar, också delade filer och `vendor/`.
+   - Sparas i registret och kontrolleras i CI och av `build-release.mjs`. Den skrivs aldrig för hand.
+   - Visar exakt vilken kod som är publicerad.
+4. **Testtäckning styrs av kodberoende**, inte av versionshöjning. Ändras en delad fil testas alla moduler som laddar den.
+5. **Inga nya filkopior:**
+   - Versionen står i registret, inte i filnamnet.
+   - Filer rättas där de ligger, och befintliga filnamn behålls.
+
+**Att hålla isär:**
+- *Kodberoende* avgör tester.
+- *Funktionsändring* avgör versionshöjning.
+- *Kontrollsumma* avgör spårbarheten till publicerad kod.
+
+**Godkända startversioner:**
+
+| Modul | Start |
+|---|---|
+| Dörrautomatik, Lås, Säkerhetsservice, Brand | 1.0 |
+| Avläsning | 9.100.35. Etiketten 9.100.17 i `smartmatch-read-main-v524.js` rättas när registret införs. |
+| SmartMatch | 1.0 för driftsidan `smartmatch-read-v9-100.html` (egen serie, skild från Avläsning) |
+| Projektering | 2.19.24 |
+| CE-märkning | **Modulversion 1.2**, och **separat dataformat 60** (`VERSION=60`/`FORMAT` i `ce-markning-v1-2.js`, sparformatet). De blandas inte ihop. Dataformatet ändras bara när sparformatet ändras. |
+
+**SmartMatch TEST 1.5** (`smartmatch-slr-test.html`) och övriga befintliga testversioner behålls oförändrade. Övergången från nya filkopior till registret görs först när registret är verifierat och ägaren har godkänt den.
+
+**Beslutad arbetsordning:** varje steg är en egen uppgift med egen branch och PR och kräver ägarens godkännande.
+
+- [ ] 1. PR #10 (dokumentationsstrukturen) slås ihop med `main`.
+- [ ] 2. Krascher i Dörrautomatik, i en ny session.
+  - Undersökning utan kodändring: minne, nätverk och service worker med syntetiska testritningar.
+  - Undersök bland annat om registreringen `sw.js?v=2.4.567` i `controlflow-revision/offline.js` bidrar. Den ger en ominstallation på ca 19 MB vid varje sidbyte, verifierat i Chromium.
+  - Rapport. Därefter beslut om rättning.
+- [ ] 3. Versionsregistret `versions.json`, tillsammans med tester på PR (3B), påverkanskontroll utan spärr (3C), tester för påverkan (3D) och versionstesterna, och ändrade regeltexter. Därefter slår ägaren på skyddet av `main` (3A).
+- [ ] 4. Modulversionerna visas i appen, när registret är verifierat.
+- [ ] 5. Säkra uppdateringar: service worker, cache och inga blandade versioner, med tester på dator, iPhone och iPad.
+
+**Fynd när funktionsbeskrivningarna skrevs (7 november 2026, inte åtgärdade):**
+- [ ] **CE-märkningens service worker** står på 2.4.570 och visar sidan från cachen i första hand. `ce-markning.html` ändrades i 2.4.578, så enheter kan visa en äldre CE-sida. Hör till steg 5 (säkra uppdateringar).
+- [ ] ***Rensa enhetens data*** saknar den kontobundna CE-databasen `tillsyno-ce-markning-test-v7-<användar-id>` i sin lista. Den blir kvar i webbläsare utan `indexedDB.databases()`. Egen uppgift (System).
+- [ ] **Delad lagring:** Kontrollflödets båda motorer sparar arbetet under samma nyckel `doorservice-all-in-one:<kontrollsumma>`. Effekten när samma ritning öppnas på båda sidorna är inte verifierad. Ska kontrolleras i kraschuppgiften eller med testerna i 3D.
+- [ ] **Inaktuella etiketter:** Avläsning *9.100.17*, bannern *"Separat test"* på driftsidan och länken *"SmartMatch 1.3"*. Rättas med versionsregistret (steg 3).
+- [ ] **Ritningsverktyg** har ingen beslutad modulversion. Ägaren beslutar, eller så följer modulen appversionen.
+
+**Senare, efter godkännande:**
+- [ ] Nätverkstestet för IT-granskningen (3E).
+- [ ] **Ägaren, beslut:** förbättringar av PDF-designen P1–P7 i [pdf-design.md](docs/moduler/kontrollflode/pdf-design.md). Viktigast är P6. Görs likadant i båda motorerna när det beställs.
+- [ ] **Ägaren, godkännande:** rättningar av dokumenthänvisningar R1–R9, se kvalitetskontroller.md avsnitt 4.
+
 ---
 
 ## Avbockat
