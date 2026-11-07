@@ -1,4 +1,4 @@
-const VERSION='2.4.576';
+const VERSION='2.4.577';
 const CACHE='tillsyno-offline-'+VERSION;
 const BASE=new URL('./',self.location.href);
 const CORE=[
@@ -9,6 +9,7 @@ const CORE=[
  "app.html",
  "app.js",
  "auth-config.js",
+ "auth/admin-compact-v577.css",
  "auth/admin-ui-v359.css",
  "auth/admin.css",
  "auth/admin.html",

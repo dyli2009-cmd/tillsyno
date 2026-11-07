@@ -15,47 +15,49 @@
 .moduleCodeActions{display:flex;justify-content:flex-end;gap:9px;margin-top:12px}.moduleCodeStatus{margin:8px 0 0;font-size:12px;min-height:18px}
 @media(max-width:680px){.moduleCodeRow{grid-template-columns:minmax(0,1fr) auto}.moduleCodePin{grid-column:1/-1}.moduleCodeActions{justify-content:stretch}.moduleCodeActions button{width:100%}}
 </style>
+<link rel="stylesheet" href="admin-compact-v577.css?v=2.4.577">
 </head>
 <body class="adminPage" data-require-role="admin">
 <header class="topbar"><a class="brand ta-brandlockup ta-admin-brand" href="../index.html"><span class="ta-brandmark" aria-hidden="true">T</span><span class="ta-brandcopy"><strong>Tillsyno</strong><small>Kontroll · dokumentation · tillsyn</small></span></a><nav class="toplinks"><a href="../index.html">← Startsidan</a><button type="button" data-logout>Logga ut</button></nav></header>
 <main class="shell"><div class="heading"><div><span class="eyebrow">Administration</span><h1>Användare och åtkomst</h1><p>Godkänn ansökningar och hantera behörighet och licens.</p></div><div class="owner"><strong>Administratör</strong><span data-account-email></span></div></div>
 <div id="message" class="notice" role="status" aria-live="polite" hidden></div>
 <div class="stats" role="group" aria-label="Filtrera användare"><button class="stat" type="button" data-user-filter="pending" aria-pressed="false"><strong id="pendingCount">–</strong><span>Väntar på beslut</span></button><button class="stat" type="button" data-user-filter="active" aria-pressed="false"><strong id="activeCount">–</strong><span>Godkända</span></button><button class="stat" type="button" data-user-filter="all" aria-pressed="true"><strong id="totalCount">–</strong><span>Alla konton</span></button></div>
-<section class="panel" aria-labelledby="moduleCodeHeading">
-<div class="panelhead"><div><h2 id="moduleCodeHeading">Kodlås för moduler</h2><p>Slå på kod endast där du vill ha en extra spärr. Koden lagras inte i appkoden.</p></div></div>
+<section class="panel" aria-labelledby="moduleCodeHeading"><details class="codePanel">
+<summary class="panelhead"><h2 id="moduleCodeHeading">Kodlås för moduler</h2><span id="moduleCodeSummary" class="codeSummaryState"></span></summary>
+<p class="codeIntro">Slå på kod endast där du vill ha en extra spärr. Koden lagras inte i appkoden.</p>
 <form id="moduleCodeForm">
  <div class="moduleCodeGrid">
   <div class="moduleCodeRow" data-code-row="read">
    <div class="moduleCodeCopy"><strong>Avläsning + SmartMatch</strong><small data-code-state>Hämtar status…</small></div>
    <label class="moduleCodeToggle"><input type="checkbox" data-code-enabled> Kräv kod</label>
-   <label class="moduleCodePin">Ny fyrsiffrig kod<input type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" data-code-pin placeholder="••••"></label>
+   <label class="moduleCodePin"><span>Ny fyrsiffrig kod</span><input type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" data-code-pin placeholder="Ny kod"></label>
   </div>
   <div class="moduleCodeRow" data-code-row="control">
    <div class="moduleCodeCopy"><strong>Kontrollflöde</strong><small data-code-state>Hämtar status…</small></div>
    <label class="moduleCodeToggle"><input type="checkbox" data-code-enabled> Kräv kod</label>
-   <label class="moduleCodePin">Ny fyrsiffrig kod<input type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" data-code-pin placeholder="••••"></label>
+   <label class="moduleCodePin"><span>Ny fyrsiffrig kod</span><input type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" data-code-pin placeholder="Ny kod"></label>
   </div>
   <div class="moduleCodeRow" data-code-row="project">
    <div class="moduleCodeCopy"><strong>Tillsyno Projekt</strong><small data-code-state>Hämtar status…</small></div>
    <label class="moduleCodeToggle"><input type="checkbox" data-code-enabled> Kräv kod</label>
-   <label class="moduleCodePin">Ny fyrsiffrig kod<input type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" data-code-pin placeholder="••••"></label>
+   <label class="moduleCodePin"><span>Ny fyrsiffrig kod</span><input type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" data-code-pin placeholder="Ny kod"></label>
   </div>
   <div class="moduleCodeRow" data-code-row="drawing">
    <div class="moduleCodeCopy"><strong>Ritningsverktyg</strong><small data-code-state>Hämtar status…</small></div>
    <label class="moduleCodeToggle"><input type="checkbox" data-code-enabled> Kräv kod</label>
-   <label class="moduleCodePin">Ny fyrsiffrig kod<input type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" data-code-pin placeholder="••••"></label>
+   <label class="moduleCodePin"><span>Ny fyrsiffrig kod</span><input type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" data-code-pin placeholder="Ny kod"></label>
   </div>
  </div>
  <p id="moduleCodeMessage" class="moduleCodeStatus" role="status" aria-live="polite"></p>
  <div class="moduleCodeActions"><button id="saveModuleCodes" class="primary" type="submit">Spara kodlås</button></div>
 </form>
-</section>
+</details></section>
 <section class="panel" aria-labelledby="listHeading"><div class="panelhead"><div><h2 id="listHeading">Alla användare</h2><p>Väntande ansökningar visas först.</p></div><span id="listCount" class="listCount" aria-live="polite"></span></div>
 <div class="filterbar"><input id="search" class="search" type="search" placeholder="Sök namn eller e-post" aria-label="Sök användare"><button id="refresh" class="secondary" type="button" aria-label="Uppdatera användarlistan">Uppdatera</button></div>
 <ul id="users" class="userlist" aria-label="Användare"></ul><p id="empty" class="empty">Hämtar användare…</p></section>
 <section class="panel" aria-labelledby="auditHeading"><div class="panelhead"><div><h2 id="auditHeading">Administratörslogg</h2><p>Vem som har lagt till, godkänt, ändrat eller raderat konton och kodlås. Sparas i 12 månader.</p></div><button id="auditRefresh" class="secondary" type="button" aria-label="Uppdatera administratörsloggen">Uppdatera</button></div>
 <ul id="auditList" class="auditList" aria-label="Administratörslogg"></ul><p id="auditEmpty" class="empty">Hämtar loggen…</p></section>
-<div class="footer"><span>Administratörskontot är skyddat mot ändring och radering. <a href="integritet.html">Integritet och data</a></span><span class="adminVersion">v2.4.575</span></div></main>
+<div class="footer"><span>Administratörskontot är skyddat mot ändring och radering. <a href="integritet.html">Integritet och data</a></span><span class="adminVersion">v2.4.577</span></div></main>
 <dialog id="confirmDialog" aria-labelledby="confirmTitle"><div class="dialoghead"><h2 id="confirmTitle">Radera konto?</h2><button class="close" type="button" data-close="confirmDialog" aria-label="Stäng">×</button></div><div class="dialogbody"><p id="deletePerson" class="dialogPerson"></p><p id="confirmText"></p><label for="confirmDeleteEmail">Skriv e-postadressen för att bekräfta</label><input id="confirmDeleteEmail" type="email" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="confirmText"><p id="deleteError" class="notice error" role="alert" hidden></p><div class="dialogactions"><button type="button" class="secondary" data-close="confirmDialog">Avbryt</button><button id="confirmRemove" type="button" class="secondary danger" disabled>Radera konto</button></div></div></dialog>
 <dialog id="licenseDialog" aria-labelledby="licenseTitle">
  <div class="dialoghead"><h2 id="licenseTitle">Behörighet och licens</h2><button class="close" type="button" data-close="licenseDialog" aria-label="Stäng">×</button></div>

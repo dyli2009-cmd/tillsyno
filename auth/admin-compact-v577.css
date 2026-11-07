@@ -1,0 +1,142 @@
+/* Administration v2.4.577 – compact layout for phone, iPad and computer.
+   Presentation only: colours still come from the selected theme (--ta-*),
+   functions, texts and dialogs are unchanged. Touch targets stay >= 44 px. */
+
+/* Page frame and heading */
+html[data-tillsyno-theme] body.adminPage .topbar{padding-top:10px;padding-bottom:10px}
+html[data-tillsyno-theme] body.adminPage .shell{padding-top:20px;padding-bottom:32px}
+html[data-tillsyno-theme] body.adminPage .heading{margin-bottom:14px;gap:16px}
+html[data-tillsyno-theme] body.adminPage .heading .eyebrow{display:block;margin-bottom:2px}
+html[data-tillsyno-theme] body.adminPage .heading h1{font-size:24px;line-height:1.2;margin:0}
+html[data-tillsyno-theme] body.adminPage .heading p{font-size:14px;line-height:1.4;margin:4px 0 0}
+html[data-tillsyno-theme] body.adminPage .owner{padding:7px 12px;border-radius:10px;font-size:12px;line-height:1.4}
+html[data-tillsyno-theme] body.adminPage .owner strong{display:inline;margin:0 6px 0 0}
+
+/* Filter statistics: one low row */
+html[data-tillsyno-theme] body.adminPage .stats{gap:8px;margin-bottom:14px}
+html[data-tillsyno-theme] body.adminPage .stat{min-height:52px;padding:8px 14px;gap:10px;border-radius:12px}
+html[data-tillsyno-theme] body.adminPage .stat strong{font-size:22px;letter-spacing:-.5px;line-height:1}
+html[data-tillsyno-theme] body.adminPage .stat span{font-size:13px;line-height:1.3}
+
+/* Panels */
+html[data-tillsyno-theme] body.adminPage .panel{margin-bottom:14px}
+html[data-tillsyno-theme] body.adminPage .panelhead{padding:12px 16px;align-items:center}
+html[data-tillsyno-theme] body.adminPage .panelhead h2{font-size:16px;line-height:1.3;margin:0 0 2px}
+html[data-tillsyno-theme] body.adminPage .panelhead p{font-size:13px;line-height:1.4;margin:0}
+
+/* Module code locks: one tidy row per module */
+html[data-tillsyno-theme] body.adminPage .moduleCodeGrid{gap:6px;padding:10px 16px 0}
+html[data-tillsyno-theme] body.adminPage .moduleCodeRow{grid-template-columns:minmax(0,1fr) auto 132px;gap:6px 12px;padding:6px 6px 6px 12px;border:1px solid var(--ta-border);border-radius:10px;background:var(--ta-soft2,transparent);color:var(--ta-ink)}
+html[data-tillsyno-theme] body.adminPage .moduleCodeCopy{gap:1px}
+html[data-tillsyno-theme] body.adminPage .moduleCodeCopy strong{font-size:14px;color:var(--ta-ink)}
+html[data-tillsyno-theme] body.adminPage .moduleCodeCopy small{font-size:12px;color:var(--ta-muted)}
+html[data-tillsyno-theme] body.adminPage .moduleCodeToggle{min-height:44px;padding:0 6px;gap:8px;font-size:14px;font-weight:650;cursor:pointer;color:var(--ta-ink)}
+html[data-tillsyno-theme] body.adminPage .moduleCodeToggle input{width:20px;height:20px;margin:0;accent-color:var(--ta-blue,#2f6f8a)}
+html[data-tillsyno-theme] body.adminPage .moduleCodePin{display:block;position:relative}
+html[data-tillsyno-theme] body.adminPage .moduleCodePin span{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+html[data-tillsyno-theme] body.adminPage .moduleCodePin input{display:block;width:100%;min-height:44px;padding:6px 10px;box-sizing:border-box;border:1px solid var(--ta-border);border-radius:8px;background:var(--ta-card);color:var(--ta-ink);font:16px/1.2 inherit;letter-spacing:6px;text-align:center}
+html[data-tillsyno-theme] body.adminPage .moduleCodePin input::placeholder{letter-spacing:normal;color:var(--ta-muted)}
+html[data-tillsyno-theme] body.adminPage .moduleCodeStatus{margin:6px 16px 0;min-height:0}
+html[data-tillsyno-theme] body.adminPage .moduleCodeStatus:empty{display:none}
+html[data-tillsyno-theme] body.adminPage .moduleCodeActions{margin:0;padding:10px 16px 14px}
+html[data-tillsyno-theme] body.adminPage .moduleCodeActions button{min-height:44px}
+
+/* Users */
+html[data-tillsyno-theme] body.adminPage .filterbar{padding:10px 16px}
+html[data-tillsyno-theme] body.adminPage .userrow{grid-template-columns:minmax(220px,1.2fr) minmax(170px,1fr) auto;gap:6px 16px;padding:10px 16px;align-items:center}
+html[data-tillsyno-theme] body.adminPage .identity{gap:10px;align-items:center}
+html[data-tillsyno-theme] body.adminPage .avatar{width:34px;height:34px;flex:0 0 34px;border-radius:10px;font-size:12px}
+html[data-tillsyno-theme] body.adminPage .identity strong{font-size:14px;line-height:1.3}
+html[data-tillsyno-theme] body.adminPage .identity small{margin-top:1px;font-size:12px;line-height:1.35;overflow-wrap:anywhere}
+html[data-tillsyno-theme] body.adminPage .userModules{margin-top:4px;gap:4px}
+html[data-tillsyno-theme] body.adminPage .userStatus{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+html[data-tillsyno-theme] body.adminPage .userStatus .accessNote{margin:0;font-size:12px;line-height:1.35}
+html[data-tillsyno-theme] body.adminPage .actions{gap:6px}
+html[data-tillsyno-theme] body.adminPage .actions>button,html[data-tillsyno-theme] body.adminPage .userMenu>summary{min-height:44px}
+
+/* Administrator log */
+html[data-tillsyno-theme] body.adminPage .auditList{gap:4px;padding:8px 16px 14px}
+html[data-tillsyno-theme] body.adminPage .auditRow{grid-template-columns:118px minmax(150px,max-content) minmax(0,1fr) auto;align-items:baseline;gap:2px 12px;padding:8px 12px;border-radius:8px}
+html[data-tillsyno-theme] body.adminPage .auditWhen{grid-row:auto;font-size:12px}
+html[data-tillsyno-theme] body.adminPage .auditWhat{font-size:13px}
+html[data-tillsyno-theme] body.adminPage .auditWho{font-size:13px}
+html[data-tillsyno-theme] body.adminPage .auditBy{grid-column:auto;text-align:right}
+html[data-tillsyno-theme] body.adminPage #auditEmpty{margin:0;padding:10px 16px 16px}
+
+/* Footer: the version is part of the footer, never laid over content */
+html[data-tillsyno-theme] body.adminPage .footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;padding-top:4px}
+html[data-tillsyno-theme] body.adminPage .adminVersion{position:static!important;padding:0;background:none!important;font-size:11px}
+
+/* iPad and narrow computer windows */
+@media (max-width:960px){
+ html[data-tillsyno-theme] body.adminPage .owner{max-width:none;white-space:nowrap}
+ html[data-tillsyno-theme] body.adminPage .userrow{grid-template-columns:minmax(0,1fr) auto;gap:6px 12px}
+ html[data-tillsyno-theme] body.adminPage .userrow .userStatus{grid-column:1;grid-row:2;padding-left:44px}
+ html[data-tillsyno-theme] body.adminPage .actions{grid-column:2;grid-row:1/3}
+ html[data-tillsyno-theme] body.adminPage .auditRow{grid-template-columns:112px minmax(0,1fr) auto}
+ html[data-tillsyno-theme] body.adminPage .auditWho{grid-column:2/-1}
+ html[data-tillsyno-theme] body.adminPage .auditBy{grid-column:3;grid-row:1}
+}
+
+/* Phone */
+@media (max-width:650px){
+ /* the shared theme forces the admin header to wrap on phones; brand and two buttons fit on one line above 360 px */
+ html[data-tillsyno-theme] body[data-require-role="admin"]>.topbar{flex-wrap:nowrap!important;padding:8px 12px}
+ html[data-tillsyno-theme] body[data-require-role="admin"]>.topbar>.toplinks{width:auto!important;flex:0 0 auto!important;flex-wrap:nowrap;margin-left:auto}
+ html[data-tillsyno-theme] body[data-require-role="admin"]>.topbar>.brand{flex:1 1 auto!important;min-width:0!important}
+ html[data-tillsyno-theme] body.adminPage .ta-admin-brand .ta-brandcopy small{display:none}
+ html[data-tillsyno-theme] body.adminPage .shell{padding:16px 12px 28px}
+ html[data-tillsyno-theme] body.adminPage .heading{display:block;margin-bottom:12px}
+ html[data-tillsyno-theme] body.adminPage .heading h1{font-size:22px}
+ html[data-tillsyno-theme] body.adminPage .heading p{display:none}
+ html[data-tillsyno-theme] body.adminPage .owner{display:block;margin-top:8px;padding:6px 10px;white-space:normal;overflow-wrap:anywhere}
+ html[data-tillsyno-theme] body.adminPage .stats{gap:6px;margin-bottom:12px}
+ html[data-tillsyno-theme] body.adminPage .stat{flex-direction:row;align-items:center;justify-content:flex-start;min-height:48px;padding:6px 8px;gap:6px}
+ html[data-tillsyno-theme] body.adminPage .stat strong{font-size:20px}
+ html[data-tillsyno-theme] body.adminPage .stat span{font-size:11.5px;line-height:1.2}
+ html[data-tillsyno-theme] body.adminPage .panel{margin-bottom:12px}
+ html[data-tillsyno-theme] body.adminPage .panelhead{padding:10px 12px}
+ html[data-tillsyno-theme] body.adminPage .panelhead p{font-size:12px}
+ html[data-tillsyno-theme] body.adminPage .moduleCodeGrid{padding:8px 12px 0}
+ html[data-tillsyno-theme] body.adminPage .moduleCodeRow{grid-template-columns:auto minmax(0,1fr);padding:8px 8px 8px 10px;gap:4px 8px}
+ html[data-tillsyno-theme] body.adminPage .moduleCodeCopy{grid-column:1/-1}
+ html[data-tillsyno-theme] body.adminPage .moduleCodePin{grid-column:auto}
+ html[data-tillsyno-theme] body.adminPage .moduleCodeStatus{margin:6px 12px 0}
+ html[data-tillsyno-theme] body.adminPage .moduleCodeActions{padding:10px 12px 12px}
+ html[data-tillsyno-theme] body.adminPage .filterbar{padding:8px 12px}
+ /* name + menu on the first line, status + main button on the second */
+ html[data-tillsyno-theme] body.adminPage .userrow{display:grid;grid-template-columns:minmax(0,1fr) auto 44px;gap:6px 8px;padding:10px 12px;align-items:center}
+ html[data-tillsyno-theme] body.adminPage .userrow .identity{grid-column:1/3;grid-row:1;min-width:0}
+ html[data-tillsyno-theme] body.adminPage .userrow .identity small{overflow-wrap:normal;word-break:normal}
+ html[data-tillsyno-theme] body.adminPage .userrow .userStatus{grid-column:1;grid-row:2;padding-left:0}
+ html[data-tillsyno-theme] body.adminPage .userrow .actions{display:contents}
+ html[data-tillsyno-theme] body.adminPage .userrow .actions>.userMenu{grid-column:3;grid-row:1;justify-self:end}
+ html[data-tillsyno-theme] body.adminPage .userrow .actions>.ownerlabel{grid-column:2/4;grid-row:2;justify-self:end}
+ html[data-tillsyno-theme] body.adminPage .userrow .actions>button{grid-column:2/4;grid-row:2;flex:none;padding:8px 12px;font-size:13px;white-space:nowrap}
+ html[data-tillsyno-theme] body.adminPage .avatar{width:30px;height:30px;flex-basis:30px;font-size:11px}
+ html[data-tillsyno-theme] body.adminPage .auditList{padding:6px 12px 12px}
+ html[data-tillsyno-theme] body.adminPage .auditRow{grid-template-columns:minmax(0,1fr) auto;padding:8px 10px}
+ html[data-tillsyno-theme] body.adminPage .auditWhen{grid-column:2;grid-row:1;text-align:right}
+ html[data-tillsyno-theme] body.adminPage .auditWhat{grid-column:1;grid-row:1}
+ html[data-tillsyno-theme] body.adminPage .auditWho{grid-column:1/-1}
+ html[data-tillsyno-theme] body.adminPage .auditBy{grid-column:1/-1;grid-row:auto;text-align:left}
+ html[data-tillsyno-theme] body.adminPage #auditEmpty{padding:8px 12px 12px}
+}
+
+/* Very small phones (320 px) */
+@media (max-width:360px){
+ html[data-tillsyno-theme] body[data-require-role="admin"]>.topbar{flex-wrap:wrap!important}
+ html[data-tillsyno-theme] body.adminPage .stat{flex-direction:column;align-items:flex-start;gap:2px}
+ html[data-tillsyno-theme] body.adminPage .userrow .actions>button{padding:8px 10px;font-size:12.5px}
+}
+
+/* Code locks fold away: the heading shows whether any lock is on */
+html[data-tillsyno-theme] body.adminPage .codePanel>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;cursor:pointer;list-style:none}
+html[data-tillsyno-theme] body.adminPage .codePanel>summary::-webkit-details-marker{display:none}
+html[data-tillsyno-theme] body.adminPage .codePanel>summary h2{margin:0}
+html[data-tillsyno-theme] body.adminPage .codePanel>summary::after{content:'';flex:0 0 9px;width:9px;height:9px;margin-right:4px;border-right:2px solid var(--ta-muted);border-bottom:2px solid var(--ta-muted);transform:rotate(45deg);transition:transform .15s}
+html[data-tillsyno-theme] body.adminPage .codePanel[open]>summary::after{transform:rotate(-135deg)}
+html[data-tillsyno-theme] body.adminPage .codePanel:not([open])>summary{border-bottom:0;border-radius:16px}
+html[data-tillsyno-theme] body.adminPage .codeSummaryState{margin-left:auto;font-size:13px;font-weight:650;color:var(--ta-muted);white-space:nowrap}
+html[data-tillsyno-theme] body.adminPage .codeIntro{margin:10px 16px 0;font-size:13px;line-height:1.4;color:var(--ta-muted)}
+@media (max-width:650px){html[data-tillsyno-theme] body.adminPage .codeIntro{margin:8px 12px 0;font-size:12px}}
