@@ -57,7 +57,7 @@ async function fixture(mode,sourcePdf){
   drawingRaster:null,drawingNatural:null,zoomFrame:0,pendingZoomGeometry:null,pinch:null,panTouch:null,panMouse:null,
   drawingGestureLocked:false,drawingLockScroll:null,suppressPageSwipeUntil:0,MAX_PIXELS:4000000,MAX_SIDE:4096,
   heavyDrawing:false,HEAVY_MAX_PIXELS:3000000,HEAVY_MAX_SIDE:3072,HEAVY_RENDER_MS:1500,performance,// v2.4.580 sparläge (off for these synthetic pages)
-  renderTarget:null,sharpZoom:null,// v2.4.591 skarp zoom (controlflow-sharp-zoom-v591.js is not loaded here)
+  renderTarget:null,sharpZoom:null,stampView:null,// v2.4.591 skarp zoom (controlflow-sharp-zoom-v591.js is not loaded here)
   
   ALL_IN_ONE:true,DOOR_AUTOMATION_MODELS:[],SYSTEMS:Object.fromEntries(['lock','automation','automation_selfcheck','lock_revision'].map(type=>[type,{label:type,checks:[['a','Kontroll']]}])),
   PDFLib,crypto,devicePixelRatio:1,setTimeout,clearTimeout,requestAnimationFrame:fn=>setTimeout(fn,0),cancelAnimationFrame:clearTimeout,

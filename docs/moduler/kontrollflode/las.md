@@ -3,7 +3,7 @@
 ## 1. Version
 - **Appversion:** Tillsyno v2.4.591 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
 - **Modulversion:** Dörrautomatik / Lås 1.8. Lås har ingen egen version, eftersom den delar mapp, sida och motor med Dörrautomatik (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (v2.4.584).
-- **Sidhuvud, verktygsmeny, frågan innan ritningen lämnas, *Ta bort* för ritobjekt, checklistvyn, vyerna Ritning, Översikt och Projekt, sparläget och den skarpa zoomen** är gemensamma med Dörrautomatik och beskrivs i [dorrautomatik.md](dorrautomatik.md), avsnitt 3.
+- **Sidhuvud, verktygsmeny, frågan innan ritningen lämnas, *Ta bort* för ritobjekt, checklistvyn, vyerna Ritning, Översikt och Projekt, sparläget, den skarpa zoomen och stämplarna under gester** är gemensamma med Dörrautomatik och beskrivs i [dorrautomatik.md](dorrautomatik.md), avsnitt 3.
 - Kontrollflödet är upplåst. Gemensamma regler och filkarta: [README.md](README.md).
 
 ## 2. Arbetsflöde från början till slut

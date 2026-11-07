@@ -20,7 +20,7 @@
 
   Punkterna är okulär kontroll, indikering eller placering, funktionsprov, strömförsörjning eller skada, och dokumentation av avvikelser. De står i `security.js` ca rad 115–144, och rubrikerna i kundprotokollet ca rad 323–325.
 - **Import av äldre PDF:er:** texten tolkas, och ord som brandcentral, rök- och värmedetektor, branddörr, dörrhållning och uppställningsmagnet känns igen (ca rad 736–738). Det gäller bara på huvudsidan och bara för valda protokoll.
-- **Ritningsvyn är densamma som i Säkerhetsservice** (`security-drawing-view.js`): sparläge för tunga ritningar och skarp zoom av det område som syns. Se [sakerhetsservice.md](sakerhetsservice.md) avsnitt 3.
+- **Ritningsvyn är densamma som i Säkerhetsservice** (`security-drawing-view.js`): sparläge för tunga ritningar, skarp zoom av det område som syns och stämplar som inte belastar appen vid snabb zoom. Se [sakerhetsservice.md](sakerhetsservice.md) avsnitt 3.
 - **Inget annat är brandspecifikt.** Det finns ingen egen sökning och inget eget gränssnitt. Allt annat är Kontrollflödets gemensamma arbetsyta.
 
 ## 4. Kodfiler och motor

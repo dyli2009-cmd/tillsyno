@@ -290,4 +290,9 @@ Användarbeslut 7 november 2026 (Kontrollflödet upplåst för denna beställnin
 - Säkerhetsservice och Brand har fått samma sparläge och skydd vid snabb zoom som Dörrautomatik (v2.4.580–581), med samma gränser och samma text *· Sparläge* i sidraden. De har ingen laddningsruta.
 - Stämplar, export, Kundmallens innehåll, sparade arbetsfiler och import ändras inte. I Säkerhetsservice och Brand ritas Kundmall i sparläge med högst 4 MP och stängs med rutan, som i Dörrautomatik.
 - Fil: `controlflow-sharp-zoom-v591.js`, som används av `controlflow-revision/security-v335.js` och `security-drawing-view.js`.
+- **Stämplar under gester** (ägarens beslut samma dag, efter krasch vid snabb zoom med cirka 100 stämplar):
+  - Under nyp, mushjul och flyttning är de riktiga stämplarna dolda som med ögat, och en bild av stämplarna i och runt det synliga området visas i stället. Den kan vara suddig.
+  - 0,22 s efter gesten ritas stämplarna om en gång. Stilla visas bara stämplar vars nummer eller pilspets syns, med en halv skärms marginal; den markerade visas alltid.
+  - Text, ritobjekt och detektorrutor syns inte medan gesten pågår. Ritningen tvingas inte in i egna grafiklager.
+  - Fil: `controlflow-stamp-view-v591.js/.css`.
 - Kontrollerat i Chromium med telefon (390×844, DPR 3), iPad (820×1180, DPR 2) och dator. Fysisk iPhone och iPad, och appen i TestFlight, är inte verifierade.

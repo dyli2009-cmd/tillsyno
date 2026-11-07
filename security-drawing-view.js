@@ -17,7 +17,9 @@
  // page again each time, which piled up memory with heavy drawings. Only another page, rotation or file cancels it.
  function sameTarget(){return !!renderTarget&&renderTarget.document===pdf&&renderTarget.page===page&&renderTarget.viewRotation===drawingRotation();}
  function invalidate(){clearTimeout(paintTimer);paintTimer=null;renderVersion++;if(renderTask&&!sameTarget()){try{renderTask.cancel();}catch(_){}renderTask=null;renderTarget=null;}if(paintResolve){paintResolve(false);paintResolve=null;}}
- function freeze(){if(frozen.length)return;for(const node of stage.children){if(node===canvas||node===detail||node.classList.contains('cfSharpDetail'))continue;frozen.push({node,width:pageWidth,height:pageHeight});node.style.width=pageWidth+'px';node.style.height=pageHeight+'px';node.style.transformOrigin='0 0';}}
+ // v2.4.591: the sharp detail and the stamp picture keep their own size, and the stamps are hidden during a gesture
+ // (controlflow-stamp-view-v591.js), so they are not scaled as one large layer.
+ function freeze(){if(frozen.length)return;for(const node of stage.children){if(node===canvas||node===detail||node.classList.contains('cfSharpDetail')||node.classList.contains('cfStampImage')||(stampView&&node===markers))continue;frozen.push({node,width:pageWidth,height:pageHeight});node.style.width=pageWidth+'px';node.style.height=pageHeight+'px';node.style.transformOrigin='0 0';}}
  function thaw(){for(const {node}of frozen){node.style.width='';node.style.height='';node.style.transform='';node.style.transformOrigin='';}frozen=[];}
  function uiScale(){const scale=Math.max(.52,Math.min(1,Math.sqrt(Math.max(.01,baseScale*zoom))));for(const [key,value]of Object.entries({'drawing-ui-scale':scale,'drawing-line-width':Math.max(.9,2*scale)+'px','drawing-box-stroke':Math.max(.8,1.5*scale)+'px','security-marker-size':30*scale+'px','security-marker-font':Math.max(6.5,10*scale)+'px','security-point-size':Math.max(7,12*scale)+'px','security-note-font':Math.max(7,10*scale)+'px','security-note-max':Math.max(100,180*scale)+'px'}))stage.style.setProperty('--'+key,value);}
  const drawBefore=drawMarkers;

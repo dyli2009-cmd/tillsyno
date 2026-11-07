@@ -52,6 +52,7 @@
   - Kundmall ritas med högst 4 MP i sparläge, ritningens minne frigörs innan Kundmall byggs och Kundmalls PDF stängs när rutan stängs.
   - De två kontrollerna av arbetsfiler delar en pdf-lib-tolkning när filen öppnas.
 - **Skarp zoom (v2.4.591, `controlflow-sharp-zoom-v591.js`, delad med Dörrautomatik / Lås):** när sidans bild inte räcker till för skarp visning ritas bara det område som syns, med en fjärdedels marginal, i full skärpa när man har slutat zooma eller flytta. Gränser, minne och beteende är desamma som i [dorrautomatik.md](dorrautomatik.md) avsnitt 3. Detaljen följer ritningens rotation. Den ersätter ritningsvyns tidigare egna detaljbild, som hade högst 2,5 MP och avbröts vid varje zoomsteg.
+- **Stämplar utan överbelastning (v2.4.591, `controlflow-stamp-view-v591.*`, delad med Dörrautomatik / Lås):** under nyp, mushjul och flyttning visas stämplarna som en bild och byggs inte om. Stilla visas bara de som syns. Det beskrivs i [dorrautomatik.md](dorrautomatik.md) avsnitt 3. Ritningsvyn skalar inte längre hela stämpellagret under en gest.
 - **Låsa stämplar** (`security-stamp-selection-v549.*`, delad med Dörrautomatik / Lås): *Justera / lås stämplar*, därefter *Lås placering*. En låst stämpel kan inte flyttas, men den går att trycka på. Sedan v2.4.586 har en låst stämpel ingen ram på ritningen. Låset visas i panelen som *· N låsta*.
 
 ## 4. Kodfiler och motor
@@ -63,7 +64,7 @@
   |---|---|
   | Detektorer | `security-detectors-v344.*`, `security-detector-scan.*`, `detector-scan-core.js`, `detector-scan-vision.js`, `security-manual-numbering.js`, `security-manual-sequence-v544.css` |
   | Översikt | `security-service-overview-v554.*` |
-  | Arbetsyta | `security-toolbar-v543.*`, `security-stamp-selection-v549.*`, `security-drawing-view.js` (ritningsvyn, sparläge) och den delade `controlflow-sharp-zoom-v591.js` (skarp zoom) |
+  | Arbetsyta | `security-toolbar-v543.*`, `security-stamp-selection-v549.*`, `security-drawing-view.js` (ritningsvyn, sparläge) den delade `controlflow-sharp-zoom-v591.js` (skarp zoom) och `controlflow-stamp-view-v591.*` (stämplar under gester) |
   | Layout | `security-*-compact-v52x.css`, `security-overview-*-v530.*`, `security-result-labels-v529.css`, `security-workspace-*` |
 
 - **Delas med revisionssidan:** `security-detectors-v344.*` (med en äldre `?v=2.4.359`), `security-stamp-selection-v549.*` och `controlflow-*`.
@@ -98,7 +99,7 @@
 ```sh
 node tools/run-tests.mjs --modules <mapp>/node_modules security- detector- controlflow-
 ```
-- `controlflow-sharp-zoom-v591` provar skarp zoom (också roterad ritning), telefonens gräns och sparläget med Säkerhetsservice och Brand valda.
+- `controlflow-sharp-zoom-v591` provar skarp zoom (också roterad ritning), telefonens gräns och sparläget med Säkerhetsservice och Brand valda. `controlflow-stamp-view-v591` provar 100 stämplar vid snabb zoom och flyttning.
 - **Kända fel** (`tests/known-failures.json`):
   - `security-detectors-v344`: testet hittar ingen detektor efter tryck på ritningen.
   - `security-uncheck-v531`: andra trycket på samma svar. Önskat beteende behöver bekräftas.

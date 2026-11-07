@@ -73,6 +73,8 @@ const CORE=[
  "controlflow-history-v590.css",
  "controlflow-history-v590.js",
  "controlflow-sharp-zoom-v591.js",
+ "controlflow-stamp-view-v591.css",
+ "controlflow-stamp-view-v591.js",
  "controlflow-revision/revision-preview-v590.css",
  "controlflow-revision/revision-preview-v590.js",
  "controlflow-revision/offline-work-v2.js",

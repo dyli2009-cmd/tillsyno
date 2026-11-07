@@ -55,7 +55,7 @@ Den här listan samlar allt som är beslutat men inte klart, och vem som gör va
   - färgteman i Projektering och SmartMatch;
   - *Rensa enhetens data*;
   - öppna en stor ritning i Kontrollflöde Dörrautomatik, även på telefon. Sidraden ska visa *· Sparläge*. Kontrollera att laddningsrutan fylls till 100 %, zooma snabbt och öppna Kundmall.
-  - **Skarp zoom (v2.4.591), också i appen i TestFlight:** öppna den tunga ritningen i Säkerhetsservice, Brand och Dörrautomatik. Zooma in på ett område och vänta: området ska bli skarpt efter en kort stund. Flytta åt höger och vänster: den nya delen är suddig och blir skarp när du stannar. Zooma snabbt fram och tillbaka och kontrollera att appen inte stängs. Säg till om det tar för lång tid att bli skarpt.
+  - **Skarp zoom (v2.4.591), också i appen i TestFlight:** öppna den tunga ritningen i Säkerhetsservice, Brand och Dörrautomatik. Zooma in på ett område och vänta: området ska bli skarpt efter en kort stund. Flytta åt höger och vänster: den nya delen är suddig och blir skarp när du stannar. Zooma och flytta snabbt fram och tillbaka med stämplarna synliga (cirka 100) och kontrollera att appen inte stängs. Stämplarna ska synas som en bild under rörelsen och bli vanliga stämplar när du stannar. Säg till om det tar för lång tid att bli skarpt.
   - **Färgen i den tunga ritningen:** syns färgerna nu i Säkerhetsservice när ritningen öppnas? Om inte: säg om filen är sparad från Tillsyno tidigare, ett äldre Bluebeam-protokoll eller en ren ritning från kunden, och om de färgade delarna står under *Kommentarer* i Acrobat.
   - Dörrautomatik (v2.4.584–590): sidhuvudet på en rad, *Stäng ritning*, verktygsmenyn, *Ta bort* vid markerat ritobjekt, frågan vid *Hem*, *Historik* och *Mall*-rutan. Kontrollera särskilt att nyp-zoom i *Mall* inte zoomar hela sidan i Safari. Välj *Spara PDF* i frågan och kontrollera att PDF:en blir sparad innan du går vidare.
 
@@ -159,6 +159,7 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 
 ## Avbockat
 
+- 2026-11-07, v2.4.591: stämplarna belastar inte appen vid snabb zoom: under rörelsen visas de som en bild och byggs inte om, och stilla visas bara de som syns.
 - 2026-11-07, v2.4.591: skarp zoom som i Acrobat, i Dörrautomatik / Lås (1.8), Säkerhetsservice (1.4) och Brand (1.1). Bara det område som syns ritas skarpt när man slutar zooma eller flytta, med en fast pixelgräns. Säkerhetsservice och Brand har fått sparläge för tunga ritningar och avbryter inte längre en pågående ritning vid varje zoomsteg.
 - 2026-11-07, v2.4.590: Historik över de senaste 10 servicetillfällena (status och anmärkningar) med en gul *Historik*-knapp, i Dörrautomatik / Lås (1.7) och Säkerhetsservice (1.3). *Mall* i Dörrautomatik är en flyttbar ruta som kan ändra storlek, utan A− / A+, och zoomen gäller bara rutan.
 - 2026-11-07, v2.4.589: historikrutan *Tidigare service / anmärkningar* är läsbar i mörka teman, i Dörrautomatik / Lås (1.6) och Säkerhetsservice (1.2), och upprepar inte punktens namn. I Dörrautomatik har *Öppna* / *Stäng ritning* samma färg som *Mall*, ögat och sidpilarna som *Ångra*, och *Signatur och logga* är kompakt.

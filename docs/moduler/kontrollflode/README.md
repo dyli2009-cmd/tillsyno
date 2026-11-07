@@ -77,6 +77,7 @@ Den har också egna revisionsfiler: `revision-*`, `service-overview-v12.*`, `cus
 - `security-stamp-selection-v549.*`, `security-detectors-v344.*`
 - `controlflow-revision/customer-stamp-editor-v335.js`, som också laddas av `security.html`
 - `controlflow-previous-v589.css` (historikrutan *Tidigare service* i mörka teman, v2.4.589)
+- `controlflow-stamp-view-v591.js/.css` (v2.4.591): stämplarna visas som en bild under gester och byggs inte om, och stilla visas bara de som syns. Den ersätter `window.ControlflowStampStyle` med en kopia som känner till senaste stämpeldata och inte ändrar stämplarnas storlek under en gest, och kör motorns `drawMarkers` först när gesten har stannat.
 - `controlflow-sharp-zoom-v591.js` (skarp zoom av det område som syns, v2.4.591). Varje motor skapar den med sina egna uppgifter: `security-v335.js` på revisionssidan och `security-drawing-view.js` på huvudsidan och i `security.html`.
 - `controlflow-history-v590.*` (Historik-knappen och historikrutan, v2.4.590). Historiken (`serviceHistory`) sparas av `startNewSecurityService` i båda motorerna.
 
@@ -106,12 +107,12 @@ Ett förslag till automatisk påverkanskontroll, utan spärr, finns i [kvalitets
 node tools/run-tests.mjs --modules <mapp>/node_modules controlflow- security- protocol-selection revision-uncheck detector- customer-preview navigation-theme save-theme theme-consistency
 ```
 
-Kör dem före och efter varje ändring i Kontrollflödet. Filtret `controlflow-` omfattar även testerna för tunga ritningar och skarp zoom, `controlflow-heavy-drawing-v580`, `controlflow-heavy-zoom-v581`, `controlflow-drawing-load-progress-v581` och `controlflow-sharp-zoom-v591`.
+Kör dem före och efter varje ändring i Kontrollflödet. Filtret `controlflow-` omfattar även testerna för tunga ritningar och skarp zoom, `controlflow-heavy-drawing-v580`, `controlflow-heavy-zoom-v581`, `controlflow-drawing-load-progress-v581`, `controlflow-sharp-zoom-v591` och `controlflow-stamp-view-v591`.
 
 ## Status
 
 - **Fungerar enligt tester:** se testkörningen i [kvalitetskontroller.md](../../kvalitetskontroller.md).
-- **Senast ändrat (v2.4.591, alla fyra undermodulerna):** skarp zoom av det område som syns, i båda motorerna. Säkerhetsservice och Brand har fått samma sparläge och skydd vid snabb zoom som Dörrautomatik fick i v2.4.580–581. Se [dorrautomatik.md](dorrautomatik.md) och [sakerhetsservice.md](sakerhetsservice.md).
+- **Senast ändrat (v2.4.591, alla fyra undermodulerna):** skarp zoom av det område som syns, och stämplar som inte belastar appen vid snabb zoom, i båda motorerna. Säkerhetsservice och Brand har fått samma sparläge och skydd vid snabb zoom som Dörrautomatik fick i v2.4.580–581. Se [dorrautomatik.md](dorrautomatik.md) och [sakerhetsservice.md](sakerhetsservice.md).
 - **Kända fel** (finns i `tests/known-failures.json`): `security-detectors-v344`, `security-uncheck-v531`, `security-drawing-rotation`. Alla tre gäller huvudsidan. `controlflow-customer-floating-v310` är inte längre ett känt fel.
 - **Väntar på beslut** (VANTANDE_PUNKTER.md punkt 6):
   - kontrasten i grå hjälptext,

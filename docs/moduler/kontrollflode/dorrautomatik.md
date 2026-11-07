@@ -63,6 +63,13 @@
   - Kan en detalj inte ritas visas sidans vanliga bild, och inga fler detaljer ritas för den filen.
   - **Säkerhetsspärr i sparläge:** en detalj kostar ungefär lika mycket minne som att öppna sidan. En sida som tog mer än 4 s att rita första gången på telefon (8 s på iPad och dator) får därför inga detaljer och visas som i sparläget förut. Tar en detaljritning så lång tid ritas inga fler för filen. Mätningar: [CONTROLFLOW_HEAVY_PDF_PLAN.md](../../../CONTROLFLOW_HEAVY_PDF_PLAN.md).
   - Stämplar, export, Kundmall, sparade arbetsfiler och import ändras inte.
+- **Stämplar utan överbelastning (v2.4.591, `controlflow-stamp-view-v591.*`, delad med Säkerhetsservice och Brand):** samma metod som Acrobat. Ägaren såg att appen kraschade vid snabb zoom med cirka 100 stämplar, men inte när stämplarna var dolda med ögat.
+  - **Under en gest** (nyp, mushjul, flyttning eller zoom) är de riktiga stämplarna dolda som med ögat. I stället visas en enda bild av stämplarna i och runt det synliga området: ruta, nummer och pil, ritade från objektens data med samma mått som PDF:en. Bilden har högst 1,5 MP på telefon och 3 MP annars, och den kan vara suddig medan den förstoras. Stämplarna byggs inte om och deras storlek räknas inte om under gesten. Text, ritobjekt och detektorrutor syns inte medan gesten pågår.
+  - **0,22 s efter gesten**, när inget finger ligger kvar, ritas stämplarna om en gång. Bilden tas bort.
+  - **Stilla** visas bara stämplar vars nummer eller pilspets ligger i det synliga området, med en halv skärms marginal åt varje håll. Övriga döljs tills man flyttar dit. Den markerade stämpeln visas alltid.
+  - När en stämpel eller ett ritobjekt dras räknas det inte som en gest.
+  - Ritningen och stämplarna tvingas inte in i egna grafiklager (`will-change`).
+  - Stämplarnas data, placering, storlek, låsning, export och Kundmall ändras inte.
 - **Ångra och gör om:** upp till 30 steg, bara i minnet (`session-history.js`).
 - **Sidhuvud och verktyg (v2.4.584, `revision-header-v584.*`):**
   - En rad: *Hem*, filnamnet, och till höger *Öppna ritning*, *Stäng ritning*, *Mall* och *PDF*. På telefon står filnamnet i raden med antal objekt. Versionsraden finns inte i sidhuvudet.
@@ -92,6 +99,7 @@
   - `customer-preview-v310.*`
   - `drawing-load-progress-v581.*`
   - den delade `controlflow-sharp-zoom-v591.js` i roten (skarp zoom, också i Säkerhetsservice och Brand)
+  - den delade `controlflow-stamp-view-v591.js/.css` i roten (stämplar under gester och utanför skärmen, också i Säkerhetsservice och Brand)
   - `revision-header-v584.*` (sidhuvud, verktygsmeny och frågan innan ritningen lämnas)
   - `revision-protocol-v587.*` (checklistvyn: rubrik, infällda objektuppgifter med varning)
   - `revision-views-v588.*` (Ritning, Översikt och Projekt: meddelanden, sidrad, öga, översiktens filter, Starta ny service sist)
@@ -134,9 +142,9 @@
 
 ## 8. Tester och status
 ```sh
-node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress controlflow-sharp-zoom security-automation-checklist revision-uncheck revision-header revision-draw-delete stamp-lock-frame revision-protocol revision-views controlflow-polish controlflow-history-preview controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
+node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress controlflow-sharp-zoom controlflow-stamp-view security-automation-checklist revision-uncheck revision-header revision-draw-delete stamp-lock-frame revision-protocol revision-views controlflow-polish controlflow-history-preview controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
 ```
-- **Senaste körning:** v2.4.591, hela testsviten: 121 tester, 114 godkända, 5 kända fel och 2 överhoppade (de behöver en riktig ritning). `controlflow-sharp-zoom-v591` provar skarp zoom, flyttning, sidbyte, telefonens gräns, sparläget och säkerhetsspärren i Dörrautomatik, Säkerhetsservice och Brand. Se också [kvalitetskontroller.md](../../kvalitetskontroller.md). `revision-header-v584` provar sidhuvudet, verktygsmenyn och frågan innan ritningen lämnas på telefon, iPad och dator. `revision-draw-delete-v585` provar *Ta bort* för alla sex ritobjekt på telefon och dator. `revision-protocol-v587` provar checklistvyn på telefon, iPad och dator. `revision-views-v588` provar Ritning, Översikt och Projekt på telefon, iPad och dator, i ljust och mörkt tema.
+- **Senaste körning:** v2.4.591, hela testsviten: 122 tester, 115 godkända, 0 fel, 4 kända fel, 1 känt fel som gick igenom den här gången (`drawing-ocr-swedish`, varierar mellan körningar) och 2 överhoppade (de behöver en riktig ritning). `controlflow-sharp-zoom-v591` provar skarp zoom, flyttning, sidbyte, telefonens gräns, sparläget och säkerhetsspärren i Dörrautomatik, Säkerhetsservice och Brand. `controlflow-stamp-view-v591` provar 100 stämplar vid snabb zoom och flyttning. Se också [kvalitetskontroller.md](../../kvalitetskontroller.md). `revision-header-v584` provar sidhuvudet, verktygsmenyn och frågan innan ritningen lämnas på telefon, iPad och dator. `revision-draw-delete-v585` provar *Ta bort* för alla sex ritobjekt på telefon och dator. `revision-protocol-v587` provar checklistvyn på telefon, iPad och dator. `revision-views-v588` provar Ritning, Översikt och Projekt på telefon, iPad och dator, i ljust och mörkt tema.
 - **Ej verifierat på riktig enhet:** sidhuvudet och frågan på iPhone och iPad med Safari, och att nedladdningen av PDF:en blir klar innan användaren väljer att lämna.
 - **Kända fel:** inga egna.
 - **Pågår separat:** krascher med stora ritningar på riktiga enheter (VANTANDE_PUNKTER.md avsnitt 8, steg 2).

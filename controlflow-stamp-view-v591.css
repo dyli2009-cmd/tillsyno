@@ -1,0 +1,8 @@
+/* Tillsyno v2.4.591 – stämplar utan överbelastning (controlflow-stamp-view-v591.js), båda sidorna. */
+/* Under nyp, mushjul och flyttning: de riktiga stämplarna är dolda som med ögat, en stämpelbild visas i stället. */
+body.cfStampsMoving #secMarkers{display:none!important}
+/* Stilla: stämplar utanför det synliga området ritas inte. */
+#secMarkers .cfStampOff{display:none!important}
+/* Ritningen tvingas inte in i egna stora grafiklager (iPhone och iPad håller annars bilder av hela sidan). */
+#secCanvas{will-change:auto!important}
+#secViewer.pinching #secStage{will-change:auto!important}

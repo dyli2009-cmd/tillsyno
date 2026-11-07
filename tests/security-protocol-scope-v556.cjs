@@ -40,7 +40,7 @@ function fixture(mode){
   inspectDoorAutomationWorkPdfForAllInOne:async()=>{s.importCalls.door++;return s.importResults.door||null;},
   inspectLegacySecurityLinkedPdf:async()=>{s.importCalls.legacySecurity++;return s.importResults.legacySecurity||null;},
   heavyDrawing:false,PHONE_DEVICE:false,assessHeavyDrawing:async()=>false,// v2.4.580-581 sparläge check; these fixtures are small drawings
-  renderTarget:null,sharpZoom:null// v2.4.591 skarp zoom (controlflow-sharp-zoom-v591.js is not loaded here)
+  renderTarget:null,sharpZoom:null,stampView:null// v2.4.591 skarp zoom (controlflow-sharp-zoom-v591.js is not loaded here)
  });
  s.project={...s.emptyProject(),projectName:'Projekt för valt protokoll',date:'2025-11-02',nextDate:'2026-11-02',order:'Tidigare order',signature:'Signatur'};
  s.AllInOneProtocols={get:()=>s.activeTypes.slice()};
