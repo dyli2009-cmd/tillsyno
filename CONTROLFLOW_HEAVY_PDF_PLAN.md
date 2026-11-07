@@ -139,7 +139,9 @@ Jag provade också att begränsa bildstorleken i pdf.js (`canvasMaxAreaInBytes`)
 
 Värdet vid öppning varierar mellan körningar med ungefär 0,1 GB. Exporten är oförändrad.
 
-Test: `tests/controlflow-heavy-zoom-v581.cjs`. Testet fallerar på v2.4.580 med 13 inläsningar och går igenom på v2.4.581.
+**Laddningsruta (samma version):** i stället för bara *Laddar ritning…* visas en ruta med stapel till 100 %, steg och filnamn. Den täcker sidan medan ritningen laddas, så det går inte längre att zooma innan sidan är klar. Det tar också bort den situation som gav flest omritningar. Se UI_RULES.md.
+
+Test: `tests/controlflow-heavy-zoom-v581.cjs` och `tests/controlflow-drawing-load-progress-v581.cjs`. Testet fallerar på v2.4.580 med 13 inläsningar och går igenom på v2.4.581.
 
 ## Kvar, som egna beslut
 

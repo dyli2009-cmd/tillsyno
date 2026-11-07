@@ -265,4 +265,14 @@ Användarbeslut 7 november 2026 (Kontrollflödet upplåst för denna beställnin
 - En zoom avbryter inte en pågående ritning av samma sida. Ritningen blir klar och visas, och i vanligt läge ritas sidan därefter en gång i den nya storleken.
 - Safaris egen sidzoom är avstängd på ritningsytan. Appens tvåfingerzoom och knapparna fungerar som förut.
 - På telefon börjar sparläget tidigare än på iPad och dator: vid 15 MB, en bild över 8,4 MP, A2 eller större med minst 1 MB per sida, eller en sida som tar mer än 0,8 s att rita.
+- **Laddningsruta:** när en ritning öppnas visas en ruta i valt tema. Den visar *Laddar ritning*, filnamnet, en stapel med procent och vilket steg som pågår:
+  - *Kontrollerar arbetsfil och tidigare protokoll*, med sidnummer när äldre PDF:er analyseras;
+  - *Öppnar ritningen*;
+  - *Ritar sidan*, eller *Ritar sidan i sparläge – en stor ritning kan ta en stund*;
+  - *Klart*.
+- Stegen är verkliga. Under själva ritandet ger pdf.js inget exakt förlopp, så stapeln rör sig mot slutet av steget utifrån filens storlek. Den når 100 % först när sidan visas.
+- Rutan täcker sidan medan ritningen laddas, så ritningen kan inte zoomas under tiden. Vid fel stängs den direkt och felet visas.
+- Rutan är 380 px bred, och smalare på telefon med 16 px marginal. Den har inga rörelser vid *minska rörelse*.
+- Filer: `controlflow-revision/drawing-load-progress-v581.js` och `.css`.
+- Kontrollerat i Chromium på 390 px (dimblå och natt), 820 px (sand) och 1440 px (grafit), utan sidledsrullning.
 - Kontrollerat i Chromium med telefoninställning 390×844. Fysisk iPhone är inte verifierad.

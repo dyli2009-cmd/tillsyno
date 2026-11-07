@@ -883,17 +883,24 @@ async function inspectLegacySecurityLinkedPdf(bytes){
 }
 
 if($('secChangeDrawing'))$('secChangeDrawing').onclick=()=>$('securityFile').click();
-$('securityFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{
- msg('Laddar ritning…');const bytes=new Uint8Array(await f.arrayBuffer());
+$('securityFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;const progress=window.DrawingLoadProgress;try{
+ msg('Laddar ritning…');progress?.start(f.name);const bytes=new Uint8Array(await f.arrayBuffer()),sizeMB=bytes.length/1048576;
+ progress?.step('Kontrollerar arbetsfil och tidigare protokoll',5,25,400+sizeMB*80);
  // One pdf-lib parse is shared by both work-file checks and released before the drawing is shown.
  let parsed=window.PDFLib?await PDFLib.PDFDocument.load(bytes,{updateMetadata:false}):null;
  const imported=await inspectSecurityWorkPdf(bytes,parsed),doorImported=!imported?await inspectDoorAutomationWorkPdfForAllInOne(bytes,parsed):null;parsed=null;
- const legacyDoorImported=!imported&&!doorImported&&ALL_IN_ONE&&allInOneProtocolActive('automation')&&window.RevisionImportProfiles?await window.RevisionImportProfiles.inspect(bytes,f.name,message=>msg(message)):null,legacyImported=!imported&&!doorImported&&!legacyDoorImported?await inspectLegacySecurityLinkedPdf(bytes):null,drawingBytes=imported?.drawingBytes||doorImported?.drawingBytes||legacyDoorImported?.drawingBytes||legacyImported?.drawingBytes||bytes,key=await fingerprint(drawingBytes),saved=loadSaved(key),record=imported?.work||doorImported?.work||(legacyDoorImported?{items:(legacyDoorImported.work?.doors||[]).map((d,index)=>({...d,type:'automation',number:index+1})),textNotes:legacyDoorImported.work?.textNotes||[],drawingExtras:legacyDoorImported.work?.drawingExtras||[],project:{...emptyProject(),...(legacyDoorImported.work?.project||{})},logoData:legacyDoorImported.work?.logoData||''}:null)||(saved?.items?.length?saved:legacyImported?.work)||legacyImported?.work||saved,candidate=await pdfjsLib.getDocument({data:drawingBytes.slice()}).promise,candidateHeavy=await assessHeavyDrawing(drawingBytes,candidate);
+ const legacyDoorImported=!imported&&!doorImported&&ALL_IN_ONE&&allInOneProtocolActive('automation')&&window.RevisionImportProfiles?await window.RevisionImportProfiles.inspect(bytes,f.name,message=>{msg(message);progress?.note(message)}):null,legacyImported=!imported&&!doorImported&&!legacyDoorImported?await inspectLegacySecurityLinkedPdf(bytes):null,drawingBytes=imported?.drawingBytes||doorImported?.drawingBytes||legacyDoorImported?.drawingBytes||legacyImported?.drawingBytes||bytes,key=await fingerprint(drawingBytes),saved=loadSaved(key),record=imported?.work||doorImported?.work||(legacyDoorImported?{items:(legacyDoorImported.work?.doors||[]).map((d,index)=>({...d,type:'automation',number:index+1})),textNotes:legacyDoorImported.work?.textNotes||[],drawingExtras:legacyDoorImported.work?.drawingExtras||[],project:{...emptyProject(),...(legacyDoorImported.work?.project||{})},logoData:legacyDoorImported.work?.logoData||''}:null)||(saved?.items?.length?saved:legacyImported?.work)||legacyImported?.work||saved;
+ progress?.step('Öppnar ritningen',25,32,300+drawingBytes.length/1048576*20);
+ const candidate=await pdfjsLib.getDocument({data:drawingBytes.slice()}).promise,candidateHeavy=await assessHeavyDrawing(drawingBytes,candidate);
+ // Drawing has no exact progress in pdf.js: estimate from the content per page (slower on a phone).
+ const drawEstimate=(500+drawingBytes.length/Math.max(1,candidate.numPages)/1048576*450)*(PHONE_DEVICE?2:1);
+ progress?.step(candidateHeavy?'Ritar sidan i sparläge – en stor ritning kan ta en stund':'Ritar sidan',32,99,drawEstimate);
  if(pdf)try{await pdf.destroy()}catch(_){}
  // The file's own array is not used elsewhere, so it is kept as is instead of copied once more.
  pdf=candidate;heavyDrawing=candidateHeavy;sourceBytes=drawingBytes===bytes?bytes:drawingBytes.slice();activeKey=key;items=renumberLegacySecurityItems((record?.items||[]).map(normalize));textNotes=Array.isArray(record?.textNotes)?record.textNotes:[];drawingExtras=Array.isArray(record?.drawingExtras)?record.drawingExtras:[];project={...emptyProject(),...(record?.project||{})};project.sourceFileName=f.name;syncAutomationIds();logoData=record?.logoData||'';page=1;zoom=1;visualZoom=1;pinch=null;panTouch=null;panMouse=null;addType=null;textMode=false;applyDrawingOverlayVisibility(false);document.body.classList.remove('secAdding','secTextAdding');$('secAddText').classList.remove('primary');$('secStage').style.transform='';syncProjectInputs();refreshTop();save();let shown=await render(true);
  // A drawing that cannot be shown normally gets one more try in sparläge.
- if(shown===false&&!heavyDrawing&&pdf===candidate){heavyDrawing=true;try{await candidate.cleanup()}catch(_){}shown=await render(true)}
+ if(shown===false&&!heavyDrawing&&pdf===candidate){heavyDrawing=true;progress?.step('Ritar sidan i sparläge – en stor ritning kan ta en stund',0,99,drawEstimate);try{await candidate.cleanup()}catch(_){}shown=await render(true)}
+ if(shown===false)progress?.close();else progress?.done();
  viewer.scrollLeft=0;viewer.scrollTop=0;
  const activeCount=visibleItems().length,heavyNote=heavyDrawing?'Stor ritning – visas i sparläge. ':'',notShown='Ritningen öppnades, men sidan kunde inte visas, inte heller i sparläge. Prova Passa eller en annan sida. Fungerar det inte, dela upp ritningen i mindre PDF-filer.';
  if((imported||doorImported)&&activeCount){
@@ -905,7 +912,7 @@ $('securityFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{
  else msg(heavyNote+((imported||doorImported)?'Arbets-PDF öppnad. ':'Ritningen är klar. ')+(activeCount?activeCount+' objekt återställda.':(ALL_IN_ONE?'Börja markera valda protokoll.':'Lägg till Inbrottslarm, Lås & Dörrmiljö eller Passer.')));
  window.dispatchEvent(new Event('revision-work-loaded'));
  try{await window.TillsynoOfflineWork?.remember(APP_STATE_NAME,key,f.name,sourceBytes)}catch(error){console.error(error);msg('Arbetsdata sparas, men ritningen kunde inte sparas lokalt. Spara en arbets-PDF innan du stänger appen.',true)}
- }catch(err){console.error(err);msg(err.message||'Kunde inte öppna PDF-filen.',true)}finally{e.target.value=''}};
+ }catch(err){console.error(err);msg(err.message||'Kunde inte öppna PDF-filen.',true)}finally{progress?.close();e.target.value=''}};
 $('secOpenWorkDialog').addEventListener('cancel',e=>e.preventDefault());
 $('secOpenContinue').onclick=()=>{$('secOpenWorkDialog').close();go('drawing');msg('')};
 $('secOpenNewService').onclick=()=>{if(startNewSecurityService(false))$('secOpenWorkDialog').close()};
