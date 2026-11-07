@@ -1,8 +1,8 @@
 # Kontrollflöde – Dörrautomatik
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.584 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
-- **Modulversion:** Dörrautomatik / Lås 1.1. Det är en gemensam version för Dörrautomatik och Lås, som grupperas som i mappvalet (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (ägarens beslut, v2.4.584). Nästa funktionsändring, till exempel kraschrättningen, höjer den till 1.2.
+- **Appversion:** Tillsyno v2.4.585 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** Dörrautomatik / Lås 1.2. Det är en gemensam version för Dörrautomatik och Lås, som grupperas som i mappvalet (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (ägarens beslut, v2.4.584). Nästa funktionsändring, till exempel kraschrättningen, höjer den till 1.3.
 - Kontrollflödet är upplåst. Gemensamma regler, motorer och filkarta: [README.md](README.md).
 
 ## 2. Arbetsflöde från början till slut
@@ -51,6 +51,8 @@
   - Verktygsraden har *Ångra*, *Gör om* och *Verktyg*, med verktygsikon. Textstorleken (A− / A+) finns inte, och texten visas alltid i 100 %. En större textstorlek som valts i Säkerhetsservice ligger kvar sparad där men används inte här.
   - Verktygsmenyn har ritverktygen och *Precision*, och under dem två rader: *Justera / lås stämplar* och *Lägg till serviceöversikt*. Zoomknapparna finns inte; zoom görs med fingrarna eller mushjulet (motorns `setZoom` är oförändrad).
   - **Stäng ritning** (`closeRevisionDrawing` i motorn) sparar arbetet, släpper ritningen och minnet och visar *Välj ritning*. Arbetet ligger kvar på enheten och kommer tillbaka när samma ritning öppnas.
+  - **Ta bort ritobjekt (v2.4.585, `drawing-annotations.js`):** när en text, text med pil, linje, pil eller dörrsymbol är markerad visas en liten *Ta bort*-knapp bredvid den på ritningen. På telefon är knappen bara en ikon. Knappen, och papperskorgen i verktygsmenyn, frågar alltid först: *Ta bort texten? Är du säker? Du kan ångra med Ångra.* med *Avbryt* och *Ta bort*. Knappen döljs när inget är markerat, medan ett objekt dras och när ett ritverktyg används. *Ångra* återställer objektet.
+  - **Låsa stämplar** (`security-stamp-selection-v549.*`, delad): *Verktyg → Justera / lås stämplar*. Välj alla, en sida eller enskilda stämplar och tryck *Lås placering*. En låst stämpel kan inte flyttas, men dragning på den panorerar ritningen, och ett tryck markerar den. Ett dubbeltryck öppnar protokollet.
   - **Ändringskontrollen** jämför arbetet (objekt, anteckningar, ritobjekt, projektuppgifter, logotyp) med läget när ritningen öppnades eller PDF:en senast sparades. Motorn meddelar en sparad PDF med händelsen `revision-pdf-saved`.
 
 ## 4. Kodfiler och motor
@@ -99,9 +101,9 @@
 
 ## 8. Tester och status
 ```sh
-node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress security-automation-checklist revision-uncheck revision-header controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
+node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress security-automation-checklist revision-uncheck revision-header revision-draw-delete controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
 ```
-- **Senaste körning:** godkänd (v2.4.584), se [kvalitetskontroller.md](../../kvalitetskontroller.md). `revision-header-v584` provar sidhuvudet, verktygsmenyn och frågan innan ritningen lämnas på telefon, iPad och dator.
+- **Senaste körning:** godkänd (v2.4.585), se [kvalitetskontroller.md](../../kvalitetskontroller.md). `revision-header-v584` provar sidhuvudet, verktygsmenyn och frågan innan ritningen lämnas på telefon, iPad och dator. `revision-draw-delete-v585` provar *Ta bort* för alla sex ritobjekt på telefon och dator.
 - **Ej verifierat på riktig enhet:** sidhuvudet och frågan på iPhone och iPad med Safari, och att nedladdningen av PDF:en blir klar innan användaren väljer att lämna.
 - **Kända fel:** inga egna.
 - **Pågår separat:** krascher med stora ritningar på riktiga enheter (VANTANDE_PUNKTER.md avsnitt 8, steg 2).
