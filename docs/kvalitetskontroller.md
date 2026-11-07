@@ -6,7 +6,7 @@ Det här dokumentet beskriver vilka kontroller som finns i dag (avsnitt 1) och v
 
 | Kontroll | Var | Körs när |
 |---|---|---|
-| Testsviten, 109 tester (Playwright, Chromium och Node) | `tools/run-tests.mjs`, `tests/` | Manuellt |
+| Testsviten, 112 tester (Playwright, Chromium och Node) | `tools/run-tests.mjs`, `tests/` | Manuellt |
 | Kända fel som inte fäller körningen | `tests/known-failures.json` | Med testsviten |
 | Bara använda filer publiceras, inga `.md`, `.pdf`, `.dwg` | `tools/build-release.mjs`, `.github/workflows/pages.yml` | Vid push till `main`, **det publicerar direkt** |
 | Valfri denylist mot kundnamn | `build-release.mjs --denylist <fil>` | Manuellt |
@@ -25,11 +25,10 @@ Två saker att känna till när miljön sätts upp:
 ## 2. Luckor
 
 1. Testerna körs **inte automatiskt**, och en push till `main` publicerar utan tester.
-2. Låsreglerna är bara text. Inget stoppar en ändring i Kontrollflödets filer.
-3. Ingenting visar vilka **andra moduler** en ändring påverkar.
-4. Inget test larmar om **kontrollpunkterna** i en undermodul ändras.
-5. Inget test kontrollerar kundprotokollet för **Brand** eller **Lås** för sig.
-6. Inget test visar att **inga kunddata eller ritningar lämnar enheten**.
+2. Ingenting visar automatiskt vilka **moduler, undermoduler och motorer** en ändring påverkar, också via delade filer.
+3. Inget test larmar om **kontrollpunkterna** i en undermodul ändras.
+4. Inget test kontrollerar kundprotokollet för **Brand** eller **Lås** för sig.
+5. Inget test visar att **inga kunddata eller ritningar lämnar enheten**.
 
 ## 3. Förberedda ändringar (inte införda)
 
@@ -43,7 +42,7 @@ Steg A–D hör till nästa uppgift, *branchskydd och automatiska tester*. Steg 
 |---|---|---|
 | Require a pull request before merging | På | Inga ändringar direkt i `main` |
 | Required approvals | **0** | Se förklaringen nedan |
-| Require status checks to pass | På: `tests` och `lock-check` (från B och C) | Inget förs in i `main` utan godkända tester |
+| Require status checks to pass | På: `tests` (från B) | Inget förs in i `main` utan godkända tester. Påverkanskontrollen (C) är information och ingen spärr. |
 | Require branches to be up to date | På | Testerna körs mot den senaste `main` |
 | Block force pushes | På | Historiken kan inte skrivas om |
 | Restrict deletions | På | `main` kan inte raderas |
@@ -51,7 +50,7 @@ Steg A–D hör till nästa uppgift, *branchskydd och automatiska tester*. Steg 
 
 **Varför 0 godkännanden:** GitHub tillåter inte att man godkänner sin egen PR. PR:erna skapas via ditt konto, så krav på ett godkännande skulle låsa allt. Kontrollen ligger i stället i att **bara du trycker på Merge** efter att ha läst PR:en.
 
-**Ordning:** inför B och C först och låt dem gå igenom på en PR. Slå på branchskyddet först därefter. Statuskontrollerna måste ha körts en gång för att kunna väljas.
+**Ordning:** inför B–D först och verifiera dem på en PR. Slå på branchskyddet först därefter (ägarens beslut). Statuskontrollen måste ha körts en gång för att kunna väljas.
 
 **Publiceringen** (`pages.yml`) ändras inte. Den publicerar fortfarande vid push till `main`, men med branchskyddet sker det bara efter en godkänd PR.
 
@@ -63,7 +62,7 @@ Steg A–D hör till nästa uppgift, *branchskydd och automatiska tester*. Steg 
 name: Tests
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+    types: [opened, synchronize, reopened]
 permissions:
   contents: read
 jobs:
@@ -80,20 +79,12 @@ jobs:
           npm install --prefix "$RUNNER_TEMP/tm" playwright @napi-rs/canvas pdf-lib@1.17.1 pdfjs-dist@4.10.38
           npx --prefix "$RUNNER_TEMP/tm" playwright install --with-deps chromium
           pip install --target "$RUNNER_TEMP/tm/python" pymupdf
-      - name: Påverkade moduler
+      - name: Påverkan (information, ingen spärr)
         run: node tools/affected-modules.mjs origin/${{ github.base_ref }} >> "$GITHUB_STEP_SUMMARY"
       - name: Testsviten
         run: node tools/run-tests.mjs --modules "$RUNNER_TEMP/tm/node_modules" --jobs 4 --report report.json
       - name: Byggkontroll (ingen publicering)
         run: node tools/build-release.mjs --out "$RUNNER_TEMP/release"
-  lock-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with: {fetch-depth: 0}
-      - run: node tools/check-locks.mjs origin/${{ github.base_ref }}
-        env:
-          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
 ```
 
 - Hela sviten körs på varje PR (ca 4 minuter plus installation).
@@ -101,24 +92,37 @@ jobs:
 - Workflowen publicerar ingenting.
 - **Behöver provas:** att Chromium i GitHubs miljö ger samma resultat som här. Det görs på den första PR:en.
 
-### C. Låskontroll för Kontrollflödet, en ny fil `tools/check-locks.mjs`
+### C. Påverkanskontroll utan spärr, en ny fil `tools/affected-modules.mjs`
 
-- Jämför PR:ens ändrade filer (`git diff --name-only <bas>...HEAD`) med en lista över låsta filer. Listan är densamma som filkartan i [kontrollflode/README.md](moduler/kontrollflode/README.md):
-  - `all-in-one.*`, `security*`, `controlflow-*`, `controlflow-revision/**`, `legacy-door-import.js`, `detector-scan-*`, `drawing-annotations-security-v530.js`, `offline-work.js`,
-  - de delade `style.css`, `tillsyno-appearance.*`, `offline.js`, `session-history.js`, `drawing-transfer.js`.
-- Kontrollen **fäller** om en låst fil har ändrats och PR:en saknar etiketten **`upplåst-kontrollflöde`**. Etiketten sätter bara du.
-- Den skriver också ut **vilken motor** som berörs: `security.js` (Säkerhetsservice, Brand), `security-v335.js` (Dörrautomatik, Lås) eller båda, via de delade filerna.
-- Låsreglerna ändras inte. Kontrollen bara upprätthåller dem.
-- Senare, om du vill: samma mönster för licensreglerna (`auth/`, `supabase/`), med etiketten `upplåst-licens`.
+**Beslut 7 november 2026 (alternativ A):** Kontrollflödet förblir upplåst. Inget lås och ingen upplåsningsetikett återinförs. Varje ändring ska i stället **visa** vad den påverkar, och de relevanta testerna ska köras.
 
-### D. Tester som upptäcker om andra moduler påverkas
+- **Vad kontrollen gör:**
+  - Läser PR:ens ändrade filer (`git diff --name-only <bas>...HEAD`).
+  - Tar fram vilka sidor som laddar varje fil, med samma logik som `build-release.mjs` (sidornas `<script>`- och `<link>`-taggar, samt `sw.js`).
+  - Översätter sidorna till moduler och undermoduler enligt filkartorna i `docs/moduler/`.
+- **Vad den skriver i PR:ens sammanfattning:**
+
+  | Rad | Exempel |
+  |---|---|
+  | Moduler som berörs | *Kontrollflöde: Dörrautomatik, Lås* |
+  | Motor | *revisionsmotorn `security-v335.js`* (eller `security.js` (Säkerhetsservice, Brand), eller båda via delade filer som `controlflow-*`) |
+  | Delade filer | *`tillsyno-appearance.css` → 9 sidor, 7 moduler* |
+  | Projekteringsfiler som SmartMatch laddar | *Projektering + Avläsning/SmartMatch* |
+  | Tester som täcker de berörda delarna | namnfilter till `run-tests.mjs`, t.ex. `controlflow- security- smartmatch-` |
+  | Bara dokumentation ändrad | anges särskilt |
+
+- **Ingen spärr:** kontrollen fäller aldrig PR:en. Det som stoppar är testerna i B, och de körs i sin helhet.
+- **Samma uppgifter i Claudes plan:** innan kod ändras redovisas påverkan på samma sätt (CLAUDE.md avsnitt 1 och 3).
+- Låsta regler som fortfarande finns (licens, SmartMatch, UI) ändras inte av kontrollen.
+
+### D. Tester som upptäcker om andra delar påverkas
 
 | Del | Vad den gör | Fil |
 |---|---|---|
-| **Påverkade moduler** | Läser vilka sidor som laddar varje ändrad fil, med samma logik som `build-release.mjs` och tabellen i [gemensamt.md](moduler/gemensamt.md). Skriver i PR:en vilka moduler och sidor som berörs, och vilka tester som täcker dem. | `tools/affected-modules.mjs` (ny) |
 | **Hela sviten på varje PR** | Ett fel i en annan modul syns även om ändringen verkar lokal | B ovan |
 | **Kontrollpunkterna är oförändrade** | Läser `SYSTEMS` ur båda motorerna och jämför varje protokolltyp med en sparad referens. Ändras Dörrautomatik syns det som en ändring av just Dörrautomatiks referens. Säkerhetsservice, Lås och Brand kan inte ändras i smyg. **Motorerna behålls separata.** Testet kräver inte att de är lika, men visar om en typ som finns i båda skiljer sig. | `tests/controlflow-checklist-content.cjs` (nytt), `tests/fixtures/controlflow-checklists.json` (ny) |
-| **Kundprotokoll per undermodul** | Skapar ett protokoll per undermodul med testdata. Kontrollerar den gemensamma designen (fältnamn, rubriker, sidfot) och att varje protokoll bara har sina egna punkter. Se [pdf-design.md](moduler/kontrollflode/pdf-design.md) förslag P7. | `tests/controlflow-pdf-design.cjs` (nytt) |
+| **Kundprotokoll per undermodul** | Skapar ett protokoll per undermodul med testdata. Kontrollerar den gemensamma designen (fältnamn, rubriker, sidfot) och att varje protokoll bara har sina egna punkter. Se [pdf-design.md](moduler/kontrollflode/pdf-design.md) förslag P7. Testet ändrar inte PDF-designen. | `tests/controlflow-pdf-design.cjs` (nytt) |
+| **Lås på revisionssidan** | Öppnar *Checklista revision lås* ensamt och kontrollerar att sparläge och laddningsruta (v2.4.580–581) fungerar även där. I dag provas bara `automation`. | utökning av `tests/controlflow-heavy-drawing-v580.cjs` eller ett nytt test |
 
 Inget av detta ändrar appens kod.
 
@@ -161,7 +165,7 @@ Inget av detta ändrar appens kod.
 ### F. Övrigt, valfritt och senare
 
 - **Granskning före PR:** `/code-review` på ändringarna. `/security-review` när `auth/`, `supabase/`, `sw.js`, lagring eller PDF-import berörs.
-- **Hook i Claude Code** (`.claude/settings.json`): varnar vid redigering av låsta filer redan i sessionen.
+- **Hook i Claude Code** (`.claude/settings.json`): visar påverkan (C) redan när en fil redigeras i sessionen. Ingen spärr.
 - **Veckokontroll** (schemalagd uppgift): testsviten mot `main` och Supabases säkerhetsrådgivare. Bara läsning.
 - **Inventering av gamla versionsfiler** (`tools/file-usage.mjs`): en rapport, ingen radering. Underlaget finns i avsnitt 5.
 
@@ -171,7 +175,7 @@ Inga regler eller lås ändras. Bara felaktiga fakta och länkar rättas. I lås
 
 | # | Fil och plats | I dag | Förslag |
 |---|---|---|---|
-| R1 | DEVELOPMENT_RULES.md avsnitt 4 | "Aktuell version: **v2.4.398**" | "Aktuell version visas i `app.html` (7 november 2026: v2.4.579)." |
+| R1 | DEVELOPMENT_RULES.md avsnitt 4 | "Aktuell version: **v2.4.398**" | "Aktuell version visas i `app.html` (7 november 2026: v2.4.581)." |
 | R2 | DEVELOPMENT_RULES.md avsnitt 2A | Projektflödesytan ligger i `project-workspace.html/.css/.js` | Byt filnamnen till `smartmatch-projektering.html` och `smartmatch-projektering-*`. Regeln om isolering står kvar oförändrad. |
 | R3 | PROJECTFLOW_ARCHITECTURE.md *Egna filer* | `project-workspace.*` | Samma som R2, plus en hänvisning till [projektering.md](moduler/projektering.md) |
 | R4 | DEVELOPMENT_RULES.md avsnitt 4 | Länk till `CE_DESKTOP_357.md` (saknas) | Ta bort länken. Beslutet står redan i samma stycke och i [ce-markning.md](moduler/ce-markning.md). |
@@ -179,7 +183,7 @@ Inga regler eller lås ändras. Bara felaktiga fakta och länkar rättas. I lås
 | R6 | README.md | "`tillsyno-admin` motsvarar **version 11**" | Kontrollera versionen i Supabase (läsning) och skriv rätt version. VANTANDE_PUNKTER.md säger 12. |
 | R7 | `tools/run-tests.mjs`, kommentar överst | `pdfjs-dist@3.11.174` | `pdfjs-dist@4.10.38`. Bara kommentaren ändras, men det är en ändring i ett verktyg. |
 | R8 | tests/README.md | Nämner inte `tests/*-browser.js` | En rad: "`*-browser.js` är manuella QA-skript som laddas i webbläsaren. Testkörningen använder dem inte." |
-| R9 | `CONTROLFLOW_LOCK.md` med flera | Ingen hänvisning till den nya strukturen | Ingen ändring. `CLAUDE.md` pekar redan på låsfilerna. |
+| R9 | `CONTROLFLOW_LOCK.md` | Rubriken *Senaste beställda ändring* står ovanför den äldsta posten (v2.4.252) | Ingen ändring nu. Kan rubriceras som *Historik* vid tillfälle. Innehållet är redan uppdaterat för upplåsningen i v2.4.581. |
 
 ## 5. Underlag: gamla versionsfiler (rapport, ingen radering)
 

@@ -1,6 +1,6 @@
 # Kontrollflöde – Brand
 
-**LÅST.** Läs först [README.md](README.md).
+**Upplåst** sedan v2.4.581. Läs först [README.md](README.md), som förklarar motorerna, vad som fortfarande gäller och filkartan.
 
 ## Innehåll
 

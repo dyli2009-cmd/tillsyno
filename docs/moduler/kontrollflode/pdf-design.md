@@ -1,6 +1,6 @@
 # Kontrollflöde – gemensam PDF-design
 
-**Status: LÅST**, som resten av Kontrollflödet. Inga förslag i det här dokumentet är införda.
+Kontrollflödet är **upplåst** sedan v2.4.581. **Inga förslag i det här dokumentet är införda**, och PDF-designen lämnas orörd tills ägaren beställer en ändring (beslut 7 november 2026).
 
 ## Regel (användarbeslut 7 november 2026)
 
@@ -52,7 +52,7 @@ De slås inte ihop, och funktioner flyttas inte mellan dem. En godkänd designä
 
 ## Granskning: skillnader mellan de två motorerna
 
-`reportDoc()` jämfördes rad för rad. Cirka 130 rader skiljer, i 15 områden.
+`reportDoc()` jämfördes rad för rad. Cirka 130 rader skiljer, i 15 områden. Granskningen gjordes på v2.4.579 och kontrollerades igen på v2.4.581: kundprotokollet ändrades inte i v2.4.580–581.
 
 ### Designskillnader (lager 1), som enligt regeln bör vara lika
 
@@ -81,7 +81,7 @@ D8 betyder att även protokollen på **samma** revisionssida ser olika ut. *Chec
 | F6 | Anmärkningstext: `1.5 text` för dörrautomatik, `1.5 – text` för övriga | Formatet ser ut som design. Det är oklart om skillnaden är avsiktlig, se förslag P6. |
 | F7 | Filnamn vid sparande | Syns inte i PDF:en |
 
-## Förslag till förbättringar (inte beställda, kräver upplåsning)
+## Förslag till förbättringar (inte beställda)
 
 Varje förslag görs **likadant i båda motorerna**. Det ändrar bara lager 1 och lämnar kontrollpunkter, protokoll och funktioner orörda.
 
@@ -98,7 +98,7 @@ Varje förslag görs **likadant i båda motorerna**. Det ändrar bara lager 1 oc
 **Rekommenderad ordning:**
 1. P7, testet, som inte ändrar appen.
 2. Beslut om P6, P1 och P4.
-3. En upplåsning med P1–P6 i båda motorerna.
+3. En beställd ändring med P1–P6, gjord likadant i båda motorerna.
 4. Testerna körs på båda sidorna.
 
 ## Regler vid ändring

@@ -81,16 +81,17 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 **Beslutat 7 november 2026:**
 - De två motorerna i Kontrollflödet (`security.js` och `controlflow-revision/security-v335.js`) behålls. De slås inte ihop, och funktioner flyttas inte mellan dem.
 - Båda låsprotokollen behålls där de ligger: *Checklista revision lås* under Dörrautomatik/Lås och *Lås & Dörrmiljö* under Säkerhetsservice.
-- PDF-designen ska vara gemensam, men innehållet egna per undermodul.
+- PDF-designen ska vara gemensam, men innehållet eget per undermodul. Designen och de två motorerna lämnas orörda tills vidare.
+- Kontrollflödet förblir upplåst (sedan v2.4.581). I stället för låskontroll används en påverkanskontroll utan spärr (alternativ A): varje ändring visar vilka moduler och motorer som påverkas, och de relevanta testerna körs.
 
 **Nästa uppgift, branchskydd och automatiska tester:**
-- [ ] **Claude, efter godkännande:** tester på varje PR (3B), låskontroll (3C) och påverkan på andra moduler (3D).
-- [ ] **Ägaren:** slå på skyddet av `main` enligt 3A, när 3B och 3C har gått igenom en gång.
+- [ ] **Claude, efter godkännande:** tester på varje PR (3B), påverkanskontroll utan spärr (3C) och tester som upptäcker påverkan på andra delar (3D).
+- [ ] **Ägaren:** slå på skyddet av `main` enligt 3A, först när 3B–3D har verifierats på en PR.
 
 **Därefter:**
 - [ ] **Claude, efter godkännande:** nätverkstestet för IT-granskningen (3E).
-- [ ] **Ägaren, beslut:** förbättringar av PDF-designen P1–P7 i [pdf-design.md](docs/moduler/kontrollflode/pdf-design.md). Viktigast är P6, en kundstil för alla. Görs i båda motorerna och kräver upplåsning.
-- [ ] **Ägaren, godkännande:** rättningar av dokumenthänvisningar R1–R8, se kvalitetskontroller.md avsnitt 4.
+- [ ] **Ägaren, beslut:** förbättringar av PDF-designen P1–P7 i [pdf-design.md](docs/moduler/kontrollflode/pdf-design.md). Viktigast är P6, en kundstil för alla. Görs likadant i båda motorerna när det beställs.
+- [ ] **Ägaren, godkännande:** rättningar av dokumenthänvisningar R1–R9, se kvalitetskontroller.md avsnitt 4.
 
 ---
 

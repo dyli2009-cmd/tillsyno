@@ -1,6 +1,6 @@
 # Kontrollflöde – Lås
 
-**LÅST.** Läs först [README.md](README.md).
+**Upplåst** sedan v2.4.581. Läs först [README.md](README.md), som förklarar motorerna, vad som fortfarande gäller och filkartan.
 
 ## Innehåll
 
@@ -48,4 +48,5 @@ Det finns inget test som bara gäller låsprotokollet. Ett förslag finns i [kva
 
 ## Status
 
-Inga kända fel som gäller bara Lås.
+- Inga kända fel som gäller bara Lås.
+- **Påverkas av ändringar i Dörrautomatik.** Sparläget, zoomskyddet och laddningsrutan (v2.4.580–581) ligger i revisionsmotorn och revisionssidan, som även kör *Checklista revision lås*. Testerna för detta öppnar bara `automation`. **Det är inte verifierat** att det fungerar lika när bara låsprotokollet är valt.

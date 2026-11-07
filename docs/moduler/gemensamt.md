@@ -25,11 +25,11 @@ Förkortningar:
 | `auth-config.js`, `auth/client.js`, `vendor/supabase-*.js` | alla sidor | allt |
 | `auth/guard.js` | alla utom inloggnings- och rensningssidorna | allt |
 | `auth/module-code-gate.js` | KF, KF-rev, SS-fri, CE, Rit, Proj, Avl+SM | allt |
-| `tillsyno-appearance.css` och `.js` (tema) | Hem, KF, SS-fri, CE, Rit, Avl+SM, AvlTEST, SM1.5, Auth | `theme-consistency save-theme navigation-theme customer-preview-theme ce-signature-theme` + berörda moduler. **Kontrollflödet berörs, så ändringen kräver upplåsning.** |
+| `tillsyno-appearance.css` och `.js` (tema) | Hem, KF, SS-fri, CE, Rit, Avl+SM, AvlTEST, SM1.5, Auth | `theme-consistency save-theme navigation-theme customer-preview-theme ce-signature-theme` + berörda moduler. **Påverkar också Kontrollflödet:** kör även Kontrollflödets tester. |
 | `tillsyno-theme-fix-v578.css` | CE, Rit, Avl+SM, AvlTEST, SM1.5, Auth (rensning) | som raden ovan, utom Kontrollflödet |
-| `style.css` | Hem, KF, SS-fri | KF-tester + `app-startup`. Kräver upplåsning. |
+| `style.css` | Hem, KF, SS-fri | KF-tester + `app-startup` |
 | `ui-text-scale.js` | Hem, SS-fri, Rit | `app-startup drawing-tools security-workflow` |
-| `session-history.js`, `offline.js`, `drawing-transfer.js` | Hem, KF, SS-fri | KF-tester + `app-startup app-update`. Kräver upplåsning. |
+| `session-history.js`, `offline.js`, `drawing-transfer.js` | Hem, KF, SS-fri | KF-tester + `app-startup app-update` |
 | `vendor/pdf.min.js`, `vendor/pdf-lib.min.js` | nästan alla | allt |
 | `vendor/jspdf.umd.min.js` | Hem, KF, KF-rev, SS-fri, Avl+SM, AvlTEST, SM1.5 | KF, SmartMatch, Avläsning |
 | `vendor/jszip-3.10.1.min.js` | CE, Avl+SM, AvlTEST, SM1.5 | `ce-`, `smartmatch-` |
