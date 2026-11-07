@@ -83,10 +83,11 @@ const server=http.createServer((req,res)=>{
    await expect(()=>api.buildFileArchive([doors[0]],['Egenkontroll'],bridge),'Signatur saknas');
    const partial=await api.buildFileArchive([doors[0]],['Loggbok'],bridge);if(partial.files!==1)throw Error('Unrelated signature blocked logbook');
    const subset=await JSZip.loadAsync((await api.buildFileArchive([doors[1],doors[7]],['Loggbok'],bridge)).bytes);
-   if(!subset.files['02-Loggbok-12341-14-24-2.pdf']||!subset.files['08-Loggbok-12341-14-24-8.pdf'])throw Error('Subset renumbered doors');
+   // The doors keep their own numbers (02, 08); the fixture's object number may change.
+   const names=Object.keys(subset.files);if(!names.some(n=>/^02-Loggbok-.+-2\.pdf$/.test(n))||!names.some(n=>/^08-Loggbok-.+-8\.pdf$/.test(n)))throw Error('Subset renumbered doors');
    doors[9].serialNumber='100';
    const wide=await JSZip.loadAsync((await api.buildFileArchive([doors[0]],['Loggbok'],bridge)).bytes);
-   if(!wide.files['001-Loggbok-12341-14-24-1.pdf'])throw Error('Numeric sorting width must use the whole project');
+   if(!Object.keys(wide.files).some(n=>/^001-Loggbok-.+-1\.pdf$/.test(n)))throw Error('Numeric sorting width must use the whole project');
    doors[9].serialNumber='10';
    await expect(()=>api.buildFileArchive([doors[0]],[],bridge),'Välj minst ett dokument');
    await expect(()=>api.buildFileArchive([],['Loggbok'],bridge),'Välj minst en dörr');

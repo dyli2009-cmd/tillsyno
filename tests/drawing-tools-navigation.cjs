@@ -67,7 +67,8 @@ const server=http.createServer((req,res)=>{
    if(process.env.DRAWING_QA_DIR)await page.screenshot({path:path.join(process.env.DRAWING_QA_DIR,(mobile?'mobile':'desktop')+'-tools.png')});
    await page.locator('#closeTools').click();
    await page.locator('#nextPage').click();await page.waitForFunction(()=>document.querySelector('#pageInfo').textContent.includes('Sida 2'));
-   assert.equal(await page.locator('#previewZoomLevel').textContent(),'100%','new page fits');
+   // The zoom label is updated right after the new page has been rendered.
+   await page.waitForFunction(()=>document.querySelector('#previewZoomLevel').textContent==='100%',null,{timeout:5000}).catch(()=>{});assert.equal(await page.locator('#previewZoomLevel').textContent(),'100%','new page fits');
    await page.locator('#prevPage').click();await page.waitForFunction(()=>document.querySelector('#pageInfo').textContent.includes('Sida 1'));
    await tools('Vy');
    await page.locator('#previewZoomIn').click();await page.locator('#previewZoomIn').click();

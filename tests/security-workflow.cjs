@@ -7,7 +7,7 @@ const js=fs.readFileSync(path.join(root,'security.js'),'utf8');
 const html=fs.readFileSync(path.join(root,'security.html'),'utf8');
 
 assert(js.includes("PDFName.of('SecurityServiceWork')"),'Security work-PDF metadata must be embedded/read');
-assert(js.includes("app:'security-service',version:2"),'Security work-PDF state version must exist');
+assert(js.includes("APP_STATE_NAME=ALL_IN_ONE?'doorservice-all-in-one':'security-service'")&&js.includes('app:APP_STATE_NAME,version:2'),'Security work-PDF state version must exist');
 assert(js.includes('inspectSecurityWorkPdf'),'Security work-PDF import must exist');
 assert(js.includes("project.order='';project.date=localToday();project.nextDate=suggestedNextDate;project.signature=''"),'New service must reset visit-specific fields without clearing technician');
 assert(js.includes('previousIssues')&&js.includes('previousServiceDate'),'Previous service history must be preserved');
@@ -22,7 +22,8 @@ assert(html.includes('id="secOpenWorkDialog"')&&html.includes('id="secOpenNewSer
 assert(js.includes("project.order='';project.date=localToday();project.nextDate=suggestedNextDate;project.signature=''"),'New service must reset visit fields while retaining technician');
 assert(!js.includes("project.technician=''"),'New Security service must not clear the technician');
 assert(js.includes("project.companyContact===previous"),'Technician should auto-fill service-company contact while it remains linked');
-assert(js.includes("size=label.length>16?7.5:8.5"),'Security labels in exported drawing must use larger text');
+// Sizes since v2.4.335 (CONTROLFLOW_LOCK.md): 10.8/9.2 pt for security labels, 15.4/13.2 pt for door automation.
+assert(js.includes("label.length>18?9.2:10.8")&&js.includes("label.length>18?13.2:15.4"),'Security labels in exported drawing must use larger text');
 assert(js.includes("shiftedNextDate(previousDate,previousNextDate)"),'Next inspection interval should carry forward when available');
 
 console.log('Security work-PDF / guided new-service regression checks passed.');

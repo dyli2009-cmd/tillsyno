@@ -89,7 +89,8 @@ async function call(action,data={},token=ownerToken,origin='https://dyli2009-cmd
  frontend.navigator.onLine=false;await assert.rejects(()=>auth.verify({allowOffline:true}),/Offlineperioden/);
  console.log('PASS client: password freshness, online membership, 7-day offline permission, admin requires network, revoked membership.');
  // Login accepts only explicit same-app destinations, never an external next URL.
- for(const [next,expected]of [['https://evil.invalid','index.html'],['/tillsyno/auth/admin.html','auth/admin.html'],['/tillsyno/auth/login.html','index.html']]){
+ // The start page after login is app.html (auth/login.js fallback).
+ for(const [next,expected]of [['https://evil.invalid','app.html'],['/tillsyno/auth/admin.html','auth/admin.html'],['/tillsyno/auth/login.html','app.html']]){
   let target;const form={addEventListener(){}},message={};
   const s={document:{getElementById:id=>id==='login'?form:message},window:{TillsynoAuth:{root:new URL('https://dyli2009-cmd.github.io/tillsyno/'),verify:async()=>({role:'admin'}),client:{auth:{getSession:async()=>ok({session:{}})}}}},setTimeout,clearTimeout,location:{search:'?next='+encodeURIComponent(next),replace:url=>{target=String(url)}},URL,URLSearchParams};
   vm.createContext(s);vm.runInContext(fs.readFileSync(path.join(root,'auth/login.js'),'utf8'),s);await new Promise(r=>setImmediate(r));assert.equal(target,'https://dyli2009-cmd.github.io/tillsyno/'+expected);

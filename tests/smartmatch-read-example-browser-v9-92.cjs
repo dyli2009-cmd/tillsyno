@@ -3,6 +3,8 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {PDFDocument,PDFName,PDFHexString,StandardFonts,rgb}=require('../vendor/pdf-lib.min.js');
 const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
 const root=path.resolve(__dirname,'..'),rect={x:60/900,y:90/600,w:120/900,h:100/600};
+// Screenshots go outside the repository (set SMARTMATCH_QA_DIR to keep them).
+const shotDir=process.env.SMARTMATCH_QA_DIR||require('node:fs').mkdtempSync(require('node:path').join(require('node:os').tmpdir(),'smartmatch-shots-'));
 const server=http.createServer((req,res)=>{const file=path.resolve(root,decodeURIComponent(new URL(req.url,'http://local').pathname).slice(1));if(!file.startsWith(root+path.sep)){res.writeHead(403);return res.end();}try{res.setHeader('Content-Type',({'.js':'application/javascript','.html':'text/html','.css':'text/css'})[path.extname(file)]||'application/octet-stream');res.end(fs.readFileSync(file));}catch(_){res.writeHead(404);res.end();}});
 async function fixture(){
  const doc=await PDFDocument.create(),font=await doc.embedFont(StandardFonts.Helvetica);
@@ -36,11 +38,11 @@ async function mark(page,context,touch){
    await page.locator('#pwFile').setInputFiles({name:'example-project.pdf',mimeType:'application/pdf',buffer:bytes});
    await page.waitForFunction(()=>window.SmartMatchAppBridge?.getPdf()&&!SmartMatchAppBridge.isOpeningProject()&&document.getElementById('pwScanOverlay').hidden);
    if(process.env.SMARTMATCH_DEBUG)console.log(await page.evaluate(()=>({body:document.body.innerText.slice(-3000),payload:SmartMatchReadTest.payload(),opening:SmartMatchAppBridge.isOpeningProject()})));
-   if(process.env.SMARTMATCH_DEBUG)await page.screenshot({path:path.join(root,'work/example-open-debug.png')});await page.locator('#pwToolMenuButton').click();await page.locator('#rtEditPreparation').click();await page.waitForSelector('#rtDialog[open]');
+   if(process.env.SMARTMATCH_DEBUG)await page.screenshot({path:path.join(shotDir,'example-open-debug.png')});await page.locator('#pwToolMenuButton').click();await page.locator('#rtEditPreparation').click();await page.waitForSelector('#rtDialog[open]');
    await page.locator('.rtCardSummary').click();await page.locator('.rtManualLinkCard').click();await page.waitForFunction(()=>document.getElementById('rtCanvas').width>document.getElementById('rtCanvas').height);
    await page.locator('#rtManualMark').click();await mark(page,context,mobile);await page.waitForFunction(()=>!document.getElementById('rtManualConfirm').disabled);
-   assert.match(await page.locator('#rtManualSampleInfo').innerText(),/Exempel på sida 1/);
-   await page.locator('#rtManualConfirm').click();await page.waitForFunction(()=>document.getElementById('rtManualConfirm').disabled);assert.match(await page.locator('#rtManualSampleInfo').innerText(),/Exempel på sida 1/,'single link retains search example');
+   assert.match(await page.locator('#rtManualSampleInfo').innerText(),/Exempel(stämpel från| på) sida 1/);
+   await page.locator('#rtManualConfirm').click();await page.waitForFunction(()=>document.getElementById('rtManualConfirm').disabled);assert.match(await page.locator('#rtManualSampleInfo').innerText(),/Exempel(stämpel från| på) sida 1/,'single link retains search example');
    await page.locator('#rtManualSearch').click();await page.waitForFunction(()=>!document.getElementById('rtManualSearch').disabled);
    assert.match(await page.locator('#rtStatus').innerText(),/2 träffar för DVEL/);
    assert.equal(await page.locator('#rtManualSearchResults input[type=checkbox]:checked').count(),1,'already linked example excluded; second page remains selectable');
@@ -49,7 +51,7 @@ async function mark(page,context,touch){
    await page.waitForFunction(()=>SmartMatchAppBridge.getPositions().length===2&&document.getElementById('pwScanOverlay').hidden);
    const positions=await page.evaluate(()=>SmartMatchAppBridge.getPositions());assert.deepEqual(positions.map(p=>p.page).sort(),[1,2]);assert(positions.every(p=>p.code==='DVEL'&&p.cardPage===3));
    assert.equal(await page.evaluate(()=>__ocrCalls),0);assert.deepEqual(errors,[]);
-   await page.screenshot({path:path.join(root,'work/example-search-'+(mobile?'ipad':'desktop')+'.png')});
+   await page.screenshot({path:path.join(shotDir,'example-search-'+(mobile?'ipad':'desktop')+'.png')});
    await context.close();console.log('PASS '+(mobile?'iPad touch':'desktop mouse')+': actual Avläsning mark → single link → sample search on both drawing pages → bulk link → correct card, blue/plain/suffix rejected, no OCR');
   }
  }finally{await browser?.close();await new Promise(r=>server.close(r));}
