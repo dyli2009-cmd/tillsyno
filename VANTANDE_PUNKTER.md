@@ -144,6 +144,7 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 - [ ] **Inaktuella etiketter:** *9.100.17*, *"SmartMatch 1.3"* (nu *SmartMatch TEST 1.5*) och CE-märkningens *"v2.4.359"* är rättade i v2.4.582. Kvar: bannern *"Separat test"* på Avläsningens driftsida.
 - [x] **Ritningsverktyg** följer appversionen och har ingen egen modulversion (ägarens beslut 7 november 2026).
 - [ ] **Tillfälligt testfel:** `ce-file-export-v312` föll en gång i full körning (knappen *Exportera filer* blev inte synlig inom 30 s). Det gick igenom vid omkörning. Undersöks i uppgiften om automatiska tester (steg 3).
+- [ ] **Tidskänsligt testfel:** `controlflow-heavy-zoom-v581` föll i full körning och med 4 parallella jobb, även på `main` utan ändringar (v2.4.581). Testet väntar sig att en A2-ritning *inte* räknas som tung på iPad, men gränsen *mer än 1,5 s att rita* nås när datorn är hårt belastad. Ensamt går det igenom. Undersöks i uppgiften om automatiska tester (steg 3).
 
 **Senare, efter godkännande:**
 - [ ] Nätverkstestet för IT-granskningen (3E).
