@@ -1,5 +1,5 @@
 /* CE-märkning: versioned static app files; account and work data are never cached here. */
-const VERSION='2.4.585';
+const VERSION='2.4.586';
 const CACHE='tillsyno-ce-markning-'+VERSION;
 const BASE=new URL('./',self.location.href);
 const CORE=[
