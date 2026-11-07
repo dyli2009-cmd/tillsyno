@@ -1,6 +1,6 @@
 # Tunga ritningar i Kontrollflöde Dörrautomatik – utredning, plan och genomförande
 
-Utredd 7 november 2026 (v2.4.579). Genomförd samma dag i **v2.4.580**, efter att ägaren skrev **"Lås upp Kontrollflödet"**. Krasch vid snabb zoom på telefon rättad i **v2.4.581**. Kontrollflödet är åter LÅST.
+Utredd 7 november 2026 (v2.4.579). Genomförd samma dag i **v2.4.580**, efter att ägaren skrev **"Lås upp Kontrollflödet"**. Krasch vid snabb zoom på telefon och laddningsruta i **v2.4.581**. Ägaren tog samtidigt bort låset på Kontrollflödet.
 
 ## Vad som händer
 

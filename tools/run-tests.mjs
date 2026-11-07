@@ -17,8 +17,8 @@
 //   --logs     save each test's full output as <name>.log in this folder.
 // A test reports SKIP by printing a line that starts with "SKIP" and exiting with code 0,
 // for example when it needs a real customer drawing that is not kept in the repository.
-// tests/known-failures.json lists failures that wait for a decision or for Kontrollflöde to be
-// unlocked: they are reported as KNOWN and do not fail the run. A known test that passes is
+// tests/known-failures.json lists failures that wait for a decision or a fix of their own:
+// they are reported as KNOWN and do not fail the run. A known test that passes is
 // reported as FIXED so it can be removed from the list.
 import {spawn, execFileSync} from 'node:child_process';
 import fs from 'node:fs';
