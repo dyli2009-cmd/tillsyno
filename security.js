@@ -1102,7 +1102,7 @@ function renderSecurityPrevious(o){
  panel.hidden=!rows.length&&!o.previousStatus;
  box.replaceChildren();if(panel.hidden)return;
  if(o.previousStatus||o.previousServiceDate){const meta=document.createElement('div');meta.className='previousIssue';const strong=document.createElement('strong');strong.textContent=[o.previousServiceDate,o.previousStatus].filter(Boolean).join(' · ');meta.appendChild(strong);box.appendChild(meta)}
- rows.forEach(issue=>{const row=document.createElement('div');row.className='previousIssue';const strong=document.createElement('strong');strong.textContent=[issue.n,issue.title].filter(Boolean).join(' · ');const text=document.createElement('span');text.textContent=issue.note?.trim()||issue.title||'Tidigare anmärkning';row.append(strong,text);box.appendChild(row)});
+ rows.forEach(issue=>{const row=document.createElement('div');row.className='previousIssue';const strong=document.createElement('strong');strong.textContent=[issue.n,issue.title].filter(Boolean).join(' · ');const note=issue.note?.trim()||(issue.title?'':'Tidigare anmärkning');row.append(strong);if(note){const text=document.createElement('span');text.textContent=note;row.append(text)}box.appendChild(row)});// v2.4.589: no repeated title when a point has no note
 }
 function showSelected(){
  const o=cur();$('secNoSelection').hidden=!!o;$('secForm').hidden=!o;$('secProtocolTitle').textContent=securityProtocolTitle();if(!o)return;

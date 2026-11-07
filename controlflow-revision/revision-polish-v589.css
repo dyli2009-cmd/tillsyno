@@ -1,0 +1,58 @@
+/* v2.4.589: Dörrautomatik / Lås – knappfärger som Mall och kompakt Signatur och logga. Bara revisionssidan. */
+@layer controlflowStandard {
+  /* Öppna ritning and Stäng ritning look like Mall: accent text, card background (soft in the dark themes). */
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-header="584"] .cfNavigationHeader .revHeaderFiles .appHeaderIconButton {
+    color: var(--ta-blue-dark, #285b73) !important;
+    background: var(--ta-card, #fff) !important;
+    border-color: var(--ta-border, #cfdae0) !important;
+  }
+  html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"]:is([data-tillsyno-theme="night"], [data-tillsyno-theme="graphite"], [data-tillsyno-theme="pine"]) body.allInOneApp[data-rev-header="584"] .cfNavigationHeader .revHeaderFiles .appHeaderIconButton {
+    background: var(--ta-soft2, #102638) !important;
+  }
+  /* Eye and page buttons look like Ångra / Gör om. */
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-views="588"] :is(#secPrev, #secNext, #secToggleOverlays):not(.active):not([aria-pressed="true"]) {
+    color: var(--ta-blue-dark, #285b73) !important;
+  }
+
+  /* Signatur och logga: smaller buttons side by side, smaller help texts. Fields and functions unchanged. */
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject .revisionSignatureActions,
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject .secLogoActions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    margin: 6px 0 2px !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject .revisionSignatureActions > button:not([hidden]),
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject .secLogoActions > :is(label.filebtn, button:not([hidden])) {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    max-width: 220px !important;
+    min-height: 36px !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 6px 10px !important;
+    font-size: .82rem !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    border-radius: 9px !important;
+    white-space: nowrap !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject :is(#revisionSignatureStatus, #secLogoStatus) {
+    margin: 2px 0 6px !important;
+    font-size: .74rem !important;
+    line-height: 1.3 !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject .secLogoLabel {
+    display: block !important;
+    margin-top: 4px !important;
+    font-size: .82rem !important;
+    font-weight: 600 !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject #revisionSignaturePreview:not([hidden]) {
+    max-height: 64px !important;
+    width: auto !important;
+  }
+}
