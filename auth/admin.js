@@ -115,8 +115,11 @@
     row.querySelector('[data-code-state]').textContent=setting.enabled?(setting.hasCode?'På · kod satt':'På · kod saknas'):(setting.hasCode?'Av · kod finns sparad':'Av');
    });
    message.textContent='';save.disabled=false;
+   const on=codeModules.filter(module=>settings.get(module)?.enabled).length,summary=$('moduleCodeSummary');
+   if(summary)summary.textContent=on?on+' av '+codeModules.length+' på':'Av';
   }catch(error){
    message.textContent=error.message||'Kodlåsen kunde inte hämtas.';
+   if($('moduleCodeSummary'))$('moduleCodeSummary').textContent='';
   }
  }
  function moduleCodePayload(){

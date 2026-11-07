@@ -210,3 +210,14 @@ När `tillsyno-controlflow-text-level-v1` saknas används 100 procent. `doorserv
 Textkontrollerna visar aktuell procent mellan A− och A+; procentknappen återställer till 100 procent. Områdes-/checklistväljaren visar exempelvis **Text 136% · Återställ** endast när textnivån är högre än standard. Vid återkomst via webbläsarhistorik/BFCache och relevanta storage-händelser läses den moderna inställningen på nytt, med bevarat tillfälligt val om lokal lagring inte kunde skrivas.
 
 Grundstorlekar, svarsknapparnas mått, teman, ritningskoordinater, stämpelstorlekar, projektvärden och PDF-layout ändras inte. Återställningen gäller gränssnittstext; ritningszoom och dokumentets stämplar har egna inställningar. Verifieringsplan och aktuell status finns i [CONTROLFLOW_TEXT_PARITY_557.md](CONTROLFLOW_TEXT_PARITY_557.md). Fysisk iPhone/iPad, Safari och TestFlight har inte verifierats för denna ändring.
+
+## Kompakt administration v2.4.577
+
+Användarbeslut 7 november 2026: administrationssidan (`auth/admin.html`) görs mer kompakt och anpassas för telefon, iPad och dator. Bara presentationen ändras, i det separata lagret `auth/admin-compact-v577.css`; funktioner, texter i dialoger och färgteman är oförändrade.
+
+- 24/22 px sidrubrik, 16 px panelrubriker, 14 px namn och 12–13 px etiketter. Statistikrutorna är en låg rad (52 px dator, 48 px telefon).
+- **Kodlås för moduler** är fällbart och stängt från början; rubriken visar *Av* eller till exempel *2 av 4 på*. Varje modul är en rad med *Kräv kod* och ett eget kodfält (44 px, 16 px text). Etiketten *Ny fyrsiffrig kod* finns kvar för skärmläsare.
+- Användarrader: dator = en rad med namn, status och knappar; iPad = namn och status till vänster, knappar till höger; telefon = namn och ⋯-meny överst, status och huvudknapp under. E-postadresser bryts inte mitt i ordet.
+- Administratörsloggen visas på en rad per händelse på dator och i två rader på telefon. Versionsnumret ligger i sidfoten, aldrig över innehållet.
+- Alla knappar, menyer och kryssrutornas etiketter behåller minst 44 px tryckyta.
+- Kontrollerat i Chromium: 320 och 390 px telefon, 820 px iPad och 1440 px dator, ljust och mörkt tema, utan sidledsrullning; sidan är 42–46 % kortare än i v2.4.576. Fysisk iPhone/iPad är inte verifierad.
