@@ -1,6 +1,25 @@
 # Väntande punkter – vad som behövs och när
 
-Senast uppdaterad 7 november 2026, Tillsyno v2.4.581.
+Senast uppdaterad 7 november 2026, Tillsyno v2.4.583.
+
+## Senaste läget
+
+*Det här avsnittet skrivs om (läggs inte till) i slutet av varje session och när ägaren säger "spara läget". Det är det första Claude läser när ägaren frågar "vad pratade vi om sist?".*
+
+**Senaste session (7 november 2026):**
+- Grundstrukturen är klar:
+  - `CLAUDE.md`, en funktionsbeskrivning per modul i `docs/moduler/`, och taggen `tillsyno-2.4.581-utgangspunkt`.
+- Modulversionerna visas i appen (`versions.json`). Alla moduler står på 1.0, utom CE-märkning 1.2. Appen är på **v2.4.583**, som är publicerad.
+- **Beslutat:**
+  - En uppgift per session, och ägaren säger *"Vi ska arbeta med [modul] – [del] – [vad]"*.
+  - Arbetssättet i varje beskrivning skrivs om när det ändras. Historiken finns i GitHub.
+- **Pågår:** PR #14, som är dokumentation: iakttagelsen om kraschen på iPhone, och det här avsnittet.
+
+**Nästa steg, i ordning:**
+1. Kraschen på iPhone i Dörrautomatik. Den fungerar på iPad. **Avvaktar ägarens beslut.** Se avsnitt 8, steg 2.
+2. Automatiska tester på PR, med de två tidskänsliga testerna. Se avsnitt 8, steg 3.
+3. Arbetsinstruktion för tekniker per modul, utan teknik. Föreslaget, inte beställt.
+
 
 Den här listan samlar allt som är beslutat men inte klart, och vem som gör vad. När en punkt blir aktuell gör vi den i den ordning som står här. Bocka av med datum och version när den är klar.
 
@@ -130,7 +149,12 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 
 - [x] 1. PR #10 (dokumentationsstrukturen) sammanslagen 7 november 2026. Utgångsläget har taggen `tillsyno-2.4.581-utgangspunkt`.
 - [x] 1b. Modulversionerna visas i appen (v2.4.582). Det tidigarelades före kraschuppgiften på ägarens beslut.
-- [ ] 2. Krascher i Dörrautomatik, i en ny session.
+- [ ] 2. Krascher i Dörrautomatik, i en ny session. **Avvaktar på ägarens beslut (7 november 2026).**
+  - **Iakttagelse från ägaren (v2.4.583):**
+    - Stora ritningar fungerar på **iPad** men kraschar på **iPhone**.
+    - Man arbetar ofta med stora PDF:er på både iPad och iPhone.
+    - Även Adobe Acrobat är mycket långsam med att öppna samma fil på telefonen. Själva filen är alltså tung, och det är oklart varför den är så stor.
+    - Undersökningen bör därför också titta på vad som gör filen tung, till exempel bilder, upplösning, lager eller antal objekt. Ritningsverktygets analys och optimering kan vara ett hjälpmedel.
   - Undersökning utan kodändring: minne, nätverk och service worker med syntetiska testritningar.
   - Undersök bland annat om registreringen `sw.js?v=2.4.567` i `controlflow-revision/offline.js` bidrar. Den ger en ominstallation på ca 19 MB vid varje sidbyte, verifierat i Chromium.
   - Rapport. Därefter beslut om rättning.
