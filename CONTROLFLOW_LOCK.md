@@ -380,3 +380,16 @@ Låsa stämplar fanns redan (*Justera / lås stämplar*, låsta stämplar går a
 - Ny cacheparameter i `all-in-one.html` och `controlflow-revision/all-in-one.html`.
 
 Modulversioner: Dörrautomatik / Lås 1.2 → 1.3, Säkerhetsservice 1.1. Brand har inga låsbara stämplar och är oförändrad. Låsfunktionen, motorerna, stämplarnas placering och storlek, arbetsfiler och exporterad PDF är oförändrade. Test: `tests/stamp-lock-frame-v586.cjs` och Kontrollflödets tester.
+
+# 2026-11-07 · v2.4.587 · Dörrautomatik / Lås: checklistvyn
+
+Ägaren beställde ändringar i den digitala checklistan (Protokoll) på telefon, iPad och dator. Lås körs på samma sida och får samma ändringar. Modulversion Dörrautomatik / Lås 1.3 → 1.4.
+
+Ändrat, bara i `controlflow-revision/` (nya `revision-protocol-v587.js/.css`, laddas i `all-in-one.html`):
+- Rubriken är bara det öppna objektets protokollnamn, i liten text. *Dörrautomatik / Lås* visas inte i checklistvyn.
+- Raden med filnamn, projekt och antal objekt visas inte i checklistvyn. På ritningen är den kvar.
+- *Objektuppgifter* ligger överst och är infällda varje gång ett objekt öppnas. Saknas uppgifter visar den infällda raden en röd varning.
+- Krysset *Till ritningen* är borttaget; fliken *Ritning* leder tillbaka. Nyckeln (protokollverktygen) är oförändrad.
+- Den gamla versionstexten i hörnet (*v2.4.559*) visas inte på revisionssidan.
+
+Oförändrat: kontrollpunkter, protokollinnehåll, motorn `security-v335.js`, delade filer, Säkerhetsservice och Brand, stämplar, arbetsfiler, import och exporterad PDF. Test: `tests/revision-protocol-v587.cjs` och Kontrollflödets tester.
