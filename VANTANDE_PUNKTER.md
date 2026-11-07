@@ -69,6 +69,17 @@ Testsviten är städad 7 november 2026: `node tools/run-tests.mjs`, se [tests/RE
 - [ ] Ritningsverktyg, textigenkänning: ett felläst ord (*Dérrcentral* i stället för *Dörrcentral*) kan ibland godkännas utan att visas för granskning (`drawing-ocr-swedish`).
 - [ ] SmartMatch Version 1.5 (`smartmatch-slr-test.html`) länkar till `project-workspace-smartmatch-test.html`, som inte publiceras.
 
+## 8. Utvecklingsstrategi – nästa steg
+
+Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. Förslagen finns i [docs/kvalitetskontroller.md](docs/kvalitetskontroller.md) avsnitt 3. Varje punkt godkänns separat.
+
+- [ ] **Ägaren:** slå på branchskydd för `main` (bara via PR, krav på godkända tester). Görs i GitHub → Settings → Branches.
+- [ ] **Claude, efter godkännande:** tester på varje PR (förslag A) och låskontroll för Kontrollflödet (B).
+- [ ] **Claude, efter godkännande:** test som låser kontrollpunkterna (C) och nätverkstest som visar att inga kunddata lämnar enheten (E).
+- [ ] **Ägaren, beslut:** ska *Lås & Dörrmiljö* (`lock`, i dag under Säkerhetsservice) höra till undermodulen Lås? Se [docs/moduler/kontrollflode/las.md](docs/moduler/kontrollflode/las.md).
+- [ ] **Ägaren, beslut:** PDF-designen finns i två kopior som har börjat skilja sig åt (t.ex. ORDER/ORDERNUMMER). Vilken variant gäller, och ska designen brytas ut till en gemensam fil? Kräver upplåsning. Se [pdf-design.md](docs/moduler/kontrollflode/pdf-design.md).
+- [ ] **Ägaren, godkännande:** rätta inaktuella hänvisningar i befintliga dokument, se kvalitetskontroller.md avsnitt 4.
+
 ---
 
 ## Avbockat

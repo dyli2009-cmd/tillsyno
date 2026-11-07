@@ -22,6 +22,8 @@ Inga kundritningar, ritningsutdrag, projektnamn eller objektnummer från kunder 
 ## Regler för utveckling
 Det som är beslutat men inte klart (SMTP, Microsoft-inloggning, IT-granskning m.m.) och vem som gör vad står i [VANTANDE_PUNKTER.md](VANTANDE_PUNKTER.md).
 
+**Börja här:** [CLAUDE.md](CLAUDE.md) beskriver arbetssättet, och vilket moduldokument i [docs/moduler/](docs/moduler/) som gäller för en viss uppgift. Där finns filkarta, tester och status per modul.
+
 Läs [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md) före ändringar. Låsta regler: [CONTROLFLOW_LOCK.md](CONTROLFLOW_LOCK.md), [TILLSYNO_LICENSE_RULES_LOCK.md](TILLSYNO_LICENSE_RULES_LOCK.md), [SMARTMATCH_FUNCTION_RULES_LOCK.md](SMARTMATCH_FUNCTION_RULES_LOCK.md), [SMARTMATCH_TABLE_RULE_LOCK.md](SMARTMATCH_TABLE_RULE_LOCK.md), [SMARTMATCH_AUTOMATION_RULE_LOCK.md](SMARTMATCH_AUTOMATION_RULE_LOCK.md), [UI_RULES.md](UI_RULES.md).
 
 Äldre versionsrapporter och tidigare versioner av modulerna finns inte i detta repo. Historiken från det tidigare repot är inte medtagen.
