@@ -221,3 +221,21 @@ Användarbeslut 7 november 2026: administrationssidan (`auth/admin.html`) görs 
 - Administratörsloggen visas på en rad per händelse på dator och i två rader på telefon. Versionsnumret ligger i sidfoten, aldrig över innehållet.
 - Alla knappar, menyer och kryssrutornas etiketter behåller minst 44 px tryckyta.
 - Kontrollerat i Chromium: 320 och 390 px telefon, 820 px iPad och 1440 px dator, ljust och mörkt tema, utan sidledsrullning; sidan är 42–46 % kortare än i v2.4.576. Fysisk iPhone/iPad är inte verifierad.
+
+## Färgteman i hela appen v2.4.578
+
+Användarbeslut 7 november 2026: granska att valt färgtema blir detsamma i hela appen, även i dialoger, menyer och knappar. Granskningen gick igenom alla 18 publicerade sidor i alla sju teman (Isblå, Nordisk dimblå, Havsbris, Sand & blå, Midnattsblå, Grafit, Mörkgrön), med varje dialog öppnad och alla utfällbara delar uppfällda. Arbetsytorna öppnades dessutom med en neutral testritning.
+
+Rättat, bara färger:
+
+- **Projektering** följde inget tema och var alltid grön. Sidan läser nu valt tema på samma sätt som övriga sidor, och lagret `smartmatch-projektering-theme-v578.css` kopplar alla gränssnittsfärger till temats färger. Ritningen, stämplar, stenciler, textanteckningar, PDF-export och projektdata ändras inte. Varnings- och felrutor behåller sin innebörd, med mörka varianter i mörka teman.
+- **SmartMatch** (Avläsning, testversion och Version 1.5): fältetiketter som nästan inte syntes i mörka teman (Egenkontroll, Spara projekt, Filnamn, Tid, Uppdatera appen, Kontroll av filer) samt ljusa rutor och vita fält i mörka teman. *Välj logga* hade mörk text på blå knapp i alla teman, och Tid-dialogens totalsumma var vit text på vit botten. Rubrikfälten i Uppdatera appen och Tid följer nu temat i stället för en fast mörkblå färg.
+- **CE-märkning**: hjälprutan i Importera CE-mallar.
+- **Ritningsverktyg**: granskningen av digitaliserade dörrkort (rubrik och rutan Text som inte förts över) samt hjälptexten i Förbereder sökbar text.
+- **Rensa enhetens data** och versionsnumret på inloggningssidan.
+
+De här rättningarna ligger i `tillsyno-theme-fix-v578.css`, som laddas av SmartMatch, CE-märkning, Ritningsverktyg och Rensa enhetens data, aldrig av Kontrollflödet.
+
+Medvetet oförändrat: den neutrala grå ytan runt PDF-sidan i Kontrollflödet, kundmallens förhandsvisning och SmartMatch-protokollet är samma i alla teman, så att ritningens vita papper syns likadant. Godkänn-knappens gröna färg och de gula stämplarna har en egen betydelse. Startsidans gamla Dörrservice-dialoger går inte att nå från appen. Temats grå hjälptext har i de ljusa temana kontrasten 3,7–3,9:1 i hela appen; att ändra den kräver ändring i den gemensamma temafilen och därmed upplåsning av Kontrollflödet.
+
+Kontrollflödet granskades också, i alla teman, och följer temat. Inga Kontrollflödesfiler ändrades. Kontrollerat i Chromium på dator (1280 px) och för Projektering även 390 px telefon; inga nya körfel. Fysisk iPhone/iPad är inte verifierad.

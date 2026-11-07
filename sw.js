@@ -1,4 +1,4 @@
-const VERSION='2.4.577';
+const VERSION='2.4.578';
 const CACHE='tillsyno-offline-'+VERSION;
 const BASE=new URL('./',self.location.href);
 const CORE=[
@@ -199,6 +199,8 @@ const CORE=[
  "smartmatch-projektering-v519-store.js",
  "smartmatch-projektering-v519.css",
  "smartmatch-projektering-v520.css",
+ "smartmatch-projektering-theme-v578.css",
+ "tillsyno-theme-fix-v578.css",
  "smartmatch-projektering-v525-materials.js",
  "smartmatch-projektering-v525-pdf.js",
  "smartmatch-projektering-v525.js",

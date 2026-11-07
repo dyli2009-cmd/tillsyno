@@ -1,0 +1,96 @@
+/* Tillsyno v2.4.578 — windows and panels that ignored the chosen colour theme now follow it.
+   Loaded by SmartMatch, CE-märkning, Ritningsverktyg and the account pages (not by Kontrollflöde).
+   Colour-only layer loaded after SmartMatch's own stylesheets. It replaces fixed light
+   surfaces and fixed text colours that ignored the theme (unreadable in Midnattsblå,
+   Grafit and Mörkgrön). The PDF itself, stamps, layout and functions are unchanged. */
+html[data-tillsyno-theme]{--sm-fix-head:var(--ta-blue-dark);--sm-fix-head-ink:#fff}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]){--sm-fix-head:var(--ta-soft);--sm-fix-head-ink:var(--ta-ink)}
+
+/* Field labels and helper texts in the SmartMatch windows */
+html[data-tillsyno-theme] :is(.pwRevisionBasics,.pwRevisionParty,.pwRevisionPostal,.pwRevisionAdvancedGrid)>label,
+html[data-tillsyno-theme] :is(.pwRevisionBasics,.pwRevisionParty,.pwRevisionPostal,.pwRevisionAdvancedGrid) label,
+html[data-tillsyno-theme] .pwAutomationBody>label.pwAutomationNotes,
+html[data-tillsyno-theme] .pwDABody>label,
+html[data-tillsyno-theme] .pwItemEditorBody>label,
+html[data-tillsyno-theme] label.smExportFileName,
+html[data-tillsyno-theme] #smartCardFirstTitle,
+html[data-tillsyno-theme] #smartGSReportTitle,
+html[data-tillsyno-theme] #smartFileReviewName,
+html[data-tillsyno-theme] #pwRefreshFileName,
+html[data-tillsyno-theme] #pwDetailsFontValue,
+html[data-tillsyno-theme] #pwChecksFontValue{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] .pwItemEditorBody>label>small,
+html[data-tillsyno-theme] #pwItemScopeField>small,
+html[data-tillsyno-theme] .pwAutomationProject>summary>span,
+html[data-tillsyno-theme] #pwAutomationInspectionLabel,
+html[data-tillsyno-theme] .pwAutomationHead>div>span,
+html[data-tillsyno-theme] #pwProtocolLinkSummary,
+html[data-tillsyno-theme] #pwProtocolPreviewZoomLabel,
+html[data-tillsyno-theme] #pwRefreshDescription,
+html[data-tillsyno-theme] .smRefreshFile small,
+html[data-tillsyno-theme] .smFinishBody>p,
+html[data-tillsyno-theme] .smartExportSizes small,
+html[data-tillsyno-theme] .smSaveReminder,
+html[data-tillsyno-theme] .smartFileSizeCard>p,
+html[data-tillsyno-theme] .smartFileSizeResult>span,
+html[data-tillsyno-theme] #pwProjectLogoStatus,
+html[data-tillsyno-theme] .pwProjectLogoField>span,
+html[data-tillsyno-theme] .smRevisionSizeBar .smSizeControls>span,
+html[data-tillsyno-theme] .pwTimeIntro,
+html[data-tillsyno-theme] .pwTimeSummary>div>span{color:var(--ta-muted)!important}
+
+/* Logo choice: the label is a button on the accent colour */
+html[data-tillsyno-theme] .pwProjectLogoField{background:var(--ta-soft2)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] .pwProjectLogoField label.pwLogoButton{color:#fff!important}
+
+/* "Uppdatera appen?" */
+html[data-tillsyno-theme] #pwRefreshDialog .smRefreshHeader{background:var(--sm-fix-head)!important;color:var(--sm-fix-head-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] #pwRefreshDialog .smRefreshHeader :is(div,span,strong,small,h2,h3){color:inherit}
+html[data-tillsyno-theme] #pwRefreshDialog .smRefreshHeader .smRefreshSymbol{background:var(--ta-blue)!important;color:#fff!important}
+html[data-tillsyno-theme] #pwRefreshDialog .smRefreshFile>span{color:var(--ta-blue-dark)!important}
+html[data-tillsyno-theme] #pwRefreshDialog .smRefreshFile{background:var(--ta-soft2)!important;border-color:var(--ta-border)!important;color:var(--ta-ink)!important}
+html[data-tillsyno-theme] #pwRefreshDialog .smRefreshInfo{background:var(--ta-soft)!important;border-color:var(--ta-border)!important;color:var(--ta-ink)!important}
+html[data-tillsyno-theme] #pwRefreshDialog .smRefreshInfo *{color:inherit}
+html[data-tillsyno-theme] #pwRefreshConfirm,
+html[data-tillsyno-theme] #pwFinishConfirm{background:var(--ta-blue)!important;border-color:var(--ta-blue)!important;color:#fff!important}
+html[data-tillsyno-theme] :is(#pwRefreshSavePdf,#pwRefreshCancel,#pwFinishExport,#pwAutomationResetAll,#pwSelfcheckSelectDone,#smartFileSizeRun,#labSelectDialog .labClose){background:var(--ta-card)!important;border-color:var(--ta-border)!important;color:var(--ta-blue-dark)!important}
+html[data-tillsyno-theme] #pwFinishDialogClose{color:var(--ta-ink)!important}
+
+/* Time overview */
+html[data-tillsyno-theme] #pwTimeDialog .pwTimeHead{background:var(--sm-fix-head)!important;color:var(--sm-fix-head-ink)!important}
+html[data-tillsyno-theme] #pwTimeDialog .pwTimeHead :is(div,span,strong,small){color:inherit}
+html[data-tillsyno-theme] #pwTimeDialog .pwTimeHead button{background:var(--ta-card)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] #pwTimeDialog .pwTimeSummary>div:not(.smTimeCardPrimary) strong{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] #pwTimeDialog .pwTimeBody{background:var(--ta-page)!important;color:var(--ta-ink)}
+html[data-tillsyno-theme] #pwTimeDialog .pwTimeSummary>div:not(.smTimeCardPrimary){background:var(--ta-card)!important;border-color:var(--ta-border)!important}
+/* Same total card as in the main SmartMatch window */
+html[data-tillsyno-theme] #pwTimeDialog .pwTimeSummary>.smTimeCardPrimary{background:var(--ta-soft)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] #pwTimeDialog .pwTimeSummary>.smTimeCardPrimary strong{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] #pwTimeDialog .pwTimeSummary>.smTimeCardPrimary span{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] #pwTimeSummaryText{background:var(--ta-soft)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+
+/* Save, export and diagnostics */
+html[data-tillsyno-theme] #smartExportStatus{background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] #smartPdfPageCounts{background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] .smRevisionSizeBar .smSizeControls{background:var(--ta-card)!important;border-color:var(--ta-border)!important;color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) dialog :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea):not([readonly]):not(:disabled){background-color:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+
+/* CE-märkning: import window hint */
+html[data-tillsyno-theme] #ceImportCEDialog .ceImportCEHint{background:var(--ta-soft2)!important;border-color:var(--ta-border)!important;color:var(--ta-muted)!important}
+
+/* Ritningsverktyg: door card digitiser review */
+html[data-tillsyno-theme] #digitizerReviewDialog .digitizerReviewHeader{background:var(--sm-fix-head)!important;color:var(--sm-fix-head-ink)!important}
+html[data-tillsyno-theme] #digitizerReviewDialog .digitizerReviewHeader .digitizerEyebrow{color:color-mix(in srgb,var(--sm-fix-head-ink) 86%,transparent)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) #digitizerReviewDialog .digitizerUnassignedPanel{background:color-mix(in srgb,#b7791f 22%,var(--ta-card))!important;border-color:color-mix(in srgb,#d3a44a 60%,var(--ta-border))!important;color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) #digitizerReviewDialog .digitizerUnassignedPanel[data-complete="true"]{background:color-mix(in srgb,#3f7d5a 26%,var(--ta-card))!important;border-color:color-mix(in srgb,#78aa8d 60%,var(--ta-border))!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) #digitizerReviewDialog .digitizerUnassignedPanel :is(p,h3,strong,.digitizerUnassignedHead){color:var(--ta-ink)!important}
+
+html[data-tillsyno-theme] #ocrProgressDialog .hint{color:var(--ta-muted)!important}
+
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) #digitizerReviewDialog .digitizerUnassignedList:empty::after{color:#9fd8b4}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) #digitizerReviewDialog .digitizerUnassignedItem small{color:#f3d58f!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) #digitizerReviewDialog .digitizerUnassignedItem button{background:var(--ta-card)!important;border-color:color-mix(in srgb,#c8b06f 60%,var(--ta-border))!important;color:#f3d58f!important}
+
+/* Rensa enhetens data */
+html[data-tillsyno-theme] #clearChoice p{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] #clearChoice p strong{color:var(--ta-ink)!important}
