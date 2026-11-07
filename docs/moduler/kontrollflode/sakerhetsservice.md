@@ -1,8 +1,8 @@
 # Kontrollflöde – Säkerhetsservice
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.589 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
-- **Modulversion:** Säkerhetsservice 1.2 (v2.4.586: låsta stämplar visas utan ram; v2.4.589: läsbar historikruta i mörka teman). Versionen finns i `versions.json` och visas med liten text på startsidan, i mappvalet och i modulens sidhuvud.
+- **Appversion:** Tillsyno v2.4.590 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** Säkerhetsservice 1.3 (v2.4.586: låsta stämplar utan ram; v2.4.589: läsbar historik i mörka teman; v2.4.590: Historik-knapp och flera års historik). Versionen finns i `versions.json` och visas med liten text på startsidan, i mappvalet och i modulens sidhuvud.
 - Kontrollflödet är upplåst. Gemensamma regler och filkarta: [README.md](README.md).
 
 ## 2. Arbetsflöde från början till slut
@@ -41,7 +41,7 @@
   - I kundprotokollet visas detektorer med *ID / märkning*, *Placering*, *Bedömning* och *AO nummer* (`detectorIdentityCell`).
   - Detektorkoden lagras i objektets `id`.
 - **Ångra och gör om:** upp till 30 steg, bara i minnet.
-- **Tidigare service / anmärkningar** (efter *Ny service*): läsbar i alla teman sedan v2.4.589 (`controlflow-previous-v589.css`, delad med Dörrautomatik / Lås). En punkt utan anmärkningstext visas bara med nummer och namn (`renderSecurityPrevious` i `security.js`).
+- **Historik** (v2.4.590, `controlflow-history-v590.*`, delad med Dörrautomatik / Lås): *Starta ny service* sparar den avslutade servicen i objektets historik (`serviceHistory`, status och anmärkningar, de senaste 10). En gul *Historik*-knapp bredvid nyckeln öppnar en flyttbar ruta med alla tidigare servicetillfällen. Historiken sparas i arbets-PDF:en. Säkerhetsservice läser tillbaka arbetet från arbets-PDF:en (inte från enheten när samma ritning öppnas igen), vilket är oförändrat.
 - **Låsa stämplar** (`security-stamp-selection-v549.*`, delad med Dörrautomatik / Lås): *Justera / lås stämplar*, därefter *Lås placering*. En låst stämpel kan inte flyttas, men den går att trycka på. Sedan v2.4.586 har en låst stämpel ingen ram på ritningen. Låset visas i panelen som *· N låsta*.
 
 ## 4. Kodfiler och motor

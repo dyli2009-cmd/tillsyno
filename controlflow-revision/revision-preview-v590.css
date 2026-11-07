@@ -1,0 +1,91 @@
+/* v2.4.590: Dörrautomatik / Lås – Mall som en flyttbar ruta som kan ändra storlek. Bara revisionssidan. */
+@layer controlflowStandard {
+  /* A box, not the whole screen. */
+  html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-preview="590"] #revisionInlineWorkspace[data-panel="secPreviewDialog"]:not([data-rev-resized]) {
+    width: min(960px, calc(100vw - 24px)) !important;
+    height: min(720px, calc(100dvh - 48px)) !important;
+  }
+  html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-preview="590"] #revisionInlineWorkspace[data-panel="secPreviewDialog"] {
+    max-width: calc(100vw - 8px) !important;
+    max-height: calc(100dvh - 8px) !important;
+    touch-action: pan-x pan-y !important;
+  }
+  @media (max-width: 800px) {
+    html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-preview="590"] #revisionInlineWorkspace[data-panel="secPreviewDialog"]:not([data-rev-resized]) {
+      width: calc(100vw - 16px) !important;
+      height: min(78dvh, calc(100dvh - 32px)) !important;
+    }
+  }
+  html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-preview="590"] #revisionInlineWorkspace[data-panel="secPreviewDialog"] #secPreviewWrap {
+    touch-action: pan-x pan-y !important;
+    overscroll-behavior: contain !important;
+  }
+  /* No A− / A+. */
+  html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-preview="590"] :is(#secPreviewTextSmaller, #secPreviewTextLarger) {
+    display: none !important;
+  }
+  /* ‹ 1 / 1 › in the middle, × at the right. */
+  html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-preview="590"] #revisionInlineWorkspace[data-panel="secPreviewDialog"] .secPreviewHead {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+    align-items: center !important;
+    padding-right: 54px !important;
+  }
+  html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-preview="590"] #revisionInlineWorkspace[data-panel="secPreviewDialog"] .secPreviewHead > div:first-child {
+    grid-column: 1 !important;
+    padding-right: 0 !important;
+  }
+  html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-preview="590"] #revisionInlineWorkspace[data-panel="secPreviewDialog"] .secPreviewControls {
+    grid-column: 2 !important;
+    justify-self: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+  }
+  html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-preview="590"] #revisionInlineWorkspace[data-panel="secPreviewDialog"] #secPreviewClose {
+    position: absolute !important;
+    right: 8px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+  }
+  @media (max-width: 560px) {
+    html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-preview="590"] #revisionInlineWorkspace[data-panel="secPreviewDialog"] .secPreviewHead {
+      grid-template-columns: minmax(0, 1fr) !important;
+      row-gap: 6px !important;
+    }
+    html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-preview="590"] #revisionInlineWorkspace[data-panel="secPreviewDialog"] .secPreviewControls {
+      grid-column: 1 !important;
+    }
+    html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-preview="590"] #revisionInlineWorkspace[data-panel="secPreviewDialog"] #secPreviewClose {
+      top: 7px !important;
+      transform: none !important;
+    }
+  }
+  /* Resize handle in the lower right corner. */
+  html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-preview="590"] #revisionInlineWorkspace .revPreviewResize {
+    position: absolute !important;
+    right: 2px !important;
+    bottom: 2px !important;
+    z-index: 5 !important;
+    width: 30px !important;
+    height: 30px !important;
+    display: grid !important;
+    place-items: center !important;
+    color: var(--ta-muted, #4d6878) !important;
+    background: var(--ta-card, #fff) !important;
+    border: 1px solid var(--ta-border, #cfdae0) !important;
+    border-radius: 8px 0 8px 0 !important;
+    cursor: nwse-resize !important;
+    touch-action: none !important;
+  }
+  html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-preview="590"] #revisionInlineWorkspace .revPreviewResize svg {
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+  }
+  html[data-controlflow-ui="1"][data-cf-stamp-mode="revision"] body.allInOneApp[data-rev-preview="590"] #revisionInlineWorkspace:not([data-panel="secPreviewDialog"]) .revPreviewResize {
+    display: none !important;
+  }
+}

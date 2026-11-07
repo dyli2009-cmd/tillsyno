@@ -1,8 +1,8 @@
 # Kontrollflöde – Dörrautomatik
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.589 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
-- **Modulversion:** Dörrautomatik / Lås 1.6. Det är en gemensam version för Dörrautomatik och Lås, som grupperas som i mappvalet (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (ägarens beslut, v2.4.584). Nästa funktionsändring, till exempel kraschrättningen, höjer den till 1.7.
+- **Appversion:** Tillsyno v2.4.590 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** Dörrautomatik / Lås 1.7. Det är en gemensam version för Dörrautomatik och Lås, som grupperas som i mappvalet (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (ägarens beslut, v2.4.584). Nästa funktionsändring, till exempel kraschrättningen, höjer den till 1.8.
 - Kontrollflödet är upplåst. Gemensamma regler, motorer och filkarta: [README.md](README.md).
 
 ## 2. Arbetsflöde från början till slut
@@ -29,6 +29,8 @@
    - Den börjar varje gång på *Objekt med anmärkning* (objekt med anmärkning eller fel som inte är åtgärdat). Under *Visa* kan *Alla objekt* väljas.
    - Rubriken är liten och siffrorna kompakta på telefon. *Tillbaka* och *Kundmall* bredvid rubriken finns inte; *Mall* finns i sidhuvudet (v2.4.588, `revision-views-v588.*`).
 6. **Kundmall** (`openCustomerPreview`) är en förhandsvisning av ritningssidorna och kundprotokollet. Den har ingen egen nedladdning.
+   - Sedan v2.4.590 (`revision-preview-v590.*`) öppnas den som en ruta som är mindre än skärmen. Rutan flyttas med rubriken och ändrar storlek med handtaget i nedre högra hörnet. *‹ 1 / 1 ›* står i mitten, och A− / A+ finns inte.
+   - Två fingrar och mushjulet zoomar bara innehållet i rutan, också på protokollsidorna. Appen zoomas inte. Att Safari på iPhone och iPad inte zoomar sidan är *ej verifierat* på riktig enhet.
 7. **Spara PDF:** *Spara arbete* (`exportPdf('work')`) eller *Spara som ny PDF* (`newSecurityPdf`, som frågar efter filnamn).
 8. **Lämna ritningen:** *Hem* går till startsidan och *Stäng ritning* går tillbaka till *Välj ritning*.
    - Har arbetet ändrats sedan PDF:en sparades eller ritningen öppnades, frågas först: *Spara PDF*, *Lämna (Stäng) utan att spara PDF* eller *Avbryt*.
@@ -64,7 +66,9 @@
     - Filnamn och antal objekt står i sidraden bredvid sidpilarna, på dator i verktygsraden. Raden med objekt finns inte längre, och inte heller *Svep*.
     - Ögat (visa/dölj markeringar) ligger i verktygsraden mellan *Gör om* och *Verktyg*. Sidpilarna och ögat följer färgtemat.
     - *Projekt*: ingen modulrubrik, inget kryss och ingen rubrik *Service*. Rubriken *Projekt* och alla formulär finns kvar. *Starta ny service* ligger sist, efter *Beställare*.
-  - **Tidigare service / anmärkningar (v2.4.589):** efter *Ny service* visar checklistan förra servicens status och anmärkningar. Rutan är läsbar i alla teman (mörk bakgrund i de mörka temana, `controlflow-previous-v589.css`, delad med Säkerhetsservice). En punkt utan anmärkningstext visas bara med nummer och namn.
+  - **Historik (v2.4.590, `controlflow-history-v590.*`, delad med Säkerhetsservice):** *Starta ny service* sparar den avslutade servicen i objektets historik (`serviceHistory`): datum, status, anmärkningar och allmän anmärkning, de senaste 10, nyast först. Alla kontrollpunkter sparas inte.
+    - En fil från före v2.4.590 har bara den senaste servicen (`previous*`). Den blir första tidigare post vid nästa *Ny service*.
+    - I checklistan finns en gul *Historik*-knapp bredvid nyckeln när objektet har historik. Den öppnar en flyttbar ruta med alla tidigare servicetillfällen. Den gamla rutan *Tidigare service / anmärkningar* visas inte längre.
   - **Färger och Signatur och logga (v2.4.589, `revision-polish-v589.css`):** *Öppna ritning* och *Stäng ritning* har samma färger som *Mall*, ögat och sidpilarna samma som *Ångra*. *Signatur och logga* har mindre knappar bredvid varandra och mindre hjälptexter.
   - **Ändringskontrollen** jämför arbetet (objekt, anteckningar, ritobjekt, projektuppgifter, logotyp) med läget när ritningen öppnades eller PDF:en senast sparades. Motorn meddelar en sparad PDF med händelsen `revision-pdf-saved`.
 
@@ -81,6 +85,7 @@
   - `revision-protocol-v587.*` (checklistvyn: rubrik, infällda objektuppgifter med varning)
   - `revision-views-v588.*` (Ritning, Översikt och Projekt: meddelanden, sidrad, öga, översiktens filter, Starta ny service sist)
   - `revision-polish-v589.css` (knappfärger som Mall, kompakt Signatur och logga)
+  - `revision-preview-v590.*` (Mall som flyttbar ruta som kan ändra storlek, zoom bara i rutan)
   - kopior av `legacy-door-import.js`, `offline-work-v2.js`, `drawing-transfer-v2.js`, `session-history.js`, `drawing-annotations.js` och `tillsyno-appearance*`
 - **Delade Kontrollflödesfiler:** `controlflow-*` och `security-stamp-selection-v549.*`, `security-detectors-v344.*`. Se README.md.
 - **Äldre dörrkod på startsidan** (`app.js`, `v2.js`, `reports.js`): har en egen kopia av de 18 punkterna. Om den koden används är *ej verifierat*. Ändra den inte som följd av ändringar här.
@@ -100,6 +105,7 @@
   - Användaren väljer själv var filen sparas.
 - **Öppna igen:** arbetsdata i PDF:en går före sparad data på enheten för samma ritning, och sist kommer importen av äldre protokoll.
 - **Ändringskontrollen** inför *Hem* och *Stäng ritning* finns bara i minnet och sparar inget på enheten.
+- **Historiken** (`serviceHistory`, högst 10 poster per objekt) sparas med objekten på enheten och i arbets-PDF:en (`SecurityServiceWork`). Den skrivs inte ut i kundprotokollet.
 
 ## 6. Beroenden till andra moduler
 - **Lås** körs på samma sida och i samma motor. Ändringar i motorn eller sidan påverkar båda.
@@ -117,7 +123,7 @@
 
 ## 8. Tester och status
 ```sh
-node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress security-automation-checklist revision-uncheck revision-header revision-draw-delete stamp-lock-frame revision-protocol revision-views controlflow-polish controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
+node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress security-automation-checklist revision-uncheck revision-header revision-draw-delete stamp-lock-frame revision-protocol revision-views controlflow-polish controlflow-history-preview controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
 ```
 - **Senaste körning:** godkänd (v2.4.585), se [kvalitetskontroller.md](../../kvalitetskontroller.md). `revision-header-v584` provar sidhuvudet, verktygsmenyn och frågan innan ritningen lämnas på telefon, iPad och dator. `revision-draw-delete-v585` provar *Ta bort* för alla sex ritobjekt på telefon och dator. `revision-protocol-v587` provar checklistvyn på telefon, iPad och dator. `revision-views-v588` provar Ritning, Översikt och Projekt på telefon, iPad och dator, i ljust och mörkt tema.
 - **Ej verifierat på riktig enhet:** sidhuvudet och frågan på iPhone och iPad med Safari, och att nedladdningen av PDF:en blir klar innan användaren väljer att lämna.

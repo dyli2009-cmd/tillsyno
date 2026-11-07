@@ -55,7 +55,7 @@ Den här listan samlar allt som är beslutat men inte klart, och vem som gör va
   - färgteman i Projektering och SmartMatch;
   - *Rensa enhetens data*;
   - öppna en stor ritning i Kontrollflöde Dörrautomatik, även på telefon. Sidraden ska visa *· Sparläge*. Kontrollera att laddningsrutan fylls till 100 %, zooma snabbt och öppna Kundmall.
-  - Dörrautomatik (v2.4.584–585): sidhuvudet på en rad, *Stäng ritning*, verktygsmenyn, *Ta bort* vid markerat ritobjekt och frågan vid *Hem*. Välj *Spara PDF* i frågan och kontrollera att PDF:en blir sparad innan du går vidare.
+  - Dörrautomatik (v2.4.584–590): sidhuvudet på en rad, *Stäng ritning*, verktygsmenyn, *Ta bort* vid markerat ritobjekt, frågan vid *Hem*, *Historik* och *Mall*-rutan. Kontrollera särskilt att nyp-zoom i *Mall* inte zoomar hela sidan i Safari. Välj *Spara PDF* i frågan och kontrollera att PDF:en blir sparad innan du går vidare.
 
 ## 6. Beslut som väntar på ägaren
 
@@ -87,9 +87,9 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 
 ### Versionshantering (beslut 7 november 2026)
 
-**Läge v2.4.589:**
+**Läge v2.4.590:**
 - Modulversionerna finns i `versions.json`. De visas med liten text på startsidan, i Kontrollflödets mappval och i modulernas sidhuvud, via `tillsyno-versions.js`. Undantag: Dörrautomatik / Lås visar ingen version i sidhuvudet (ägarens beslut, v2.4.584).
-- Dörrautomatik / Lås är 1.6 och Säkerhetsservice 1.2 (v2.4.589). Övriga moduler har sina startversioner.
+- Dörrautomatik / Lås är 1.7 och Säkerhetsservice 1.3 (v2.4.590). Övriga moduler har sina startversioner.
 - Kontrollsummor, automatisk höjning och CI-kontroll är **inte** införda ännu (steg 3).
 - Fram till steg 3 höjs versionerna för hand i `versions.json`, i samma PR som ändringen. Testet `tests/module-versions-v582.cjs` kontrollerar att appversionen stämmer överallt.
 
@@ -157,6 +157,7 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 
 ## Avbockat
 
+- 2026-11-07, v2.4.590: Historik över de senaste 10 servicetillfällena (status och anmärkningar) med en gul *Historik*-knapp, i Dörrautomatik / Lås (1.7) och Säkerhetsservice (1.3). *Mall* i Dörrautomatik är en flyttbar ruta som kan ändra storlek, utan A− / A+, och zoomen gäller bara rutan.
 - 2026-11-07, v2.4.589: historikrutan *Tidigare service / anmärkningar* är läsbar i mörka teman, i Dörrautomatik / Lås (1.6) och Säkerhetsservice (1.2), och upprepar inte punktens namn. I Dörrautomatik har *Öppna* / *Stäng ritning* samma färg som *Mall*, ögat och sidpilarna som *Ångra*, och *Signatur och logga* är kompakt.
 - 2026-11-07, v2.4.588: Dörrautomatik / Lås 1.5. Inga förklaringstexter (fel visas). Filnamn och antal objekt i sidraden, ögat i verktygsraden, sidpilar och öga följer färgtemat. Översikt börjar på *Objekt med anmärkning*, är kompakt och saknar *Tillbaka* och *Kundmall*. Projekt utan modulrubrik, kryss och rubriken *Service*; *Starta ny service* sist.
 - 2026-11-07, v2.4.587: Dörrautomatik / Lås 1.4, checklistvyn. Liten rubrik med bara protokollnamnet. Raden med filnamn, projekt och antal objekt, krysset och den gamla versionstexten i hörnet är borttagna. *Objektuppgifter* ligger överst, är infällda och visar en varning när något saknas.
