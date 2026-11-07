@@ -91,5 +91,5 @@ node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy control
 ```
 - **Senaste körning:** godkänd (v2.4.581), se [kvalitetskontroller.md](../../kvalitetskontroller.md).
 - **Kända fel:** inga egna.
-- **Pågår separat:** krascher med stora ritningar på riktiga enheter (VANTANDE_PUNKTER.md avsnitt 8, steg 2).
+- **Väntar (ägarens beslut):** krascher med stora ritningar på **iPhone**. På iPad fungerar de. Även Adobe Acrobat är långsam med samma fil på telefonen. Se VANTANDE_PUNKTER.md avsnitt 8, steg 2.
 - **Kvar som egna beslut:** läsa texten en gång i `legacy-door-import.js`, prova en nyare pdf.js, och mycket tunga ritningar på äldre iPad.

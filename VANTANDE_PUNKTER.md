@@ -130,7 +130,12 @@ Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringa
 
 - [x] 1. PR #10 (dokumentationsstrukturen) sammanslagen 7 november 2026. Utgångsläget har taggen `tillsyno-2.4.581-utgangspunkt`.
 - [x] 1b. Modulversionerna visas i appen (v2.4.582). Det tidigarelades före kraschuppgiften på ägarens beslut.
-- [ ] 2. Krascher i Dörrautomatik, i en ny session.
+- [ ] 2. Krascher i Dörrautomatik, i en ny session. **Avvaktar på ägarens beslut (7 november 2026).**
+  - **Iakttagelse från ägaren (v2.4.583):**
+    - Stora ritningar fungerar på **iPad** men kraschar på **iPhone**.
+    - Man arbetar ofta med stora PDF:er på både iPad och iPhone.
+    - Även Adobe Acrobat är mycket långsam med att öppna samma fil på telefonen. Själva filen är alltså tung, och det är oklart varför den är så stor.
+    - Undersökningen bör därför också titta på vad som gör filen tung, till exempel bilder, upplösning, lager eller antal objekt. Ritningsverktygets analys och optimering kan vara ett hjälpmedel.
   - Undersökning utan kodändring: minne, nätverk och service worker med syntetiska testritningar.
   - Undersök bland annat om registreringen `sw.js?v=2.4.567` i `controlflow-revision/offline.js` bidrar. Den ger en ominstallation på ca 19 MB vid varje sidbyte, verifierat i Chromium.
   - Rapport. Därefter beslut om rättning.
