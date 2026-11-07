@@ -1,6 +1,6 @@
 # Väntande punkter – vad som behövs och när
 
-Senast uppdaterad 7 november 2026, Tillsyno v2.4.580.
+Senast uppdaterad 7 november 2026, Tillsyno v2.4.581.
 
 Den här listan samlar allt som är beslutat men inte klart, och vem som gör vad. När en punkt blir aktuell gör vi den i den ordning som står här. Bocka av med datum och version när den är klar.
 
@@ -54,7 +54,7 @@ Den här listan samlar allt som är beslutat men inte klart, och vem som gör va
   - uppdatera med förloppsstapeln;
   - färgteman i Projektering och SmartMatch;
   - *Rensa enhetens data*;
-  - öppna en stor ritning i Kontrollflöde Dörrautomatik. Sidraden ska visa *· Sparläge*. Zooma och öppna Kundmall.
+  - öppna en stor ritning i Kontrollflöde Dörrautomatik, även på telefon. Sidraden ska visa *· Sparläge*. Zooma snabbt, också medan ritningen fortfarande laddas, och öppna Kundmall.
 
 ## 6. Beslut som väntar på ägaren
 
@@ -78,6 +78,7 @@ Testsviten är städad 7 november 2026: `node tools/run-tests.mjs`, se [tests/RE
 
 ## Avbockat
 
+- 2026-11-07, v2.4.581: krasch vid snabb zoom på telefon i Dörrautomatik. Zoom startar inte om en pågående ritning, tillfälliga ritytor frigörs, Safaris egen sidzoom är avstängd på ritningen och sparläget börjar tidigare på telefon.
 - 2026-11-07, v2.4.580: Kontrollflöde Dörrautomatik känner av tunga ritningar och visar dem i sparläge. Ritningen ritas en gång, minnet frigörs, Kundmall blir mindre och stängs med rutan, och ritfel visas. Exporten är oförändrad. Kundmallens × var ett fel i testet, inte i appen; testet är rättat.
 - 2026-11-07: testsviten städad och körbar med ett kommando (`tools/run-tests.mjs`). Kraschen med stora ritningar är utredd (plan klar).
 

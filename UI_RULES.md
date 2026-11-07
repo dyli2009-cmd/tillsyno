@@ -259,3 +259,10 @@ Användarbeslut 7 november 2026 (Kontrollflödet upplåst för denna beställnin
 - Kontrollerat i Chromium på 390, 820, 1180 och 1440 px. Sidraden får plats på en rad, utan sidledsrullning.
 - Stämplar, export och protokoll ändras inte.
 - Fysisk iPhone och iPad är inte verifierad.
+
+## Zoom på telefon med tunga ritningar v2.4.581
+
+- En zoom avbryter inte en pågående ritning av samma sida. Ritningen blir klar och visas, och i vanligt läge ritas sidan därefter en gång i den nya storleken.
+- Safaris egen sidzoom är avstängd på ritningsytan. Appens tvåfingerzoom och knapparna fungerar som förut.
+- På telefon börjar sparläget tidigare än på iPad och dator: vid 15 MB, en bild över 8,4 MP, A2 eller större med minst 1 MB per sida, eller en sida som tar mer än 0,8 s att rita.
+- Kontrollerat i Chromium med telefoninställning 390×844. Fysisk iPhone är inte verifierad.

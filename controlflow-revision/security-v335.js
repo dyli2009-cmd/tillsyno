@@ -268,8 +268,10 @@ const canvas=$('secCanvas'),ctx=canvas.getContext('2d'),markers=$('secMarkers'),
 let drawingRaster=null,drawingNatural=null,zoomFrame=0,pendingZoomGeometry=null,suppressObjectTapUntil=0,suppressDrawingClick=null;
 const MAX_PIXELS=4000000,MAX_SIDE=4096;
 // Sparläge för tunga ritningar: sidan ritas en gång med högst HEAVY_MAX_PIXELS och minnet frigörs efter varje ritning.
-const HEAVY_MAX_PIXELS=3000000,HEAVY_MAX_SIDE=3072,HEAVY_FILE_BYTES=30*1024*1024,HEAVY_IMAGE_PIXELS=16777216,HEAVY_PAGE_AREA=4000000,HEAVY_PAGE_BYTES=2*1024*1024,HEAVY_RENDER_MS=1500;
-let heavyDrawing=false;
+// A phone has about half the memory of an iPad, so sparläge starts earlier there (v2.4.581).
+const PHONE_DEVICE=(()=>{try{return matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<=600}catch(_){return false}})();
+const HEAVY_MAX_PIXELS=3000000,HEAVY_MAX_SIDE=3072,HEAVY_FILE_BYTES=(PHONE_DEVICE?15:30)*1024*1024,HEAVY_IMAGE_PIXELS=PHONE_DEVICE?8388608:16777216,HEAVY_PAGE_AREA=PHONE_DEVICE?2000000:4000000,HEAVY_PAGE_BYTES=(PHONE_DEVICE?1:2)*1024*1024,HEAVY_RENDER_MS=PHONE_DEVICE?800:1500;
+let heavyDrawing=false,renderTarget=null;
 function boundedViewport(p,scale){const natural=p.getViewport({scale:1}),maxPixels=heavyDrawing?HEAVY_MAX_PIXELS:MAX_PIXELS,maxSide=heavyDrawing?HEAVY_MAX_SIDE:MAX_SIDE;return p.getViewport({scale:Math.min(scale,Math.sqrt(maxPixels/(natural.width*natural.height)),maxSide/natural.width,maxSide/natural.height)})}
 // Reads image sizes from the uncompressed image dictionaries without decoding anything.
 function largestPdfImagePixels(bytes){
@@ -548,11 +550,14 @@ function previewSecurityZoom(z,focus,anchor){
  if(!zoomFrame)zoomFrame=requestAnimationFrame(flushSecurityZoomGeometry);
  $('secZoom').textContent=Math.round(zoom*100)+'%';
 }
-function cancelSecurityRaster(){renderVersion++;if(renderTask)renderTask.cancel();}
+// A drawing of the page that is still shown is allowed to finish: cancelling it on every zoom step made pdf.js read the
+// whole page again each time, which piled up memory on fast zooming (v2.4.581). Only a page or document change cancels.
+function sameRenderTarget(){return !!renderTarget&&renderTarget.document===pdf&&renderTarget.page===page}
+function cancelSecurityRaster(){renderVersion++;if(renderTask&&!sameRenderTarget())renderTask.cancel();}
 function showSecurityPageLabel(pageNumber,pageCount){const label=$('secPage');label.textContent='Sida '+pageNumber+' / '+pageCount+(heavyDrawing?' · Sparläge':'');label.title=heavyDrawing?'Stor ritning – visas i sparläge med lägre upplösning så att appen inte stängs.':'';label.classList.toggle('secPageHeavy',heavyDrawing)}
 function render(fit=false,focus=null,anchor=null){
  if(!pdf)return Promise.resolve();const version=++renderVersion,documentPdf=pdf,pageNumber=page;
- if(renderTask)renderTask.cancel();
+ if(renderTask&&!sameRenderTarget())renderTask.cancel();
  renderQueue=renderQueue.catch(()=>{}).then(async()=>{
   if(version!==renderVersion)return;
   const p=await documentPdf.getPage(pageNumber);window.ControlflowStampStyle?.rememberPageSize(documentPdf,pageNumber,p);await window.ControlflowStampStyle?.prepare(PDFLib);if(version!==renderVersion)return;
@@ -565,14 +570,20 @@ function render(fit=false,focus=null,anchor=null){
   const raster=boundedViewport(p,heavyDrawing?Infinity:baseScale*zoom*Math.min(window.devicePixelRatio||1,2)),rasterWidth=Math.ceil(raster.width),rasterHeight=Math.ceil(raster.height);
   if(!drawingRaster||drawingRaster.document!==documentPdf||drawingRaster.page!==pageNumber||drawingRaster.width!==rasterWidth||drawingRaster.height!==rasterHeight){
    const nextCanvas=document.createElement('canvas');nextCanvas.width=rasterWidth;nextCanvas.height=rasterHeight;
-   const started=performance.now(),task=p.render({canvasContext:nextCanvas.getContext('2d'),viewport:raster});renderTask=task;
-   try{await task.promise}finally{if(renderTask===task)renderTask=null}
-   const renderMs=performance.now()-started;
-   if(version!==renderVersion){nextCanvas.width=nextCanvas.height=0;return}
-   canvas.width=nextCanvas.width;canvas.height=nextCanvas.height;ctx.drawImage(nextCanvas,0,0);canvas.style.visibility='';nextCanvas.width=nextCanvas.height=0;
-   drawingRaster={document:documentPdf,page:pageNumber,width:rasterWidth,height:rasterHeight};
-   if(!heavyDrawing&&documentPdf===pdf&&renderMs>HEAVY_RENDER_MS){heavyDrawing=true;showSecurityPageLabel(pageNumber,documentPdf.numPages)}
-   if(heavyDrawing)releaseDrawingMemory(documentPdf);
+   try{
+    const started=performance.now(),task=p.render({canvasContext:nextCanvas.getContext('2d'),viewport:raster});renderTask=task;renderTarget={document:documentPdf,page:pageNumber};
+    try{await task.promise}finally{if(renderTask===task){renderTask=null;renderTarget=null}}
+    const renderMs=performance.now()-started;
+    // A newer request for the same page still uses this drawing; a drawing of another page or file is dropped.
+    if(documentPdf!==pdf||pageNumber!==page)return;
+    canvas.width=nextCanvas.width;canvas.height=nextCanvas.height;ctx.drawImage(nextCanvas,0,0);canvas.style.visibility='';
+    drawingRaster={document:documentPdf,page:pageNumber,width:rasterWidth,height:rasterHeight};
+    if(!heavyDrawing&&renderMs>HEAVY_RENDER_MS){
+     // Switch to sparläge and draw once more at the sparläge size while the page content is still in memory.
+     heavyDrawing=true;showSecurityPageLabel(pageNumber,documentPdf.numPages);if(version===renderVersion)render(false);
+    }else if(heavyDrawing)releaseDrawingMemory(documentPdf);
+   }finally{nextCanvas.width=nextCanvas.height=0}// the temporary canvas is freed at once, also when the drawing is cancelled
+   if(version!==renderVersion)return;
   }
   return true;
  }).catch(error=>{if(error?.name==='RenderingCancelledException')return;if(heavyDrawing)releaseDrawingMemory(documentPdf);if(version===renderVersion)msg('Kunde inte visa sidan. Prova Passa eller välj en annan sida.',true);return false});
@@ -659,6 +670,8 @@ function endTouch(e){
  }
 }
 viewer.addEventListener('touchend',endTouch,{passive:true});
+// iOS Safari: a fast two-finger pinch could start Safari's own page zoom on top of the drawing zoom (v2.4.581).
+for(const type of ['gesturestart','gesturechange'])viewer.addEventListener(type,e=>e.preventDefault(),{passive:false});
 viewer.addEventListener('touchcancel',endTouch,{passive:true});
 
 async function inspectSecurityWorkPdf(bytes,parsed=null){
