@@ -1,0 +1,145 @@
+@layer controlflowStandard {
+/* Overview presentation only. The renderer enables this scope for the selected
+   Door/Lock or Security area; standalone pages and Brand-only views keep theirs. */
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .overviewHead {
+  flex-wrap: wrap;
+  gap: 8px !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .overviewHead > div:first-child {
+  min-width: 0;
+  flex: 1 1 10rem;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .overviewHead .eyebrow {
+  display: none !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .overviewHead h2 {
+  margin: 0 !important;
+  font-size: calc(1.125rem * var(--cf-text-scale, 1)) !important;
+  line-height: 1.25 !important;
+  overflow-wrap: anywhere;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .overviewHeadControls {
+  max-width: 100%;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+}
+
+/* Keep the six existing counts, classes and status colours. The single visible
+   label also carries the existing decorative status dot. */
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] #secOverviewSummary .overviewStat {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] #secOverviewSummary .cfOverviewStatLabel {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-style: normal;
+}
+
+/* Revision used the larger global typography. Security keeps its established
+   v530 type scale and 4px statistic padding instead of being enlarged. */
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityOverview[data-cf-overview-compact="1"] #secOverviewSummary .overviewStat {
+  padding: 8px !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .overviewHead button {
+  font-size: calc(.875rem * var(--cf-text-scale, 1)) !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secSummaryCard[data-cf-overview-object="1"] {
+  --cf-body: calc(.875rem * var(--cf-text-scale, 1));
+  --cf-label: calc(.875rem * var(--cf-text-scale, 1));
+  --cf-heading: calc(1rem * var(--cf-text-scale, 1));
+  padding: 8px !important;
+  margin: 4px 0 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secSummaryCard[data-cf-overview-object="1"] .secStatusBadge {
+  font-size: calc(.875rem * var(--cf-text-scale, 1)) !important;
+  line-height: 1.3 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secSummaryCard[data-cf-overview-object="1"] :is(p,li) {
+  margin: 3px 0 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secSummaryCard[data-cf-overview-object="1"] ul {
+  margin: 4px 0 !important;
+  padding-left: 18px !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secSummaryCard[data-cf-overview-object="1"] .secRemediationDescriptionBlock h4 {
+  font-size: calc(.875rem * var(--cf-text-scale, 1)) !important;
+  margin: 4px 0 !important;
+}
+
+/* ID and type have separate text nodes. Location remains a full-width paragraph;
+   a long ID or status may wrap without losing any information. */
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secSummaryCard[data-cf-overview-object="1"] .secSummaryHead {
+  flex-wrap: wrap;
+  align-items: flex-start !important;
+  gap: 4px 8px !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .cfOverviewIdentity {
+  flex: 1 1 calc(12rem * var(--cf-text-scale, 1));
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .cfOverviewIdentity h3 {
+  margin: 0 !important;
+  line-height: 1.25 !important;
+  overflow-wrap: anywhere;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .cfOverviewType {
+  margin: 2px 0 0 !important;
+  line-height: 1.35 !important;
+  color: var(--ta-muted);
+  font-weight: 400;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secSummaryCard[data-cf-overview-object="1"] .secSummaryMeta {
+  width: 100%;
+  overflow-wrap: anywhere;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secSummaryCard[data-cf-overview-object="1"] .secStatusBadge {
+  flex: 0 1 auto;
+  max-width: 100%;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+/* Existing editable controls keep their IDs/listeners. Readable input and touch
+   size apply in both areas, including when the compact Security styles load. */
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secOverviewFilters :is(input,select),
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secSummaryCard[data-cf-overview-object="1"] .secRemediationGrid input {
+  box-sizing: border-box;
+  min-width: 0 !important;
+  width: 100%;
+  max-width: 100%;
+  min-height: 44px !important;
+  height: auto !important;
+  padding: 8px 10px !important;
+  font-size: calc(1rem * var(--cf-text-scale, 1)) !important;
+  line-height: 1.4 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secSummaryCard[data-cf-overview-object="1"] .secRemediationDescriptionBlock textarea {
+  font-size: calc(1rem * var(--cf-text-scale, 1)) !important;
+}
+
+/* Give Search the full available phone width. The original Visa/Sök DOM order
+   remains unchanged, as do the two filters and all their behaviour. */
+@media (max-width: 800px) {
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secOverviewFilters {
+    grid-template-columns: minmax(0,1fr) !important;
+    gap: 8px !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secOverviewFilters label {
+    margin: 0 !important;
+  }
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]):is([data-tillsyno-device="phone"],[data-cf-large-text]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secOverviewFilters {
+  grid-template-columns: minmax(0,1fr) !important;
+  gap: 8px !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]):is([data-tillsyno-device="phone"],[data-cf-large-text]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secOverviewFilters label {
+  margin: 0 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] #secOverviewSummary,
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text]:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp #securityOverview[data-cf-overview-compact="1"] .secSummaryCard[data-cf-overview-object="1"] .secRemediationGrid {
+  grid-template-columns: minmax(0,1fr) !important;
+}
+}

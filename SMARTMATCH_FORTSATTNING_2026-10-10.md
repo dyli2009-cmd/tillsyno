@@ -1,0 +1,441 @@
+## Senaste separata SLR-testet: v36.123 (13 oktober 2026)
+
+Se [SLR TEST v36.123](SMARTMATCH_SLR_TEST_V36_123.md): sju dokumentmappar, hela ifyllnaden som glas/utan-glas-standard, ändra bara denna dörr, signatur efter aktivt tryck, CE-foto per dörr, manuell Klart → 100 % och Spara → SLR → ZIP med dörr-/dokumentmappar. Föregående v36.122 bevaras. Denna SLR-funktionsbeställning ändrar inte Kontrollflöde, ordinarie SmartMatch v36.106 eller iOS. Äldre överlämningsavsnitt nedan är historik.
+
+# Tillsyno v2.4.269 – inloggning och enkel användaradministration (2026-10-12)
+
+Startsidan och aktiva SmartMatch-adressen kontrollerar Supabase-inloggning och aktuell tillsyno_access-roll. Admin ser Användare på startsidan. Den nya responsiva adminsidan har lista/sökning, status, skapa konto + personlig lösenordslänk, godkänn/återaktivera, ny länk och ta bort åtkomst. Ingen e-post skickas automatiskt. Ägarkonton kan inte ändras genom denna sida. Borttagning återkallar medlemsposten och spärrar Auth-kontot; kontot kan återaktiveras utan att radera projekt.
+
+Serverfunktionen tillsyno-admin verifierar JWT via getUser, kontrollerar session_id mot auth.sessions genom en server-only SECURITY INVOKER-RPC och läser aktuell adminroll från databasen. verify_jwt=false används eftersom dessa kontroller genomförs i funktionen och det nya nyckelformatet stöds. Servernycklar finns enbart i Supabases miljö. Behörighetstabellen är RLS-skyddad; klienter får bara SELECT på sin egen rad, aldrig ändra roller eller TRUNCATE. Migrationerna restrict_tillsyno_access_writes och verify_tillsyno_admin_sessions är applicerade, SQL finns under auth/.
+
+Offline: redan verifierad användare kan fortsätta lokalt; offlinekopia av behörigheten är endast en lokal UX-spärr och används aldrig för serverbehörighet. Borttagen åtkomst upptäcks vid nästa onlinekontroll. Adminåtgärder kräver alltid internet. Supabase-klienten är versionslåst till 2.49.10 och levereras lokalt/offline. PDF-innehåll och lokal historik berörs inte.
+
+Avgränsning: GitHub Pages serverar fortfarande publika statiska filer. En klientbaserad inloggningsspärr gör inte kodfiler eller gamla direkta HTML-länkar privata. Kontrollflödeslåset är inte upplåst; Kontrollflödets HTML/JS/checklistor och tidigare SmartMatch-snapshots är oförändrade. Startsida och aktiv SmartMatch gateas. Verkligt privat distribution kräver separat skyddad hosting. Admin-API och behörighetsdata skyddas på servern.
+
+Verifiering: tests/tillsyno-admin-auth.cjs testar saknad/felaktig session, avslutad adminsession, nekad medlem, CORS, listning, skyddat ägarkonto, godkännande, borttagning, återaktivering, inbjudnings-/återställningslänkar, dubbletter, indatavalidering, serveravslag trots offlinecache och säkra next-omdirigeringar. Livefunktionsanrop utan token/felaktig token nekas 401 och fel Origin 403. DB-behörigheter/RLS och ägarens adminroll verifierade. Inga verkliga nya konton/länkar eller mejl skapades i verifieringen. Fullt interaktivt admin-test med användarens session och fysisk Safari/iOS återstår. iOS-filer och buildversion speglas; TestFlight-status verifieras separat.
+
+Säkerhetsrådgivaren har en befintlig varning om avstängt skydd mot läckta lösenord; inga tabell-/RLS-varningar. Inställningen kräver separat Auth-konfiguration och ändrades inte här.
+
+
+# SmartMatch v36.106 / Tillsyno v2.4.268 – ritningsnoteringar synliga i projekt-PDF (2026-10-12)
+
+Text, text med pil, pil och foto från Verktyg exporteras nu som synligt innehåll på ritningssidorna vid Spara PDF eller delning av projekt-PDF. Redigerbara drawingNotes ligger kvar i projektets metadata. Endast exporterade, indexerade noteringsströmmar tas bort och ersätts vid nästa sparning; den rena arbetskopian tar bort detta lager före visning så att redigerbara överlägg inte dubbleras. Originalritningen behåller sitt vektorinnehåll. Bilder behåller proportioner och text behåller svenska tecken/färg/ram/bakgrund; endast små textrutor rasteriseras. Alla fyra sidrotationer och förskjuten CropBox hanteras.
+
+Verifiering: verklig PDF-lib/Canvas-körning av hela build/verify-kedjan, 16 noteringar, återexport, flytt/borttagning, återläsning av metadata, rensad arbetskopia och oberoende Poppler-rendering granskade. Test: tests/smartmatch-drawing-notes-pdf-v36-106.cjs. Browserpaketet kunde inte laddas i miljön; fysisk Safari/iPhone/iPad-verifiering kvar. Samma exportkod speglas till iOS med dess project-vendor-worker bibehållen. TestFlight-publicering verifieras separat. Protokollsexporten innehåller fortsatt endast valda protokoll. GS-/dörrkort-/Kontrollflödeslogik oförändrad. Föregående v36.105 bevarad.
+
+# TEST v36.105 – kompakt dokumentval när man trycker på en automatik (2026-10-11)
+
+Vid tryck på t.ex. `2001-34-28-24-1` ska modalrutan endast erbjuda två sidställda knappar: **Egenkontroll dörrautomatik** (vänster) och **SLR-dokumentmapp** (höger). Den gamla statusraden `Kontrollerar GS-koppling…` i denna valmeny är borttagen. Beskrivande rad i rubriken (objekt/maskin/antal eller GS-status) döljs i dokumentvalsläget men finns kvar i särskild GS-redigering. Undermenyn `Sök fler automatiker` är inte längre synlig här, eftersom motsvarande funktion redan finns under sektioner; tekniska element är kvar dolda i DOM för att inte bryta sektionens befintliga anrop. Samma v36.104 DA-modul/GS-beräkning används. Endast separata TEST-versionerna `project-workspace-smartmatch-v36-105.{html,js,css}` och den fasta testadressen uppdaterade. Tvåknappslayout, version och JS-syntax kontrollerade, full iOS/Safari-test återstår.
+
+# TEST v36.104 – fix: tryck på automatik ska öppna Egenkontroll/SLR (2026-10-11)
+
+Användaren upptäckte att tryck på `2001-34-28-24-1` inte längre öppnade menyn. Rotorsaken bekräftades i v36.102-DA-modulen som kördes av v36.103: `refreshGsSuggestion` anropade `chooseNearestGS(o)` utan obligatoriska `linkCardCache`, vilket bröt före `showModal()`. v36.104 byter **bara** till `chooseNearestGS(o,linkCardCache)`. Isolerad DOM/JS-test med samma ID öppnade dialogen och Egenkontroll-knappen korrekt. Regressionstest och [detaljer](SMARTMATCH_TEST_V36_104.md) finns på GitHub. Testa fortfarande i riktig Safari/iPhone/iPad. Låst GS/SLR-princip oförändrad.
+
+# TEST v36.103 – förenklad placeringsdialog, samma söklogik (2026-10-11)
+
+På användarens begäran har rubriken ”Koppla dörrautomatik” och den långa texten ”Objektnummer–maskintyp–antal. Exempel: … Rita rutan kring märkningen; sedan söks samma objekt på alla ritningssidor.” tagits bort ur modalrutan. Endast instruktionen **”Rita en ruta kring dörrautomatikens ID. Sedan söker appen samma objekt på alla ritningssidor.”** visas. Inmatningsfältet, placeringsknappen, DA-modulen från v36.102, GS-regeln och SLR är orörda. Fasta `project-workspace-smartmatch-test.html` har samma innehåll som v36.103-versionen; ingen iOS-/TestFlight-ändring.
+
+# TEST v36.102 – GS-ändringen var inte synlig trots versionsnumret (2026-10-11)
+
+Användaren såg `101` men inte effekten av uppdateringen. v36.102 gör kopplingen synlig i dörrautomatikdialogen: visar sparad GS och närmaste verifierade förslag samt avvikelse, inklusive tidigare manuellt sparad fel-GS. Koden läser DA-symboler och GS-dörrkort även i den vanliga dialogen, inte bara länkningsläget. Teknikern kan välja föreslagen GS men måste spara själv. SLR laddar kontrollunderlaget vid öppning, visar GS/kortsida överst och använder **inte** sparad fel-GS som verifierad automatiserad SLR-källa. 11 isolerade kodassertioner för kundprojektet, gamla fel och SLR passerade; full iPad/iPhone-GUI-verifiering återstår. Fasta testadressen har uppdaterats. Se [SMARTMATCH_TEST_V36_102.md](SMARTMATCH_TEST_V36_102.md). Låst v36.101-princip om EN korrekt GS per fysisk automatik oförändrad.
+
+# TEST v36.101 – en rätt GS och säker SLR-källa (2026-10-11)
+
+Användaren bestämde att varje fysisk automatik bara får en korrekt GS-koppling, inte två. Detta är viktigare än att blint följa den fysiska DA-symbolen, som fortsatt används som hjälp för avstånd och dörrplacering (kundprojektet GS4/GS2). Gamla dubbletter med motstridiga GS får inte användas som SLR-underlag; ett manuellt bekräftat nytt GS-val rättar samma fysiska automatik utan att radera checklistor/SLR. Framtida SLR ska läsa verifierad GS och dess dörrkortssida. [v36.101](SMARTMATCH_TEST_V36_101.md) beskriver implementation, begränsningar och regressionstest; ny testkod är incheckad men inte körd, iPhone/iPad-verifiering kvar.
+
+# TEST v36.100 – uppmätt fel GS4 i stället för GS2 (2026-10-11)
+
+Kundspecifika ritningsutdrag, koordinater och objektidentifierare har tagits bort inför IT-granskningen. Beteendereglerna nedan gäller fortfarande; detta är inget nytt verifieringspåstående. Fysisk DA-symbol på ritningen identifieras från originalets PDF-text; en-till-en-parning av automatik-ID och DA-symbol ger geometrisk ankare före valet av närmaste korrekta GS. Gamla auto-länkar räknas om; manuellt godkända länkar och SLR/checklistor sparas. Se SMARTMATCH_TEST_V36_100.md.
+
+# TEST v36.99 – närmaste GS med automatik, ED200/ID200 (2026-10-11)
+
+Ny uttrycklig korrigering efter felrapport: tidigare prioritering av exakta kortuppgifter skapade långa pilar till GS2 och gömde andra pilar, särskilt när närliggande dörrkort angav ED200. Nu är 17/24/37 kompatibla för själva GS-pilen och endast närmaste korrekta GS väljs geografiskt; för långt bort ska kopplas manuellt. Gamla obekräftade automatiska länkar rättas vid återöppning efter dörrkortsläsning utan förlust av kontrollsvar/SLR. Se SMARTMATCH_TEST_V36_99.md.
+
+# TEST v36.98 – ID250/ED250 undantag för GS-pilar (2026-10-11)
+
+Dörrkortets ID250 och ID 250 måste läsas som typkod 37 så att ED100/ID100 (24) och ED250/ID250 (37) kan paras åt båda håll för närmaste korrekta GS. Undantaget gäller endast pilens GS-val; komplett ID kräver samma objekt och sista nummer och originalmaskinens kod ändras inte. Separat v36.98-snapshot, regressionstest och återgång till v36.97 kvar. Se SMARTMATCH_TEST_V36_98.md.
+
+# TEST v36.97 – återställ dörrkortskontroll av GS-pilar (2026-10-11)
+
+Användaren begär att dörrautomatik bara får en pil till närmaste **rätt** GS; dörrkortets dörrautomatikrad, maskintyp och eventuellt fullständigt ID ska först kontrolleras. v36.82:s bevisbaserade kopplingslogik återförs till v36.92:s fungerande objektsökning. Obekräftade automatiska länkar kan räknas om; manuellt bekräftade länkar och sparade egenkontroller/SLR bevaras. Äldre dubbla poster raderas inte men ger endast en synlig pil per fysisk automatik. Fristående v36.97-snapshot; tidigare v36.96 oförändrad. Se SMARTMATCH_TEST_V36_97.md och SMARTMATCH_AUTOMATION_RULE_LOCK.md.
+
+# TEST v36.96 – endast protokoll i protokollsexporten
+
+Användaren tar bort Ta med ritning och GS-länkar under Spara → Protokoll. Ny separat protokollsexportmodul36.96 kopierar endast valda revisionsprotokollsidor. Godkända protokoll förblir förvalda; sparande av hela projektet, de låsta avläsningsreglerna, DA92, profilen94 och sessionslogiken ändras inte. Riktigt Chromium-test: sju godkända förvalda i underlaget; val av ett/två protokoll ger exakt en/två protokollsidor, inga interna GS-länkar och inga originalritningsläsningar i protokollsexporten. Befintliga externa företagslänkar i själva protokollen behålls. Version95 inklusive önskat sidhuvud behålls som snapshot; samma placering i96. Se [TEST v36.96](SMARTMATCH_TEST_V36_96.md).
+
+# TEST v36.95 – känd profil även med en utrustningsrad (2026-10-11)
+
+Extra återanvändningstest visade att titel/Objekt/Komponent-profilens ID kunde identifieras men sidan sedan sorteras bort av äldre krav på extra Låshus/Cylinder-ord. v36.95 godtar den verifierade profilen som kortbevis. Endast denna klassningsgren är ny; profil94, första-cell-avläsning och DA92 är oförändrade. Faktiska app95-tester: fem kort ensamma, 14 kopplingar i exemplet, nytt GC2-kort med endast en automatikrad; tidigare 15 GS-kort och 17DA/17GS-pilar samt 18 sparade poster behålls. 94-snapshots kvar. Se [TEST v36.95](SMARTMATCH_TEST_V36_95.md).
+
+# TEST v36.94 – separat känt tabellupplägg (2026-10-11)
+
+Användaren vill lägga till nya kända tabellupplägg och behålla fungerande låst logik. Ny isolerad profil: Dörrkort-titel ovanför tabellen → Objekt-rad → Komponent/Produkt → utrustningsrad. Läser titelns ID enbart i det verifierade upplägget; befintlig första-cell-avläsning har företräde och är oförändrad. Samma hela-ID-sökning återanvänds. Faktiska Chromium-tester: fem kort även ensamma; med ritningen 14 positioner (140C7, VC2, WC1, HWC2, 130C2), rätt kort öppnas; Kontor/Teknik saknar kort och kopplas inte. Tidigare 15 GS-kort och Teknik-layout samt DA92:s 17 automatiker/17 GS-pilar och 18 sparade poster behålls. Se [TEST v36.94](SMARTMATCH_TEST_V36_94.md) och [tabellregel avsnitt 8](SMARTMATCH_TABLE_RULE_LOCK.md). Ingen automatisk mallinlärning; kundfiler, Kontrollflöde och iOS orörda.
+
+# TEST v36.93 – namngivet dörrkort i samma grundtabell
+
+Användaren bad om stöd för det inskickade kortet Dörrkort Teknik utan att ändra fungerande kort. Explicit Dörrkort-titel med alfabetiskt namn på 2–6 bokstäver i den första tabellcellen tillåts; TEKNIK blir ID. Tidigare GS-/siffer-ID:n och den låsta ID-källan behålls. Riktiga PDF.js-fragment, alla 15 tidigare kortfixturer och faktisk Chromium-app testade: kort ensamt indexeras korrekt; genererad ritning ger två exakta Teknik-positioner, kopplade till kortsida 2 som öppnas vid klick. Ingen verklig kundritning för det nya kortet finns ännu. Se SMARTMATCH_TEST_V36_93.md. Oförändrad godkänd DA-modul v36.92, Kontrollflöde/native iOS orörda.
+
+# Förtydligad låst tabellregel – 2026-10-11
+
+Användaren betonar att ett exempel på själva dörrkortstabellen ska läggas in för ett nytt upplägg, så att vi kan förstå tabellens uppbyggnad och översta vänstra ID-cell innan matchningen mot ritningen verifieras. Arbetsgång: lägg in tabellen → förstå och kontrollera uppbyggnaden → läs första vänstra cellens ID → matcha hela ID på ritningen. Redan verifierade upplägg återanvänds; uppladdning är inte automatisk mallinlärning. Förtydligat i [tabellregeln](SMARTMATCH_TABLE_RULE_LOCK.md) och [regelsamlingen](SMARTMATCH_FUNCTION_RULES_LOCK.md). Bara dokumentation; TEST v36.92 och automatikregeln oförändrade.
+
+# Bekräftat och låst – SmartMatch-regler 2026-10-11
+
+Användaren bekräftar att v36.92 fungerar: ”Okej, nu funkar detta”. På användarens begäran har regler och motiv samlats i [SMARTMATCH_FUNCTION_RULES_LOCK.md](SMARTMATCH_FUNCTION_RULES_LOCK.md). [SMARTMATCH_AUTOMATION_RULE_LOCK.md](SMARTMATCH_AUTOMATION_RULE_LOCK.md) låser placerings-/objektsökningen och närmaste-GS-pilen. [SMARTMATCH_TABLE_RULE_LOCK.md](SMARTMATCH_TABLE_RULE_LOCK.md) behåller översta vänstra tabellcell som dörrkortets ID-källa och länkar till sambandet mellan funktionerna. Läs dessa före fortsatt ändring eller när användaren frågar hur vi tänkt. Principer ändras bara efter ett nytt uttryckligt beslut; rättningar som återställer regeln är tillåtna inom beställd omfattning. Enbart dokumentation, appen kvar på TEST v36.92.
+
+# TEST v36.92 – placering → hela objektet → närmaste GS
+
+Användaren ersätter tidigare DA-kort-/en-till-en-krav med närmaste fysisk GS på samma ritningssida. Sparad placeringsruta läses för objektnummer, maskintyp och antal; sedan söks objektet automatiskt på alla ritningssidor och varje träff får Egenkontroll/SLR-knapp och GS-pil. Fullt Chromium-test avslöjade verklig orsak: ritningar felklassades som kort och uteslöts från sökningen. Explicit GS-geometri och ritningsstämpel hindrar detta; kundprojektets kortlista nu exakt 11–25. Tester i riktiga HTML-flödet med original och rå testkopia: 17 fysiska träffar med GS-pilar; originalets 18 sparade poster (en äldre dublett) och kontroller bevaras. Se SMARTMATCH_TEST_V36_92.md. Låst tabell-ID-regel, Kontrollflöde och native iOS orörda.
+
+# TEST v36.91 – faktiskt laddad automatikmodul rättad
+
+36.90-sidan laddade fortfarande DA v36.85, så den testade ändringen var inte aktiv. 36.91 kopplar både fast och versionsmärkt entry till DA v36.90; nytt test kontrollerar resursreferensen. Se SMARTMATCH_TEST_V36_91.md.
+
+# TEST v36.90 – återinförd manuell GS-referens (2026-10-11)
+
+Efter jämförelse med v36.19–v36.23 godkände användaren att första manuella DA→GS-kopplingen åter används som riktning/avståndsstöd vid objektnummersökning. Okända automatikuppgifter tillåts bara med befintligt kort och tydlig närgeometri; explicita fel, saknade kort, dubbla GS och tvetydighet blockeras. gsReferenceId sparas och valideras även efter återöppning. Kontrollerat helkedjetest med kundprojektets riktiga PDF ger 17 märkningar och 17 verifierade GS-pilar med första automatiken manuellt kopplad till GS4. Se SMARTMATCH_TEST_V36_90.md. Låst tabellregel och övriga moduler oförändrade.
+
+# TEST v36.89 – sök från manuellt placerad automatik (2026-10-11)
+
+Explicit vald automatik som sökreferens, hela objektnumret som filter, maskintyp per träff, färsk dörrkortskontroll vid sökning. Annotation-ID söks i samtliga Contents/Subj/T-fält, dedupliceras. Status visar sökt objektnummer. Kundspecifika testresultat har tagits bort; full koppling i användarens aktiva session ej verifierad. Se SMARTMATCH_TEST_V36_89.md. Låst tabellregel och UI-förenkling bevarade.
+
+# TEST v36.88 – förenklad Ritning & dörrkort (2026-10-11)
+
+Läs kontrollpunkter och Lägg till position / koppla dörrkort borttagna ur den synliga gruppen enligt användarens beslut. Manuellt formulär dolt; åtgärdsrader för kort utan funnen ritningsposition visas inte längre. Hittade positioner/kopplingar kvar. Kontrollpunktslogik och sparade läslägen bevaras; låst tabellregel/ID-avläsning oförändrad. Se SMARTMATCH_TEST_V36_88.md.
+
+# Låst tabellregel – användarbeslut 2026-10-11
+
+Se **[SMARTMATCH_TABLE_RULE_LOCK.md](SMARTMATCH_TABLE_RULE_LOCK.md)**. Tabellen och dess tomma celler identifieras först; översta vänstra rutan är ID-källan; därefter matchas samma hela beteckning på ritningen. Nya tabellupplägg öppnas/läses in och verifieras innan automatisk koppling betraktas som stödd. TEST v36.87 är verifierad för de 15 kundprojekt-korten; generell cellidentifiering och automatiskt lärande av nya mallar är inte införda. Detta är en dokumentationsändring, ingen ny funktionsversion.
+
+# TEST v36.85 – Dörrkortets första ID-rad I TABELLEN (2026-10-11)
+Tabell först efter valfri projekttext. Matcha endast tabellens första ID-rad, inklusive GS1/GS 1/WC GS1/VCGS1 samt bara 1, 2, 3, 140C, A-105. Läs inte artikelnummer längre ner. Exakt ritnings-ID, inte delfragment av 1-45-1. Begränsad kompatibilitetsreserv för gamla PDF:er med 'Dorrkort 140C' överst och bara Komponent|Produkt i tabellen. GS/Alla/Eget sökord, ritning, kontrollflöde och iOS lämnas orörda. Se SMARTMATCH_TEST_V36_85.md.
+
+# TEST v36.85 – strikt första-rads-ID (2026-10-11)
+Matcha endast dörrkortets första tryckta rad mot exakt beteckning på ritningen (1, 2, 3, 140C, 140 C, A-105, WC etc); prefixet spelar ingen roll. Inte söka bland senare utrustningsrader. Hindra ID 1 att matcha del av 1-45-1 eller 11. Dörrkort utan känd rubrik får stöd genom riktig tvåkolumnstabell. GS/Alla/Eget sökord oförändrat. Se SMARTMATCH_TEST_V36_85.md.
+
+# TEST v36.84 – extra läslägen högra dörrkortskolumnen (2026-10-11)
+GS (standard) oförändrat; Alla = högra tabellkolumnens samtliga värden inklusive Mötesrum/OK; Eget sökord = innehåller term bara i högra cellen, t.ex. DT. Kompakt UI i Ritning & dörrkort. Projektinställning sparas; GS och alternativ har skilda kontrollnycklar så avprickningar finns kvar. Byter bara kontrollpunktsuttag, inte ID/dörrkort, GS-pilar eller annan modul. Se SMARTMATCH_TEST_V36_84.md.
+
+# TEST v36.83 – dörrautomatik progresskontur (2026-10-11)
+Egenkontroll till vänster och SLR till höger som grå/grön yttre kontur, separat procent från nedersta mittpunkten och upp runt respektive halva. Ingen linje över siffror. Korta yttre mittstreck och små etiketter. SLR har manuell arbetsstatus per tio rubriker, inte faktiska färdiga dokumentmallar, sparar i befintligt slrDocuments. Se SMARTMATCH_TEST_V36_83.md. GS/protokoll/ControlFlow/iOS orörda.
+
+# TEST v36.82 – ED100/ED250 familj för GS-pilar (2026-10-11)
+24/37 är kompatibla endast vid GS-koppling, men originalmodeller och typkoder lämnas kvar. GS full-ID matchar bara om objekt och sista antal/serie är identiska; annan kod än 24/37 tillåts ej. Exakt ID rankas före kompatibelt ID, och manuell meny visar kompatibilitetsnotis. Kod/test i SMARTMATCH_TEST_V36_82.md. Kontrollflöde/iOS orörda.
+
+# TEST v36.81 – kodbaserad maskintypmatchning, 24 = Dorma ED 100 (2026-10-11)
+Dörrautomatikens GS-pil jämför maskintyp via PROJECT_AUTOMATION_MODELS, inte modellnummer i fritext. ED100/ED 100/ID100 = kod 24; kanoniska "024" = 24. Klarar dörrkort med etikett "Dörrautomatik" och värde på raden under. Visar både typkoder och namn om de faktiskt skiljer, mot tidigare generiska fel. GS och andra skydd kvar. Se SMARTMATCH_TEST_V36_81.md. Isolerat TEST; Kontrollflöde/iOS orört.
+
+# TEST v36.80 – GS-manual och återritning, v36.79 korrigerad (2026-10-11)
+En ny DA-modul byggd om från fungerande v36.75 sedan v36.79 hade ett funktionsplaceringsfel. Läs SMARTMATCH_TEST_V36_80.md. GS manuell skrivning+ritningssida, lediga fysiska positioner, förslag, Visa GS och återritning av pilar. Känd felmatch blockerar, okända dörrkort kräver bekräftelse, sidkrav för fysisk pil bevarat. Kontrollflöde/iOS orört.
+
+# TEST v36.79 – GS skrivfält, förslag och Visa vald GS (2026-10-11)
+Koppla/ändra GS: identifierad DA → föreslagen närmaste verifierade GS med kod/position/sida; manuell GS-nummer + ritningssida; lista riktiga GS-positioner inklusive dublettkoder; Spara kräver exakt vald fysisk GS samt korrekt sida och bekräftat dörrkort; Visa flyttar ritningsvyn utan att ändra kopplingen. Vid kortcache färdig ritas sparade pilar om. Ingen avståndsgräns inom en sida. Kända fel/GS-upptagna blockeras. Se SMARTMATCH_TEST_V36_79.md. Kontrollflöde/iOS orörda.
+
+# TEST v36.78 – automatisk GS-stämpelform (2026-10-11)
+Befintlig klickmarkering följer PDF Circle/Square eller säker rasterdetekterad oval/rund/fyrkantig/rektangulär kontur. För enskilda färgpatchar kan klicköverläggets VISUELLA rektangel följa patchens storlek, men GS-koder/dörrkort/positioner ändras inte. Manuell form fortsätter gälla; valet 'Följ PDF-stämpeln automatiskt' återställer. pmSizedMarker CSS-bugg överstyrd. Simulerade formtester (även tunna ovala linjer), syntax och versionskopplingar testade; riktig PDF återstår. Se SMARTMATCH_TEST_V36_78.md. Kontrollflöde/iOS orörda.
+
+# TEST v36.77 – kompakt responsiv historik (2026-10-11)
+PDF-historikdialog och listan Senast sparade mer kompakt: dator 460px, iPad 440px, iPhone skärmbredd och vertikala tryckvänliga val, landscape maxhöjd; bra radbrytning filnamn/tid. Ingen ändring i lagringslogik. Se SMARTMATCH_TEST_V36_77.md. Kontrollflöde/iOS orörda.
+
+# TEST v36.76 – lokal historik per exakt original-PDF (2026-10-11)
+Välj PDF -> innan skanning jämförs originalbyte med lokala arkiv -> välj sparad version, börja ny eller avbryt. Ny version får egen workspaceId och förstör inte tidigare arkiv/utkast. Senaste projekt och äldre hash-ID bevaras. Bara SmartMatch TEST. Se SMARTMATCH_TEST_V36_76.md.
+
+# TEST v36.75 – kopplingsinformation och renare automatikmeny (2026-10-11)
+Koppla / ändra GS visar GS-nr, fysisk position, ritsida + objekt/maskintyp/antal, även för valt men ännu inte sparat alternativ. Sidofältet visar kopplad GS, position, maskin, antal, sida. Automatikens dokumentdialog visar två huvudval: Egenkontroll dörrautomatik och SLR-dokumentmapp. Justera pil bara i positionens ⋯-meny. Hitta alla automatiker kvar hopfällt under Sök fler automatiker och i DA-gruppinställningar. Knappar kompaktare med tvåkolumnslayout. Se SMARTMATCH_TEST_V36_75.md. Isolerat TEST, v36.74 kvar, inga ändringar i Kontrollflöde/iOS.
+
+# TEST v36.74 – Ej kontrollerat alla (2026-10-11)
+En andra knapp nollställer alla resultat och punktanmärkningar på just den öppna automatiken (0 %) utan att röra andra DA, projektinformation eller GS/SLR. Den befintliga Godkänn alla är kvar. Se SMARTMATCH_TEST_V36_74.md. DA/GS-modulen v36.73 återanvänds oförändrad.
+
+# TEST v36.73 – egenkontroll skiljs åt, markering och pil (2026-10-11)
+Buggrättning: inget checklistdelat tillstånd mellan två DA, kolliderande interna ID korrigeras vid inläsning; tidigare matchning endast samma fysiska position. Godkänn alla gäller vald DA. Gult fokus försvinner vid klick utanför DA på ritningen. ↗ Justera pil åter i menyn och DA-dialogen. Se SMARTMATCH_TEST_V36_73.md. v36.72 bevarad och Kontrollflöde/iOS orörda.
+
+# TEST v36.72 – ny DA→GS-koppling (2026-10-11)
+Användaren vill nu att Hitta alla automatiker väljer närmaste GS med dörrautomatik på tilldelat dörrkort, inte närmaste GS över huvud taget. Exakt ID/modell prioriteras, en GS per DA och omvänt. Oläsbart/otydligt = manuell koppling, ingen påhittad pil. SLR ska senare läsa det exakt kopplade dörrkortet. Se SMARTMATCH_TEST_V36_72.md. Bara TEST, ingen native iOS.
+
+# TEST v36.71 – senaste beslut och implementation (2026-10-11)
+
+SmartMatch TEST har nu tre synliga sparval (Spara lokalt / Spara PDF / Skicka mejl), överflödigt Spara fil dolt, snabbare återanvändning av befintlig stor PDF-blob vid lokala sparningar, enstegsexport med fortsatt obligatorisk PDF-kontroll och cache som ogiltigförklaras vid ändringar. Den separata designmallen `smartmatch-protocol-templates.js` / `SMARTMATCH_MALL_EGENKONTROLL.md` ger EN rubrik ”EGENKONTROLL” i kundprotokoll och sparad layout. × Stäng ritning ligger bredvid Spara och fortsätter lokalt arkivera.
+
+Online kontroll av ny version visar uppdateringsknapp enbart vid nytt bygge. Med aktiv PDF erbjuds säker uppdatering **efter att ritningen stängts**, i stället för att avbryta och skanna om ritningen. Äkta byte av körande moduler utan omladdning ingår inte. Första stora PDF-genereringen och första lokala lagringen kan ännu ta tid; inga tester på fysisk enhet. Se [detaljer](SMARTMATCH_TEST_V36_71.md). Ordinarie app och iOS/TestFlight är orörda.
+
+# TEST v36.70 – kompakt revisionschecklista, X-sparning och separat PDF (2026-10-11)
+
+Beställt för dator/iPad/iPhone: synlig allmän anmärkning längst ned, kompakt scroll; X sparar också utan att kräva Klart; synlig knapp för PDF av endast aktuell ifylld revision; lika breda resultatkolumner; EGENKONTROLL i stället för SERVICE, inget dokumentnr; Checklista revision dörrautomatik under EGENKONTROLL; endast Anläggning och ID-märkning i fetstil bland uppgiftsfält, anläggningsnr/datum/AO/kund/företag vanliga. Anläggningsnamn visas nu som eget fält i formuläret (tidigare dolt men redan befintligt metadatafält).
+
+Dialogen använder flexhöjd med min-height:0 och separat scrollbar; rubrik/actions får brytas utan att nederdelen klipps av fast höjdantagande. Kompakt textarea och safe-area-padding. X/Escape inväntar flush av aktuell arbetskopia, fångar fortfarande fokuserade identitets/anmärkningsfält och behåller dialogen vid lagringsfel. Klart använder också central stängning. Befintlig enskild PDF-export görs synlig som Spara protokoll · PDF, utan ritningar/hela projektet. PDF-resultatkolumner 23/23 mm (tidigare21/25), formulärknappar lika breda. Gemensam generator gäller kundmall, separat/bulk-PDF i isolerad TEST.
+
+Piljustering pausad enligt användaren: Justera pil-val borttaget ur menyn, underliggande historik/tips bevarade. Regelhistorik kvar: v36.25 bevara giltiga och granska osäkra länkar, v36.45 ingen närmaste-GS vid manuell placering, v36.68 DA→exakt GS med passande tilldelat dörrkort/modell/ID, inga dubbla/upptagna kopplingar och inget närhetsval vid tvetydighet. Ingen ny pilgeometri/matchningsändring.
+
+Verifierat med exakt jsPDF: rätt rubriker, inga Dokumentnr/SERVICE, fetstil bara anläggning/ID i metadata, vanligt datum/anläggningsnr/AO/kund/företag, båda resultatkolumner23mm och ifyllda anmärkningar i PDF; 1.5/1.6/1.12 fortsatt hela rader. X-test: fångar fokuserade fält/checks, väntar på flush, dubbelstängning stoppas, fel behåller data/dialog. Matchnings/pilregression passerar; syntax, unika HTML-ID, identisk fast entry, synlig enskild export och shrinkbar scroll kontrollerade. Ingen fysisk iPhone/iPad/dator UI-test tillgänglig; lokal sparning testad med kontrollerade mocks. Kontrollflöde/native iOS/TestFlight orörda. Tre plattformar avser samma responsiva TEST-webb, enligt användarens tidigare native-iOS-paus. Löpande publicering godkänd. Nästa TEST v36.71.
+
+# TEST v36.69 – former, appdialoger och separat lokal sparning (2026-10-11)
+
+Positionsmenyn har Form på markeringen: rund/oval, rektangel, rundade hörn. Circle/Square-annoteringar får motsvarande form automatiskt; övriga stämplar behöver manuellt val (ingen gissning av tillplattad grafik). Endast klickmarkeringen ändras, ingen PDF-text/kopplingslogik. Form sparas i positionEdits och manuella positioner för PDF/lokal återöppning.
+
+Alla native confirm/prompt i TEST-arbetsytan ersatta med appdialog; DA/protokollets alert-info ersatt också. Sparrutan visas utan automatisk PDF-generering. Spara lokalt lagrar original-PDF + fullständig arbetskopia i befintligt IndexedDB-arkiv, med valt namn och bibehållen aktiv session; Stäng ritningen använder fortsatt samma arkiv. Lokal sparning markerar inte PDF-filen som exporterad. Spara PDF bygger/verifierar därefter, Spara fil/dela blir tillgängligt efter verifiering (ny användargest för iOS delning). Namnfält och knappar förbättrade.
+
+Verifierat JS-syntax, appdialogers spara/validera/avbryt och touch-flytt, DA→GS/matchningsregression, lokal arkivering med bevarad aktiv session och senare stängning, full snapshot/flush före filarkiv, originalbytes + namn/sida, ingen PDF-generering vid öppning, unika HTML-ID och identisk fast TEST-entry. IndexedDB-transaktion testad med kontrollerat DB-mock, fysisk Safari/Chrome och användarens PDF inte tillgängliga; inga påståenden om fysisk återöppningstest. Lokalt arbete är bundet till samma enhet/webbläsare och kan försvinna vid rensning av webbplatsdata. Ingen Kontrollflöde/iOS/TestFlight-ändring. Löpande publicering godkänd. Nästa TEST v36.70.
+
+# TEST v36.68 – DA→GS, dörrkort före avstånd och inga dubbla kopplingar (2026-10-11)
+
+Användaren förtydligar pilriktning: dörrautomatikens placering ska peka mot rätt GS-position med matchande dörrkort, inte närmaste GS. GS4 får inte kopplas dubbelt/fel. Historik läst: v36.25 bevarar giltiga länkar och kräver granskning av osäkra; v36.45 tar bort närmaste-GS i manuell placering. Kvarvarande bulk-skanner använde fortfarande avståndspoäng och familjskanner `nearestGS`.
+
+v36.68 tar bort närmaste-GS-funktionen/familjgissningen. Bulk-auto-koppling kräver ett entydigt dörrkort med dörrautomatik och matchande maskintyp eller exakt automatik-ID i relevanta kortfält. Exakt ID prioriteras; flera passande kort väljs aldrig med avstånd. Dörrkortet som faktiskt är kopplat i projektets mapping läses först/ensamt; cache uppdateras vid ändrat kortval. Upptagna GS-positioner får ingen andra auto/manuell koppling. Konfliktpilar döljs och kopplingar flaggas, medan sparade uppgifter bevaras för rättning. Äldre obekräftade länkar granskas även för entydighet; korrekt entydig eller uttryckligen manuellt bekräftad länk bevaras. `gsLinkConfirmed` sparas i PDF-data. Osäkert läsbart kort kräver manuell kontroll; saknat kort, explicit ingen automatik, fel maskintyp/ID eller upptagen GS stoppas. Ingen data raderas för att dölja konflikter.
+
+Pilen återställd enligt senaste förtydligandet till DA→GS. `arrowTip` används åter för GS-kanten; `daArrowTip` från v36.65 bevaras i metadata men används inte för fel mål. All placerings-/zoom-/kundmallsfunktion från v36.67 kvar.
+
+Verifierat med kontrollerade testfall: längre bort korrekt kort slår närmare GS utan automatik, fel modell avvisas, samma modell på flera kort ger manuell granskning, exakt ID ger rätt träff, oläsbart kort ger ingen auto-länk, upptagen position blockeras, befintliga dubbla pilar döljs, gammal tvetydig auto-länk granskas, manuell bekräftelse bevaras, DA→GS-geometri. Separat test av tilldelat kort före indexträff, cacheinvalidering och ID-läsning; JS-syntax passerar. Användarens verkliga PDF inte tillgänglig för innehållstest, inga garanterade automatiska matchningar när korten saknar entydigt ID/modellunderlag. Publicering löpande godkänd. Kontrollflöde/iOS/TestFlight orörda. Nästa TEST v36.69.
+
+# TEST v36.67 – hela textrader i kundmall 1.5, 1.6 och 1.12 (2026-10-11)
+
+Användaren vill att fullständig benämning för 1.5, 1.6 och 1.12 ligger på en rad i kundmallens ruta, inklusive hastighet/låshus utan oönskad nedflyttning. PDF-tabellen beräknade radbrytning innan typsnitt och storlek valdes, alltså med föregående cells font. Rätt font sätts nu först. Dessa tre punkter hålls på en rad med full text och mätt anpassning till tillgänglig bredd om det skulle behövas. Övriga rader behåller vanlig radbrytning. Textinnehåll och rutornas storlek är oförändrade.
+
+Verifierat med exakt appens jsPDF: alla tre fullständiga etiketter ryms på en rad både vid 6.8 och 7.4 punkters ordinarie textstorlek (max 94.32 mm mot 97 mm tillgängligt); inga borttagna ord, samma vertikala centrering. Teststart med avsiktligt annan font bekräftar oberoende av föregående cell. JS-syntax passerar. Kundmallens förhandsvisning och export använder samma PDF-generering. Zoom/DA-arbetsflöde orört. Fasta TEST-adressen och alla versionerade resurser uppdaterade. Löpande publicering godkänd. Kontrollflöde och iOS/TestFlight orörda. Nästa TEST v36.68.
+
+# TEST v36.66 – snabbare skärpning på iPad (2026-10-11)
+
+Användaren ber om snabbare iPad-skärpning. Enda funktionella ändringen från v36.65: detaljrenderingens schemaläggningspaus på mobil/tablet är nu 120 ms, tidigare 1200 ms på iPad. Telefonen behåller 120 ms och desktop 300 ms. Skärpa, pixelgränser, serialisering, cache och DA-funktioner är oförändrade.
+
+Kontrollerat JS-syntax och jämförelse mot v36.65: endast väntetiden ändrad utöver versionsmärkning. 120 ms avser startpaus, inte total PDF-renderingstid. Ingen fysisk iPad-mätning. Alla TEST-resurser versionsmärkta och fasta adressen uppdaterad. Löpande publicering godkänd; Kontrollflöde/iOS/TestFlight orörda. Nästa TEST v36.67.
+
+# TEST v36.65 – DA-dialoger, projektuppgifter och kopplingar (2026-10-11)
+
+Beställt: flytta Koppla dörrautomatik även på iPhone/iPad, kompakta/centrerade datumfält, kund före utförande företag, signatur hos utförande företag med logga; positionpanelen ska täcka ritningens markeringar; egna professionella ändra/ta-bort-dialoger; redan sparad koppling ska visas och pilen ska peka mot dörrautomatiken. Befintligt placeringskors fungerar och är oförändrat. Löpande TEST-publicering är godkänd.
+
+v36.65 har egen DA-modulkopia (`smartmatch-da-v36-65-module.js`) och nya versionerade resurser. Draghandtag på Koppla DA och DA-val/koppling accepterar touch/mus, begränsas till skärmen. Positionpanelen är ogenomskinlig ovanför ritningens isolerade lager. Kundsektion först i formulär och kundprotokoll; signaturfält flyttat till utförande sektion tillsammans med logga. Fälten kompaktare, datumvärden centrerade. Märkningsändring, borttagning, kopplingsbekräftelse och fri modell använder appens HTML-dialog med validering/Avbryt i stället för browser prompt/confirm.
+
+Koppling löses genom aktuellt ID, sparad beteckning+rektangel eller entydig beteckning på samma sida. Äldre scan/ocr-ID:n kan läsas för GS-beteckning och koordinater. Otydliga dubletter gissas aldrig; oåterställd koppling visas som kontrollbehov i stället för tomt 'ingen koppling'. Vid sparning bevaras ID/kod/rect samt explicit frånkoppling. Visningspilen går nu GS→DA; pilspets redigeras på DA-kanten och sparas i separat `daArrowTip`, så tidigare GS-tip inte feltolkas.
+
+Verifierat: JS-syntax; länkresolver (omindexering, äldre ID, dubbla beteckningar, koordinatmatchning, frånkoppling); pilkoordinater GS→DA och separat spets; HTML-dialog validering/spara/avbryt; touchdrag inom skärm; HTML-ID:n unika, signatur i utförande sektion, kund före utförande, fast TEST-kopia identisk. Befintliga zoomlivscykel- och verkliga roterade PDF-renderingstester passerar. Zoomlogik från fungerande v36.64 behålls. Ingen fysisk Safari/iPad-visuell kontroll tillgänglig; kompakt layout och datumrendering behöver användartest. Kontrollflöde och iOS/TestFlight orörda. Nästa TEST v36.66.
+
+# TEST v36.64 – snabb telefonzoom och hela skarpa utsnittet (2026-10-11)
+
+Användaren vill ha snabb, smidig och skarp zoom utan 2–3 sekunders väntan. v36.63:s separata stämpelutsnitt tas bort. Hela synliga PDF-utsnittet skärps igen på telefon, med samma enskilda 1-miljon-pixelbildyta som tidigare. Telefonens avsiktliga väntetid kortas från 1200 till 120 ms. Befintlig färdig detaljbild behålls vid zoom/pan på samma sida och följer ritningens koordinater. Telefonens lättare 900000-pixelbakgrund kvarstår.
+
+Aktuell PDF-sidas resurser återanvänds i stället för cleanup/ombyggnad efter varje zoom. Föregående sidans cache frigörs i den serialiserade renderingskön vid sidbyte; dokumentet förstörs vid stängning. Ingen gest avbryter eller resizar aktiv mobil render. Mask-allokeringsfixen från v36.62 kvarstår i TEST-isolerat bibliotek. iPad behåller 1200-ms-planeringen, desktop 300 ms. Nästa TEST v36.65.
+
+Verifierat: JS-syntax; mockad renderlivscykel visar färdig crop kvar under navigation, cacheåteranvändning och frigörande av stale resultat; actual roterad PDF-vy pixelidentisk med original och aktuell sidas cleanup körs inte vid upprepad zoom. Ingen fysisk iPhone-prestandamätning. 120 ms är schemaläggningspaus, inte garanterad total tid; PDF-renderingtiden tillkommer. Chrome på iPhone är inte en garanterad lösning på minneskrascher.
+
+Publicering är löpande godkänd. Kontrollflöde och iOS/TestFlight orörda.
+
+# TEST v36.63 – telefon prioriterar stämplar (2026-10-11)
+
+Användaren förtydligar: samma PDF på iPhone/iPad; ritningens bakgrund och linjer får vara mindre skarpa på telefon, men faktiska stämplar och projekterade kopplingar ska vara tydliga. Löpande publicering fortsatt godkänd.
+
+Ny DRAWING_IS_PHONE skiljer telefon från iPad. På telefon minskas bakgrundens budget från 1.8 miljoner till 900000 pixlar och full synlig-vy-detaljrendering stängs av. Original-PDF skärps i små utsnitt kring identifierade GS/projektpositioner och relevanta native PDF-annoteringar (inklusive Stamp). Inga påhittade etiketter. Upp till 16 synliga utsnitt med gemensam 350000-pixelbudget; upp till 90000 pixlar per utsnitt. Utsnitt väljs efter närhet till vyns mitt, cache återanvänds. Skärpning efter 1.2 sekunders vila och vid zoom >=100%. En aktiv rendering avbryts/resizas aldrig av gest; gammal bild släpps efter avslut. Cache töms vid projektstängning. iPad/desktop behåller full detaljvisning från v36.62. Isolerat mask-allokeringsskydd från v36.62 behålls. Nästa TEST v36.64.
+
+Verifierat: JS-syntax, faktisk roterad original-PDF-stämpel (former och text bevaras, crop-jämförelse med mindre rasteriseringsavvikelse vid subpixelklippning), mockad aktiv gest/stale rendering/cache/disposal. Fysisk iPhone ej testad; inget löfte att Safari-kraschen är slutligt löst. Skärpningen täcker identifierade regioner/native stamp-annoteringar; oidentifierade symboler som är platta PDF-grafikobjekt kan fortfarande ha bakgrundens upplösning. Kontrollflöde och iOS/TestFlight orörda.
+
+# TEST v36.62 – återskapad överstor bildmask vid zoom (2026-10-11)
+
+v36.61 löste inte användarens iPhone-krasch. Granskningen fann att PDF.js 3.11.174 `_createMaskCanvas` dimensionerar `fillCanvas` efter hela den zoomade masken och inte efter destinationscanvas. Ett kontrollerat test med exakt appens PDF.js och worker försöker skapa 14000 × 21000 pixlar (294 miljoner, cirka 1.18 GB RGBA) trots att utsnittet bara är 780 × 1200. Allokeringen fångas och blockeras av testets canvasFactory före minnesreservation.
+
+TEST v36.62 använder en isolerad kopia `smartmatch-pdf-v36-62.js`, med maskens tillfälliga färgyta klippt till destinationsbilden och motsvarande cache-offset. `vendor/pdf.min.js` och ordinarie app är oförändrade. Worker är fortfarande samma befintliga vendor-worker. Ingen skärpesänkning eller extra etiketter. Alla versionerade TEST-resurser och fasta adressen uppdaterade. Nästa TEST är v36.63.
+
+Verifierat: allokering i samma test reduceras till 780 × 1200; pixlar mot originalbiblioteket är identiska i sex scenarier med zoom, panorering, rotation, negativa offset och mask utanför vyn. Syntaxkontroller passerar. Detta är ett bekräftat allokeringsfel, men det är ännu inte bekräftat att användarens PDF innehåller den utlösande masken. Fysisk iPhone-test kvarstår; modell och jämförelse med liten PDF efterfrågades. iPad v36.60 stående använder redan samma mobila kodgren; högre minnesmarginal är en möjlig förklaring, inte uppmätt.
+
+Löpande TEST-publicering är redan godkänd av användaren. Kontrollflöde och iOS/TestFlight förblir låsta.
+
+# TEST v36.61 – mobil PDF-resurshantering (2026-10-11)
+
+Användaren bekräftar att TEST v36.60 fungerar på iPad i stående läge, men att telefonen fortfarande kraschar vid upprepad zoom. Båda använder redan samma mobila renderingsgren; inget separat iPad-läge att kopiera.
+
+v36.61 behåller v36.60:s skarpa original-PDF och frigör PDF.js analysresurser innan ritningen visas. Mobila färgskanningar och avslutade detaljrenderingar frigör också sidans cache efter att renderingen avslutats. Ingen sänkning av visningsupplösningen. Nästa TEST är v36.62.
+
+Verifierat: JS-syntax; aktiv render avslutas innan cleanup, ingen mobil extra canvas, återanvändning av färdig vy; faktisk PDF-rendering av roterad sida är pixelidentisk med originalet även efter cleanup och omrendering. Safari på fysisk iPhone har inte kunnat testas; orsaken till kraschen är fortfarande en hypotes. Publicering av SmartMatch TEST är redan löpande godkänd av användaren. Kontrollflöde och iOS/TestFlight är fortsatt orörda.
+
+# SMARTMATCH – FORTSÄTT HÄR NÄSTA GÅNG
+
+**Senast uppdaterad:** 2026-10-10  
+**Status:** Avstämning och överlämning; **ingen ny funktionskod** i denna commit.  
+**Repo:** `dyli2009-cmd/tillsyno`  
+**Senaste TEST-kodversion:** **SmartMatch TEST v36.60** (normal helhetsvy, hel synlig PDF-yta skärps efter 1,2 s stillhet med en mobilcanvas). Nästa funktionsversion är **TEST v36.61**.  
+**Fast TEST-adress:** https://dyli2009-cmd.github.io/tillsyno/project-workspace-smartmatch-test.html  
+**Viktigt:** Detta är bara Projektflöde/SmartMatch TEST; INGA ändringar i Kontrollflöde, ordinarie Dörrservice eller iOS/TestFlight utan uttryckligt nytt beslut.
+
+## Löpande publiceringsgodkännande från användaren 2026-10-11
+
+Användaren: ”Ja, men du kan publicera alltid. Behöver inte fråga. Så vi här vi håller på att ändra hela tiden, så du kan publicera bara.” Detta ger löpande godkännande att publicera de SmartMatch TEST-ändringar vi arbetar med i denna utveckling, utan nytt godkännande per testversion. Gäller inte iOS/TestFlight, ordinarie app eller låst Kontrollflöde.
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.60
+
+Användaren vill ha normalt skarpt originalutseende på hela vyn, inte stämpelpatchar. Separata utsnitt borttagna; hela synliga PDF-ytan skärps efter 1,2 s stillhet på mobil. En direkt begränsad canvas används utan extra kopia; startad rendering avslutas utan cancel/restart-churn, inaktuella resultat visas inte och gemensam kö behålls. CSS zoom under mobilpinch och skydd mot inaktuella touchend-callbacks. Verklig Node-PDF-rastertest av funktionen gav pixelidentiskt originalområde på roterad sida, 936k pixlar. Safari/CSS zoom med riktig telefon ännu ej testat. Ingen automatisk page reload i ritningskoden; Safari-processkrasch kan inte spärras med JS. Se [SMARTMATCH_TEST_V36_60.md](SMARTMATCH_TEST_V36_60.md).
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.59
+
+Användaren behöver själva originalstämplarnas former/symboler, inte extra text. SVG-text/ID-plattor borttagna. Mobilen renderar små utsnitt direkt från PDF runt identifierade stämpel-/objektområden efter 900 ms stillhet, en i taget, med pixelbegränsad cache. Kopplingspilar/ramar kvar. Riktig PDF-rastertest: roterad syntetisk färgstämples utsnitt pixelidentiskt med källrenderingen. Safari med användarens PDF ej verifierat. Se [SMARTMATCH_TEST_V36_59.md](SMARTMATCH_TEST_V36_59.md).
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.58
+
+Förtydligat behov: stämplars beteckningar ska också vara skarpa. Mobilen visar identifierade GS-/projektstämplar och automatik-ID:n som SVG-etiketter vid zoom från 100 procent. Exakta kända etiketter och sparade rektanglar används, med vit läsplatta inom rektangeln. Kopplingspilar/ramar kvar som HTML/SVG. Ingen ny rasterrendering. Okända skannade symboler rekonstrueras inte. Mocktester/syntax godkända; fysisk läsbarhet och Safari-stabilitet återstår. Se [SMARTMATCH_TEST_V36_58.md](SMARTMATCH_TEST_V36_58.md).
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.57
+
+Mobilens fasta bild kompletteras med skarp SVG-visning av riktig PDF-text, utan ny PDF-rasterrendering vid zoom. Text cachelagras och visas inom synlig yta med begränsat antal etiketter. Skannad bildtext blir inte skarpare. Datorns Positioner öppnas som en fristående flyttbar ruta; även Koppla dörrautomatik kan dras i rubriken. Mocktester/syntax godkända; verklig Safari-läsbarhet/stabilitet och musdrag återstår. Se [SMARTMATCH_TEST_V36_57.md](SMARTMATCH_TEST_V36_57.md).
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.56
+
+Filnamn-fält i sparrutan för Projekt-PDF och Protokoll, med befintligt namn som standard. Valfritt eget namn följer med filen vid sparning/delning; .pdf normaliseras automatiskt, svenska tecken och mellanslag kvar. Namnändring kräver ingen ny PDF-rendering. Syntax/namnkontroller godkända. Fysisk telefon/Dropbox-test återstår. Se [SMARTMATCH_TEST_V36_56.md](SMARTMATCH_TEST_V36_56.md).
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.55
+
+Användaren bekräftar Safari-krasch även i v36.54 efter raderad historik. Mobil zoom återanvänder nu samma begränsade PDF-raster per sida; automatisk detaljrendering avstängd på mobil, permanent canvas-GPU-hint borttagen. Datorns skärpning kvar. Hög mobilzoom kan vara suddigare: verifiera först stabilitet, sedan skärpa. Mocktest: åtta mobilzoomar ger en enda PDF-rendering och ingen detaljrendering. Fysisk telefonverifiering återstår. Se [SMARTMATCH_TEST_V36_55.md](SMARTMATCH_TEST_V36_55.md).
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.54
+
+Snabb mobilzoom/panorering: helbild och detaljbild renderas i samma kö, avbrutna canvasytor frigörs i finally, lägre mobilpixelbudget och 450 ms stillhet före skärpning. Safari-minnestryck är misstänkt men fysisk iPhone-test återstår. Extern PDF öppnas direkt; lokal återställning erbjuds via kort rad Återställ / Behåll PDF. Samma aktiva session återupptas utan popup. Automatisk sparning är fortsatt lokal arbetskopia; extern Projekt-PDF sparas uttryckligen. Mocktester för avbrott/serialisering/återställning och syntax godkända. Se [SMARTMATCH_TEST_V36_54.md](SMARTMATCH_TEST_V36_54.md). Endast TEST; iOS/TestFlight och Kontrollflöde orörda.
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.53
+
+På startsidan finns nu **Radera** per lokalt sparat projekt och **Radera alla** för hela lokala projekthistoriken. Säkerhetsfråga innan radering; tar bara bort SmartMatchs lokala arkiv och tillhörande utkast i IndexedDB, aldrig PDF-filen i Filer/Dropbox. Efter radering uppdateras listan direkt. Vanliga **Stäng ritning** fortsätter att lagra en lokal säkerhetskopia automatiskt. Detta gör det möjligt att testa vad som verkligen finns i en sparad **Projekt-PDF** separat från telefonens minne. Ny `smartmatch-session-v36-53.js` används enbart i TEST. **Dropbox är inte realtidssamredigering av en PDF**: två användare som sparar samma fil kan skriva över varandras ändringar; versionskontroll/konflikthantering behövs för säkert gemensamt arbete. [SMARTMATCH_TEST_V36_53.md](SMARTMATCH_TEST_V36_53.md) beskriver tre rekommenderade tester och simulerade IndexedDB-kontroller. Fysisk Safari/Dropbox-test återstår. Ordinarie app och TestFlight orörda.
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.52
+
+**Akut iPhone-fel efter Stäng ritning:** Försök att öppna PDF B gav `null is not an object (evaluating "$('pmCancel').hidden=true")`. Rotorsaken: `renderGroups()` flyttar `#pwPositionEditor` in i `#pwGroups`; `smartResetWorkspace()` rensade sedan `#pwGroups` och tog därmed av misstag bort `pmCancel` och hela redigeraren ur DOM. Fix: flytta tillbaka exakt samma editor-nod till `#pwSide` **innan** rensning, stäng/redigera tillfälliga fält, skydda `pmCancel()` med DOM-null-kontroll. Testat DOM-reset **två gånger i följd** med alla sju knappar/fält bevarade. [SMARTMATCH_TEST_V36_52.md](SMARTMATCH_TEST_V36_52.md). Den fasta TEST-länken uppdaterad, tidigare v36.51 kvar, ordinarie app och iOS/TestFlight orörda. Verklig iPhone-test återstår.
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.51
+
+Telefonens synliga ikoner, rubriker, filrad, ritningsverktyg och nedersta sid-/zoomknappar är mindre för att frigöra ritningsyta. **✓ Avsluta** har bytts till **Stäng ritning**. Nu behövs normalt bara **ett tryck** för att tyst arkivera en lokal arbetskopia, stänga ritningen och återvända till **startsidan där man öppnar en ny PDF**. Ingen teknisk ”Avsluta projekt”-dialog vid lyckat förlopp. Vid misslyckad lokal arkivering stannar PDF öppen och en kort felruta erbjuder **Fortsätt, Spara PDF, Stäng ändå**. Efter lyckat avslut återställs projektväxlingsspärren innan listan med lokala projekt uppdateras. *Lokal arkivering är inte samma sak som att Filer/Dropbox-PDF uppdateras.* Se [SMARTMATCH_TEST_V36_51.md](SMARTMATCH_TEST_V36_51.md). Simulerade success-/feltester och statisk kodvalidering godkända; fysisk mobiltest återstår. Kontrollflöde, ordinarie app och iOS/TestFlight är orörda.
+
+## Uppdatering 2026-10-11: SmartMatch TEST v36.50
+
+Beslutade montagetider: magnet 30 min, armbågskontakt 30 min, dörrautomatik 8 timmar, dörrstängare 30 min, låshus 20 min, trycke 10 min, slutbleck 10 min, cylinder 20 min och WC-behör 10 min. Ny standardkategori 179 utrymningsbehör hittas i relevanta kontrollpunkter men får **ingen uppskattad tid** förrän den anges. Tidsöversikten visar nu bara **förekommande kategorier** i projektets identifierade kontrollpunkter. Egna per-punktstider har företräde; ändrade standardtider lagras för nästa nytt projekt på samma enhet, och projektets tidsinställning följer med när projekt-PDF sparas. Befintliga PDF-filer med avsiktligt sparade tidinställningar prioriterar dessa. Kort dokumentation och syntetiska testresultat i [SMARTMATCH_TEST_V36_50.md](SMARTMATCH_TEST_V36_50.md). Fysisk iPhone/iPad-test återstår. Ordinarie app/Kontrollflöde/TestFlight är orörda.
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.49
+
+Föregående mobilprotokoll v36.48 kunde synas **hela tiden** eftersom `display:flex!important` gavs åt en stängd HTML-dialog. Det är rättat: `pwProtocol` döljs tvingande utan `[open]`. Den delade jämförelsen har nu en separat `pwCardCompareMode` som endast sätts av `openProtocol` när faktiskt dörrkort är kopplat till GS/positionen och tas bort vid stängning. Samtidigt har mobilens rubriker, zoomknappar, ikon-/textstorlek, kontroller och åtgärdsrader komprimerats. 22 px kryssrutor och hela klickbara punktrader kvar. Det är enbart **SmartMatch TEST**; ordinarie app, iOS och PDF-export oförändrade. Se [SMARTMATCH_TEST_V36_49.md](SMARTMATCH_TEST_V36_49.md). Fysisk iPhone/iPad-test återstår.
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.48
+
+Mobilens projektprotokoll är nu delat **vänster 50 % originalprotokoll + höger 50 % kontrollpunkter** i samma vy; ingen växling mellan dem behövs. Varje panel rullas självständigt. Originalprotokollet kan zoomas/flyttas och passar initialt vänsterhalvans bredd. Kontrollpunkterna kan bockas av genom att trycka på hela textraden, med tydligare 22 px kryssruta. Ändra/Ta bort kvar på andra raden på smal telefon. Även iPad mellan 700–1100 px får jämn fördelning. Endast **SmartMatch TEST**: inga Kontrollflöde, ordinarie app, TestFlight eller PDF-exportändringar. Test på fysisk iPhone/iPad återstår. Dokumentation: [SMARTMATCH_TEST_V36_48.md](SMARTMATCH_TEST_V36_48.md).
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.47
+
+Sparningen är nu förenklad för iPhone, iPad och dator. **Spara** öppnar en kompakt ruta med **Projekt-PDF** eller **Protokoll** och bara åtgärderna **Spara fil** och **Skicka mejl**. Manuel analys/optimering och extra sparval är borttagna från den synliga vyn. Projekt-PDF förbereds och verifieras automatiskt när dialogen öppnas; protokollbilagan förbereds när urvalet visas eller ändras så att iOS kan dela PDF direkt från användarens klick. Tidigare projektdata-/statuskontroll och lokala säkerhetsutkast finns kvar. Webbens fasta TEST-sida pekar på v36.47, **inte** ordinarie TestFlight. **Observera:** praktisk iPhone/iPad/Dropbox/Mail-test och 17-automatikers återöppningstest återstår. Läs [SMARTMATCH_TEST_V36_47.md](SMARTMATCH_TEST_V36_47.md).
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.46
+
+Manuell DA-placering på iPhone/iPad: Safari touchpan stoppas lokalt i aktivt läge, krysset placeras 58 px ovanför pekfingret vid touch. Efter drag/släpp kommer en förhandsruta med fyrhörns-handtag (44px hit-area), mittgrepp för flytt, finjusteringsknappar 2px vänster/upp/ned/höger och ± storlek, **Rita om**, **✓ Spara**, **Avbryt**. Inget skapas i projektet före bekräftelse; exakt finjusterad rektangel konverteras då till PDF-koordinater. Datorn använder också valfri finjustering före sparning. Återaktivera vanlig touchscroll efter avslut. Se [SMARTMATCH_TEST_V36_46.md](SMARTMATCH_TEST_V36_46.md).
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.45
+
+Verktyg → Koppla dörrautomatik förenklat till fältet **Märkning** och knappen **＋ Placera manuellt**. "Analysera märkningar", långa familjtexter och analysresultaten tas bort från gränssnittet; den separata objekt/GS-scannern lämnas orörd. Placering använder **drag-rektangeln** från den befintliga ändringsfunktionen, plusmarkör som följer pekaren och en liten avbrytsbar instruktion nere på skärmen. Vid kort tryck görs ingen gissad, förskjuten ruta. Vid drag/släpp sparas exakt rektangel i PDF-koordinater och därefter öppnas dörrens val. Den tidigare automatkopplingen till närmaste GS tas bort i detta manuella flöde, så användaren väljer rätt GS separat. PDF-exportfix från 36.44 (tomt statusindex när procentstämplar saknas) är bevarad. Se [SMARTMATCH_TEST_V36_45.md](SMARTMATCH_TEST_V36_45.md).
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.43
+
+Den inbyggda webbläsar-popupen `window.confirm` på **↻ Uppdatera** har ersatts av appens egen formgivna dialog med knapparna **Uppdatera och fortsätt**, **Spara PDF först**, **Avbryt · fortsätt arbeta**. Dialogen förklarar lokal arbetskopia kontra färdig PDF. När användaren godkänt omladdning tar v36.43 en aktuell projektsnapshot, inväntar IndexedDB-sparning och käll-PDF-cache och återställer projektet automatiskt *utan ytterligare webbläsarfråga* efter laddning. Vid sparfel stoppas uppdateringen och arbetet lämnas kvar. Se [SMARTMATCH_TEST_V36_43.md](SMARTMATCH_TEST_V36_43.md). Ordinarie app orörd.
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.42
+
+Text, Text + pil och Pil fick en direktredigerare för ritningen utan `window.prompt`. Efter placering eller tryck på en befintlig text/linje öppnas en kompakt på-ritningen-panel med text, färger, storlek, fetstil, ramens form/färg, bakgrundsfärg och pilens tjocklek. Ändringar förhandsvisas löpande och sparas via befintlig projektstate och undo/redo. Låt rensning/byte av verktyg avbryta osparat utkast. Pilspetsen följer vald färg. Webb/iPad/iPhone behöver praktiskt klick/drag- och tangentbordstest, och verklig PDF-export bör kontrolleras separat: v36.42 fokuserar arbetsvyns markeringar och projektmetadata. Se [SMARTMATCH_TEST_V36_42.md](SMARTMATCH_TEST_V36_42.md).
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.41
+
+Revision dörrautomatik har nu bara synliga primära åtgärderna **Klart** och **Kundmall** (samt × för att stänga); separat Spara lokalt/Skicka mejl döljs också i kundmallens preview. **Klart** inväntar att lokalt utkast skrivs färdigt innan revisionen stängs, med felmeddelande om lagringen misslyckas; ingen PDF-filsparning sker automatiskt. Anläggning / objekt-fältet med placeholder med projektnamn tas bort från formuläret utan att radera tidigare sparat projektnamn/PDF-metadata. Punkt 1.5 och 1.12 får kortare visningstexter på en rad, fullständiga texter bevaras i PDF-protokollet. Se [SMARTMATCH_TEST_V36_41.md](SMARTMATCH_TEST_V36_41.md).
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.40
+
+Skanningsrutan visar fortfarande verkliga steg och procent/progressbar men har inte längre uppskattad återstående tid (sekunder/minuter), inte heller förklaringstexten 'Procenten följer skanningen. Tiden är ungefärlig.'. Skämten är större och mer lättlästa på iPhone och iPad. ETA-logik och dess uppdateringsanrop borttagna; skämten roterar ungefär var sjätte sekund under pågående skanning. Endast TEST. Se [SMARTMATCH_TEST_V36_40.md](SMARTMATCH_TEST_V36_40.md).
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.39
+
+Användaren vill kunna avsluta aktuell PDF utan att stänga appen och öppna nästa. Projektsparning via IndexedDB per hash + lokal utkaststatus; knapp '✓ Avsluta' → 'Spara lokalt och avsluta' och val 'Spara projekt-PDF' som öppnar befintlig export. Startsida listar tidigare lokalt arkiverade projekt och öppnar dem med vyåterställning. Lokalt arkiv är **inte** automatiskt PDF i Filer/Dropbox. Dokumentation [SMARTMATCH_TEST_V36_39.md](SMARTMATCH_TEST_V36_39.md). Fortsatt test med riktig iPhone/iPad och flera stora filer.
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.38
+
+PDF-status låg för långt från rätt GS-ritningsposition, särskilt på roterade ark. Exporten använder nu motsvarande PDF.js-displaykoordinater inklusive CropBox och /Rotate för att fästa procent inom ett fåtal punkter från exakt GS-rect. Markeringskrockar jämförs med övriga GS och redan placerade etiketter, väljer närmaste lediga sida, ledarlinje om längre än 6 pt. Se [SMARTMATCH_TEST_V36_38.md](SMARTMATCH_TEST_V36_38.md). v36.37 kvar.
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.37
+
+PDF-stämpeln syntes spegelvänd/upp och ned i en exporterad ritning ("%001"). Rotationskompensation rättad från minus- till plusvinkel och stämpelns gränsrektangel hanteras för 90/270°-sidor. Endast SmartMatch TEST: se [SMARTMATCH_TEST_V36_37.md](SMARTMATCH_TEST_V36_37.md). v36.36 behålls.
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.36
+
+Användaren såg fortfarande dubbla 100 % på ritningen efter v36.35. Orsaken kan vara tidigare genererade SM35:progress-FreeText. Vid öppning saneras en visningskopia av PDF:en från gamla FreeText och nya genererade progress-strömmar, originalbytes för export bevaras. Se [SMARTMATCH_TEST_V36_36.md](SMARTMATCH_TEST_V36_36.md). Testa omgående med den PDF användaren observerade dubbleringen i.
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.35
+
+Extra 100 %-text i arbetsvyn kontra lagrad PDF: flyttad från redigerbara PDF FreeText-annoteringar till horisontellt PDF-sidinnehåll nära GS. PDF-lager synligt i läsare men döljs i SmartMatch-arbetsvyn. Versionssäkra innehållsströmmar byts ut vid omexport; tidigare SM35-annoteringar städas av befintlig kod. Dokumentation: [SMARTMATCH_TEST_V36_35.md](SMARTMATCH_TEST_V36_35.md). Första exporten av äldre PDF kan visa äldre FreeText tills den nya filen öppnats. Viktigt att testa export i Filer/Acrobat och rundresa.
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.34
+
+Användaren påtalade hoppande zoom och spontana Safari-omrenderingar; också ikonmeny, bort med nedersta Plan 0 och kompakt Tid. Se [SMARTMATCH_TEST_V36_34.md](SMARTMATCH_TEST_V36_34.md). Behåll v36.33 för jämförelse.
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.33
+
+iPhone/iPad: Verktyg-meny klipptes bort, Analys för lång och revisionsuppgifter överlappade. Fix och tester i [SMARTMATCH_TEST_V36_33.md](SMARTMATCH_TEST_V36_33.md). Behåll v36.32 för jämförelse.
+
+## Uppdatering 2026-10-10: SmartMatch TEST v36.32
+
+Användaren godkände mobilkompakt huvudmeny, gemensam Spara-meny med projekt/protokoll, kort filstorleksanalys, protokollfilter och autosparat lokalt utkast. Implementationen dokumenteras i [SMARTMATCH_TEST_V36_32.md](SMARTMATCH_TEST_V36_32.md). Fortsätt med manuella test enligt detta dokument; v36.31 kvar som referens.
+
+## Ny återkoppling från användaren
+
+**Bekräftat av användaren efter senaste testet:** "Det har jag faktiskt testat ... den funkar nu" (2026-10-10). Den senaste rättningen för sparning/delning fungerar enligt test i användarens miljö; särskilt iPad/Dropbox-problemet var det senaste som diskuterades. **Behandla v36.31 som fungerande för det användaren nyss testat** och ändra inte detta utan att ett nytt fel påvisas. Exakt vilka separata återöppningstester med 17 automatiker, GS-pilar och checklistsvar som ingick framgår inte av återkopplingen och är därför ännu inte separat dokumenterat som verifierat.
+
+**Beslut om nästa steg:** Avsluta arbetsdagen. Nästa gång börjar vi med att gemensamt gå igenom vad som byggts och den sparade listan med idéer. Användaren bestämmer sedan vad som ska ändras eller läggas till. **Inga fler funktionsändringar begärdes.**
+
+## 1. Beslutat – det vi INTE ska behöva diskutera om
+
+1. **Själva PDF-filen är projektets sanningskälla.** Alla projektändringar ska följa med när filen sparas, delas och öppnas igen i valfri webbläsare/enhet. Gammal lokal historik i Chrome/Safari får ALDRIG tyst skriva över PDF:ens tillstånd.
+2. **Dörrautomatiker ingår i projektet.** Objekt/ID, modell, serienummer, sida, PDF-koordinater, storlek/placering, manuella GS-kopplingar/pilar, revisionens checklistor, status, anmärkningar, signatur/övrigt som stöds, SLR-/dokumentstatus och projektuppgifter ska återställas.
+3. **Dörrkort/GS ska fortsätta fungera oförändrat** inklusive "första ID-raden på dörrkortet först" och exakt matchning mot ritning. Befintliga kontrollpunkter, arbetsresultat, markeringar, egna punkter, anteckningar och projektlogga ska bevaras.
+4. **Samma fil fungerar för flera tekniker, sekventiellt.** Tekniker A sparar PDF; tekniker B öppnar den, gör ändringar och sparar en *nyare filversion*; A öppnar denna uppdaterade fil och ser B:s status. Detta kräver att A faktiskt öppnar B:s exporterade fil – automatisk realtidssynk är **inte** byggd.
+5. **Sparningen måste kunna verifieras.** Innan export: kontrollera att skapad PDF verkligen innehåller förväntat antal automatiker, GS-kopplingar, checklistsvar, koordinater och full projektpayload. Visa tydlig avvikelse i stället för att påstå att allt är sparat.
+6. **Bevara samma ursprungliga PDF-filnamn som förvalt exportnamn**, men skriv inte över enda fungerande original under test. Dropbox/iPad ska helst ge **en enda .pdf**, ingen extra textfil för delningstitel/revisionsprotokoll.
+7. **Laddningsvy:** 0–100 % efter verkliga arbetssteg, korta varierade kollegaskämt ungefär var sjätte sekund, längre skämt när tung PDF står still länge och en försiktig ETA. Utseendet och skämtfunktionen ska inte påverka scanners.
+8. **Inga kundritningar, hemliga ID-listor, säkerhetskänsliga bilagor eller API-nycklar i offentliga GitHub-repot.**
+
+## 2. Senaste byggda TEST-versioner
+
+| Version | Faktisk ändring | Status |
+| --- | --- | --- |
+| v36.26 | Första laddningsprocenten och skämt under skanning | Byggd |
+| v36.27 | 30 roterande kollegaskämt | Byggd |
+| v36.28 | 60 korta + 24 längre, ca 6 sek, ungefärlig ETA | Byggd |
+| v36.29 | Återställde äldre DA-skanner från v36.23 och tog bort tidig rensning av automatiker vid PDF-läsning | Byggd; verklig DA-återläsning inte slutverifierad |
+| v36.30 | PDF blir auktoritativ, browser-local projektdata får inte överstyra; komplett metadata + läs-tillbaka-validering innan export | Byggd; **manuellt återöppningstest med riktig PDF återstår** |
+| **v36.31** | iPad/iOS-delning till Dropbox skickar enbart PDF-filer, utan `title`/`text` som kan bli extra textfil | **Publicerad; verifiera manuellt i Dropbox på iPad** |
+
+v36.31 publicerad via GitHub Pages. Läs även `SMARTMATCH_TEST_V36_30.md` och `SMARTMATCH_TEST_V36_31.md` före kodarbete. Produktionen och TestFlight har INTE publicerats som en del av detta.
+
+## 3. Konkreta problem och osäkerheter
+
+- **DA försvinner vid överföring mellan webbläsare/filer.** Tidigare kunde användaren se **17 automatiker i Chrome** men **0 i Safari**, och en lokalt sparad PDF gav 0 även vid nyöppning i Chrome. Mest sannolikt: 17 låg i Chromes gamla lokala projekthistorik eller exporterades inte med; det är ännu inte bevisat om aktuell v36.30/31 löser hela scenariot med *riktig PDF*. **Påstå inte att buggen är slutligt löst innan återöppningstest har passerat.**
+- **Migration från gammal lokal Chrome-status är kritisk:** v36.30/31 läser avsiktligt inte den gamla historiken. Om 17 enbart finns i en äldre webbläsares localStorage kan de gå förlorade vid övergång till den nya PDF-first-vyn. Behåll originalet och den fungerande Chrome-sessionen! Om 17 bara syns i äldre v36.29, öppna då den **sparade sessionen i v36.29**, exportera *en kopia* till PDF och verifiera att det står 17 i v36.30/31:s exportkontroll/återöppning. Om migration inte fungerar, implementera ett **separat och användarbekräftat "Importera äldre lokal projektstatus"**-flöde som aldrig automatiskt skriver över filen.
+- **Dropbox/iPad extra textfil:** v36.31 tog bort `title` och `text` från iOS-delning och skickar bara `files`; **inte manuellt bekräftat** att Dropbox nu enbart får PDF. Testa specifikt revisionsprotokoll → Spara lokalt → Dropbox, samt hel projekt-PDF → Spara lokalt → Dropbox.
+- **Projekt-PDF och enskild revisions-PDF är två olika exporter.** En egenkontrolls knapp heter numera **Klart**, som stänger redigeringen; för komplett projektinformation ska man välja **PDF → granska/verifiera → Spara lokalt/Spara som**. Utveckla gärna tydligare förklaring där för att undvika handhavandefel.
+- **Samtidiga ändringar är inte automatiskt sammanfogade.** PDF-first stödjer sekventiell överlämning, inte parallell säkrad synk. Cloud-integration, låsning och konfliktflöde är endast plan i `SMARTMATCH_SAMARBETE_OFFLINE_PLAN.md`.
+
+## 4. Starta nästa arbetspass – kort testchecklista
+
+1. Fråga först användaren om resultaten från iPad/Chrome/Safari och bekräfta **vilket filnamn och vilken exakt PDF-kopia** som öppnades. Be inte om känsliga ritningar i public GitHub.
+2. Kontrollera repo `main`, `DEVELOPMENT_RULES.md`, versionsmärkt TEST-HTML och GitHub Pages-deploy. Efter v36.32: nästa v36.33.
+3. Använd en **kopia** av känd PDF med 17 automatiker. Öppna i Chrome, se 17 i DA-listan. Välj **PDF → granska**, kontrollera att "Verifierad projekt-PDF" visar 17 (inte 0), spara en ny PDF. Öppna exakt ny sparad fil i Chrome och Safari/iPad. Kontrollera 17 positioner, dörrkort, GS-pilar, revisionsstatus och anmärkningar.
+4. Öppna filen i en annan webbläsare med gammal lokal historik, testa att PDF-innehållet bestämmer. Låt kollega ändra en kontrollpunkt/placering och exportera reviderad PDF; öppna den på den första enheten.
+5. Testa iPad → Dropbox: spara enskilt revisionsprotokoll och hel projekt-PDF. Kontrollera att båda sparas som korrekt **.pdf** och **inte skapar separat .txt-fil**.
+6. Om verkligt återöppningstest misslyckas: undersök PDF metadata `TillsynoSmartMatchV36Data` och `TillsynoSmartMatchV30Data`, `makeProjectPayload`, `buildPortableProjectPdf`, `verifyPortableProjectPdf`, `readEmbeddedProjectState`, `buildInstances`, `automationItems` i versionsfilen. Skapa nästa version endast för verifierad orsak; lämna tidigare TEST-filer intakta.
+7. Vid framgång: notera verifierad version/resultat i detta dokument och bestäm därefter nästa utvecklingsuppgift med användaren.
+
+## 5. Prioriterade idéer för efter testet
+
+**P0 – Datatrygghet:** Säker import av äldre lokal Chrome-data när PDF saknar automatiska positioner (endast efter tydlig bekräftelse), varna om sparad PDF har 0 automatiker fast projektet innehåller 17, markera om ändringar finns som ännu inte exporterats. Visa tydlig status "Sparat i PDF" kontra "Osparat arbete", och enklare filverifiering.
+
+**P1 – PDF och återupptagning:** Snabbare öppning av färdiga PDF-projekt utan onödig full omskanning av redan sparade positioner; kontrollera att gamla koordinater fortfarande gäller; bättre hantering av stora PDF (30 MB+) och skarp zoom på iPad/iPhone, med stegvis skanning enbart där PDF:n verkligen ändrats.
+
+**P2 – Arbetsflöde för tekniker:** Smidig koppling "ritning ↔ dörrkort ↔ DA-revision/SLR" med en enkel knapp för manuell omkoppling när ritningen ändras; selektera många dörrar/egenkontroller och markera klara; tydlig projekt-/revisionshistorik (vem ändrade vad och när) och förhandsgranskning av vad kunden får.
+
+**P3 – Samarbete/säkerhet:** Designa delat projekt med offlinekö, projekt-/dörrversions-ID, individuell dörrlåsning online, ändringslogg, synkstatus och konfliktbeslut hos arbetsledare. Läs `SMARTMATCH_SAMARBETE_OFFLINE_PLAN.md`. **Inte implementerat, inget beslut om molnleverantör och inga externa kundfiler ska skickas utan uttryckligt godkännande.**
+
+## 6. Så ska nästa ChatGPT-pass starta
+
+Öppningsfras för fortsatt arbete:
+
+> Vi fortsätter SmartMatch från `SMARTMATCH_FORTSATTNING_2026-10-10.md` i GitHub-repot `dyli2009-cmd/tillsyno`. Kolla senaste versionen och noteringarna. Börja med 17-automatikers återöppningstest och Dropbox-textfilen innan nya funktioner byggs.
+
+**Versionsdisciplin:** Se alltid `DEVELOPMENT_RULES.md`. Ändra aldrig ordinarie TestFlight/Kontrollflöde utan nytt godkännande. Nästa TEST efter bekräftad v36.31 = v36.32. Behåll fasta `project-workspace-smartmatch-test.html` vid varje funktionspublicering.
+
+**Påminnelse:** Användaren har bett om en framtida påminnelse och idéer när arbetet återupptas; **ingen tid är angiven och ingen automation har skapats**. Fråga om önskat datum/klockslag för en verklig notifiering.
+
+
+

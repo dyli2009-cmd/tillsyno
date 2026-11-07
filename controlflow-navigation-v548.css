@@ -1,0 +1,135 @@
+/* v2.4.548: shared header, chooser navigation and one empty-state instruction.
+   Existing PDF controls, theme, text scale and v547 scrolling remain in use. */
+@layer controlflowStandard {
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .secAppHeader.cfNavigationHeader {
+  display:grid!important;
+  grid-template-columns:44px minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:8px 12px!important;
+  padding:10px 12px!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfNavigationHeader>.cfHeaderHomeSlot {
+  grid-column:1;grid-row:1;align-self:start;justify-self:start;min-width:0;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfNavigationHeader>.cfHeaderContext {
+  grid-column:1/-1;grid-row:2;display:grid;gap:4px;min-width:0;width:100%;text-align:center;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfNavigationHeader .cfHeaderContext :is(.brand,.headerDetails) {
+  grid-area:auto!important;flex:none!important;min-width:0!important;width:100%!important;margin:0!important;text-align:center!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfNavigationHeader .headerDetails {
+  justify-content:center!important;gap:4px 8px!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfNavigationHeader .headerSubtitle {
+  flex:1 1 100%!important;text-align:center!important;overflow-wrap:anywhere;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfNavigationHeader>.headerActions {
+  grid-column:2!important;grid-row:1!important;display:flex!important;flex-wrap:wrap!important;
+  justify-content:flex-end!important;align-items:center!important;gap:8px!important;
+  min-width:0!important;max-width:100%!important;width:100%!important;margin:0!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfNavigationHeader .cfPrimaryActions {
+  display:flex;flex-wrap:nowrap;align-items:stretch;justify-content:flex-end;gap:8px;min-width:0;max-width:100%;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .secAppHeader.cfNavigationHeader .appHeaderIconButton {
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;
+  width:auto!important;min-width:44px!important;max-width:100%!important;min-height:44px!important;height:auto!important;
+  padding:8px 10px!important;font-size:calc(.875rem * var(--cf-text-scale,1))!important;
+  line-height:1.35!important;white-space:normal!important;box-sizing:border-box;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfNavigationHeader .appHeaderIconButton svg {
+  width:22px!important;height:22px!important;flex:none!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfNavigationHeader .appHeaderIconButton span {
+  font-size:inherit!important;line-height:inherit!important;white-space:normal!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .secAppHeader.cfNavigationHeader [hidden] {
+  display:none!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfNavigationHeader .homeIconLink span,
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfNavigationHeader #securityPreview .cfActionFull {
+  display:none!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfNavigationHeader #securityPreview .cfActionCompact,
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfNavigationHeader #securityExport>span {
+  display:inline!important;
+ }
+ /* Hidden file actions keep their existing state; an empty group occupies no space. */
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .cfNavigationHeader .workspaceHeaderFiles:not(:has(button:not([hidden]))) {
+  display:none!important;
+ }
+ /* Security Service already suppresses both title and file details while drawing. */
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout].secHasPdf[data-view="drawing"] .cfHeaderContext {
+  display:none!important;
+ }
+ @media(max-width:400px) {
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp .cfNavigationHeader .cfPrimaryActions {
+   flex-wrap:wrap;
+  }
+ }
+ @media(min-width:1100px) and (hover:hover) and (pointer:fine) {
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:not(:where([data-tillsyno-device="phone"],[data-tillsyno-device="tablet"],[data-cf-large-text])) body.allInOneApp .secAppHeader.cfNavigationHeader {
+   grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr)!important;
+   padding:10px 16px!important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:not(:where([data-tillsyno-device="phone"],[data-tillsyno-device="tablet"],[data-cf-large-text])) body.allInOneApp .cfNavigationHeader>.cfHeaderContext {
+   grid-column:2;grid-row:1;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:not(:where([data-tillsyno-device="phone"],[data-tillsyno-device="tablet"],[data-cf-large-text])) body.allInOneApp .cfNavigationHeader>.headerActions {
+   grid-column:3!important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:not(:where([data-tillsyno-device="phone"],[data-tillsyno-device="tablet"],[data-cf-large-text])) body.allInOneApp .cfNavigationHeader .homeIconLink span,
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:not(:where([data-tillsyno-device="phone"],[data-tillsyno-device="tablet"],[data-cf-large-text])) body.allInOneApp .cfNavigationHeader #securityPreview .cfActionFull {
+   display:inline!important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:not(:where([data-tillsyno-device="phone"],[data-tillsyno-device="tablet"],[data-cf-large-text])) body.allInOneApp .cfNavigationHeader #securityPreview .cfActionCompact {
+   display:none!important;
+  }
+ }
+
+ /* Back has its own row, so every chooser title is centered on the whole dialog. */
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog .allProtocolHead {
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important;text-align:center!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog .allFolderHeading {
+  grid-column:1/-1;min-width:0!important;width:100%!important;max-width:none!important;text-align:center!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog #allFolderBack {
+  grid-column:1/-1;justify-self:start;max-width:100%!important;min-height:44px!important;height:auto!important;
+  font-size:calc(.875rem * var(--cf-text-scale,1))!important;line-height:1.35!important;
+  white-space:normal!important;overflow-wrap:anywhere;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog[data-stage] .allProtocolActions {
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog .allProtocolActions>.allProtocolHome {
+  grid-column:1!important;justify-self:start;width:auto!important;min-width:44px!important;max-width:100%;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog #allProtocolApply {
+  grid-column:2!important;justify-self:end;width:auto!important;max-width:100%;
+ }
+ @media(max-width:700px) {
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog[data-stage] .allProtocolActions {
+   grid-template-columns:minmax(0,1fr)!important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog #allProtocolApply {grid-column:1!important;}
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-tillsyno-device="phone"],[data-cf-large-text]) body.allInOneApp #allProtocolDialog[data-stage] .allProtocolActions {
+  grid-template-columns:minmax(0,1fr)!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-tillsyno-device="phone"],[data-cf-large-text]) body.allInOneApp #allProtocolDialog #allProtocolApply {
+  grid-column:1!important;
+ }
+ /* The menu's service-overview text action is not a square drawing-tool icon. */
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .serviceToolsMenu #revisionOverviewTool:not([hidden]) {
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  grid-column:1/-1;align-self:stretch;flex:none!important;
+  width:100%!important;max-width:100%!important;min-width:44px!important;min-height:44px!important;height:auto!important;
+  padding:8px 12px!important;box-sizing:border-box;font-size:var(--cf-label)!important;line-height:1.35!important;
+  white-space:normal!important;overflow-wrap:anywhere!important;text-align:center!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp:not(.secHasPdf)[data-view="drawing"] .objectBar .objectTitle,
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #secEmpty>p {
+  display:none!important;
+ }
+}

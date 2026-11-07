@@ -1,0 +1,4 @@
+/* Explicit geometry, not a temporary transform: keep the view stable while PDF sharpens. */
+body.allInOneApp #secViewer{overflow-anchor:none;scroll-behavior:auto;overscroll-behavior:contain}
+body.allInOneApp #secStage{overflow-anchor:none}
+body.allInOneApp #secViewer.pinching #secStage{will-change:auto}

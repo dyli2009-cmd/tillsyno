@@ -1,0 +1,66 @@
+<!doctype html><html lang="sv" data-tillsyno-theme="mist"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Egenkontroll – visningstest 9.100.35</title><style>body{margin:0;font:14px system-ui;background:#e6edf1;color:#233f52}#qaTools{display:flex;flex-wrap:wrap;gap:8px;padding:10px}#qaTools button,#qaTools select{font:inherit;padding:7px;border:1px solid #a6bdc7;border-radius:5px;background:white}#qaFrame{display:block;margin:auto;border:1px solid #a6bdc7;height:840px;background:#e6edf1}#qaResult{padding:0 12px;white-space:pre-wrap}</style></head><body>
+<script>
+(async()=>{
+ const params=new URLSearchParams(location.search);
+ if(!params.has('frame')){
+  document.body.innerHTML='<div id="qaTools"><strong>Visningstest · enbart exempeldata</strong><select id="qaDevice" aria-label="Enhet"><option value="390">Telefon 390</option><option value="820">iPad 820</option><option value="1100">Dator 1100</option></select><button id="qaSelf">Egenkontroll</button><button id="qaPreview">Kundmall</button><button id="qaSave">Spara projekt</button><button id="qaRun">Kör kontroller</button></div><p id="qaResult" role="status">Laddar…</p><iframe id="qaFrame" title="Egenkontroll i vald skärmstorlek"></iframe>';
+  const frame=document.getElementById('qaFrame'),device=document.getElementById('qaDevice');
+  const load=()=>{document.getElementById('qaResult').textContent='Laddar…';for(const b of document.querySelectorAll('#qaTools button'))b.disabled=true;frame.style.width=device.value+'px';frame.src=location.pathname+'?frame=1&v=9.100.35';};
+  device.onchange=load;document.getElementById('qaSave').onclick=()=>frame.contentWindow.qaSave();document.getElementById('qaSelf').onclick=()=>frame.contentWindow.qaSelf();document.getElementById('qaPreview').onclick=()=>frame.contentWindow.qaPreview();
+  document.getElementById('qaRun').onclick=async()=>{const output=document.getElementById('qaResult');output.textContent='Kontrollerar…';try{output.textContent=await frame.contentWindow.qaRun()}catch(e){output.textContent='FEL: '+e.message;}};
+  window.qaReady=()=>{document.getElementById('qaResult').textContent='Redo. Egenkontroll och kundmall använder appens aktuella kod.';for(const b of document.querySelectorAll('#qaTools button'))b.disabled=false;};load();return;
+ }
+ document.body.className='smDockWorkspace';
+ const html=await (await fetch('../smartmatch-read-v9-100.html?v=9.100.35',{cache:'reload'})).text(),parsed=new DOMParser().parseFromString(html,'text/html');
+ for(const style of parsed.querySelectorAll('style'))document.head.append(style.cloneNode(true));
+ await Promise.all([...parsed.querySelectorAll('link[rel=stylesheet]')].map(original=>new Promise(resolve=>{const link=document.createElement('link');link.rel='stylesheet';link.href=new URL('../'+original.getAttribute('href'),location.href);link.onload=link.onerror=resolve;document.head.append(link);})));
+ for(const id of ['pwAutomationDialog','pwAutomationPreviewDialog','smartExportDialog'])document.body.append(parsed.getElementById(id));
+ const script=src=>new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='../'+src;s.onload=resolve;s.onerror=reject;document.body.append(s)});
+ await script('smartmatch-windows-v9-100-13.js?v=9.100.35');await script('smartmatch-protocol-viewer-v9-100-33.js?v=9.100.35');await script('vendor/jspdf.umd.min.js');await script('vendor/pdf.min.js');pdfjsLib.GlobalWorkerOptions.workerSrc='../vendor/pdf.worker.min.js';
+ const $=id=>document.getElementById(id),checks=[['1.1','Kontrollera fastsättning'],['1.2','Dörrblad, gångjärn och infästningar'],['1.5','Öppning: kraft, dämpning och hastighet'],['1.12','Lås: slutbleck, motorlås och låshus']];
+ const source=await (await fetch('../smartmatch-read-main-v524.js?v=9.100.35')).text(),a=source.indexOf('const AUTOMATION_CHECK_ROW_LABELS='),b=source.indexOf('function renderAutomationProtocol(',a);
+ let current={id:'qa:1',checks:{}},saved;
+ const state={el:{automationChecks:$('pwAutomationChecks')},PROJECT_AUTOMATION_CHECKS:checks,PROJECT_AUTOMATION_FAULTS:{},selectedAutomation:()=>current,automationProgressOf:()=>0,save:()=>{saved=JSON.parse(JSON.stringify(current))},updateDALiveStatus:()=>{},renderAutomationProtocol:o=>render(o)};
+ const render=Function(...Object.keys(state),source.slice(a,b)+';return renderAutomationChecks;')(...Object.values(state));
+ $('pwAutomationIdentity').textContent='Exempel · ED100 · Entré';$('pwAutomationProgress').textContent='0%';
+ $('pwAutomationDialog').querySelector('.pwRevisionData').open=false;$('pwAutomationModel').innerHTML='<option>ED100</option>';
+ $('pwProjectName').value='Exempelprojekt';$('pwAutomationFullId').value='1001-15-1';
+ render(current);
+ const preview=SmartMatchProtocolViewer.create($('pwAutomationPreviewWrap'),{onError:e=>console.error(e)});
+ const pdfDoc=new jspdf.jsPDF();
+ for(let n=1;n<=3;n++){if(n>1)pdfDoc.addPage();pdfDoc.setFontSize(20);pdfDoc.text('EGENKONTROLL',15,24);pdfDoc.setFontSize(11);pdfDoc.text('Exempelprojekt – endast testdata',15,35);for(let i=0;i<13;i++){const y=56+i*15;pdfDoc.setDrawColor(180);pdfDoc.line(15,y+8,195,y+8);pdfDoc.text((n-1)*13+i+1+'. Kontrollpunkt',15,y);pdfDoc.text('Kontrollerad',130,y);}pdfDoc.text('Protokollsida '+n,15,280);}
+ const pdf=await pdfjsLib.getDocument({data:new Uint8Array(pdfDoc.output('arraybuffer'))}).promise;
+ window.qaSave=()=>{$('pwAutomationDialog').close();$('pwAutomationPreviewDialog').close();preview.close();$('smartExportFileName').value='Exempelprojekt.pdf';$('smartExportOriginalSize').textContent='12,50 MB';$('smartExportFinalSize').textContent='–';$('smartExportBuild').disabled=false;$('smartExportBuild').textContent='Förbered PDF';$('smartExportDialog').showModal();};
+ $('smartExportClose').onclick=()=>$('smartExportDialog').close();
+ window.qaSelf=()=>{$('smartExportDialog').close();$('pwAutomationPreviewDialog').close();preview.close();if(!$('pwAutomationDialog').open)$('pwAutomationDialog').showModal();};
+ window.qaPreview=async()=>{$('smartExportDialog').close();$('pwAutomationDialog').close();$('pwAutomationPreviewDialog').showModal();await preview.open(pdf);};
+ $('pwAutomationPreview').onclick=window.qaPreview;$('pwAutomationClose').onclick=()=> $('pwAutomationDialog').close();$('pwAutomationPreviewClose').onclick=()=>{$('pwAutomationPreviewDialog').close();preview.close();};
+ window.qaRun=async()=>{
+  const assert=(ok,message)=>{if(!ok)throw Error(message)},settle=()=>new Promise(resolve=>setTimeout(resolve,250));
+  const painted=async page=>{const end=performance.now()+5000;while(performance.now()<end){const c=page.querySelector('canvas');if(c.width>0&&page.getAttribute('aria-busy')==='false'){const pixel=c.getContext('2d').getImageData(c.width-2,c.height-2,1,1).data;assert(pixel[0]>240&&pixel[1]>240&&pixel[2]>240,'vit PDF-bakgrund även vid stor zoom');return;}await new Promise(resolve=>setTimeout(resolve,30));}throw Error('PDF-sidan blev inte färdigrenderad');};
+  window.qaSelf();
+  for(const theme of ['mist','night','graphite','pine','sand','ice','coast']){
+   document.documentElement.dataset.tillsynoTheme=theme;
+   for(const value of ['ok','remark','na']){
+    const button=$('pwAutomationChecks').querySelector('[data-v='+value+']');if(button.getAttribute('aria-pressed')!=='true')button.click();
+    const chosen=$('pwAutomationChecks').querySelector('[data-v='+value+']'),other=$('pwAutomationChecks').querySelector('[aria-pressed=false]');
+    assert(chosen.getAttribute('aria-pressed')==='true','status');assert(getComputedStyle(chosen).backgroundColor!==getComputedStyle(other).backgroundColor,'vald färg '+theme+' '+value);
+    current=JSON.parse(JSON.stringify(saved));render(current);assert($('pwAutomationChecks').querySelector('[data-v='+value+']').getAttribute('aria-pressed')==='true','återöppnat val');
+   }
+  }
+  document.documentElement.dataset.tillsynoTheme='mist';await settle();assert($('pwAutomationChecks').scrollWidth<=$('pwAutomationChecks').clientWidth+1,'sidledsöverflöde i kontroller');
+  await window.qaPreview();await settle();const wrap=$('pwAutomationPreviewWrap'),pages=[...wrap.querySelectorAll('.smProtocolPage')];assert(pages.length===3,'alla protokollsidor');await painted(pages[0]);
+  const initial=pages[0].getBoundingClientRect().width,r=wrap.getBoundingClientRect();
+  wrap.dispatchEvent(new WheelEvent('wheel',{bubbles:true,cancelable:true,ctrlKey:true,deltaY:-150,clientX:r.left+130,clientY:r.top+160}));await settle();assert(pages[0].getBoundingClientRect().width>initial,'muszoom');
+  wrap.dispatchEvent(new KeyboardEvent('keydown',{key:'0',bubbles:true,cancelable:true}));await settle();
+  const t=(id,x)=>new Touch({identifier:id,target:wrap,clientX:r.left+x,clientY:r.top+180});
+  wrap.dispatchEvent(new TouchEvent('touchstart',{touches:[t(1,80),t(2,180)],bubbles:true,cancelable:true}));
+  wrap.dispatchEvent(new TouchEvent('touchmove',{touches:[t(1,40),t(2,230)],bubbles:true,cancelable:true}));
+  wrap.dispatchEvent(new TouchEvent('touchend',{touches:[],bubbles:true}));await settle();assert(pages[0].getBoundingClientRect().width>initial*1.8,'tvåfingerszoom');
+  wrap.scrollTop=wrap.scrollHeight;await painted(pages[2]);
+  preview.close();assert(!wrap.querySelector('.smProtocolPage'),'sidor frigörs när vyn stängs');await preview.open(pdf);await settle();assert(Math.abs(wrap.querySelector('.smProtocolPage').getBoundingClientRect().width-initial)<2,'återöppning återställer zoom');
+  window.qaSelf();return 'PASS · '+innerWidth+' px · 7 teman, 3 statusval, återöppning, 3 PDF-sidor, muszoom, tvåfingerszoom, sista sidan, vit PDF-bakgrund och minnesrensning.';
+ };
+ window.qaSelf();parent.qaReady?.();
+})().catch(error=>{document.body.append(document.createTextNode('Testfel: '+error.message));console.error(error)});
+</script></body></html>

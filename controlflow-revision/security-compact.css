@@ -1,0 +1,11 @@
+/* 2.4.130 compact Security protocol */
+#securityProtocol .secCheck{padding:7px!important;margin-bottom:5px!important}
+#securityProtocol .secCheckHead{gap:6px!important}
+#securityProtocol .secChoices{gap:4px!important;margin-top:6px!important}
+#securityProtocol .secChoices button{min-height:31px!important;padding:3px 4px!important}
+#securityProtocol .secFault{margin-top:5px!important}
+#securityProtocol .progressLine{margin:7px 0!important}
+#securityProtocol .secProgressActions{gap:4px!important}
+#securityProtocol .secProgressActions button{min-height:30px!important;padding:3px 6px!important}
+#securityProtocol .protocolNotes{margin-top:4px!important}
+#securityProtocol .protocolNotes textarea{min-height:38px!important}

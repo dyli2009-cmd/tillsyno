@@ -1,0 +1,839 @@
+{
+  "title": "Tillsyno – produkturval verifierat mot Copiax",
+  "version": 1,
+  "checkedOn": "2026-10-22",
+  "scope": "Ett manuellt kontrollerat första urval för projektering. Inte ett officiellt Copiax-bibliotek eller hela sortimentet. Produktnamn och korta egna beskrivningar; inga bilder eller priser.",
+  "importFormat": "TillsynoProjekteringLibraryV1",
+  "products": [
+    {
+      "name": "310-50 höger – ASSA ABLOY låshus",
+      "category": "lock",
+      "description": "Mekaniskt låshus, högerutförande med 50 mm dorndjup.",
+      "sourceUrl": "https://www.copiax.se/produkt/lashus-310-50-hoger-mp-102941",
+      "sourceTitle": "Copiax: ASSA ABLOY Låshus 310-50 höger mp",
+      "id": "copiax-lock-310-50-hoger-assa-abloy-l-119ed2a8e5",
+      "categoryLabel": "Låshus",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "411-50 – ASSA ABLOY låshus",
+      "category": "lock",
+      "description": "Mekaniskt låshus med 50 mm dorndjup.",
+      "sourceUrl": "https://www.copiax.se/produkt/lashus-411-50-102950",
+      "sourceTitle": "Copiax: ASSA ABLOY Låshus 411-50",
+      "id": "copiax-lock-411-50-assa-abloy-lashus-8211bd3958",
+      "categoryLabel": "Låshus",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "411-50 MA – ASSA ABLOY låshus med mikrobrytare",
+      "category": "lock",
+      "description": "Två mikrobrytare indikerar regelns inlåsta respektive utlåsta läge.",
+      "sourceUrl": "https://www.copiax.se/produkt/lashus-411-50-ma-10012805",
+      "sourceTitle": "Copiax: ASSA ABLOY Låshus 411-50 MA",
+      "id": "copiax-lock-411-50-ma-assa-abloy-lash-01bda666a5",
+      "categoryLabel": "Låshus",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "511-50 rostfri – ASSA ABLOY låshus",
+      "category": "lock",
+      "description": "Kompletteringslås med 50 mm dorndjup. Utan mikrobrytare.",
+      "sourceUrl": "https://www.copiax.se/produkt/lashus-511-50-rostfri-50125509",
+      "sourceTitle": "Copiax: ASSA ABLOY Låshus 511-50 rostfri",
+      "id": "copiax-lock-511-50-rostfri-assa-abloy-eff0d747ab",
+      "categoryLabel": "Låshus",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "565-50 sym vänster – ASSA ABLOY låshus",
+      "category": "lock",
+      "description": "Symmetriskt låshus, vänsterutförande med 50 mm dorndjup.",
+      "sourceUrl": "https://www.copiax.se/produkt/lashus-565-50-sym-vanster-mp-102045",
+      "sourceTitle": "Copiax: ASSA ABLOY Låshus 565-50 sym vänster mp",
+      "id": "copiax-lock-565-50-sym-vanster-assa-a-6bfdf922b8",
+      "categoryLabel": "Låshus",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "2002-50 sym – ASSA ABLOY låshus",
+      "category": "lock",
+      "description": "Symmetriskt låshus med 50 mm dorndjup.",
+      "sourceUrl": "https://www.copiax.se/produkt/lashus-2002-50-sym-sb-10012062",
+      "sourceTitle": "Copiax: ASSA ABLOY Låshus 2002-50 sym SB",
+      "id": "copiax-lock-2002-50-sym-assa-abloy-la-f78864abb8",
+      "categoryLabel": "Låshus",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "EL580 – ABLOY eltryckeslås",
+      "category": "lock",
+      "description": "Eltryckeslås med splitfunktion och omställbar rättvänd/omvänd funktion.",
+      "sourceUrl": "https://www.copiax.se/produkt/eltryckeslas-el580-440101",
+      "sourceTitle": "Copiax: ABLOY Eltryckeslås EL580",
+      "id": "copiax-lock-el580-abloy-eltryckeslas-87ed3cfe2d",
+      "categoryLabel": "Låshus",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "SL620 rättvänd – SAFETRON eltryckeslås",
+      "category": "lock",
+      "description": "Eltryckeslås med splitfunktion. Rättvänt utförande.",
+      "sourceUrl": "https://www.copiax.se/produkt/eltryckeslas-sl620-rattvand-50152056",
+      "sourceTitle": "Copiax: SAFETRON Eltryckeslås SL620 rättvänd",
+      "id": "copiax-lock-sl620-rattvand-safetron-e-0ef9a62c08",
+      "categoryLabel": "Låshus",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "ST110 / STEP 110 – StepLock eltryckeslås",
+      "category": "lock",
+      "description": "Eltryckeslås med splitfunktion och modern kolvplacering.",
+      "sourceUrl": "https://www.copiax.se/produkt/eltryckeslas-step-110-modern-split-50142554",
+      "sourceTitle": "Copiax: StepLock Eltryckeslås Step 110 modern split",
+      "id": "copiax-lock-st110-step-110-steplock-e-4da425c0bb",
+      "categoryLabel": "Låshus",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "256 multi 16–21mm nickel – ASSA ABLOY cylinderbehör",
+      "category": "cylinder-fittings",
+      "description": "Cylinderbehör, nickel. Copiax artikel 50101719.",
+      "sourceUrl": "https://www.copiax.se/produkt/cylinderbehor-256-multi-16-21mm-nickel-50101719",
+      "sourceTitle": "Copiax: Cylinderbehör, artikel 50101719",
+      "id": "copiax-cylinder-fittings-256-multi-16-21mm-nickel--4b75525087",
+      "categoryLabel": "Cylinderbehör",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "3212 nickel – ASSA ABLOY cylinderbehör",
+      "category": "cylinder-fittings",
+      "description": "Cylinderbehör i nickelutförande.",
+      "sourceUrl": "https://www.copiax.se/produkt/cylinderbehor-3212-nickel-105898",
+      "sourceTitle": "Copiax: ASSA ABLOY Cylinderbehör 3212 nickel",
+      "id": "copiax-cylinder-fittings-3212-nickel-assa-abloy-cy-6e2b862cf5",
+      "categoryLabel": "Cylinderbehör",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "3212:2 nickel – ASSA ABLOY cylinderbehör",
+      "category": "cylinder-fittings",
+      "description": "Behör för rund säkerhetscylinder, nickel.",
+      "sourceUrl": "https://www.copiax.se/produkt/cylinderbehor-32122-nickel-105057",
+      "sourceTitle": "Copiax: ASSA ABLOY Cylinderbehör 3212:2 nickel",
+      "id": "copiax-cylinder-fittings-3212-2-nickel-assa-abloy--6d535428ff",
+      "categoryLabel": "Cylinderbehör",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "4265 insida mattkrom – ASSA ABLOY täckbricka",
+      "category": "cylinder-fittings",
+      "description": "Täckbricka för insidan, mattkrom.",
+      "sourceUrl": "https://www.copiax.se/produkt/tackbricka-4265-insida-mattkrom-10011446",
+      "sourceTitle": "Copiax: ASSA ABLOY Täckbricka 4265 insida mattkrom",
+      "id": "copiax-cylinder-fittings-4265-insida-mattkrom-assa-b3bd042d3d",
+      "categoryLabel": "Cylinderbehör",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "575 12–24V – ASSA ABLOY elslutbleck",
+      "category": "strike",
+      "description": "Elslutbleck med omställbar rättvänd/omvänd funktion.",
+      "sourceUrl": "https://www.copiax.se/produkt/elslutbleck-575-12-24v-8041016",
+      "sourceTitle": "Copiax: ASSA ABLOY Elslutbleck 575 12-24V",
+      "id": "copiax-strike-575-12-24v-assa-abloy-els-b6d83d4cf0",
+      "categoryLabel": "Slutbleck",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "1487-1 – ASSA ABLOY Connect slutbleck",
+      "category": "strike",
+      "description": "Plant slutbleck, 200 × 40 mm med 13,5 mm plös.",
+      "sourceUrl": "https://www.copiax.se/produkt/slutbleck-connect-1487-1-plant-h200xb40-plos-135mm-121302",
+      "sourceTitle": "Copiax: ASSA ABLOY Slutbleck Connect 1487-1",
+      "id": "copiax-strike-1487-1-assa-abloy-connect-a2777ea77b",
+      "categoryLabel": "Slutbleck",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "1487-2 – ASSA ABLOY Connect slutbleck",
+      "category": "strike",
+      "description": "Plant slutbleck, 200 × 40 mm med 16,5 mm plös.",
+      "sourceUrl": "https://www.copiax.se/produkt/slutbleck-connect-1487-2-plant-h200xb40-plos-165mm-121303",
+      "sourceTitle": "Copiax: ASSA ABLOY Slutbleck Connect 1487-2",
+      "id": "copiax-strike-1487-2-assa-abloy-connect-e37d580e54",
+      "categoryLabel": "Slutbleck",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "ES17 rättvänd – SAFETRON elslutbleck",
+      "category": "strike",
+      "description": "Elslutbleck i rättvänt utförande med kolvkontakt.",
+      "sourceUrl": "https://www.copiax.se/produkt/elslutbleck-es17-rattvand-50464910",
+      "sourceTitle": "Copiax: SAFETRON Elslutbleck ES17 rättvänd",
+      "id": "copiax-strike-es17-rattvand-safetron-el-2a578d5a30",
+      "categoryLabel": "Slutbleck",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "STEP 40 rättvänd 12V – StepLock elslutbleck",
+      "category": "strike",
+      "description": "Elslutbleck i rättvänt 12 V-utförande.",
+      "sourceUrl": "https://www.copiax.se/produkt/elslutbleck-step-40-rattvand-12v-50093865",
+      "sourceTitle": "Copiax: StepLock Elslutbleck Step 40 rättvänd 12V",
+      "id": "copiax-strike-step-40-rattvand-12v-step-7ae1860fa6",
+      "categoryLabel": "Slutbleck",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "STEP 90 omvänd 24V kolvkontakt – StepLock elslutbleck",
+      "category": "strike",
+      "description": "Elslutbleck i omvänt 24 V-utförande med kolvkontakt.",
+      "sourceUrl": "https://www.copiax.se/produkt/elslutbleck-step-90-omvand-24v-kolvk-50100937",
+      "sourceTitle": "Copiax: StepLock Elslutbleck Step 90 omvänd 24V kolvk",
+      "id": "copiax-strike-step-90-omvand-24v-kolvko-60f21ca0ee",
+      "categoryLabel": "Slutbleck",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "696 – ASSA ABLOY trycke, nickel, 40–75 mm",
+      "category": "handle",
+      "description": "Dörrtrycke utan returfjäder. Copiax art.nr 124265.",
+      "sourceUrl": "https://www.copiax.se/produkt/trycke-696-40-75mm-nickel-pp-124265",
+      "sourceTitle": "ASSA ABLOY – Trycke 696 40-75mm nickel PP – Copiax",
+      "id": "copiax-handle-696-assa-abloy-trycke-nic-e4a5b5435a",
+      "categoryLabel": "Trycke",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "6696 – ASSA ABLOY trycke, nickel, 40–75 mm",
+      "category": "handle",
+      "description": "Dörrtrycke med returfjäder. Copiax art.nr 124267.",
+      "sourceUrl": "https://www.copiax.se/produkt/trycke-6696-40-75mm-nickel-pp-124267",
+      "sourceTitle": "ASSA ABLOY – Trycke 6696 40-75mm nickel PP – Copiax",
+      "id": "copiax-handle-6696-assa-abloy-trycke-ni-03449e04c3",
+      "categoryLabel": "Trycke",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "DH 7020 – dormakaba trycke, krom, 35–95 mm",
+      "category": "handle",
+      "description": "Dörrtrycke med returfjäder för inomhusdörrar. Copiax art.nr 50459322.",
+      "sourceUrl": "https://www.copiax.se/produkt/trycke-dh-7020-35-95-mm-krom-50459322",
+      "sourceTitle": "dormakaba – Trycke DH 7020 35-95 mm krom – Copiax",
+      "id": "copiax-handle-dh-7020-dormakaba-trycke--cd09bda6cb",
+      "categoryLabel": "Trycke",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "DH 8020 – dormakaba trycke, krom, 35–95 mm",
+      "category": "handle",
+      "description": "Dörrtrycke med returfjäder och genomgående infästning. Copiax art.nr 50459897.",
+      "sourceUrl": "https://www.copiax.se/produkt/trycke-dh-8020-35-95mm-krom-50459897",
+      "sourceTitle": "dormakaba – Trycke DH 8020 35-95mm krom – Copiax",
+      "id": "copiax-handle-dh-8020-dormakaba-trycke--868f381918",
+      "categoryLabel": "Trycke",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "8633 Wide – ASSA ABLOY draghandtag, 25/400 mm, par",
+      "category": "pull",
+      "description": "Par med ett standardhandtag och ett Wide-handtag i rostfritt stål. Copiax art.nr 50140410.",
+      "sourceUrl": "https://www.copiax.se/produkt/draghandtag-8633-25400-rf-par-wide-50140410",
+      "sourceTitle": "ASSA ABLOY – Draghandtag 8633 25/400 RF par wide – Copiax",
+      "id": "copiax-pull-8633-wide-assa-abloy-drag-7adaadf7e3",
+      "categoryLabel": "Draghandtag",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "PP-604 – ROCA draghandtag, 32 × 400 mm, polerat, par",
+      "category": "pull",
+      "description": "Draghandtag i rostfritt stål för dubbelmontage; en försäljningsenhet är ett par. Copiax art.nr 50138897.",
+      "sourceUrl": "https://www.copiax.se/produkt/draghandtag-pp-604-32x400-polerad-50138897",
+      "sourceTitle": "ROCA – Draghandtag PP-604 32x400 polerad – Copiax",
+      "id": "copiax-pull-pp-604-roca-draghandtag-3-f26ca8aa2e",
+      "categoryLabel": "Draghandtag",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "Slug 17 – ROCA draghandtag, elektropolerat, styck",
+      "category": "pull",
+      "description": "Draghandtag för montage under nödutrymningsbeslag modell 179. Säljs styckvis. Copiax art.nr 50126208.",
+      "sourceUrl": "https://www.copiax.se/produkt/draghandtag-slug-17-for-nodutrymningsbeslag-elektropolerad-50126208",
+      "sourceTitle": "ROCA – Draghandtag Slug 17 för nödutrymningsbeslag elektropolerad – Copiax",
+      "id": "copiax-pull-slug-17-roca-draghandtag--4e6d711f63",
+      "categoryLabel": "Draghandtag",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "179A 42–90 vänster nickel – ASSA ABLOY nödutrymningsbeslag",
+      "category": "escape",
+      "description": "Nödutrymningsbeslag i vänsterutförande, nickel.",
+      "sourceUrl": "https://www.copiax.se/produkt/nodutrymningsbeslag-179a-42-90-vanster-nickel-50013837",
+      "sourceTitle": "Copiax: ASSA ABLOY Nödutrymningsbeslag 179A 42-90 vänster nickel",
+      "id": "copiax-escape-179a-42-90-vanster-nickel-bf871f5d09",
+      "categoryLabel": "Utrymningsbehör",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "179G vänster krom – ASSA ABLOY nödutrymningsbeslag",
+      "category": "escape",
+      "description": "Nödutrymningsbeslag i vänsterutförande, krom.",
+      "sourceUrl": "https://www.copiax.se/produkt/nodutrymningsbeslag-179g-vanster-krom-50134607",
+      "sourceTitle": "Copiax: ASSA ABLOY Nödutrymningsbeslag 179G vänster krom",
+      "id": "copiax-escape-179g-vanster-krom-assa-ab-9c25a9efbe",
+      "categoryLabel": "Utrymningsbehör",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "179G-2 krom – ASSA ABLOY nödutrymningsbeslag",
+      "category": "escape",
+      "description": "Nödutrymningsbeslag för slagdörr i modulprofilutförande.",
+      "sourceUrl": "https://www.copiax.se/produkt/nodutrymningsbeslag-179g-2-krom-50142335",
+      "sourceTitle": "Copiax: ASSA ABLOY Nödutrymningsbeslag 179G-2 krom",
+      "id": "copiax-escape-179g-2-krom-assa-abloy-no-fe7d0842b5",
+      "categoryLabel": "Utrymningsbehör",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "ST17910-R-1 höger – StepLock nödutrymningsbeslag",
+      "category": "escape",
+      "description": "Nödutrymningsbeslag i högerutförande, borstat rostfritt stål.",
+      "sourceUrl": "https://www.copiax.se/produkt/nodutrymningsbeslag-st17910-r-1-borstat-rostfritt-stal-hoger-50457550",
+      "sourceTitle": "Copiax: StepLock Nödutrymningsbeslag ST17910-R-1 borstat rostfritt stål Höger",
+      "id": "copiax-escape-st17910-r-1-hoger-steploc-97ae1b5409",
+      "categoryLabel": "Utrymningsbehör",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "EA280 299mm – ABLOY kabelöverföring",
+      "category": "cable",
+      "description": "Infälld kabelöverföring mellan dörr och karm.",
+      "sourceUrl": "https://www.copiax.se/produkt/kabeloverforing-ea280-299mm-10011501",
+      "sourceTitle": "Copiax: ABLOY Kabelöverföring EA280 299mm",
+      "id": "copiax-cable-ea280-299mm-abloy-kabelov-5dfc8a6aa2",
+      "categoryLabel": "Kabelöverföring",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "EA281 543mm – ABLOY kabelöverföring",
+      "category": "cable",
+      "description": "Infälld kabelöverföring mellan dörr och karm.",
+      "sourceUrl": "https://www.copiax.se/produkt/kabeloverforing-ea281-543mm-10011502",
+      "sourceTitle": "Copiax: ABLOY Kabelöverföring EA281 543mm",
+      "id": "copiax-cable-ea281-543mm-abloy-kabelov-c7715347e2",
+      "categoryLabel": "Kabelöverföring",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "03 oval krom – ASSA ABLOY vredcylinder",
+      "category": "cylinder",
+      "description": "Oval vredcylinder, krom.",
+      "sourceUrl": "https://www.copiax.se/produkt/vredcylinder-03-oval-krom-50020215",
+      "sourceTitle": "Copiax: ASSA ABLOY Vredcylinder 03 oval krom",
+      "id": "copiax-cylinder-03-oval-krom-assa-abloy-v-b0799d315e",
+      "categoryLabel": "Cylinder (gångjärns- och anslagssida)",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "13 rund nickel – ASSA ABLOY vredcylinder",
+      "category": "cylinder",
+      "description": "Rund vredcylinder, nickel.",
+      "sourceUrl": "https://www.copiax.se/produkt/vredcylinder-13-rund-nickel-50020216",
+      "sourceTitle": "Copiax: ASSA ABLOY Vredcylinder 13 rund nickel",
+      "id": "copiax-cylinder-13-rund-nickel-assa-abloy-0119576e4d",
+      "categoryLabel": "Cylinder (gångjärns- och anslagssida)",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "1201 3ny nickel – ASSA ABLOY cylinder",
+      "category": "cylinder",
+      "description": "Oval enkelcylinder med tre nycklar, nickel.",
+      "sourceUrl": "https://www.copiax.se/produkt/cylinder-1201-3ny-nickel-50090952",
+      "sourceTitle": "Copiax: ASSA ABLOY Cylinder 1201 3ny nickel",
+      "id": "copiax-cylinder-1201-3ny-nickel-assa-ablo-a18b11af16",
+      "categoryLabel": "Cylinder (gångjärns- och anslagssida)",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "1211 rund 3ny – ASSA ABLOY cylinder",
+      "category": "cylinder",
+      "description": "Rundcylinder för dörrens utsida med tre nycklar.",
+      "sourceUrl": "https://www.copiax.se/produkt/cylinder-1211-rund-3ny-10032164",
+      "sourceTitle": "Copiax: ASSA ABLOY Cylinder 1211 rund 3ny",
+      "id": "copiax-cylinder-1211-rund-3ny-assa-abloy--d622ffa2fb",
+      "categoryLabel": "Cylinder (gångjärns- och anslagssida)",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "1212 rund 3ny – ASSA ABLOY dubbelcylinder",
+      "category": "cylinder",
+      "description": "Rund dubbelcylinder med tre nycklar. Ange en gång per dörr, inte på båda cylinderraderna.",
+      "sourceUrl": "https://www.copiax.se/produkt/cylinder-1212-rund-3ny-50090968",
+      "sourceTitle": "Copiax: ASSA ABLOY Cylinder 1212 rund 3ny",
+      "id": "copiax-cylinder-1212-rund-3ny-assa-abloy--4b0e6ea0d8",
+      "categoryLabel": "Cylinder (gångjärns- och anslagssida)",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "1301 3ny nickel – ASSA ABLOY cylinder",
+      "category": "cylinder",
+      "description": "Oval enkelcylinder för utsidan, tre nycklar, nickel.",
+      "sourceUrl": "https://www.copiax.se/produkt/cylinder-1301-3ny-nickel-50091202",
+      "sourceTitle": "Copiax: ASSA ABLOY Cylinder 1301 3ny nickel",
+      "id": "copiax-cylinder-1301-3ny-nickel-assa-ablo-738bf1488a",
+      "categoryLabel": "Cylinder (gångjärns- och anslagssida)",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "DC300 – ASSA ABLOY dörrstängare silver",
+      "category": "closer",
+      "description": "Dörrstängarhus med standardarmsystem. Arm väljs separat.",
+      "sourceUrl": "https://www.copiax.se/produkt/dorrstangare-dc300-ob-silver-50091452",
+      "sourceTitle": "Dörrstängare DC300 ÖB silver – Copiax",
+      "id": "copiax-closer-dc300-assa-abloy-dorrstan-19495b6818",
+      "categoryLabel": "Dörrstängare",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "DC500 – ASSA ABLOY dörrstängare silver",
+      "category": "closer",
+      "description": "Kamskivestängare för glidarm. Arm ingår inte.",
+      "sourceUrl": "https://www.copiax.se/produkt/dorrstangare-dc500-silver-50091462",
+      "sourceTitle": "Dörrstängare DC500 silver – Copiax",
+      "id": "copiax-closer-dc500-assa-abloy-dorrstan-3cc92bdf44",
+      "categoryLabel": "Dörrstängare",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "DC700 – ASSA ABLOY dörrstängare silver",
+      "category": "closer",
+      "description": "Dörrstängarhus med kamskiva. Glidarm beställs separat.",
+      "sourceUrl": "https://www.copiax.se/produkt/dorrstangare-dc700-silver-50025841",
+      "sourceTitle": "Dörrstängare DC700 silver – Copiax",
+      "id": "copiax-closer-dc700-assa-abloy-dorrstan-86e77a0a60",
+      "categoryLabel": "Dörrstängare",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "TS83 – dormakaba dörrstängare 3–6 silver",
+      "category": "closer",
+      "description": "Armsystemstängare i TS83-serien. Standardarm finns som separat produkt.",
+      "sourceUrl": "https://www.copiax.se/produkt/dorrstangare-ts83-3-6-silver-50021278",
+      "sourceTitle": "Dörrstängare TS83 3-6 silver – Copiax",
+      "id": "copiax-closer-ts83-dormakaba-dorrstanga-11d309896a",
+      "categoryLabel": "Dörrstängare",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "TS93 B – dormakaba dörrstängare 2–5 silver",
+      "category": "closer",
+      "description": "Kamskivestängare i TS93 B-serien för glidskena.",
+      "sourceUrl": "https://www.copiax.se/produkt/dorrstangare-ts93-2-5-b-silver-50021104",
+      "sourceTitle": "Dörrstängare TS93 2-5 B silver – Copiax",
+      "id": "copiax-closer-ts93-b-dormakaba-dorrstan-1819cf766d",
+      "categoryLabel": "Dörrstängare",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "TS4000 – GEZE dörrstängare silver",
+      "category": "closer",
+      "description": "Dörrstängarhus utan standardarm.",
+      "sourceUrl": "https://www.copiax.se/produkt/dorrstangare-ts4000-silver-10012670",
+      "sourceTitle": "Dörrstängare TS4000 silver – Copiax",
+      "id": "copiax-closer-ts4000-geze-dorrstangare--2500197cb7",
+      "categoryLabel": "Dörrstängare",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "TS5000 – GEZE dörrstängare silver",
+      "category": "closer",
+      "description": "Dörrstängarhus utan arm och glidskena.",
+      "sourceUrl": "https://www.copiax.se/produkt/dorrstangare-ts5000-silver-8151500",
+      "sourceTitle": "Dörrstängare TS5000 silver – Copiax",
+      "id": "copiax-closer-ts5000-geze-dorrstangare--c139cabe37",
+      "categoryLabel": "Dörrstängare",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "4000 – GEZE standardarm silver",
+      "category": "closer-arm",
+      "description": "Standardarm för dörrstängare.",
+      "sourceUrl": "https://www.copiax.se/produkt/standardarm-4000-std-silver-10012674",
+      "sourceTitle": "Standardarm 4000 std silver – Copiax",
+      "id": "copiax-closer-arm-4000-geze-standardarm-sil-25dc75e763",
+      "categoryLabel": "Dörrstängningsarm",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "CL-N – dormakaba standardarm silver",
+      "category": "closer-arm",
+      "description": "Delbar standardarm med justerbar armlängd.",
+      "sourceUrl": "https://www.copiax.se/produkt/arm-std-cl-n-silver-351161",
+      "sourceTitle": "Arm std CL-N silver – Copiax",
+      "id": "copiax-closer-arm-cl-n-dormakaba-standardar-ccad3dea26",
+      "categoryLabel": "Dörrstängningsarm",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "G93N – dormakaba glidskena silver",
+      "category": "closer-arm",
+      "description": "Glidskenesystem i G-N-serien.",
+      "sourceUrl": "https://www.copiax.se/produkt/glidskena-g93n-std-silver-50021108",
+      "sourceTitle": "Glidskena G93N STD silver – Copiax",
+      "id": "copiax-closer-arm-g93n-dormakaba-glidskena--be33194ee5",
+      "categoryLabel": "Dörrstängningsarm",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "G195 – ASSA ABLOY glidarm silver",
+      "category": "closer-arm",
+      "description": "Glidarm för enkeldörr.",
+      "sourceUrl": "https://www.copiax.se/produkt/glidarm-g195-silver-50025843",
+      "sourceTitle": "Glidarm G195 silver – Copiax",
+      "id": "copiax-closer-arm-g195-assa-abloy-glidarm-s-1870ab2ffd",
+      "categoryLabel": "Dörrstängningsarm",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "L190 – ASSA ABLOY standardarm silver",
+      "category": "closer-arm",
+      "description": "Standardarm för dörrstängare.",
+      "sourceUrl": "https://www.copiax.se/produkt/standardarm-l190-silver-50025842",
+      "sourceTitle": "Standardarm L190 silver – Copiax",
+      "id": "copiax-closer-arm-l190-assa-abloy-standarda-79d32c7ab2",
+      "categoryLabel": "Dörrstängningsarm",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "L191 – ASSA ABLOY uppställningsarm silver",
+      "category": "closer-arm",
+      "description": "Arm med uppställningsfunktion.",
+      "sourceUrl": "https://www.copiax.se/produkt/uppstallningsarm-l191-silver-50091477",
+      "sourceTitle": "Uppställningsarm L191 silver – Copiax",
+      "id": "copiax-closer-arm-l191-assa-abloy-uppstalln-9a9aa58b26",
+      "categoryLabel": "Dörrstängningsarm",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "TS5000 ECline – GEZE glidskena silver",
+      "category": "closer-arm",
+      "description": "Glidskena med öppningssupport för montage på gångjärnssidan.",
+      "sourceUrl": "https://www.copiax.se/produkt/glidskena-ts5000-ecline-silver-50093885",
+      "sourceTitle": "Glidskena TS5000 ECline silver – Copiax",
+      "id": "copiax-closer-arm-ts5000-ecline-geze-glidsk-3219818efc",
+      "categoryLabel": "Dörrstängningsarm",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "ED100LE NY – dormakaba automatikhus",
+      "category": "operator",
+      "description": "Automatikhus utan täckkåpa. Ny modell med eget armsystem. Kompletteringar väljs separat.",
+      "sourceUrl": "https://www.copiax.se/produkt/dorrautomatikhus-ed100le-ny-utan-tackkapa-50150327",
+      "sourceTitle": "Dörrautomatikhus ED100LE NY utan täckkåpa – Copiax",
+      "id": "copiax-operator-ed100le-ny-dormakaba-auto-9a816f10aa",
+      "categoryLabel": "Dörrautomatik",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "ED250LE NY – dormakaba automatikhus",
+      "category": "operator",
+      "description": "Automatikhus utan täckkåpa. Kåpa och armsystem väljs separat.",
+      "sourceUrl": "https://www.copiax.se/produkt/dorrautomatikhus-ed250le-ny-utan-tackkapa-50150303",
+      "sourceTitle": "Dörrautomatikhus ED250LE NY utan täckkåpa – Copiax",
+      "id": "copiax-operator-ed250le-ny-dormakaba-auto-1890154885",
+      "categoryLabel": "Dörrautomatik",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "SW100 – ASSA ABLOY automatik tryckande silver, komplett",
+      "category": "operator",
+      "description": "Slagdörrsautomatik med tryckande armsystem och kåpa. Antal avser komplett automatik; arm ingår.",
+      "sourceUrl": "https://www.copiax.se/produkt/dorrautomatik-sw100-tryckande-standardarm-kpl-silver-50156091",
+      "sourceTitle": "Dörrautomatik SW100 tryckande standardarm kpl silver – Copiax",
+      "id": "copiax-operator-sw100-assa-abloy-automati-20eb4fb417",
+      "categoryLabel": "Dörrautomatik",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "SW200 – ASSA ABLOY automatik dragande silver/svart, komplett",
+      "category": "operator",
+      "description": "Slagdörrsautomatik med dragande armsystem och kåpa. Antal avser komplett automatik; arm ingår.",
+      "sourceUrl": "https://www.copiax.se/produkt/dorrautomatik-sw200-dragande-glidarm-kpl-silversvart-50156342",
+      "sourceTitle": "Dörrautomatik SW200 dragande glidarm kpl silver/svart – Copiax",
+      "id": "copiax-operator-sw200-assa-abloy-automati-2099b1274a",
+      "categoryLabel": "Dörrautomatik",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "SW300 – ASSA ABLOY automatik tryckande silver, komplett",
+      "category": "operator",
+      "description": "Slagdörrsautomatik med tryckande armsystem och kåpa. Antal avser komplett automatik; arm ingår.",
+      "sourceUrl": "https://www.copiax.se/produkt/dorrautomatik-sw300-tryckande-standardarm-kpl-silver-50156200",
+      "sourceTitle": "Dörrautomatik SW300 tryckande standardarm kpl silver – Copiax",
+      "id": "copiax-operator-sw300-assa-abloy-automati-258f75fd9d",
+      "categoryLabel": "Dörrautomatik",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "4SAFE – BEA sensorlist 350 mm svart",
+      "category": "sensor",
+      "description": "Aktiv IR-sensorlist. Antal avser enskilda lister.",
+      "sourceUrl": "https://www.copiax.se/produkt/sensorlist-4safe-350mm-svart-50463158",
+      "sourceTitle": "Sensorlist 4SAFE 350mm svart – Copiax",
+      "id": "copiax-sensor-4safe-bea-sensorlist-350--1b058a25bb",
+      "categoryLabel": "Sensorlist (gångjärns- och anslagssida)",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "FLATSCAN 3D – BEA sats, 2 sensorer, svart",
+      "category": "sensor",
+      "description": "Lasersensorer, höger och vänster. Antal 1 avser en sats med 2 sensorer; lägg inte samma sats på båda sidorna.",
+      "sourceUrl": "https://www.copiax.se/produkt/flatscan-3d-kit-svart-50155038",
+      "sourceTitle": "Flatscan 3D kit svart – Copiax",
+      "id": "copiax-sensor-flatscan-3d-bea-sats-2-se-bc5ebae088",
+      "categoryLabel": "Sensorlist (gångjärns- och anslagssida)",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "FLATSCAN SW – BEA sensor höger svart",
+      "category": "sensor",
+      "description": "Lasersensor, enskilt högerutförande. Antal avser sensorer.",
+      "sourceUrl": "https://www.copiax.se/produkt/flatscan-sw-hoger-svart-50139343",
+      "sourceTitle": "Flatscan SW höger svart – Copiax",
+      "id": "copiax-sensor-flatscan-sw-bea-sensor-ho-d02729dc40",
+      "categoryLabel": "Sensorlist (gångjärns- och anslagssida)",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "SSS-5S1LED – Hotron sensorlist 360 mm svart",
+      "category": "sensor",
+      "description": "IR-sensorlist med LED-indikering. Antal avser enskilda lister.",
+      "sourceUrl": "https://www.copiax.se/article/50001925",
+      "sourceTitle": "Sensorlist SSS-5S1LED 360mm svart – Copiax",
+      "id": "copiax-sensor-sss-5s1led-hotron-sensorl-a3977ab258",
+      "categoryLabel": "Sensorlist (gångjärns- och anslagssida)",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "UniScan – Bircher sensorlist 350 mm vit",
+      "category": "sensor",
+      "description": "Infraröd närvarosensor. Antal avser enskilda lister.",
+      "sourceUrl": "https://www.copiax.se/produkt/sensorlist-uniscan-350mm-vit-50463330",
+      "sourceTitle": "Sensorlist UniScan 350mm vit – Copiax",
+      "id": "copiax-sensor-uniscan-bircher-sensorlis-56268106ad",
+      "categoryLabel": "Sensorlist (gångjärns- och anslagssida)",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "1-9012-1 – Axema öppnaknapp, utanpåliggande, svart",
+      "category": "activation",
+      "description": "Öppnaknapp för utpassage med nyckelsymbol och impulsfjäder. Copiax art.nr 50006426.",
+      "sourceUrl": "https://www.copiax.se/produkt/tryckknapp-utanpa-svart-nyckelsymbol-50006426",
+      "sourceTitle": "Axema – Tryckknapp utanpå svart nyckelsymbol – Copiax",
+      "id": "copiax-activation-1-9012-1-axema-oppnaknapp-2f8487a58f",
+      "categoryLabel": "Armbågskontakt / öppnaknapp",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "JCK207 – JC Kontakter armbågskontakt, aluminium",
+      "category": "activation",
+      "description": "Armbågskontakt med en mikrobrytare. Copiax art.nr 50133661.",
+      "sourceUrl": "https://www.copiax.se/produkt/armbagskontakt-jck207-aluminium-50133661",
+      "sourceTitle": "JC-kontakt – Armbågskontakt JCK207 aluminium – Copiax",
+      "id": "copiax-activation-jck207-jc-kontakter-armba-f81ba86c41",
+      "categoryLabel": "Armbågskontakt / öppnaknapp",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "JCK217 – JC Kontakter armbågskontakt, svart aluminium",
+      "category": "activation",
+      "description": "Armbågskontakt med taktila rillor och mikrobrytare. Copiax art.nr 50155020.",
+      "sourceUrl": "https://www.copiax.se/produkt/armbagskontakt-jck217-aluminium-svart-50155020",
+      "sourceTitle": "JC-kontakt – Armbågskontakt JCK217 aluminium svart – Copiax",
+      "id": "copiax-activation-jck217-jc-kontakter-armba-998d028bd5",
+      "categoryLabel": "Armbågskontakt / öppnaknapp",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "KT 3-1 – dormakaba nyckelkontakt, utanpåliggande",
+      "category": "activation",
+      "description": "Nyckelmanövrerad kontakt som ger potentialfri impuls. Copiax art.nr 10033815.",
+      "sourceUrl": "https://www.copiax.se/produkt/nyckelkontakt-kt-3-1-utanpaliggande-10033815",
+      "sourceTitle": "dormakaba – Nyckelkontakt KT 3-1 utanpåliggande – Copiax",
+      "id": "copiax-activation-kt-3-1-dormakaba-nyckelko-989e6de044",
+      "categoryLabel": "Armbågskontakt / öppnaknapp",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "PB1 – CDVI armbågskontakt, aluminium",
+      "category": "activation",
+      "description": "Armbågskontakt med NO/NC-mikrobrytare. Copiax art.nr 50000008.",
+      "sourceUrl": "https://www.copiax.se/produkt/armbagskontakt-pb1-aluminium-50000008",
+      "sourceTitle": "CDVI – Armbågskontakt PB1 aluminium – Copiax",
+      "id": "copiax-activation-pb1-cdvi-armbagskontakt-a-21a44b8285",
+      "categoryLabel": "Armbågskontakt / öppnaknapp",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "25 DK – OLDA dörrkoordinator, grå",
+      "category": "coordinator",
+      "description": "Dörrkoordinator för pardörrar, monteras på karmens överstycke. Copiax art.nr 50156014.",
+      "sourceUrl": "https://www.copiax.se/produkt/koordinator-25-dk-gra-50156014",
+      "sourceTitle": "Olda – Koordinator 25 DK grå – Copiax",
+      "id": "copiax-coordinator-25-dk-olda-dorrkoordinato-4d9b9e50b0",
+      "categoryLabel": "Dörrkoordinator",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "30 DK – OLDA dörrkoordinator, 850 mm, grå",
+      "category": "coordinator",
+      "description": "Dörrkoordinator för pardörrar, monteras under karmens överstycke. Copiax art.nr 8151213.",
+      "sourceUrl": "https://www.copiax.se/produkt/koordinator-30-dk-850mm-gra-8151213",
+      "sourceTitle": "Olda – Koordinator 30 DK 850mm grå – Copiax",
+      "id": "copiax-coordinator-30-dk-olda-dorrkoordinato-663c957c10",
+      "categoryLabel": "Dörrkoordinator",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "SR 390 – dormakaba dörrkoordinator",
+      "category": "coordinator",
+      "description": "Mekanisk koordinator för pardörrar. Copiax art.nr 351296.",
+      "sourceUrl": "https://www.copiax.se/produkt/koordinator-sr-390-fz-351296",
+      "sourceTitle": "dormakaba – Koordinator SR 390 fz – Copiax",
+      "id": "copiax-coordinator-sr-390-dormakaba-dorrkoor-3db02c06d8",
+      "categoryLabel": "Dörrkoordinator",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "SR392/1 – dormakaba dörrkoordinator, 1050 mm",
+      "category": "coordinator",
+      "description": "Mekanisk koordinator för infällt montage i pardörrar. Copiax art.nr 351232.",
+      "sourceUrl": "https://www.copiax.se/produkt/koordinator-sr3921-1050mm-351232",
+      "sourceTitle": "dormakaba – Koordinator SR392/1 1050mm – Copiax",
+      "id": "copiax-coordinator-sr392-1-dormakaba-dorrkoo-7cee76630c",
+      "categoryLabel": "Dörrkoordinator",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "1396 – ASSA ABLOY manuell kantregel",
+      "category": "bolt",
+      "description": "Manuellt manövrerad kantregel för pardörrar. Copiax art.nr 128304.",
+      "sourceUrl": "https://www.copiax.se/produkt/kantregel-1396-128304",
+      "sourceTitle": "ASSA ABLOY – Kantregel 1396 – Copiax",
+      "id": "copiax-bolt-1396-assa-abloy-manuell-k-f14b20d8ff",
+      "categoryLabel": "Kantregel",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "2396 – ASSA ABLOY automatisk kantregel",
+      "category": "bolt",
+      "description": "Automatisk kantregel för pardörrar. Copiax art.nr 128305.",
+      "sourceUrl": "https://www.copiax.se/produkt/kantregel-2396-128305",
+      "sourceTitle": "ASSA ABLOY – Kantregel 2396 – Copiax",
+      "id": "copiax-bolt-2396-assa-abloy-automatis-990967ccf4",
+      "categoryLabel": "Kantregel",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "STEP 21 – StepLock automatisk kantregel",
+      "category": "bolt",
+      "description": "Automatisk kantregel för pardörrar. Copiax art.nr 10011421.",
+      "sourceUrl": "https://www.copiax.se/Webshop/Detail?productId=9303",
+      "sourceTitle": "StepLock – Kantregel Step 21 – Copiax",
+      "id": "copiax-bolt-step-21-steplock-automati-ddabafc087",
+      "categoryLabel": "Kantregel",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "DC1076-6M – Aritech magnetkontakt, infälld",
+      "category": "magnet",
+      "description": "Infälld magnetkontakt med 6 m kabel och NC-funktion. Copiax art.nr 50090644.",
+      "sourceUrl": "https://www.copiax.se/produkt/magnetkontakt-dc1076-6m-infalld-50090644",
+      "sourceTitle": "Aritech – Magnetkontakt DC1076-6M infälld – Copiax",
+      "id": "copiax-magnet-dc1076-6m-aritech-magnetk-3546d3a569",
+      "categoryLabel": "Magnetkontakt",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "MC240 – Alarmtech magnetkontakt, infälld, 2 m",
+      "category": "magnet",
+      "description": "Magnetkontakt med NC-funktion och 2 m anslutningskabel. Copiax art.nr 50024335.",
+      "sourceUrl": "https://www.copiax.se/produkt/magnetkontakt-mc240-infalld-sb-50024335",
+      "sourceTitle": "Alarmtech – Magnetkontakt MC240 Infälld SB – Copiax",
+      "id": "copiax-magnet-mc240-alarmtech-magnetkon-a42223ceea",
+      "categoryLabel": "Magnetkontakt",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "MC347 – Alarmtech magnetkontakt, dubbel NC",
+      "category": "magnet",
+      "description": "Magnetkontakt med två NC-funktioner för infällt montage. Copiax art.nr 50126416.",
+      "sourceUrl": "https://www.copiax.se/produkt/magnetkontakt-mc347-50126416",
+      "sourceTitle": "Alarmtech – Magnetkontakt MC347 – Copiax",
+      "id": "copiax-magnet-mc347-alarmtech-magnetkon-b1b2f9e2d3",
+      "categoryLabel": "Magnetkontakt",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "A73 – Axema EM/MIF kortläsare",
+      "category": "reader",
+      "description": "VAKA-kortläsare med knappsats. Copiax art.nr 50002021.",
+      "sourceUrl": "https://www.copiax.se/produkt/kortlasare-emmif-a73-50002021",
+      "sourceTitle": "Axema – Kortläsare EM/MIF A73 – Copiax",
+      "id": "copiax-reader-a73-axema-em-mif-kortlasa-4a7c9c864d",
+      "categoryLabel": "Kortläsare",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "KPROX – CDVI kortläsare",
+      "category": "reader",
+      "description": "Kortläsare för Atrium passersystem. Copiax art.nr 50004729.",
+      "sourceUrl": "https://www.copiax.se/produkt/kortlasare-kprox-50004729",
+      "sourceTitle": "CDVI – Kortläsare KPROX – Copiax",
+      "id": "copiax-reader-kprox-cdvi-kortlasare-6aa882818f",
+      "categoryLabel": "Kortläsare",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "VR40S-MF – Vanderbilt kortläsare med knappsats",
+      "category": "reader",
+      "description": "Mifare-läsare med knappsats och display. Copiax art.nr 50130189.",
+      "sourceUrl": "https://www.copiax.se/produkt/kortlasare-vr40s-mf-knappsats-50130189",
+      "sourceTitle": "Vanderbilt – Kortläsare VR40S-MF knappsats – Copiax",
+      "id": "copiax-reader-vr40s-mf-vanderbilt-kortl-94bfe2e907",
+      "categoryLabel": "Kortläsare",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "B18 – Axema VAKA dörrcentral",
+      "category": "controller",
+      "description": "Centralenhet för en dörr i VAKA-system. Copiax art.nr 50142953.",
+      "sourceUrl": "https://www.copiax.se/produkt/dorrcentral-b18-50142953",
+      "sourceTitle": "Axema – Dörrcentral B18 – Copiax",
+      "id": "copiax-controller-b18-axema-vaka-dorrcentra-787bf0894f",
+      "categoryLabel": "Dörrcentral",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "B28 – Axema VAKA dörrcentral",
+      "category": "controller",
+      "description": "Dörrcentral i Axema VAKA-sortimentet. Copiax art.nr 50142999.",
+      "sourceUrl": "https://www.copiax.se/produkt/dorrcentral-b28-50142999",
+      "sourceTitle": "Axema – Dörrcentral B28 – Copiax",
+      "id": "copiax-controller-b28-axema-vaka-dorrcentra-8e049f6c58",
+      "categoryLabel": "Dörrcentral",
+      "checkedOn": "2026-10-22"
+    },
+    {
+      "name": "Koppla 2100 – Aptus dörrcentral",
+      "category": "controller",
+      "description": "Dörrenhet för signaler och styrningar i Aptus-system. Copiax art.nr 50100917.",
+      "sourceUrl": "https://www.copiax.se/produkt/dorrcentral-koppla-2100-50100917",
+      "sourceTitle": "Aptus – Dörrcentral Koppla 2100 – Copiax",
+      "id": "copiax-controller-koppla-2100-aptus-dorrcen-9739023c51",
+      "categoryLabel": "Dörrcentral",
+      "checkedOn": "2026-10-22"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+/* Keep the project save sheet focused on its name, size and save actions. */
+html body.smDockWorkspace #smartExportDialog :is(.smSaveLegacy,#smartFileReviewName,#smartExportProjectProof,#smartExportProgressDetail,#smartExportProgressHelp,#smartExportElapsed){display:none!important}
+html body.smDockWorkspace #smartExportDialog .smWindowBody{padding:12px!important;gap:12px!important}
+html body.smDockWorkspace #smartExportDialog .smSaveSummary{padding:0!important;margin:0!important;border:0!important;background:transparent!important}
+html body.smDockWorkspace #smartExportDialog .smartExportSizes{margin:0!important;display:grid!important;grid-template-columns:1fr 1fr;gap:8px!important}
+html body.smDockWorkspace #smartExportDialog .smartExportSizes>div{padding:9px 12px!important;border:1px solid var(--ta-border)!important;border-radius:6px;background:var(--ta-soft)!important}
+html body.smDockWorkspace #smartExportDialog .smSimpleSaveActions{display:flex!important;gap:8px!important;margin:0!important;justify-content:flex-end}
+html body.smDockWorkspace #smartExportDialog .smSimpleSaveActions button{min-height:40px!important}
+html body.smDockWorkspace #smartExportDialog .smLocalBackupBar{margin:0!important}
+html body.smDockWorkspace #smartExportDialog .smartExportStatus:empty{display:none!important}
+html body.smDockWorkspace #smartExportDialog .smExportFileName{margin:0!important}
+html body.smDockWorkspace #smartExportDialog input{min-width:0!important;width:100%!important;box-sizing:border-box!important}
+@media(max-width:620px){
+ html body.smDockWorkspace #smartExportDialog .smLocalBackupBar{flex-wrap:wrap!important;gap:8px!important}
+ html body.smDockWorkspace #smartExportDialog .smSimpleSaveActions button{flex:1;min-height:44px!important}
+ html body.smDockWorkspace #smartExportDialog input{font-size:16px!important}
+}

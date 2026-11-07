@@ -1,0 +1,121 @@
+@layer controlflowStandard {
+/* Shared project form only. Existing text scale, field meanings and drawing UI are unchanged. */
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .revisionProjectColumns {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-template-areas: none !important;
+  align-items: start;
+  gap: 12px !important;
+  margin-top: 8px !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .revisionProjectColumn {
+  min-width: 0;
+  align-content: start;
+  gap: 8px !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .revisionProjectColumn:not([hidden]) {
+  display: grid;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .revisionColumnHead {
+  padding: 10px 12px !important;
+  border-radius: 9px;
+  background: var(--ta-header) !important;
+  color: var(--ta-ink) !important;
+  border-color: var(--ta-border) !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .revisionColumnHead h2 {
+  margin: 0 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .revisionColumnHead p {
+  margin: 3px 0 0 !important;
+  color: var(--ta-muted) !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .projectCard {
+  min-width: 0;
+  margin: 0 !important;
+  padding: 10px !important;
+  border-radius: 9px !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .projectCardHead {
+  gap: 8px !important;
+  padding-bottom: 6px !important;
+  margin: 0 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .projectCardHead > span {
+  display: none !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .projectCardHead h3 {
+  font-weight: 650 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .projectCard .grid2 {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 4px !important;
+  margin-top: 0 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .projectCard label:not(.filebtn) {
+  grid-template-columns: calc(9rem * var(--cf-text-scale, 1)) minmax(0, 1fr) !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  min-width: 0;
+  font-weight: 500 !important;
+  overflow-wrap: anywhere;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .projectCard :is(input, select, textarea) {
+  min-width: 0 !important;
+  font-weight: 400 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .projectCard label > :is(input, select, textarea) {
+  margin-top: 0 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .secLogoLabel {
+  font-weight: 500 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] :is(.secLogoActions, .revisionSignatureActions) {
+  gap: 8px !important;
+  flex-wrap: wrap;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .secLogoActions .filebtn:not([hidden]) {
+  display: inline-flex !important;
+  grid-template-columns: none !important;
+  align-items: center !important;
+  width: auto;
+  margin: 0 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] #secLogoPreview {
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] #secLogoPreview:not(:has(img)) {
+  display: none !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] #secLogoPreview img {
+  max-height: 64px !important;
+  max-width: 100% !important;
+  object-fit: contain;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] #secNewServiceBtn {
+  margin: 0 !important;
+}
+
+/* Keep the same form order and full-width inputs on phones and with enlarged text. */
+@media (max-width: 800px) {
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .revisionProjectColumns {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 16px !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject[data-controlflow-project="1"] .projectCard label:not(.filebtn) {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 4px !important;
+  }
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-large-text], [data-tillsyno-device="phone"]) body.allInOneApp #securityProject[data-controlflow-project="1"] .revisionProjectColumns {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 16px !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-large-text], [data-tillsyno-device="phone"]) body.allInOneApp #securityProject[data-controlflow-project="1"] .projectCard label:not(.filebtn) {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 4px !important;
+}
+}

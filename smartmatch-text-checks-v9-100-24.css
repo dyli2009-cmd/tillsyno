@@ -1,0 +1,86 @@
+/* Label colors belong to the drawing; controls belong to the chosen app theme. */
+#pwTextCheckSettings{display:grid;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--ta-border,#c7d8e0)}
+#pwTextCheckSettings[hidden]{display:none!important}
+#pwTextCheckSettingsToggle{display:inline-flex;align-items:center;justify-content:center;flex:none}
+#pwTextCheckSettingsToggle svg{display:block;width:18px;height:18px;pointer-events:none}
+html body.smDockWorkspace #pwTextCheckDialog #pwTextCheckSettingsToggle[aria-expanded=true]{background:var(--ta-soft2,#e8f0f5)!important;box-shadow:inset 0 -2px var(--ta-blue,#246987)}
+#pwTextCheckSettingsToggle:focus-visible{outline:2px solid var(--ta-blue,#246987);outline-offset:-2px}
+#pwTextCheckDialog[data-settings-open=false] .smTextCheckStatusHelp{display:none!important}
+#pwTextCheckStatus:empty{display:none}
+@layer smTextLabels21 {
+ #pwTextCheckMarkers .smTextCheckHit{border-color:#315b65!important;background:var(--text-check-tint,#74d8d088)!important;color:var(--text-check-ink,#102a33)!important}
+ #pwTextCheckMarkers .smTextCheckHit[data-kind=label]{background:var(--text-check-bg,#74d8d0)!important;display:grid!important;place-items:center!important}
+ #pwTextCheckMarkers .smTextCheckLabel{display:block;max-width:100%;white-space:nowrap;overflow:hidden;box-sizing:border-box;font-family:system-ui,sans-serif;font-weight:600;line-height:1.15;letter-spacing:0;color:var(--text-check-ink,#102a33)!important;pointer-events:none}
+ #pwTextCheckLabelPreview{background:var(--text-check-bg,#74d8d0)!important;color:var(--text-check-ink,#102a33)!important;border:1px solid #315b65!important;border-radius:5px;padding:5px 8px;min-height:30px;display:grid;place-items:center;box-sizing:border-box;font:600 17px/1.2 system-ui;overflow-wrap:anywhere}
+ #pwTextCheckLabelPreview[hidden]{display:none!important}
+ #pwTextCheckForm .smTextCheckColor{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;padding:0!important;background:var(--swatch)!important;border:1px solid #315b65!important;border-radius:5px!important;box-shadow:none!important}
+ #pwTextCheckForm .smTextCheckColor[aria-pressed=true]{outline:2px solid var(--ta-ink)!important;outline-offset:2px}
+ #pwTextCheckForm #pwTextCheckColor{width:30px!important;height:28px!important;min-width:30px!important;min-height:28px!important;padding:1px!important;border:1px solid var(--ta-border)!important;cursor:pointer}
+ #pwTextCheckForm [data-check-status=pending][aria-pressed=true]{background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-blue)!important;box-shadow:inset 0 -2px var(--ta-blue)!important}
+}
+#pwTextCheckForm .smTextCheckStates{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+html body.smDockWorkspace #pwTextCheckDialog[data-sm-window] .smTextCheckStates button{padding:5px 3px;min-width:0;font-size:11px;line-height:1.2}
+.smTextCheckStatusHelp{font-size:10px;line-height:1.3;color:var(--ta-muted)}
+.smTextCheckColorRow{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:5px 8px;min-width:0}
+.smTextCheckColorRow>strong{grid-column:1/-1;font-size:11px;color:var(--ta-ink)}
+#pwTextCheckColors{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+#pwTextCheckForm .smTextCheckCustomColor{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:400;white-space:nowrap;color:var(--ta-muted)}
+#pwTextCheckForm #pwTextCheckMark{font-size:11px;min-height:30px}
+#pwTextCheckForm #pwTextCheckLocation:empty{display:none}
+/* Dragging and sizing are restricted to the label itself. */
+#pwTextCheckSizing{display:flex;gap:6px;align-items:center}
+#pwTextCheckSizing[hidden]{display:none!important}
+#pwTextCheckSizing #pwTextCheckLock{margin-left:auto}
+@layer smDrawingPolish23 {
+ #pwTextCheckMarkers .smTextCheckHit[data-kind=label]{touch-action:none;cursor:grab!important}
+ #pwTextCheckMarkers .smTextCheckHit[data-dragging=true]{cursor:grabbing!important;outline:1px dashed #315b65;outline-offset:0}
+ #pwTextCheckMarkers .smTextCheckHit[data-locked=true]{cursor:pointer!important;touch-action:manipulation}
+ #pwTextCheckForm #pwTextCheckLock[aria-pressed=true]{border-color:var(--ta-blue)!important;box-shadow:inset 0 -2px var(--ta-blue)!important;background:var(--ta-soft)!important;color:var(--ta-ink)!important}
+ /* Text checks keep compact screen sizes; GS status badges below share the DA-relative scale. */
+ #pwTextCheckMarkers .smTextCheckBadge{width:18px!important;height:18px!important;font-size:13px!important;transform:translateY(-50%) scale(var(--sm-preview-badge-scale,1))!important}
+ #pwTextCheckMarkers .smTextCheckCommentBadge{box-sizing:border-box;display:grid!important;place-items:center;right:auto!important;left:calc(100% + 2px)!important;top:50%!important;width:14px!important;height:14px!important;padding:0!important;border:1px solid #fff!important;border-radius:50%!important;background:#9b6200!important;color:#fff!important;font:700 10px/1 system-ui!important;transform:translateY(-50%) scale(var(--sm-preview-badge-scale,1))!important;transform-origin:left center!important}
+ #pwTextCheckMarkers .smTextCheckBadge+.smTextCheckCommentBadge{left:calc(100% + 22px * var(--sm-preview-badge-scale,1))!important}
+ html body.smDockWorkspace #pwMarkers button.pwStampHit .pwProgressBadge{min-width:25px!important;width:auto!important;height:14px!important;font-size:9px!important;padding:0 2px!important;border:1px solid #fff!important;transform:translateX(-50%) scale(var(--pw-progress-scale,0.7142857))!important;transform-origin:top center!important;line-height:1!important}
+ #pwMarkers .pwAttentionBadges{display:flex!important;max-width:none!important;gap:2px!important;right:0!important;top:0!important;transform:translate(50%,-100%) scale(var(--pw-progress-scale,0.7142857))!important;transform-origin:center bottom!important}
+ #pwMarkers .pwAttentionBadge{display:grid!important;place-items:center!important;min-width:14px!important;width:14px!important;height:14px!important;padding:0!important;font:700 10px/1 system-ui!important;border:1px solid #fff!important;color:#fff!important;border-radius:50%!important}
+ #pwMarkers .pwAttentionBadge.order{background:#7844aa!important}
+ #pwMarkers .pwAttentionBadge.remark{background:#9b6200!important}
+ /* Stamp tools use the same palette as the rest of the workspace. */
+ #smStampPanel{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;z-index:12100!important}
+ #smStampPanel .smStampPanelHead{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+ #smStampPanel :is(.smStampPanelHead strong,.smStampResults span){color:var(--ta-ink)!important}
+ #smStampPanel .smStampPanelHead small{color:var(--ta-muted)!important}
+ #smStampPanel :is(button,.smStampClose,.smStampResults>div){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+ #smStampPanel>p{background:var(--ta-soft)!important;color:var(--ta-ink)!important}
+ #smStampPanel button:is(:hover,:focus-visible){background:var(--ta-soft)!important;color:var(--ta-ink)!important;outline-color:var(--ta-blue)!important}
+ #smStampPanel .smStampPrimary{background:var(--ta-blue)!important;border-color:var(--ta-blue)!important;color:#fff!important}
+ #smStampPanel .smStampDanger{color:#a92736!important;border-color:#c66a74!important}
+ html:is([data-tillsyno-theme=night],[data-tillsyno-theme=pine],[data-tillsyno-theme=graphite]) #smStampPanel .smStampDanger{color:#ffb4b4!important}
+ #pwDoorAttention :is(.pwDoorAttentionCard,.pwAttentionCardHead,.pwAttentionCardText){background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+ #pwDoorAttention :is(strong,p){color:var(--ta-ink)!important}
+ #pwDoorAttention .pwAttentionCardMeta{color:var(--ta-muted)!important}
+}
+@layer smTextDelete24 {
+ #pwTextCheckMarkers [data-status=open]>.smTextCheckBadge{display:grid!important;place-items:center!important;padding:0!important;line-height:0!important}
+ #pwTextCheckMarkers .smTextCheckBadge>svg{display:block!important;width:14px!important;height:14px!important;margin:0!important;padding:0!important;flex:none!important;color:inherit!important}
+ .smTextCheckPositionRow{display:flex!important;gap:5px;align-items:center;min-width:0}
+ .smTextCheckPositionRow[hidden]{display:none!important}
+ .smTextCheckPositionRow>.smTextCheckPosition{flex:1;min-width:0!important;width:auto!important}
+ .smTextCheckPositionRow>.smTextCheckRemove{display:grid!important;place-items:center!important;flex:0 0 32px;width:32px!important;min-width:32px!important;height:32px!important;min-height:32px!important;padding:6px!important;border-radius:5px!important;background:var(--ta-soft2)!important;border:1px solid var(--ta-border)!important;color:#a92736!important}
+ .smTextCheckRemove>svg{display:block;width:17px;height:17px}
+ #pwTextCheckForm #pwTextCheckDelete{margin-right:auto;color:#a92736!important;border-color:#c66a74!important}
+ #pwTextCheckForm #pwTextCheckDelete[hidden]{display:none!important}
+ html:is([data-tillsyno-theme=night],[data-tillsyno-theme=pine],[data-tillsyno-theme=graphite]) :is(.smTextCheckRemove,#pwTextCheckForm #pwTextCheckDelete){color:#ffb4b4!important}
+ #pwTextDeleteNotice{position:fixed;z-index:12010;left:50%;bottom:calc(var(--sm-dock-height,76px) + 10px);transform:translateX(-50%);display:flex;align-items:center;gap:8px;max-width:calc(100vw - 24px);box-sizing:border-box;padding:8px 10px;border:1px solid var(--ta-border);border-radius:8px;background:var(--ta-card);color:var(--ta-ink);box-shadow:0 4px 18px #0002;font:12px/1.35 system-ui}
+ #pwTextDeleteNotice[hidden]{display:none!important}
+ #pwTextDeleteNotice span{min-width:0;overflow-wrap:anywhere}
+ #pwTextDeleteNotice button{flex:none;min-height:32px;font-size:11px;border:1px solid var(--ta-border)!important;border-radius:5px;background:var(--ta-soft2)!important;color:var(--ta-ink)!important}
+}
+
+/* A single non-wrapping row keeps order, remark and card-change flags visible. */
+@layer smDrawingPolish23 {
+ #pwMarkers .pwAttentionBadges{flex-wrap:nowrap!important;overflow:visible!important}
+ #pwMarkers .pwAttentionBadges>.pwAttentionBadge{flex:0 0 14px!important}
+ #pwMarkers .pwAttentionBadges>.pwPositionChangeBadge{position:static!important;inset:auto!important;transform:none!important;min-width:14px!important;width:14px!important;height:14px!important;box-sizing:border-box!important;border-radius:50%!important;background:var(--change-color,#a65b00)!important;color:#fff!important}
+ #pwMarkers .pwPositionChangeBadge>svg{display:block!important;width:12px!important;height:12px!important;margin:0!important;padding:0!important;color:inherit!important;flex:none!important}
+}

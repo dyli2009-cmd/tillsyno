@@ -1,0 +1,12 @@
+/* Object stencil controls: scoped to Projektering. */
+[aria-label="Objektstenciler"] { padding:8px 16px; }
+#newObject510 { min-height:44px; width:100%; font-size:max(14px,.875rem); white-space:normal; }
+#objectRows510 { max-height:180px; overflow:auto; }
+#objectRows510 .card-list-item { min-height:44px; white-space:normal; overflow-wrap:anywhere; }
+#objectDialog510 { max-width:min(560px,calc(100vw - 24px)); max-height:90dvh; overflow:auto; }
+#objectDialog510 p,#objectDialog510 label { font-size:max(14px,.875rem); line-height:1.5; }
+#objectDialog510 input,#objectDialog510 select { font-size:max(16px,1rem); min-height:44px; min-width:0; width:100%; box-sizing:border-box; }
+#objectDialog510 button { min-height:44px; }
+@media(max-width:620px){ #objectDialog510 .equipment-fields { display:grid;grid-template-columns:minmax(0,1fr); } }
+
+#objectRows510 .card-list-item{display:flex;flex-direction:column;align-items:flex-start;gap:4px;width:100%;padding:8px;border:1px solid #c8d5cc;border-radius:6px;background:var(--paper,#fff);color:var(--ink,#263b35);font:inherit;text-align:left;}

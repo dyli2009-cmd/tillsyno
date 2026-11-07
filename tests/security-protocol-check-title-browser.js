@@ -1,0 +1,36 @@
+/* Integration fixture for an isolated local preview, loaded after the app scripts. */
+(()=>{
+ const out=document.createElement('pre');out.id='qaCheckTitleResults';out.style='position:fixed;right:6px;top:80px;max-width:420px;max-height:70vh;overflow:auto;z-index:10000;background:white;padding:8px;font:11px monospace;white-space:pre-wrap';document.body.append(out);
+ const ok=(value,label)=>{if(!value)throw Error(label);out.textContent+='PASS '+label+'\n';},tick=ms=>new Promise(r=>setTimeout(r,ms));
+ const title=()=>document.querySelector('#secChecklist .secCheckText')?.textContent;
+ const select=uid=>{selected=uid;showSelected();go('protocol');};
+ const rename=value=>{const input=$('secType');input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));};
+ function edit(value){if(securityCheckEditUid!==selected)$('secEditChecks').click();const prompt=window.prompt;let shown;window.prompt=(_message,current)=>{shown=current;return value;};try{document.querySelector('[aria-label="Ändra kontrollpunkt 1.1"]').click();}finally{window.prompt=prompt;}return shown;}
+ async function reportTexts(){const doc=reportDoc(),pdf=await pdfjsLib.getDocument({data:new Uint8Array(doc.output('arraybuffer'))}).promise,texts={};for(const[uid,page]of Object.entries(doc.__protocolPages)){texts[uid]=(await(await pdf.getPage(page)).getTextContent()).items.map(item=>item.str).join(' ');}await pdf.destroy();return texts;}
+ (async()=>{
+  await tick(150);$('allProtocolDialog').close();AllInOneProtocols.set(['detector','lock']);const drawing=await PDFLib.PDFDocument.create();drawing.addPage([600,400]);
+  await $('securityFile').onchange({target:{files:[new File([await drawing.save()],'check-title.pdf',{type:'application/pdf'})],value:''}});await renderQueue;
+  for(const[i,label]of ['52','57','56'].entries()){SecurityDetectorScan.open();$('detectorManual').click();$('detectorManualCode').value=label;$('detectorManualForm').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));createItem('detector',.2+i*.3,.4);$('detectorSizeDone').click();}
+  const first=items[0].uid,manual=items[1].uid,standard=items[2].uid;createItem('lock',.4,.7);const lock=cur().uid;
+  select(first);ok(title()==='Funktionskontroll av detektor','Standardobjekt visar funktionskontroll av detektor');
+  cur().protocolLabel='Siren';cur().checks['1.1']={result:'ok',note:''};syncStatus(cur());save();showSelected();ok(title()==='Funktionskontroll av siren','Äldre sparat protokollnamn används automatiskt utan en ny namnändring');
+  const checks=JSON.stringify(cur().checks);rename('Glaskrossdetektor');ok(title()==='Funktionskontroll av glaskrossdetektor'&&JSON.stringify(cur().checks)===checks,'Namnändringen uppdaterar punkten direkt och behåller kontrollsvaret');
+  securitySessionHistory.undo();ok(title()==='Funktionskontroll av siren','Ångra återställer även kontrolltexten');securitySessionHistory.redo();ok(title()==='Funktionskontroll av glaskrossdetektor','Gör om uppdaterar kontrolltexten igen');
+  rename('Sirénprotokoll');ok(title()==='Funktionskontroll av sirén','Protokollsuffix tas bort och svenska tecken bevaras');
+  rename('');ok(title()==='Funktionskontroll av detektor','Tomt protokollnamn återställer standardtexten');rename('Siren');
+  ok(edit('Funktionskontroll av siren')==='Funktionskontroll av siren'&&JSON.stringify(cur().checks)===checks&&!cur().checkEdits['1.1'],'Redigeringen utgår från aktuell automatisk text och oförändrad text nollställer inget');
+  edit('Funktionskontroll av detektor');ok(title()==='Funktionskontroll av detektor'&&cur().checkEdits['1.1']==='Funktionskontroll av detektor','Det går att uttryckligen välja standardordet som egen text');rename('Larmdon');ok(title()==='Funktionskontroll av detektor','Egen text behålls när protokollnamnet ändras');
+  edit('Funktionskontroll av larmdon');ok(!cur().checkEdits['1.1'],'Val av aktuell standardtext återgår till automatisk benämning');rename('Siren');ok(title()==='Funktionskontroll av siren','Automatisk benämning följer nästa namnändring');$('secEditChecks').click();
+  select(manual);rename('Siren');const custom='Kontrollera ljud, blixtljus och återställning';ok(edit(custom)==='Funktionskontroll av siren'&&title()===custom,'Befintliga Redigera kontrollpunkter ändrar punkt 1.1 till valfri egen text');rename('Larmdon');ok(title()===custom,'Egen kontrolltext skrivs inte över vid namnbyte');$('secEditChecks').click();
+  select(standard);ok(title()==='Funktionskontroll av detektor','Ett annat objekt behåller sin standardtext');
+  securitySessionHistory.record();removeSecurityCheck(cur(),'1.1');save();rename('Siren');ok(!document.querySelector('#secChecklist .secCheckText'),'En borttagen punkt återskapas inte av ett namnbyte');securitySessionHistory.undo();securitySessionHistory.undo();ok(title()==='Funktionskontroll av detektor','Borttagning kan ångras med bibehållen automatisk text');
+  select(lock);ok(title()===SYSTEMS.lock.checks[0][1],'Övriga protokolltyper behåller sina kontrolltexter');
+  let texts=await reportTexts();ok(texts[first].includes('SIRENPROTOKOLL')&&texts[first].includes('Funktionskontroll av siren')&&!texts[first].includes('Funktionskontroll av detektor'),'Kund-PDF visar både Sirenprotokoll och rätt automatisk punkt');ok(texts[manual].includes('LARMDONPROTOKOLL')&&texts[manual].includes(custom),'Kund-PDF visar den egna kontrolltexten');ok(texts[standard].includes('Funktionskontroll av detektor'),'Standardobjektets kund-PDF är oförändrad');
+  select(first);await openCustomerPreview();const previewText=(await(await previewPdf.getPage(previewPage)).getTextContent()).items.map(item=>item.str).join(' ');ok(previewText.includes('Funktionskontroll av siren'),'Kundförhandsvisningen visar den automatiska texten');$('secPreviewClose').click();
+  let blob;const url=URL.createObjectURL,click=HTMLAnchorElement.prototype.click;URL.createObjectURL=value=>{blob=value;return url(value)};HTMLAnchorElement.prototype.click=function(){};try{await exportPdf();}finally{URL.createObjectURL=url;HTMLAnchorElement.prototype.click=click;}
+  const bytes=await blob.arrayBuffer(),saved=await inspectSecurityWorkPdf(new Uint8Array(bytes));ok(!saved.work.items.find(o=>o.uid===first).checkEdits['1.1']&&saved.work.items.find(o=>o.uid===manual).checkEdits['1.1']===custom,'Arbets-PDF skiljer automatisk text från egen text');
+  await $('securityFile').onchange({target:{files:[new File([bytes],'check-title-saved.pdf',{type:'application/pdf'})],value:''}});await renderQueue;if($('secOpenWorkDialog').open)$('secOpenContinue').click();
+  select(manual);rename('Siren');ok(title()===custom,'Återöppnad egen text behålls även efter nytt namnbyte');select(first);rename('Magnetkontakt');ok(title()==='Funktionskontroll av magnetkontakt','Återöppnad automatisk text fortsätter följa namnet');rename('Siren');texts=await reportTexts();ok(texts[first].includes('Funktionskontroll av siren')&&texts[manual].includes(custom),'Båda kontrolltexterna följer med till kund-PDF efter återöppning');
+  out.textContent+='ALL PASS';const hide=document.createElement('button');hide.textContent='Dölj test';hide.onclick=()=>out.hidden=true;out.append(hide);
+ })().catch(error=>{out.textContent+='FAIL '+error.message;console.error(error);});
+})();

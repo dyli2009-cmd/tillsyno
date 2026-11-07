@@ -1,0 +1,7 @@
+# SmartMatch 9.100.16: phone time and door-card checklist
+
+Root causes: the old ID-specific display:grid!important rule for pwTimeClose overrode the shared hidden-close class. The old TID caption kept the blue header visible, and the primary time card used a fixed navy gradient. At max-width 620px, the dock stylesheet hid the checklist in pwMobileCard while compare-mode styles simultaneously hid the old view-switch controls.
+
+Fix: original titles, captions and close controls retain their DOM handlers but are hidden with inline priority to beat legacy ID rules. TID is treated as the duplicate caption. Time surfaces/text/summary use the current theme variables. Narrow card windows get persistent Kontrollpunkter / Dörrkort buttons outside either pane. Each opening defaults to the checklist; switching to the card refits the PDF after it becomes visible. The existing work checkboxes and save logic are unchanged. Desktop keeps the wider compare layout.
+
+Browser regression at 390px: Tid had exactly one visible close control and no old header; primary card background matched --ta-soft and no gradient remained. G8 opened the checklist, with both view buttons visible. A 24px checkbox could be checked, the card displayed after switching, and returning to the checklist preserved the checked value. Tests use actual HTML/styles/window code with a synthetic work row, not a customer project. Physical iPhone hardware was not available. Production smoke checks follow publication.

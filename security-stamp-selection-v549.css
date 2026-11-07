@@ -1,0 +1,170 @@
+/* The selection toolbar occupies space only while the explicit tool is active. */
+@layer controlflowStandard {
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .serviceToolsMenu #securitySelectStamps {
+    grid-column: 1 / -1;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    min-height: 44px !important;
+    height: auto !important;
+    padding: 8px 10px !important;
+    font-size: var(--cf-label) !important;
+    line-height: 1.35 !important;
+    white-space: normal !important;
+    background: var(--ta-soft2, #f4f8fa) !important;
+    color: var(--ta-ink, #173f55) !important;
+    border-color: var(--ta-border, #cfdae0) !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .serviceToolsMenu #securitySelectStamps > span {
+    display: inline !important;
+    min-width: 0;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    overflow-wrap: anywhere;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .serviceToolsMenu #securitySelectStamps > svg {
+    width: 22px !important;
+    height: 22px !important;
+    flex: 0 0 22px;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securitySelectStamps[hidden],
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityStampSelectionPanel[hidden] {
+    display: none !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityStampSelectionPanel {
+    display: grid !important;
+    flex: none;
+    order: -1;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-height: min(38dvh, 320px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    align-content: start;
+    padding: 4px 8px;
+    color: var(--ta-ink, #173f55);
+    background: var(--ta-card, #fff);
+    border-bottom: 1px solid var(--ta-border, #cfdae0);
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityStampSelectionPanel :is(.securityStampSelectionHead,.securityStampSelectionLockActions,.securityStampSelectionActions) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    min-width: 0;
+    gap: 4px;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityStampSelectionCount {
+    flex: 1 1 60px;
+    min-width: 0;
+    font-size: calc(.8125rem * var(--cf-text-scale, 1)) !important;
+    line-height: 1.3;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityStampSelectionPanel :is(button,select) {
+    min-width: 44px !important;
+    width: auto !important;
+    min-height: 44px !important;
+    height: auto !important;
+    box-sizing: border-box;
+    padding: 6px 9px !important;
+    margin: 0 !important;
+    font-size: calc(.8125rem * var(--cf-text-scale, 1)) !important;
+    font-weight: 500 !important;
+    line-height: 1.3 !important;
+    white-space: normal !important;
+    color: var(--ta-ink, #173f55) !important;
+    background: var(--ta-soft2, #f4f8fa) !important;
+    border: 1px solid var(--ta-border, #cfdae0) !important;
+    border-radius: 8px !important;
+    touch-action: manipulation;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityStampSelectionAction {
+    flex: 1 1 160px;
+    min-width: 0 !important;
+    max-width: 100%;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityStampSelectionPanel :is(#securityStampSelectionLock,#securityStampSelectionApply) {
+    color: var(--ta-on-blue, #fff) !important;
+    background: var(--ta-blue, #245b70) !important;
+    border-color: var(--ta-blue, #245b70) !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityStampSelectionPanel #securityStampSelectionDelete {
+    color: var(--ta-danger, #b42318) !important;
+    border-color: var(--ta-danger, #b42318) !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityStampSelectionPanel :is(#securityStampSelectAll,#securityStampSelectPage)[aria-pressed="true"] {
+    background: var(--ta-highlight, #d6ecf5) !important;
+    color: var(--ta-ink, #173f55) !important;
+    border-color: var(--ta-blue, #356e86) !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityStampSelectionPanel :is(button,select):disabled {
+    opacity: .5;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityStampSelectionPanel :is(button,select):focus-visible {
+    outline: 2px solid var(--ta-blue, #26769a) !important;
+    outline-offset: 2px;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityStampSelectionMessage {
+    margin: 0;
+    font-size: calc(.75rem * var(--cf-text-scale, 1)) !important;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    color: var(--ta-muted, #657d8b);
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityStampSelectionMessage:empty {
+    display: none;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityStampSelecting #secViewer {
+    cursor: crosshair;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #secStage :is(.secMarker,.detectorNumberBox).securityStampLocked {
+    outline: 1px dashed #173f55 !important;
+    outline-offset: 2px;
+    cursor: pointer;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #secStage :is(.secMarker,.secTarget,.detectorNumberBox).securityStampChosen {
+    outline: 3px solid #176bb6 !important;
+    outline-offset: 3px;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #secStage .precisionPointGrab.securityStampLocked,
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityStampSelecting #secStage .precisionPointGrab {
+    display: none !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .securityStampSelectionRegion {
+    position: absolute;
+    z-index: 22;
+    box-sizing: border-box;
+    border: 2px solid #176bb6;
+    background: #176bb61a;
+    pointer-events: none;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp .securityStampSelectionRegion[hidden] {
+    display: none !important;
+  }
+  @media (min-width: 900px) {
+    html[data-controlflow-ui="1"][data-tillsyno-theme]:not([data-cf-large-text]) body.allInOneApp #securityStampSelectionPanel {
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 1fr);
+      gap: 4px 12px;
+    }
+    html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityStampSelectionMessage {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (pointer: coarse) {
+    html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityStampSelectionAction:focus {
+      font-size: max(16px, calc(.8125rem * var(--cf-text-scale, 1))) !important;
+    }
+  }
+}
+
+@layer controlflowStandard {
+  html:is([data-cf-stamp-mode="security"],[data-cf-stamp-mode="revision"]) body.allInOneApp .customerStampHandle.is-position-locked {touch-action:pan-x pan-y!important;cursor:grab}
+}

@@ -1,0 +1,21 @@
+/* A physical SVG stamp inside a separate transparent pointer target. Never follows UI text scale. */
+@layer controlflowStandard {
+ html[data-controlflow-ui="1"] body.allInOneApp #secStage #secMarkers .secMarker.cfStampPhysical {
+  display:block!important;position:absolute!important;transform:translate(-50%,-50%)!important;
+  color:inherit!important;touch-action:none!important;white-space:nowrap!important;
+ }
+ html[data-controlflow-ui="1"] body.allInOneApp #secStage #secMarkers .secTarget.cfStampTarget {
+  transform:translate(-50%,-50%)!important;border-radius:50%!important;color:transparent!important;
+ }
+ html[data-controlflow-ui="1"] body.allInOneApp #secStage #secMarkers .secTarget.cfStampTarget::before,
+ html[data-controlflow-ui="1"] body.allInOneApp #secStage #secMarkers .secTarget.cfStampTarget::after {
+  display:none!important;content:none!important;
+ }
+ html[data-controlflow-ui="1"] body.allInOneApp #secStage #secMarkers .cfStampBadge {
+  display:block!important;pointer-events:none!important;
+ }
+ html[data-controlflow-ui="1"] body.allInOneApp #secStage #secMarkers .cfStampPhysical:focus-visible,
+ html[data-controlflow-ui="1"] body.allInOneApp #secStage #secMarkers .cfStampTarget:focus-visible {
+  outline:2px solid var(--cf-focus,var(--primary,#1d687e))!important;outline-offset:2px!important;
+ }
+}

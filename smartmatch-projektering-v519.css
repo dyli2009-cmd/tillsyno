@@ -1,0 +1,8 @@
+#objectDialog510{width:520px;padding:16px}
+#objectDialog510 .dialog-heading{gap:12px;margin-bottom:12px}
+#objectDialog510 h2{font-size:20px;line-height:1.25;margin:0}
+#objectDialog510 .equipment-fields{gap:8px}
+#objectDialog510 .object-marking514{padding:8px 10px;margin-top:10px}
+#objectDialog510 #objectMarking514{font-size:16px;margin-top:3px}
+#objectDialog510 p{margin:8px 0}
+#objectDialog510 #closeObject510{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;min-height:44px;font-size:30px;font-weight:600;line-height:1;color:var(--ink,#263b35);border:1px solid var(--line,#c8d5cc);border-radius:8px}

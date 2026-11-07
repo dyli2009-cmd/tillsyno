@@ -1,0 +1,56 @@
+/* Scoped workspace chrome; existing actions and selected theme stay in use. */
+body.securityWorkspace .workspaceToolGroup,body.securityWorkspace .workspaceFileActions{display:flex;align-items:center;gap:4px;flex:none}
+body.securityWorkspace .workspaceToolGroup+.workspaceToolGroup{padding-left:8px;margin-left:4px;border-left:1px solid var(--ta-border,#cfdae0)}
+body.securityWorkspace .workspaceToolbar .sessionHistoryCenter{position:static!important;transform:none!important;display:flex;align-items:center;justify-content:center;gap:8px;margin:0!important;min-width:0}
+body.securityWorkspace .workspaceToolbar .historyStatus:empty{display:none}
+body.securityWorkspace .workspaceToolbar .historyStatus:not(:empty){font-size:11px;max-width:180px}
+body.securityWorkspace .workspaceToolbar .workspaceToolGroup button,body.securityWorkspace .workspaceToolbar .serviceToolLauncher,body.securityWorkspace #securityDrawing .pagebar .workspaceToolGroup button{display:inline-flex!important;align-items:center;justify-content:center;flex:none;width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;padding:8px!important;border-radius:9px!important;background:var(--ta-soft2,#f4f8fa)!important;color:var(--ta-blue-dark,#173f55)!important;border:1px solid var(--ta-border,#cfdae0)!important;touch-action:manipulation}
+body.securityWorkspace .workspaceToolbar svg,body.securityWorkspace .workspaceToolGroup>button svg{width:20px!important;height:20px!important;flex:none}
+body.securityWorkspace .workspaceToolbar button:focus-visible,body.securityWorkspace .workspaceFileActions button:focus-visible{outline:2px solid var(--ta-blue,#26769a);outline-offset:2px}
+body.securityWorkspace #secRotate{padding:3px!important}
+body.securityWorkspace .workspaceToolbar .workspaceToolGroup #secRotate{padding:3px!important}
+body.securityWorkspace .workspaceToolbar button:disabled{opacity:.4}
+body.securityWorkspace .serviceToolsMenu{background:var(--ta-card,#fff)!important;color:var(--ta-ink,#173f55)!important;border-color:var(--ta-border,#cfdae0)!important}
+body.securityWorkspace .serviceToolsMenu .historyTextControls{background:transparent!important;border-color:var(--ta-border,#cfdae0)!important}
+body.securityWorkspace .pagebar .mobileSwipeHint{display:none!important}
+body.securityWorkspace .workspaceFileLine{flex:0 1 auto}
+html[data-tillsyno-theme] body.securityWorkspace .workspaceFileName{flex:1;max-width:260px;min-width:0;min-height:44px}
+html[data-tillsyno-theme] body.securityWorkspace .workspaceFileLine .workspaceFileActions button{position:static!important;transform:none!important;display:inline-flex!important;align-items:center;justify-content:center;gap:6px;width:auto!important;min-width:44px!important;height:44px!important;min-height:44px!important;margin:0!important;padding:6px 10px!important;font-size:12px!important;line-height:1.3;border:1px solid var(--ta-border,#cfdae0);border-radius:9px;background:var(--ta-soft2,#f4f8fa);color:var(--ta-blue-dark,#173f55);white-space:nowrap}
+body.securityWorkspace .workspaceFileActions button svg{width:20px!important;height:20px!important;flex:none}
+body.securityWorkspace .workspaceMeta{display:flex;align-items:center;gap:9px;flex:none;color:var(--ta-muted,#657d8b)}
+body.securityWorkspace .workspaceMeta #securityCount{font-size:10px;white-space:nowrap}
+body.securityWorkspace .workspaceMeta .ta-page-version{position:static!important;display:inline!important;min-width:0!important;padding:0!important;margin:0!important;background:none!important;color:inherit!important;font-size:9px!important;white-space:nowrap;opacity:.8}
+body.securityWorkspace .allInOneProtocolTools [data-add] svg{width:17px;height:17px;flex:none;margin-right:5px}
+body.securityWorkspace .allInOneProtocolTools [data-add]::before{display:none!important}
+body.securityWorkspace:not(.secHasPdf) .workspaceToolbar{display:none!important}
+body.securityWorkspace[data-workspace-compact] .workspaceToolbar{justify-content:center;padding:5px 8px!important;min-height:54px!important}
+body.securityWorkspace[data-workspace-compact] .workspaceToolbar .sessionHistoryCenter{gap:6px!important}
+body.securityWorkspace[data-workspace-compact] .workspaceToolbar .historyStatus{position:absolute;left:-10000px}
+body.securityWorkspace[data-workspace-compact] .serviceToolsMenu .historyTextControls{display:flex!important;justify-content:center;border-top:1px solid var(--ta-border,#cfdae0);padding-top:7px;gap:6px}
+body.securityWorkspace[data-workspace-compact] .serviceToolsMenu .historyTextControls button{min-width:44px!important;min-height:44px!important;font-size:15px!important}
+body.securityWorkspace[data-workspace-compact] #securityDrawing .pagebar{gap:0!important;padding:4px 6px!important;justify-content:center!important}
+body.securityWorkspace[data-workspace-compact] .pagebar .workspaceToolGroup{gap:3px}
+body.securityWorkspace[data-workspace-compact] .pagebar .workspaceToolGroup+.workspaceToolGroup{padding-left:6px;margin-left:6px}
+body.securityWorkspace[data-workspace-compact] .pagebar #secPage{min-width:60px!important;white-space:nowrap;font-size:10px!important;text-align:center}
+body.securityWorkspace[data-workspace-compact] .pagebar #secZoom{min-width:34px;font-size:10px!important;text-align:center}
+@media(max-width:600px){
+ html[data-tillsyno-theme] body.securityWorkspace .secAppHeader .headerActions{gap:4px!important}
+ html[data-tillsyno-theme] body.securityWorkspace .secAppHeader .headerActions .appHeaderIconButton{width:40px!important;min-width:40px!important;height:40px!important;min-height:40px!important;padding:8px!important}
+ html[data-tillsyno-theme] body.securityWorkspace .secAppHeader .headerActions .appHeaderIconButton span{display:none!important}
+ html[data-tillsyno-theme] body.securityWorkspace .secAppHeader .brand{min-width:0!important;max-width:none!important}
+ html[data-tillsyno-theme] body.securityWorkspace .secAppHeader .brand strong{font-size:15px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ html[data-tillsyno-theme] body.securityWorkspace .workspaceFileLine{width:100%;gap:6px}
+ html[data-tillsyno-theme] body.securityWorkspace .workspaceFileName{max-width:none!important;font-size:12px}
+ html[data-tillsyno-theme] body.securityWorkspace .workspaceFileLine .workspaceFileActions button{width:44px!important;padding:8px!important}
+ html[data-tillsyno-theme] body.securityWorkspace .workspaceFileLine .workspaceFileActions button span{display:none!important}
+ html[data-tillsyno-theme] body.allInOneApp.securityWorkspace .workspaceFileLine .workspaceFileActions #secChangeDrawing{width:44px!important;padding:8px!important}
+ html[data-tillsyno-theme] body.allInOneApp.securityWorkspace .workspaceFileLine .workspaceFileActions #secChangeDrawing span{display:none!important}
+ body.securityWorkspace .allInOneProtocolTools{display:grid;grid-template-columns:repeat(var(--protocol-columns,4),minmax(0,1fr));gap:4px;padding:5px 6px;overflow:visible}
+ html[data-tillsyno-theme] body.allInOneApp.securityWorkspace .allInOneProtocolTools [data-add]:not([hidden]){display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:44px!important;padding:4px 3px!important;gap:2px;font-size:10px!important;line-height:1.2;white-space:normal}
+ body.securityWorkspace .allInOneProtocolTools [data-add] svg{width:14px;height:14px;margin:0}
+ body.securityWorkspace .allInOneProtocolTools [data-add] span{min-width:0;max-width:100%;overflow-wrap:normal}
+ body.securityWorkspace .workspaceMeta{gap:5px}
+}
+@media(max-width:360px){
+ html[data-tillsyno-theme] body.allInOneApp.securityWorkspace .allInOneProtocolTools [data-add]:not([hidden]){font-size:9.5px!important;letter-spacing:-.1px}
+}

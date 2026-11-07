@@ -1,0 +1,104 @@
+/* Selected bottom-dock layout, scoped to Avläsning + SmartMatch. */
+body.smDockWorkspace{--sm-dock-height:76px}
+body.smDockWorkspace [hidden]{display:none!important}
+body.smDockWorkspace>.pwHeader{min-height:52px!important;padding:7px 12px!important}
+body.smDockWorkspace .pwHeaderActions button{min-height:38px!important}
+body.smDockWorkspace .pwMain{min-height:0!important;flex:1 1 auto!important}
+body.smDockWorkspace>.pwBottomNav{display:grid!important;grid-template-columns:minmax(110px,1fr) auto minmax(110px,1fr)!important;gap:10px!important;min-height:var(--sm-dock-height)!important;padding:8px 12px max(8px,env(safe-area-inset-bottom))!important;flex:none!important;overflow:visible!important;background:var(--ta-panel,#f5f9fb)!important}
+body.smDockWorkspace.pwStartMode>.pwBottomNav{display:none!important}
+body.smDockWorkspace .pwBottomNav>.pwToolbar{position:static!important;order:0!important;padding:0!important;border:0!important;background:transparent!important;width:auto!important;overflow:visible!important}
+body.smDockWorkspace .pwToolbarWork{display:grid!important;grid-template-columns:repeat(4,minmax(66px,1fr))!important;gap:3px!important;padding:3px!important;border:1px solid var(--ta-border,#c7d8e0)!important;border-radius:12px!important;background:var(--ta-card,#fff)!important;width:auto!important;overflow:visible!important}
+body.smDockWorkspace .pwToolbarWork>.pwToolWrap,body.smDockWorkspace .smMoreWrap{display:block!important;min-width:0!important;position:relative}
+body.smDockWorkspace .pwToolbarWork>*{order:0!important}
+body.smDockWorkspace .pwToolbarWork>#pwBulkSelect{grid-column:1!important;grid-row:1!important}
+body.smDockWorkspace .pwToolbarWork>.pwToolWrap{grid-column:2!important;grid-row:1!important}
+body.smDockWorkspace .pwToolbarWork>#pwTimeReport{grid-column:3!important;grid-row:1!important}
+body.smDockWorkspace #pwTimeReport{display:flex!important}
+body.smDockWorkspace .smDockLeft>#pwFit{order:2!important}
+body.smDockWorkspace .smDockLeft>.pwToolHistory{order:1!important}
+body.smDockWorkspace .pwToolbarWork>.smMoreWrap{grid-column:4!important;grid-row:1!important}
+body.smDockWorkspace .pwToolbarWork>button,body.smDockWorkspace .pwToolbarWork>.pwToolWrap>button,body.smDockWorkspace #smMoreButton{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;min-width:62px!important;width:100%!important;min-height:52px!important;padding:5px 10px!important;border:0!important;border-radius:9px!important;gap:4px!important;background:transparent!important;color:var(--ta-ink,#173746)!important;font-size:12px!important;line-height:1.2!important;font-weight:650!important}
+body.smDockWorkspace .pwToolbarWork button svg{display:block!important;visibility:visible!important;width:21px!important;height:21px!important;stroke:currentColor!important;flex:none!important}
+body.smDockWorkspace .smToolbarChevron{display:none!important}
+body.smDockWorkspace .pwToolbarWork button[aria-pressed=true],body.smDockWorkspace .pwToolbarWork button[aria-expanded=true],body.smDockWorkspace .pwToolbarWork button.active{background:var(--ta-soft2,#d9eaf0)!important;color:var(--ta-blue-dark,#164d5b)!important}
+body.smDockWorkspace .pwToolbarWork button:hover{background:var(--ta-soft,#edf5f8)!important}
+body.smDockWorkspace :is(button,input,select,summary):focus-visible{outline:2px solid var(--ta-blue,#246987)!important;outline-offset:2px}
+body.smDockWorkspace .smDockLeft,body.smDockWorkspace .smDockRight{display:flex!important;align-items:center!important;gap:6px!important;min-width:0}
+body.smDockWorkspace .smDockRight{justify-content:flex-end!important;flex-wrap:wrap}
+body.smDockWorkspace .pwToolHistory{display:flex!important;border:0!important;padding:0!important;gap:4px!important}
+body.smDockWorkspace .pwToolHistory .smToolbarLabel{display:none!important}
+body.smDockWorkspace .pwBottomNav .smDockLeft button,body.smDockWorkspace .pwBottomNav .smDockRight button{min-height:36px!important;min-width:36px!important}
+body.smDockWorkspace #pwToolMenu:not([hidden]),body.smDockWorkspace #smMoreMenu:not([hidden]){position:fixed!important;transform:none!important;background:var(--ta-card,#fff)!important;color:var(--ta-ink,#173746)!important;border:1px solid var(--ta-border,#c7d8e0)!important;border-radius:12px!important;box-shadow:0 6px 24px #17374624!important;z-index:2147482000!important;padding:7px!important;overflow:auto!important}
+body.smDockWorkspace #smMoreMenu>button{display:flex!important;align-items:center!important;gap:10px!important;min-height:44px!important;width:100%!important;white-space:normal!important;text-align:left!important;font-size:13px!important;padding:9px 10px!important;border:0!important;background:transparent!important;color:inherit!important;border-radius:7px!important}
+body.smDockWorkspace #smMoreMenu>button[hidden]{display:none!important}
+body.smDockWorkspace #smMoreMenu>button:hover{background:var(--ta-soft,#edf5f8)!important}
+body.smDockWorkspace #smMoreMenu>button svg{display:block!important;width:20px!important;height:20px!important;flex:none!important;stroke:currentColor!important}
+body.smDockWorkspace #smMoreMenu .smToolHelp{display:none!important}
+body.smDockWorkspace #pwToolMenu>button{min-height:52px!important;font-size:13px!important}
+body.smDockWorkspace #pwToolMenu .smToolLabel{font-size:13px!important}
+body.smDockWorkspace.smCompactWorkspace #pwToolMenu button .smToolSvg{display:block!important;width:21px!important;height:21px!important;stroke:currentColor!important}
+body.smDockWorkspace #exDialog[open]{position:fixed!important;inset:auto!important;left:var(--sm-popup-left,auto)!important;top:var(--sm-popup-top,72px)!important;right:20px!important;bottom:auto!important;margin:0!important;transform:none!important;width:min(560px,calc(100vw - 32px))!important;height:auto!important;max-height:calc(100dvh - 170px)!important;overflow:auto!important;padding:0!important;border:1px solid var(--ta-border,#c7d8e0)!important;border-radius:14px!important;box-shadow:0 10px 36px #17374630!important;background:var(--ta-card,#fff)!important;z-index:12000!important}
+body.smDockWorkspace #exDialog .exShell{max-width:none!important;padding:14px!important}
+body.smDockWorkspace #exDialog .exHeader{position:sticky;top:-14px;background:var(--ta-card,#fff);z-index:2;padding:10px 0}
+body.smDockWorkspace #exDialog .exSetupGrid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:14px!important}
+body.smDockWorkspace #exDialog #exCardPreview{max-height:110px!important;width:auto!important;max-width:100%!important}
+body.smDockWorkspace #exDialog :is(input,select,button){min-height:38px!important;font-size:13px!important}
+body.smDockWorkspace #exDialog .exHint{font-size:12px!important}
+body.smDockWorkspace .smDockDragHandle{cursor:move;touch-action:none}
+body.smDockWorkspace .smDockDragHandle:focus-visible{outline:2px solid var(--ta-blue,#246987)}
+body.smDockWorkspace #pwProtocol[open],body.smDockWorkspace #pwTimeDialog[open]{position:fixed!important;inset:64px 12px calc(var(--sm-dock-height) + 12px) auto!important;width:min(760px,72vw)!important;height:auto!important;max-height:none!important;max-width:none!important;margin:0!important;padding:0!important;border:1px solid var(--ta-border,#c7d8e0)!important;border-radius:12px!important;box-shadow:0 6px 28px #17374630!important;z-index:11000!important;overflow:auto!important;transform:none!important;background:var(--ta-card,#fff)!important}
+body.smDockWorkspace #pwTimeDialog[open]{width:min(650px,72vw)!important}
+body.smDockWorkspace #pwProtocol .pwProtocolHeader{min-height:48px!important}
+body.smDockWorkspace #pwProtocol .pwProtocolBody{height:calc(100% - 60px)!important;min-height:0!important}
+body.smDockWorkspace .pwTimeBody{max-height:none!important;font-size:13px!important}
+body.smDockWorkspace .pwTimeSummary label,body.smDockWorkspace .smTimeTableScroll{font-size:13px!important}
+@media(pointer:coarse),(max-width:1024px){
+ body.smDockWorkspace .pwBottomNav .smDockLeft button,body.smDockWorkspace .pwBottomNav .smDockRight button{min-height:44px!important;min-width:44px!important}
+ body.smDockWorkspace .pwHeaderActions button{min-height:44px!important}
+ body.smDockWorkspace #exDialog :is(input,select,button){min-height:44px!important;font-size:14px!important}
+ body.smDockWorkspace #pwProtocol[open]{width:min(720px,85vw)!important}
+}
+@media(max-width:760px){
+ body.smDockWorkspace{--sm-dock-height:116px}
+ body.smDockWorkspace>.pwBottomNav{grid-template-columns:1fr 1fr!important;gap:4px!important;padding:4px 8px max(6px,env(safe-area-inset-bottom))!important}
+ body.smDockWorkspace .pwBottomNav>.pwToolbar{grid-column:1 / -1!important;grid-row:2!important;width:100%!important}
+ body.smDockWorkspace .pwToolbarWork{width:100%!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;box-sizing:border-box!important}
+ body.smDockWorkspace .smDockLeft{grid-column:1;grid-row:1}
+ body.smDockWorkspace .smDockRight{grid-column:2;grid-row:1}
+ body.smDockWorkspace .pwBottomZoom{display:none!important}
+ body.smDockWorkspace .pwBottomPages #pwPageInfo{min-width:55px!important;font-size:11px!important}
+ body.smDockWorkspace .pwToolbarWork>button,body.smDockWorkspace .pwToolbarWork>.pwToolWrap>button,body.smDockWorkspace #smMoreButton{min-height:50px!important;min-width:0!important;font-size:12px!important}
+ body.smDockWorkspace #pwProtocol[open],body.smDockWorkspace #pwTimeDialog[open]{inset:auto 8px calc(var(--sm-dock-height) + 8px) 8px!important;width:auto!important;height:64dvh!important;max-height:calc(100dvh - 185px)!important;border-radius:16px 16px 8px 8px!important}
+}
+@media(max-width:620px){
+ body.smDockWorkspace>.pwHeader{padding:5px 8px!important;min-height:52px!important}
+ body.smDockWorkspace #exDialog[open]{left:8px!important;right:8px!important;top:auto!important;bottom:calc(var(--sm-dock-height) + 8px)!important;width:auto!important;max-height:min(60dvh,calc(100dvh - 185px))!important;border-radius:16px 16px 8px 8px!important}
+ body.smDockWorkspace #exDialog .exShell{padding:10px!important}
+ body.smDockWorkspace #exDialog .exSetupGrid{grid-template-columns:1fr!important}
+ body.smDockWorkspace #exDialog .smDockDragHandle{cursor:default;touch-action:auto}
+ body.smDockWorkspace #exDialog :is(input,select){font-size:16px!important}
+ body.smDockWorkspace #pwProtocol .pwProtocolBody{display:block!important}
+ body.smDockWorkspace #pwProtocol .pwProtocolOriginal,body.smDockWorkspace #pwProtocol .pwChecklistPane{height:100%!important;overflow:auto!important}
+ body.smDockWorkspace #pwProtocol.pwMobileCard .pwChecklistPane{display:none!important}
+ body.smDockWorkspace #pwProtocol.pwMobileChecks .pwProtocolOriginal{display:none!important}
+}
+
+/* Context action stays outside the four primary tools. */
+body.smDockWorkspace #pwToolDelete{display:none!important}
+body.smDockWorkspace #pwContextDelete{order:3;display:inline-flex!important;align-items:center;gap:5px;min-height:36px;padding:6px 9px!important;border:1px solid var(--ta-border,#c7d8e0)!important;border-radius:8px;background:var(--ta-card,#fff)!important;color:var(--ta-text,#173746)!important;font-size:12px!important;white-space:nowrap}
+body.smDockWorkspace #pwContextDelete[hidden]{display:none!important}
+body.smDockWorkspace #pwContextDelete svg{width:18px;height:18px;flex:none}
+body.smDockWorkspace #pwContextDelete:focus-visible{outline:2px solid var(--ta-blue,#246987);outline-offset:2px}
+body.smDockWorkspace :is(.pwStampHit,.pwAutomationMarker,.smTextCheckHit){touch-action:manipulation}
+body.smDockWorkspace .smTextCheckHit[data-locked="false"][data-kind="label"]{touch-action:none}
+body.smDockWorkspace [data-sm-selected="true"]{outline:2px solid var(--ta-blue,#246987)!important;outline-offset:2px}
+@media(max-width:760px){
+ body.smDockWorkspace .smDockLeft{grid-column:1 / -1;grid-row:1!important;grid-column:1 / -1!important;min-height:44px;padding-right:100px}
+ body.smDockWorkspace .smDockRight{grid-column:1 / -1;grid-row:1!important;grid-column:1 / -1!important;justify-self:end}
+ body.smDockWorkspace #pwContextDelete{font-size:11px!important;padding:5px 7px!important}
+}
+
+@media(max-width:380px){
+ body.smDockWorkspace .smDockLeft.smHasSelection #pwFit{display:none!important}
+ body.smDockWorkspace #pwContextDelete .smToolLabel{display:none!important}
+}

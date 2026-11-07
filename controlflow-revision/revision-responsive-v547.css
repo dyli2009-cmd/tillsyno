@@ -1,0 +1,247 @@
+@layer controlflowStandard {
+/* Revision workspace UI only. Drawing annotations, canvases and stored data keep their sizes. */
+
+/* All three lines of an overview statistic follow the shared text setting. */
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #secOverviewSummary {
+  --revision-stat-columns: 6;
+  grid-template-columns: repeat(var(--revision-stat-columns), minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #secOverviewSummary .overviewStat {
+  min-width: 0;
+  padding: 12px 8px !important;
+  gap: 4px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #secOverviewSummary .overviewStat strong {
+  font-size: var(--cf-heading) !important;
+  line-height: 1.2 !important;
+  font-variant-numeric: tabular-nums;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #secOverviewSummary :is(.overviewStat small, .overviewMeaning) {
+  font-size: var(--cf-label) !important;
+  line-height: 1.4 !important;
+  margin-top: 0 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #secOverviewSummary .overviewMeaning {
+  gap: 4px !important;
+  max-width: 100%;
+}
+@media (max-width: 1100px) {
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #secOverviewSummary {
+    --revision-stat-columns: 3;
+  }
+}
+@media (max-width: 800px) {
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #secOverviewSummary {
+    --revision-stat-columns: 2;
+  }
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-tillsyno-device="phone"] body.allInOneApp #secOverviewSummary {
+  --revision-stat-columns: 2;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #secOverviewSummary {
+  --revision-stat-columns: 3;
+}
+@media (max-width: 1100px) {
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #secOverviewSummary {
+    --revision-stat-columns: 2;
+  }
+}
+@media (max-width: 800px) {
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #secOverviewSummary {
+    --revision-stat-columns: 1;
+  }
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-tillsyno-device="phone"][data-cf-large-text] body.allInOneApp #secOverviewSummary {
+  --revision-stat-columns: 1;
+}
+
+/* These inline controls sit outside the named regions covered by controlflow-ui.css. */
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #revisionInlineWorkspace .revisionInlineNavigation {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #revisionInlineWorkspace .revisionInlineNavigation button,
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #revisionOverviewControls :is(button, select) {
+  min-width: 44px !important;
+  min-height: 44px !important;
+  height: auto !important;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 8px 12px !important;
+  font-size: var(--cf-label) !important;
+  line-height: 1.35 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #revisionInlineWorkspace .revisionInlineNavigation button,
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #revisionOverviewControls button {
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #revisionInlineWorkspace .revisionInlineEditor {
+  font-size: var(--cf-body) !important;
+  line-height: 1.45 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #revisionInlineWorkspace .revisionInlineEditor h2 {
+  font-size: var(--cf-title) !important;
+  line-height: 1.25 !important;
+  overflow-wrap: anywhere;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #revisionInlineWorkspace .revisionInlineEditor :is(label, p) {
+  font-size: var(--cf-label) !important;
+  line-height: 1.45 !important;
+  overflow-wrap: anywhere;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #revisionInlineWorkspace .revisionInlineEditor textarea {
+  box-sizing: border-box;
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: 100%;
+  font-size: var(--cf-body) !important;
+  line-height: 1.45 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #revisionInlineWorkspace .revisionInlineEditor .revisionInlineActions {
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #revisionInlineWorkspace .revisionInlineEditor button {
+  min-width: 44px !important;
+  min-height: 44px !important;
+  height: auto !important;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 8px 12px !important;
+  font-size: var(--cf-body) !important;
+  line-height: 1.35 !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+/* Keep the floating overview toolbar reachable when its scaled controls wrap. */
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #revisionOverviewControls {
+  gap: 8px !important;
+  max-height: calc(100vh - 100px - env(safe-area-inset-bottom));
+  max-height: calc(100dvh - 100px - env(safe-area-inset-bottom));
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #revisionOverviewControls .revisionOverviewLayout {
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+  gap: 8px !important;
+  font-size: var(--cf-label) !important;
+  line-height: 1.35 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #revisionOverviewControls #revisionOverviewLayout {
+  min-width: 0 !important;
+  padding-right: 28px !important;
+}
+
+/* Wide project forms keep their two columns. Narrow screens and large text stack labels. */
+@media (max-width: 800px) {
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject.revisionProjectLayout .revisionProjectColumns {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 16px !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #securityProject.revisionProjectLayout .projectCard label:not(.filebtn) {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 4px !important;
+  }
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-large-text], [data-tillsyno-device="phone"]) body.allInOneApp #securityProject.revisionProjectLayout .revisionProjectColumns {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 16px !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-cf-large-text], [data-tillsyno-device="phone"]) body.allInOneApp #securityProject.revisionProjectLayout .projectCard label:not(.filebtn) {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 4px !important;
+}
+
+/* Large result headings get matching tracks; normal-scale protocol rows are unchanged. */
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionCheckTable {
+  --result-width: calc(5rem * var(--cf-text-scale)) !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionCheckColumns {
+  grid-template-columns: minmax(0, 1fr) repeat(3, var(--result-width)) !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionCheckColumns > span:where(:not(:first-child)),
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionCheckColumns > span:where(:not(:first-child)) span {
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionCheckTable .secChoices {
+  grid-template-columns: repeat(3, var(--result-width)) !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionCheckTable .secChoices button {
+  width: auto !important;
+  justify-self: center !important;
+}
+
+/* The existing short labels fit three equal response columns below the control-point text. */
+@media (max-width: 700px) {
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionCheckColumns {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionCheckColumns > span:first-child {
+    grid-column: 1 / -1 !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionCheckColumns > span,
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionCheckColumns > span span {
+    overflow-wrap: anywhere !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionColumnFull {
+    display: none !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionColumnShort {
+    display: inline !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionCheckTable .secCheck {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionCheckTable .secChoices {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    justify-content: stretch !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionCheckTable .secFault {
+    grid-row: 3 !important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #securityProtocol #secChecklist .revisionCheckTable .revisionCheckEditor {
+    grid-row: auto !important;
+  }
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text][data-tillsyno-device="phone"] body.allInOneApp #securityProtocol #secChecklist .revisionCheckColumns {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text][data-tillsyno-device="phone"] body.allInOneApp #securityProtocol #secChecklist .revisionCheckColumns > span:first-child {
+  grid-column: 1 / -1 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text][data-tillsyno-device="phone"] body.allInOneApp #securityProtocol #secChecklist .revisionCheckColumns > span,
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text][data-tillsyno-device="phone"] body.allInOneApp #securityProtocol #secChecklist .revisionCheckColumns > span span {
+  overflow-wrap: anywhere !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text][data-tillsyno-device="phone"] body.allInOneApp #securityProtocol #secChecklist .revisionColumnFull {
+  display: none !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text][data-tillsyno-device="phone"] body.allInOneApp #securityProtocol #secChecklist .revisionColumnShort {
+  display: inline !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text][data-tillsyno-device="phone"] body.allInOneApp #securityProtocol #secChecklist .revisionCheckTable .secCheck {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text][data-tillsyno-device="phone"] body.allInOneApp #securityProtocol #secChecklist .revisionCheckTable .secChoices {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  justify-content: stretch !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text][data-tillsyno-device="phone"] body.allInOneApp #securityProtocol #secChecklist .revisionCheckTable .secFault {
+  grid-row: 3 !important;
+}
+html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text][data-tillsyno-device="phone"] body.allInOneApp #securityProtocol #secChecklist .revisionCheckTable .revisionCheckEditor {
+  grid-row: auto !important;
+}
+}

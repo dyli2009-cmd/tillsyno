@@ -1,0 +1,25 @@
+/* Compact door overview and a spreadsheet-like material table. */
+#cardSummary .summary-product{padding:6px 0;margin:0;border-bottom:1px solid var(--line,#d9e2db);}
+#cardSummary .summary-inline{display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 8px;font-size:max(14px,.875rem);line-height:1.35;}
+#cardSummary .summary-inline strong{font-size:inherit;}
+#cardSummary .summary-count,#cardSummary .summary-owner-code{white-space:nowrap;}
+#cardSummary .summary-model-inline{overflow-wrap:anywhere;}
+#cardSummary .summary-time{font-size:inherit;color:var(--muted,#53675b);}
+#cardSummary .summary-section{margin:8px 0;}
+#cardSummary .summary-section h3{margin:6px 0;font-size:max(14px,.875rem);}
+#cardSummary .summary-note{margin:3px 0;font-size:max(14px,.875rem);}
+.material-table-wrap{overflow:auto;max-height:70dvh;overscroll-behavior:contain;}
+.material-table{display:table!important;width:100%;min-width:960px;border-collapse:collapse;table-layout:fixed;}
+.material-table thead{display:table-header-group!important;}
+.material-table tbody{display:table-row-group!important;}
+.material-table tr{display:table-row!important;background:transparent;}
+.material-table th,.material-table td{display:table-cell!important;border:1px solid var(--line,#cad5ce);padding:7px 9px!important;margin:0!important;font-size:max(14px,.875rem)!important;vertical-align:top;white-space:normal;}
+.material-table th{position:sticky;top:0;z-index:2;background:var(--paper,#edf3ee);text-align:left;}
+.material-table tbody tr:nth-child(even){background:rgba(88,130,100,.06);}
+.material-table td::before{display:none!important;content:none!important;}
+.material-table td:nth-child(4),.material-table td:nth-child(5),.material-table td:nth-child(6){text-align:right;font-variant-numeric:tabular-nums;}
+.material-table [data-material-time]{font-size:max(16px,1rem);min-height:44px;}
+.material-table .material-time-fields{display:flex;flex-wrap:wrap;gap:4px;}
+@media print{.material-table-wrap{max-height:none;overflow:visible;}.material-table{min-width:0;}.material-table th{position:static;}}
+
+.material-table summary{cursor:pointer;min-height:32px;}

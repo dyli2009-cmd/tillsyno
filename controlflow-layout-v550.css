@@ -1,0 +1,133 @@
+/* v2.4.550: text controls and compact Project/Service presentation only.
+   The root workspace also hosts Brand; its Security Service flag is required.
+   Existing fields, actions, text-scale state and document rendering are unchanged. */
+@layer controlflowStandard {
+  /* The legacy white group shows through disabled buttons even when those
+     buttons already have the correct dark background. Theme the whole group. */
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] .historyTextControls,
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp .historyTextControls {
+    background: transparent !important;
+    border-color: var(--ta-border) !important;
+  }
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] .historyTextControls > .historyTextButton,
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp .historyTextControls > .historyTextButton {
+    background: var(--ta-soft2) !important;
+    color: var(--ta-blue-dark) !important;
+    border-color: var(--ta-border) !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    width: auto !important;
+    height: auto !important;
+    flex: 0 0 auto !important;
+    padding: 8px !important;
+    font-size: var(--cf-label) !important;
+    line-height: 1.3 !important;
+    white-space: nowrap !important;
+  }
+  /* Keep the existing disabled opacity, focus ring and text-scale handlers. */
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] #securityProject[data-controlflow-project="1"],
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject[data-controlflow-project="1"] {
+    --cf-project-inset: 16px;
+    --cf-project-title: calc(1.125rem * var(--cf-text-scale, 1));
+    --cf-project-section: calc(1rem * var(--cf-text-scale, 1));
+    --cf-project-card: calc(.9375rem * var(--cf-text-scale, 1));
+    --cf-project-label: calc(.875rem * var(--cf-text-scale, 1));
+    padding: var(--cf-project-inset) !important;
+  }
+
+  /* The sticky inset and scroll-panel padding must use the same value.
+     Previously 22px/-18px (desktop) and 12px/-5px (phone) left a strip
+     above the heading through which scrolling form content remained visible.
+     No scroll container, fixed height or stacking order is introduced here. */
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] #securityProject[data-controlflow-project="1"] > .sheetHead,
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject[data-controlflow-project="1"] > .sheetHead {
+    top: calc(0px - var(--cf-project-inset)) !important;
+    padding: 2px 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 8px !important;
+    gap: 8px !important;
+    background: var(--ta-page) !important;
+    color: var(--ta-ink) !important;
+    border-color: var(--ta-border) !important;
+  }
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] #securityProject[data-controlflow-project="1"] > .sheetHead > div,
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject[data-controlflow-project="1"] > .sheetHead > div {
+    min-width: 0;
+  }
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] #securityProject[data-controlflow-project="1"] > .sheetHead h2,
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject[data-controlflow-project="1"] > .sheetHead h2 {
+    font-size: var(--cf-project-title) !important;
+    line-height: 1.25 !important;
+    margin: 0 !important;
+    overflow-wrap: anywhere;
+  }
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] #securityProject[data-controlflow-project="1"] .revisionColumnHead,
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject[data-controlflow-project="1"] .revisionColumnHead {
+    padding: 8px 10px !important;
+  }
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] #securityProject[data-controlflow-project="1"] .revisionColumnHead h2,
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject[data-controlflow-project="1"] .revisionColumnHead h2 {
+    font-size: var(--cf-project-section) !important;
+    line-height: 1.3 !important;
+    overflow-wrap: anywhere;
+  }
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] #securityProject[data-controlflow-project="1"] .projectCard,
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject[data-controlflow-project="1"] .projectCard {
+    padding: 8px !important;
+  }
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] #securityProject[data-controlflow-project="1"] .projectCardHead h3,
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject[data-controlflow-project="1"] .projectCardHead h3 {
+    font-size: var(--cf-project-card) !important;
+    line-height: 1.3 !important;
+    overflow-wrap: anywhere;
+  }
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] #securityProject[data-controlflow-project="1"] :is(p, label:not(.filebtn), small, .muted, .eyebrow, .secLogoLabel),
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject[data-controlflow-project="1"] :is(p, label:not(.filebtn), small, .muted, .eyebrow, .secLogoLabel) {
+    font-size: var(--cf-project-label) !important;
+    line-height: 1.35 !important;
+    overflow-wrap: anywhere;
+  }
+
+  /* Editable fields retain the shared 16px touch / 18px roomy-desktop scale.
+     Auto height preserves space for the user's setting up to 200 percent. */
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] #securityProject[data-controlflow-project="1"] :is(input:not([type="checkbox"]):not([type="radio"]), select),
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject[data-controlflow-project="1"] :is(input:not([type="checkbox"]):not([type="radio"]), select) {
+    font-size: var(--cf-body) !important;
+    min-height: 44px !important;
+    height: auto !important;
+  }
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] #securityProject[data-controlflow-project="1"] :is(button, .filebtn),
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject[data-controlflow-project="1"] :is(button, .filebtn) {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    height: auto !important;
+  }
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] #securityProject[data-controlflow-project="1"] > .sheetHead > button,
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject[data-controlflow-project="1"] > .sheetHead > button {
+    flex: 0 0 auto;
+  }
+
+  /* Match the existing single-column project breakpoint and manual Phone mode. */
+  @media (max-width: 800px) {
+    html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] #securityProject[data-controlflow-project="1"],
+    html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject[data-controlflow-project="1"] {
+      --cf-project-inset: 12px;
+    }
+  }
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-tillsyno-device="phone"][data-cf-stamp-mode="security"] body.allInOneApp[data-security-project-layout] #securityProject[data-controlflow-project="1"],
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-tillsyno-device="phone"][data-cf-stamp-mode="revision"] body.allInOneApp #securityProject[data-controlflow-project="1"] {
+    --cf-project-inset: 12px;
+  }
+}

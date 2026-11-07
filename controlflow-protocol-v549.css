@@ -1,0 +1,146 @@
+/* Scoped protocol compactness for Automation/Locks and Security Service. */
+.cfProtocolMetaShell{display:contents}
+@layer controlflowStandard {
+  #cfProtocolToolsMenu[hidden],#cfProtocolTopActions[hidden],#cfProtocolCheckHeader[hidden],#cfProtocolName[hidden]{display:none!important}
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm {
+    --cf-protocol-text:calc(.875rem * var(--cf-text-scale));
+    --cf-protocol-label:calc(.75rem * var(--cf-text-scale));
+    --cf-result-track:88px;
+    --cf-result-gap:4px;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .cfProtocolMetaShell{display:block!important;position:relative}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .protocolMetaPanel{margin:0 0 6px!important;padding:0!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .protocolMetaPanel>summary{
+    min-height:44px!important;padding:6px 100px 6px 8px!important;font-size:var(--cf-protocol-text)!important;line-height:1.25!important;box-sizing:border-box;overflow-wrap:anywhere
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .protocolMetaHint{display:none!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .compactSecurityMeta{
+    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px 8px!important;padding:6px 8px!important;align-items:end!important
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .compactSecurityMeta>label{
+    display:flex!important;flex-direction:column!important;gap:3px!important;min-height:44px;margin:0!important;font-size:var(--cf-protocol-label)!important;line-height:1.2!important;font-weight:500!important;min-width:0!important
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .compactSecurityMeta :is(.secTypeField,.secAutomationModelField){grid-column:span 2!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .compactSecurityMeta :is(input,select){
+    font-size:var(--cf-protocol-text)!important;min-height:36px!important;height:auto!important;padding:5px 7px!important;margin:0!important;line-height:1.25!important;font-weight:400!important;min-width:0!important
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .compactSecurityMeta :is(input,select)[hidden],
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .compactSecurityMeta>label[hidden],
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .cfProtocolReadOnly{display:none!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #cfProtocolName{
+    display:block;min-height:36px;padding:6px 0;font-size:var(--cf-protocol-text)!important;line-height:1.25!important;overflow-wrap:anywhere;box-sizing:border-box;color:var(--ta-ink,#173f55)
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secAutomationIdMessage{
+    grid-column:1/-1!important;font-size:var(--cf-protocol-label)!important;line-height:1.25!important;margin:0!important
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secAutomationIdMessage:empty{display:none!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #cfProtocolTopActions{
+    display:flex;position:absolute;right:4px;top:0;align-items:center;gap:2px;min-height:44px;z-index:2
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #cfProtocolTopActions>button{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:44px!important;width:44px!important;min-height:44px!important;height:44px!important;padding:8px!important;border:0!important;background:transparent!important;color:var(--ta-ink,#173f55)!important;font-size:var(--cf-protocol-label)!important;box-shadow:none!important
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #cfProtocolTopActions svg{width:21px!important;height:21px!important;flex:none;pointer-events:none}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #cfProtocolTopActions #secCloseProtocol{font-size:1.25rem!important}
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm :is(.progressLine,.secProgressActions),
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secCheckGroup>summary{display:none!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #cfProtocolCheckHeader{
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 8px;padding:3px 6px;margin-top:8px;background:var(--ta-header,var(--ta-soft2,#eaf2f6));border:1px solid var(--ta-border,#cfdae0);border-radius:8px 8px 0 0;box-sizing:border-box
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #cfProtocolCheckToggle{
+    flex:0 1 auto;min-width:0!important;min-height:44px!important;padding:5px 2px!important;font-size:var(--cf-protocol-text)!important;font-weight:650!important;line-height:1.25!important;border:0!important;background:transparent!important;color:var(--ta-ink,#173f55)!important;text-align:left;white-space:normal!important
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .cfProtocolCheckActions{
+    display:flex;flex:0 1 auto;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:4px 8px;margin-left:auto;min-width:0;max-width:100%
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secProgress{
+    font-size:var(--cf-protocol-label)!important;font-weight:500!important;line-height:1.25!important;font-variant-numeric:tabular-nums;white-space:nowrap;min-width:0
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm :is(#secApproveAll,.cfProtocolEditDock #secEditChecks){
+    min-height:44px!important;max-width:100%;height:auto!important;padding:6px 8px!important;font-size:var(--cf-protocol-label)!important;line-height:1.25!important;white-space:normal!important;border-radius:6px!important
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secApproveAll{background:var(--ta-blue,#356e81)!important;color:#fff!important;border-color:var(--ta-blue,#356e81)!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .cfProtocolEditDock:empty{display:none}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secCheckGroup{margin-top:0!important;border-top:0!important;border-radius:0 0 8px 8px!important;overflow:visible!important}
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .revisionCheckTable{--result-width:var(--cf-result-track)!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .revisionCheckColumns{
+    display:grid!important;grid-template-columns:minmax(0,1fr) repeat(3,var(--cf-result-track))!important;gap:var(--cf-result-gap)!important;align-items:center!important;padding:6px 8px!important;min-width:0;box-sizing:border-box
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .revisionCheckColumns :is(span,.revisionColumnFull,.revisionColumnShort){font-size:calc(.6875rem * var(--cf-text-scale))!important;line-height:1.2!important;min-width:0;overflow-wrap:anywhere!important;font-weight:500!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .revisionCheckColumns>span:not(:first-child){text-align:center!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secCheck{
+    display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:4px!important;align-items:center!important;padding:4px 8px!important;margin:0!important;min-width:0;box-sizing:border-box
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secCheckHead{
+    grid-column:1!important;grid-row:1!important;display:flex!important;align-items:baseline!important;gap:6px!important;min-width:0;font-size:var(--cf-protocol-text)!important;line-height:1.35!important
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secCheckText{font-size:var(--cf-protocol-text)!important;line-height:1.35!important;min-width:0;overflow-wrap:anywhere}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .checkNumber{min-width:26px!important;font-size:var(--cf-protocol-label)!important;line-height:1.35!important;flex:none}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secChoices{
+    display:grid!important;grid-column:2!important;grid-row:1!important;grid-template-columns:repeat(3,var(--cf-result-track))!important;gap:var(--cf-result-gap)!important;margin:0!important;align-items:center!important;justify-content:end!important
+  }
+  /* The button stays 44px; the inset painted surface is 32px. */
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secChoices button{
+    position:relative!important;isolation:isolate;display:inline-flex!important;align-items:center!important;justify-content:center!important;justify-self:center!important;min-width:44px!important;width:44px!important;min-height:44px!important;height:44px!important;padding:6px!important;margin:0!important;border:0!important;border-radius:8px!important;background:transparent!important;box-shadow:none!important;color:var(--ta-ink,#173f55)!important;font-size:calc(1.0625rem * var(--cf-text-scale))!important;line-height:1!important;z-index:0
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secChoices button::before{
+    content:""!important;position:absolute;inset:6px;z-index:-1;border:1px solid var(--ta-border,#cfdae0);border-radius:5px;background:var(--ta-soft2,#edf4f7);pointer-events:none
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secChoices button.active[data-v="ok"]{color:#1c7147!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secChoices button.active[data-v="ok"]::before{background:#e2f2e8;border-color:#4a9770}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secChoices button.active[data-v="remark"]{color:#ad3630!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secChoices button.active[data-v="remark"]::before{background:#fbe5e2;border-color:#c57168}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secChoices button.active[data-v="na"]{color:#334e5c!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secChoices button.active[data-v="na"]::before{background:#e1e7eb;border-color:#8898a3}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secChoices button:focus-visible{outline:2px solid var(--ta-blue,#26769a)!important;outline-offset:-2px!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secFault{grid-column:1/-1!important;grid-row:2!important;margin:0 0 4px!important;min-width:0}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .revisionCheckEditor{grid-column:1/-1!important;grid-row:auto!important;min-width:0}
+
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #cfProtocolToolsMenu{
+    position:fixed!important;z-index:3000!important;display:flex;flex-direction:column;gap:4px;padding:6px;max-width:calc(100vw - 16px);overflow:auto;box-sizing:border-box;background:var(--ta-card,#fff);color:var(--ta-ink,#173f55);border:1px solid var(--ta-border,#cfdae0);border-radius:10px;box-shadow:0 8px 28px #102d4326
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #cfProtocolToolsMenu>button{
+    display:block!important;min-height:44px!important;height:auto!important;min-width:0!important;width:100%!important;padding:9px 10px!important;margin:0!important;box-sizing:border-box;text-align:left!important;white-space:normal!important;overflow-wrap:anywhere;font-size:calc(.875rem * var(--cf-text-scale))!important;line-height:1.3!important;border:0!important;border-radius:6px!important;background:var(--ta-soft2,#edf4f7)!important;color:var(--ta-ink,#173f55)!important
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #cfProtocolToolsMenu>button[hidden]{display:none!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #cfProtocolToolsMenu[hidden],
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm :is(#cfProtocolTopActions,#cfProtocolCheckHeader,#cfProtocolName)[hidden]{display:none!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #cfProtocolToolsMenu>#secDelete{color:#a6292e!important;background:#fff2f2!important;border-top:1px solid var(--ta-border,#cfdae0)!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] :is(#cfProtocolToolsMenu>button,#cfProtocolTopActions>button):hover:not(:disabled){background:var(--ta-highlight,#e0edf2)!important}
+
+  @media(pointer:coarse){
+    html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .compactSecurityMeta :is(input:not([readonly]),select):focus{font-size:max(1rem,var(--cf-protocol-text))!important}
+  }
+  @media(max-width:800px){
+    html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm{--cf-result-track:44px}
+    html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .compactSecurityMeta{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+    html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .revisionColumnFull{display:none!important}
+    html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .revisionColumnShort{display:inline!important}
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-tillsyno-device="phone"],[data-tillsyno-device="tablet"]) body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm{--cf-result-track:44px}
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-tillsyno-device="phone"] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .compactSecurityMeta{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-tillsyno-device="phone"],[data-tillsyno-device="tablet"]) body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .revisionColumnFull{display:none!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:is([data-tillsyno-device="phone"],[data-tillsyno-device="tablet"]) body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .revisionColumnShort{display:inline!important}
+
+  /* Narrow phones and large text give the control-point sentence its own full row. */
+  @media(max-width:359px){
+    html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .revisionCheckColumns{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+    html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .revisionCheckColumns>span:first-child{grid-column:1/-1!important}
+    html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secCheck{grid-template-columns:minmax(0,1fr)!important}
+    html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secChoices{grid-column:1!important;grid-row:2!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;justify-content:stretch!important}
+    html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secFault{grid-row:3!important}
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .compactSecurityMeta{grid-template-columns:minmax(0,1fr)!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm .compactSecurityMeta>label{grid-column:1!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .revisionCheckColumns{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .revisionCheckColumns>span:first-child{grid-column:1/-1!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .revisionColumnFull{display:none!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .revisionColumnShort{display:inline!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secCheck{grid-template-columns:minmax(0,1fr)!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secChoices{grid-column:1!important;grid-row:2!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;justify-content:stretch!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secFault{grid-row:3!important}
+  html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp[data-cf-protocol-compact] #securityProtocol #secForm #secChecklist .secChoices button{min-width:52px!important;width:52px!important;min-height:52px!important;height:52px!important}
+}

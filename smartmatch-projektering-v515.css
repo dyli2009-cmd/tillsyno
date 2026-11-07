@@ -1,0 +1,9 @@
+/* Compact door overview. Editor and material calculations keep their own layout. */
+#cardSummary .summary-inline{display:grid;grid-template-columns:minmax(0,1fr) 3ch 5ch minmax(5ch,max-content);align-items:baseline;gap:6px;font-size:max(14px,.875rem)}
+#cardSummary .summary-product-name{min-width:0;overflow-wrap:anywhere}
+#cardSummary .summary-count{white-space:nowrap;text-align:right}
+#cardSummary .summary-owner-code{white-space:normal;overflow-wrap:anywhere;text-align:center}
+#cardSummary .summary-time{font-size:max(12px,.75rem);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+#cardSummary .summary-product{padding:7px 4px}
+#cardSummary .summary-section h3{padding:6px 0;border-bottom:1px solid var(--line,#d9e2db)}
+@media(max-width:360px){#cardSummary .summary-inline{column-gap:4px;grid-template-columns:minmax(0,1fr) 3ch 4ch minmax(5ch,max-content)}}

@@ -1,0 +1,9 @@
+# SmartMatch 9.100.15: compact Positioner windows
+
+Observed in production 9.100.14: Positioner > DA > Ändra opened an 800x650 window with the drawing visibility set to hidden. Its title was SmartMatch above a second Ändra dörrautomatik heading, and two close buttons were visible.
+
+Changes: small editing forms are nonmodal; confirmations retain their blocking lifecycle while keeping the drawing visible. The shared window header mirrors the live action title and hides the old title and close affordance. The new X invokes the original close action, preserving its save/cancel cleanup. Positioner itself gets the shared resize/minimize/maximize header. Content height is measured when opened/updated and bounded to the viewport. Manual sizing is retained; reopening a minimized window restores its content. Preparation keeps its existing initial maximized mode. A stale form cannot submit into a different PDF after the drawing has changed.
+
+Local browser QA used actual app HTML/CSS, dialog/window scripts and requestSmartAction in a synthetic fixture. Rename rendered at 430x180 on desktop, with one title and one X, while the drawing stayed visible and interactive. Maximize/restore/minimize worked. Switching to another action updated the title. Confirmation preserved visible drawing and blocked input; cancel restored interaction. Door card and self-check each had one close button, preserved action controls and stayed within the viewport. At 390px width rename measured 366x180 with equal content/client widths (364px); no horizontal overflow. At 768px, self-check content also had no horizontal overflow. Physical iOS devices were not used.
+
+Existing note/automation and physical-GS regression suites pass. JavaScript syntax checks pass. No customer file used; no numbering, protocol content or storage-policy changes. Local test fixtures are excluded from publication. Production smoke checks follow deployment.

@@ -1,0 +1,9 @@
+/* TEST v11: compact checklist visibility choices. */
+.drawingVisibilityDialog{width:min(320px,calc(100vw - 32px));padding:14px;border-radius:14px}
+.drawingVisibilityDialog .visibilityHead{gap:8px}
+.drawingVisibilityDialog .visibilityHead h2{font-size:16px}
+.drawingVisibilityDialog .visibilityHead button{width:40px;height:40px;font-size:24px}
+.drawingVisibilityDialog .visibilityActions{margin:10px 0 6px;gap:6px}
+.drawingVisibilityDialog .visibilityActions button{padding:6px;font-size:13px}
+.drawingVisibilityDialog .visibilityChoices{gap:0}
+.drawingVisibilityDialog .visibilityChoices label{gap:10px;min-height:44px;padding:4px;font-size:13px;line-height:1.3}

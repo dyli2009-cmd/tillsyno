@@ -1,0 +1,11 @@
+/* Security Service: one toolbar for drawing actions and page navigation. */
+@layer controlflowStandard {
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-project-layout] #securityMessage[data-drawing-ready]:not(.error){display:none!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-toolbar-pages] #securityDrawing .pagebar,
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-toolbar-pages] :is(.workspaceZoomControls,#secZoomIn,#secZoomOut,#secZoom){display:none!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-toolbar-pages] .workspaceToolbar{padding:4px 8px!important;min-height:52px!important}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-toolbar-pages] .sessionHistoryCenter{gap:4px!important;max-width:100%}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-toolbar-pages] .workspacePageControls{flex-wrap:nowrap!important;gap:4px!important;padding-left:4px;margin-left:0}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-toolbar-pages] #secPage{font-size:var(--cf-label)!important;white-space:nowrap;min-width:70px;text-align:center}
+html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp.securityWorkspace[data-security-toolbar-pages] .serviceToolsMenu .historyTextControls{display:flex!important;justify-content:center;gap:6px!important;padding-top:6px;border-top:1px solid var(--ta-border,#cfdae0)}
+}

@@ -1,0 +1,24 @@
+/build/
+__pycache__/
+*.pyc
+node_modules/
+.env
+.env.*
+!.env.example
+
+# Drawing documents are opened/exported by users, never committed with the app.
+*.[pP][dD][fF]
+*.[dD][wW][gG]
+*.[dD][xX][fF]
+*.[dD][gG][nN]
+*.[rR][vV][tT]
+*.[rR][fF][aA]
+*.[iI][fF][cC]
+*.[sS][kK][pP]
+*.[sS][tT][eE][pP]
+*.[sS][tT][pP]
+*.[sS][tT][lL]
+*.[oO][bB][jJ]
+*.3[dD][mM]
+*.[pP][lL][nN]
+*.[pP][lL][aA]

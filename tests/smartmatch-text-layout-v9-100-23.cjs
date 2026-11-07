@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const T=require('../smartmatch-text-checks-v9-100-24.js');
+const measure=(text,font)=>text.length*font*.6;
+const a=T.labelMetrics('LO14',24,measure),b=T.labelMetrics('LO14555',24,measure),c=T.labelMetrics('LO14',48,measure);
+assert.equal(a.height,b.height);assert(b.width>a.width);assert.equal(c.height,2*a.height);assert.equal(c.width,2*a.width);
+const main=fs.readFileSync('smartmatch-read-main-v524.js','utf8'),start=main.indexOf('function imageNoteViewportBox('),end=main.indexOf('function appendImageNote(',start);
+const context=vm.createContext({viewportRect:()=>({left:20,top:30,width:300,height:100})});vm.runInContext(main.slice(start,end),context);
+const fit=context.imageNoteViewportBox({}, {rect:[0,0,1,1],imageWidth:200,imageHeight:200});
+assert.equal(fit.left,120);assert.equal(fit.top,30);assert.equal(fit.width,100);assert.equal(fit.height,100);
+context.viewportRect=()=>({left:40,top:60,width:600,height:200});const zoom=context.imageNoteViewportBox({}, {rect:[0,0,1,1],imageWidth:200,imageHeight:200});
+assert.equal(zoom.left,2*fit.left);assert.equal(zoom.width,2*fit.width);
+console.log('PASS: text width follows content at constant height; independent size scaling; image selection follows visible bounds and zoom');

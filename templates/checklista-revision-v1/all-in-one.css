@@ -1,0 +1,883 @@
+/* Allt-i-ett 2.4.137 */
+.allInOneApp .headerSubtitle{white-space:nowrap}
+.allProtocolDialog{
+ width:min(620px,94vw);max-height:min(86vh,760px);border:0;border-radius:14px;
+ padding:0;background:#f4f7f8;color:#203440;box-shadow:0 16px 55px #0005;overflow:hidden
+}
+.allProtocolDialog::backdrop{background:#0008}
+.allProtocolHead{
+ display:flex;align-items:center;justify-content:flex-start;gap:10px;
+ padding:12px 14px;background:#132b38;color:#fff
+}
+.allProtocolHead h2{margin:2px 0 0;font-size:18px}
+.allProtocolHead .eyebrow{font-size:9px;color:#bfd0d9}
+.allProtocolHead button{
+ width:36px;min-width:36px;height:36px;min-height:36px;padding:0;
+ font-size:24px;line-height:1;background:#294554;color:#fff;border-color:#496574
+}
+.allProtocolIntro{margin:12px 14px 8px;font-size:12px;line-height:1.45;color:#526774}
+.allProtocolChoices{display:grid;gap:7px;padding:4px 14px 8px;overflow:auto;max-height:52vh}
+.allProtocolGroup{border:1px solid #cbd7df;border-radius:10px;background:#fff;overflow:hidden}
+.allProtocolGroup>summary{display:flex;align-items:center;gap:10px;padding:11px 12px;cursor:pointer;list-style:none}
+.allProtocolGroup>summary::-webkit-details-marker{display:none}
+.allProtocolGroup>summary::after{content:'›';margin-left:auto;font-size:22px;line-height:1;color:#526774;transform:rotate(0deg);transition:transform .15s ease}
+.allProtocolGroup[open]>summary::after{transform:rotate(90deg)}
+.allProtocolGroup>summary span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.allProtocolGroup>summary strong{font-size:14px;color:#203440}
+.allProtocolGroup>summary small{font-size:10px;color:#6d7f89;font-weight:500}
+.allProtocolChildren{display:grid;gap:6px;padding:0 8px 8px}
+.allProtocolChoices label{
+ display:flex;align-items:center;gap:10px;margin:0;padding:9px 10px;
+ border:1px solid #d9e2e7;border-radius:8px;background:#f8fafb;cursor:pointer
+}
+.allProtocolChoices input{flex:0 0 auto;width:20px;height:20px;min-height:20px;margin:0}
+.allProtocolChoices label span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.allProtocolChoices label strong{font-size:12px;color:#203440}
+.allProtocolChoices label small{font-size:10px;color:#6d7f89;font-weight:500}
+#allProtocolMessage{min-height:18px;margin:2px 14px 4px;font-size:10px}
+.allProtocolActions{display:flex;align-items:center;justify-content:flex-end;gap:7px;padding:10px 14px 14px}
+.allProtocolActions button{min-height:36px}
+.allInOneProtocolTools [data-add][hidden]{display:none!important}
+.allInOneApp .securityTools{align-items:center}
+.allInOneApp .securityTools [data-add]{white-space:nowrap}
+@media(max-width:600px){
+ .allProtocolDialog{width:calc(100vw - 14px);max-height:90dvh}
+ .allProtocolHead{padding:9px 10px}.allProtocolHead h2{font-size:15px}
+ .allProtocolIntro{margin:9px 10px 6px;font-size:11px}
+ .allProtocolChoices{padding:3px 10px 6px;gap:5px}
+ .allProtocolChoices label{padding:8px 9px}
+ .allProtocolActions{padding:8px 10px 10px}
+ .allInOneApp .headerActions{gap:3px}
+ .allInOneApp #allProtocolPicker{font-size:9px;padding-inline:6px}
+}
+
+
+/* 2.4.135: compact Allt-i-ett protocol and make A-/A+ affect the whole Project workspace. */
+body.allInOneApp #securityProtocol .secCheck{
+ padding:4px 5px!important;
+ margin-bottom:3px!important;
+ border-radius:6px!important;
+}
+body.allInOneApp #securityProtocol .secCheckHead{gap:4px!important;line-height:1.12!important}
+body.allInOneApp #securityProtocol .secCheckHead .checkNumber{min-width:24px!important}
+body.allInOneApp #securityProtocol .secChoices{gap:3px!important;margin-top:4px!important}
+body.allInOneApp #securityProtocol .secChoices button{
+ min-height:24px!important;
+ padding:2px 4px!important;
+ line-height:1.05!important;
+}
+body.allInOneApp #securityProtocol .secProgressActions{gap:3px!important}
+body.allInOneApp #securityProtocol .secProgressActions button{min-height:26px!important;padding:2px 5px!important}
+body.allInOneApp #securityProtocol .progressLine{margin:4px 0!important}
+body.allInOneApp #securityProtocol .protocolNotes textarea{min-height:34px!important}
+
+body.allInOneApp[data-app-text-size="-1"] #securityProject .projectCard{padding:5px!important}
+body.allInOneApp[data-app-text-size="-1"] #securityProject .projectSections{gap:5px!important}
+body.allInOneApp[data-app-text-size="-1"] #securityProject .projectCard input{min-height:24px!important;height:24px!important;padding:2px 4px!important}
+body.allInOneApp[data-app-text-size="-1"] #securityProject .secLogoActions .filebtn,
+body.allInOneApp[data-app-text-size="-1"] #securityProject .secLogoActions button{min-height:25px!important}
+
+body.allInOneApp[data-app-text-size="0"] #securityProject .projectCard input{min-height:27px!important;height:27px!important}
+body.allInOneApp[data-app-text-size="1"] #securityProject .projectCard{padding:8px!important}
+body.allInOneApp[data-app-text-size="1"] #securityProject .projectSections{gap:8px!important}
+body.allInOneApp[data-app-text-size="1"] #securityProject .projectCard input{min-height:31px!important;height:31px!important;padding:3px 5px!important}
+body.allInOneApp[data-app-text-size="1"] #securityProject .secLogoActions .filebtn,
+body.allInOneApp[data-app-text-size="1"] #securityProject .secLogoActions button{min-height:32px!important}
+
+body.allInOneApp[data-app-text-size="2"] #securityProject .projectCard{padding:10px!important}
+body.allInOneApp[data-app-text-size="2"] #securityProject .projectSections{gap:10px!important}
+body.allInOneApp[data-app-text-size="2"] #securityProject .projectCard input{min-height:35px!important;height:35px!important;padding:4px 6px!important}
+body.allInOneApp[data-app-text-size="2"] #securityProject .secLogoActions .filebtn,
+body.allInOneApp[data-app-text-size="2"] #securityProject .secLogoActions button{min-height:36px!important}
+
+body.allInOneApp[data-app-text-size="3"] #securityProject .projectCard{padding:12px!important}
+body.allInOneApp[data-app-text-size="3"] #securityProject .projectSections{gap:12px!important}
+body.allInOneApp[data-app-text-size="3"] #securityProject .projectCard input{min-height:40px!important;height:40px!important;padding:5px 7px!important}
+body.allInOneApp[data-app-text-size="3"] #securityProject .secLogoActions .filebtn,
+body.allInOneApp[data-app-text-size="3"] #securityProject .secLogoActions button{min-height:40px!important}
+body.allInOneApp[data-app-text-size="1"] #securityProject #secLogoPreview{min-height:42px!important}
+body.allInOneApp[data-app-text-size="2"] #securityProject #secLogoPreview{min-height:50px!important}
+body.allInOneApp[data-app-text-size="3"] #securityProject #secLogoPreview{min-height:60px!important}
+
+body.allInOneApp .secMarker{max-width:230px!important}
+
+
+/* 2.4.136: Door Automation keeps its own identity separate from the chosen checklist. */
+.allInOneApp #securityProtocol .secAutomationModelField select{
+ width:100%;
+ min-height:27px;
+ height:27px;
+ margin-top:1px;
+ padding:2px 4px;
+ border:1px solid #bccbd3;
+ border-radius:5px;
+ background:#fff;
+ color:#203440;
+ font:inherit;
+}
+.allInOneApp #securityProtocol #secAutomationIdMessage{
+ grid-column:1/-1;
+ margin:0;
+ min-height:0;
+ font-size:8px;
+ color:#a13a3a;
+}
+.allInOneApp #securityProtocol #secAutomationIdMessage:empty{display:none}
+
+
+/* 2.4.137: phone-friendly arrow movement.
+   Only the selected object gets the long touch handle; the actual arrow point stays visually small. */
+@media(max-width:800px){
+ body.allInOneApp .precisionPointGrab.selectedPrecision{
+  display:block!important;
+  width:112px!important;
+  min-width:112px!important;
+  height:168px!important;
+  min-height:168px!important;
+  z-index:18!important;
+ }
+ body.allInOneApp .precisionPointGrab.selectedPrecision::after{
+  width:38px!important;
+  height:38px!important;
+  border-width:3px!important;
+ }
+ body.allInOneApp .precisionPointGrab.selectedPrecision::before{
+  border-left-width:2px!important;
+  opacity:.58!important;
+ }
+
+ body.allInOneApp .secTarget{
+  width:44px!important;
+  min-width:44px!important;
+  height:44px!important;
+  min-height:44px!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+ }
+ body.allInOneApp .secTarget::after{
+  content:"";
+  position:absolute;
+  left:50%;top:50%;
+  width:12px;height:12px;
+  transform:translate(-50%,-50%);
+  border:2px solid #fff;
+  border-radius:50%;
+  box-shadow:0 1px 4px #0005;
+  background:#77858e;
+  pointer-events:none;
+ }
+ body.allInOneApp .secTarget.status-ok::after{background:#238354}
+ body.allInOneApp .secTarget.status-action::after{background:#c77c13}
+ body.allInOneApp .secTarget.status-fail::after{background:#bd3f46}
+ body.allInOneApp .secTarget.status-untested::after{background:#77858e}
+}
+
+
+/* 2.4.145: compact home icon in Allt-i-ett header. */
+.allInOneApp .homeIconLink{
+  width:36px;
+  min-width:36px;
+  height:36px;
+  min-height:36px;
+  padding:0!important;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:9px;
+}
+.allInOneApp .homeIconLink svg{
+  width:19px;
+  height:19px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+@media(max-width:600px){
+  .allInOneApp .homeIconLink{
+    width:32px;
+    min-width:32px;
+    height:32px;
+    min-height:32px;
+  }
+  .allInOneApp .homeIconLink svg{width:18px;height:18px}
+}
+
+
+/* 2.4.146: larger home control and compact save-PDF icon button. */
+.allInOneApp .homeIconLink{
+  width:42px!important;
+  min-width:42px!important;
+  height:42px!important;
+  min-height:42px!important;
+  border-radius:10px!important;
+}
+.allInOneApp .homeIconLink svg{
+  width:24px!important;
+  height:24px!important;
+  stroke-width:2!important;
+}
+.allInOneApp .savePdfButton{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  min-height:42px;
+  padding:5px 9px!important;
+}
+.allInOneApp .savePdfButton svg{
+  width:17px;
+  height:17px;
+  flex:none;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.allInOneApp .savePdfButton span{
+  font-size:10.5px;
+  line-height:1;
+  white-space:nowrap;
+}
+@media(max-width:600px){
+  .allInOneApp .homeIconLink{
+    width:38px!important;
+    min-width:38px!important;
+    height:38px!important;
+    min-height:38px!important;
+  }
+  .allInOneApp .homeIconLink svg{width:22px!important;height:22px!important}
+  .allInOneApp .savePdfButton{
+    min-height:38px;
+    padding:4px 7px!important;
+    gap:4px;
+  }
+  .allInOneApp .savePdfButton svg{width:16px;height:16px}
+  .allInOneApp .savePdfButton span{font-size:9.5px}
+}
+
+
+/* 2.4.147: iPad/touch-friendly arrow positioning.
+   The selected arrow gets a long, obvious handle on every coarse-pointer device. */
+@media (any-pointer:coarse){
+ body.allInOneApp .precisionPointGrab.selectedPrecision{
+  display:block!important;
+  width:144px!important;
+  min-width:144px!important;
+  height:220px!important;
+  min-height:220px!important;
+  z-index:24!important;
+  touch-action:none!important;
+ }
+ body.allInOneApp .precisionPointGrab.selectedPrecision::before{
+  border-left-width:3px!important;
+  border-left-style:solid!important;
+  border-left-color:#173f5580!important;
+  opacity:1!important;
+ }
+ body.allInOneApp .precisionPointGrab.selectedPrecision::after{
+  width:52px!important;
+  height:52px!important;
+  border:4px solid #fff!important;
+  background:#173f55!important;
+  box-shadow:0 2px 8px #0006,0 0 0 2px #173f55!important;
+ }
+ body.allInOneApp .precisionPointGrab.selectedPrecision.isDragging::after{
+  transform:translate(-50%,-50%) scale(1.08)!important;
+ }
+ body.allInOneApp .secTarget{
+  width:64px!important;
+  min-width:64px!important;
+  height:64px!important;
+  min-height:64px!important;
+  touch-action:none!important;
+ }
+ body.allInOneApp .secTarget::after{
+  width:14px!important;
+  height:14px!important;
+  border-width:2px!important;
+ }
+}
+@media (any-pointer:coarse) and (max-width:600px){
+ body.allInOneApp .precisionPointGrab.selectedPrecision{
+  width:132px!important;
+  min-width:132px!important;
+  height:190px!important;
+  min-height:190px!important;
+ }
+ body.allInOneApp .precisionPointGrab.selectedPrecision::after{
+  width:46px!important;
+  height:46px!important;
+ }
+ body.allInOneApp .secTarget{
+  width:56px!important;
+  min-width:56px!important;
+  height:56px!important;
+  min-height:56px!important;
+ }
+}
+
+
+/* 2.4.149: larger arrow controls only while that arrow is selected. */
+@media (any-pointer:coarse){
+ body.allInOneApp .secTarget{
+  width:34px!important;
+  min-width:34px!important;
+  height:34px!important;
+  min-height:34px!important;
+  touch-action:none!important;
+ }
+ body.allInOneApp .secTarget.selectedArrow{
+  width:58px!important;
+  min-width:58px!important;
+  height:58px!important;
+  min-height:58px!important;
+  z-index:23!important;
+ }
+ body.allInOneApp .secTarget.selectedArrow::after{
+  width:16px!important;
+  height:16px!important;
+  box-shadow:0 1px 5px #0006,0 0 0 3px #ffffff55!important;
+ }
+ body.allInOneApp .precisionPointGrab.selectedPrecision{
+  width:118px!important;
+  min-width:118px!important;
+  height:174px!important;
+  min-height:174px!important;
+  z-index:24!important;
+ }
+ body.allInOneApp .precisionPointGrab.selectedPrecision::after{
+  width:44px!important;
+  height:44px!important;
+  border-width:3px!important;
+  box-shadow:0 2px 7px #0005,0 0 0 1px #173f55!important;
+ }
+ body.allInOneApp .precisionPointGrab.selectedPrecision::before{
+  border-left-width:2px!important;
+  opacity:.62!important;
+ }
+}
+@media (any-pointer:coarse) and (max-width:600px){
+ body.allInOneApp .secTarget{width:32px!important;min-width:32px!important;height:32px!important;min-height:32px!important}
+ body.allInOneApp .secTarget.selectedArrow{width:54px!important;min-width:54px!important;height:54px!important;min-height:54px!important}
+ body.allInOneApp .precisionPointGrab.selectedPrecision{width:112px!important;min-width:112px!important;height:164px!important;min-height:164px!important}
+ body.allInOneApp .precisionPointGrab.selectedPrecision::after{width:42px!important;height:42px!important}
+}
+
+
+/* 2.4.151: magnetic arrow selection feedback for touch. */
+@media (any-pointer:coarse){
+ body.allInOneApp .secTarget.selectedArrow{
+  width:62px!important;
+  min-width:62px!important;
+  height:62px!important;
+  min-height:62px!important;
+ }
+ body.allInOneApp .secTarget.selectedArrow::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:34px;
+  height:34px;
+  transform:translate(-50%,-50%);
+  border:2px solid #173f5590;
+  border-radius:50%;
+  background:#ffffff26;
+  pointer-events:none;
+ }
+ body.allInOneApp .precisionPointGrab.selectedPrecision{
+  width:126px!important;
+  min-width:126px!important;
+  height:176px!important;
+  min-height:176px!important;
+ }
+ body.allInOneApp .precisionPointGrab.selectedPrecision::after{
+  width:48px!important;
+  height:48px!important;
+  border:3px solid #fff!important;
+  background:#173f55!important;
+  box-shadow:0 2px 8px #0005,0 0 0 2px #173f5540!important;
+ }
+}
+@media (any-pointer:coarse) and (max-width:600px){
+ body.allInOneApp .secTarget.selectedArrow{width:56px!important;min-width:56px!important;height:56px!important;min-height:56px!important}
+ body.allInOneApp .secTarget.selectedArrow::before{width:30px;height:30px}
+ body.allInOneApp .precisionPointGrab.selectedPrecision{width:116px!important;min-width:116px!important;height:166px!important;min-height:166px!important}
+ body.allInOneApp .precisionPointGrab.selectedPrecision::after{width:44px!important;height:44px!important}
+}
+
+
+/* 2.4.152: while an arrow is being dragged, the drawing itself must stay still. */
+body.allInOneApp #secViewer.arrowDragging{
+ touch-action:none!important;
+ overscroll-behavior:contain;
+}
+body.allInOneApp #secViewer.arrowDragging .precisionPointGrab,
+body.allInOneApp #secViewer.arrowDragging .secTarget{
+ touch-action:none!important;
+}
+
+
+/* 2.4.153: centered mobile protocol selection and consistent header icon buttons. */
+.allProtocolHead{
+  justify-content:center!important;
+  text-align:center!important;
+}
+.allProtocolHead>div{width:100%}
+.allProtocolActions{
+  justify-content:center!important;
+}
+#allProtocolApply{
+  min-width:170px;
+}
+.allInOneApp .appHeaderIconButton{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:4px!important;
+  white-space:nowrap!important;
+}
+.allInOneApp .appHeaderIconButton svg{
+  display:block!important;
+  width:17px!important;
+  height:17px!important;
+  flex:none!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:1.9!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+.allInOneApp .appHeaderIconButton span{
+  display:inline-block!important;
+  font-size:10px!important;
+  line-height:1!important;
+}
+.allInOneApp .homeIconLink{
+  width:auto!important;
+  min-width:0!important;
+  padding:5px 8px!important;
+}
+@media(max-width:600px){
+  .allProtocolDialog{
+    margin:auto!important;
+  }
+  .allProtocolHead{
+    padding:11px 12px!important;
+  }
+  .allProtocolHead .eyebrow{
+    display:block;
+    text-align:center;
+  }
+  .allProtocolHead h2{
+    margin-top:3px!important;
+    text-align:center!important;
+    font-size:15px!important;
+    line-height:1.25!important;
+  }
+  .allProtocolActions{
+    padding:9px 10px 12px!important;
+  }
+  #allProtocolApply{
+    min-width:180px!important;
+    min-height:40px!important;
+  }
+  .allInOneApp .headerActions{
+    gap:3px!important;
+  }
+  .allInOneApp .appHeaderIconButton{
+    min-height:36px!important;
+    height:36px!important;
+    padding:4px 6px!important;
+    border-radius:8px!important;
+  }
+  .allInOneApp .appHeaderIconButton svg{
+    width:16px!important;
+    height:16px!important;
+  }
+  .allInOneApp .appHeaderIconButton span{
+    font-size:9px!important;
+  }
+}
+
+
+/* 2.4.154: selected-object arrow handle only; never let the canvas move under it. */
+body.allInOneApp #secViewer.arrowDragging,
+body.allInOneApp #secViewer.arrowDragging #secStage,
+body.allInOneApp #secViewer.arrowDragging #secMarkers{
+  touch-action:none!important;
+  overscroll-behavior:none!important;
+}
+body.allInOneApp #secViewer.arrowDragging{
+  overflow:hidden!important;
+}
+
+
+/* 2.4.155: eye toggle for a completely clean drawing view. */
+body.allInOneApp .drawingVisibilityButton{
+  width:34px!important;
+  min-width:34px!important;
+  height:34px!important;
+  min-height:34px!important;
+  padding:0!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+body.allInOneApp .drawingVisibilityButton svg{
+  width:19px;
+  height:19px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+body.allInOneApp .drawingVisibilityButton .eyeSlash{display:none}
+body.allInOneApp .drawingVisibilityButton.active .eyeSlash{display:block}
+body.allInOneApp .drawingVisibilityButton.active{
+  background:#e8eef1!important;
+  color:#526774!important;
+}
+body.allInOneApp.drawingOverlaysHidden #secMarkers,
+body.allInOneApp.drawingOverlaysHidden #secStage .serviceDrawingOverlay{
+  display:none!important;
+}
+@media(max-width:600px){
+ body.allInOneApp .drawingVisibilityButton{
+  width:32px!important;
+  min-width:32px!important;
+  height:32px!important;
+  min-height:32px!important;
+ }
+ body.allInOneApp .drawingVisibilityButton svg{width:18px;height:18px}
+}
+
+body.allInOneApp:not(.secHasPdf) .drawingVisibilityButton{display:none!important}
+
+
+/* 2.4.158: explicit save choice - reusable work file or separate new copy. */
+.secSaveDialog{
+ width:min(440px,calc(100vw - 24px));
+ border:0;
+ border-radius:14px;
+ padding:0;
+ background:#f4f7f8;
+ color:#203440;
+ box-shadow:0 16px 55px #0005;
+ overflow:hidden;
+}
+.secSaveDialog::backdrop{background:#132b3899}
+.secSaveHead{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:10px;
+ padding:12px 14px;
+ background:#132b38;
+ color:#fff;
+}
+.secSaveHead strong{font-size:16px}
+.secSaveHead button{
+ width:34px;
+ min-width:34px;
+ height:34px;
+ min-height:34px;
+ padding:0;
+ font-size:22px;
+ line-height:1;
+ background:#294554;
+ color:#fff;
+ border-color:#496574;
+}
+.secSaveChoices{
+ display:grid;
+ gap:9px;
+ padding:14px;
+}
+.secSaveChoice{
+ width:100%;
+ min-height:70px;
+ display:flex;
+ align-items:center;
+ gap:11px;
+ padding:11px 12px;
+ text-align:left;
+ border-radius:10px;
+}
+.secSaveChoice>span:last-child{
+ display:flex;
+ flex-direction:column;
+ gap:3px;
+ min-width:0;
+}
+.secSaveChoice strong{font-size:13px}
+.secSaveChoice small{
+ font-size:10px;
+ line-height:1.4;
+ color:#647985;
+ font-weight:500;
+}
+.secSaveChoice.primary small{color:#d7e5ec}
+.secSaveChoiceIcon{
+ flex:none;
+ width:34px;
+ height:34px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ border-radius:8px;
+ background:#e8eff3;
+}
+.secSaveChoice.primary .secSaveChoiceIcon{background:#ffffff1c}
+.secSaveChoiceIcon svg{
+ width:20px;
+ height:20px;
+ fill:none;
+ stroke:currentColor;
+ stroke-width:1.8;
+ stroke-linecap:round;
+ stroke-linejoin:round;
+}
+@media(max-width:600px){
+ .secSaveDialog{width:calc(100vw - 16px)}
+ .secSaveHead{padding:10px 11px}
+ .secSaveChoices{padding:10px;gap:7px}
+ .secSaveChoice{min-height:66px;padding:9px 10px}
+ .secSaveChoice strong{font-size:12px}
+ .secSaveChoice small{font-size:9.5px}
+}
+
+
+/* 2.4.159: overview stays scrollable while bottom navigation remains usable. */
+body.allInOneApp #securityOverview[open]{
+  z-index:45;
+  box-shadow:0 14px 42px #0b1b2445;
+}
+@media(max-width:800px){
+  body.allInOneApp #securityOverview[open]{
+    position:fixed;
+    left:7px;
+    right:7px;
+    top:auto;
+    bottom:calc(62px + env(safe-area-inset-bottom,0px));
+    width:auto;
+    height:min(74dvh,760px);
+    max-height:calc(100dvh - 125px - env(safe-area-inset-bottom,0px));
+    margin:0;
+    overflow:auto;
+    border-radius:12px 12px 8px 8px;
+  }
+  body.allInOneApp #mobileBar{
+    position:relative;
+    z-index:60;
+  }
+}
+
+
+/* 2.4.161: drawing tools on the left, continue to PDF on the right. */
+body.allInOneApp .allProtocolActions{
+  justify-content:space-between!important;
+}
+body.allInOneApp .allProtocolDrawingTool{
+  min-height:40px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:7px 11px;
+  border:1px solid #b9c9d2;
+  border-radius:8px;
+  background:#fff;
+  color:#294653;
+  text-decoration:none;
+  font-size:11px;
+  font-weight:750;
+  white-space:nowrap;
+}
+body.allInOneApp .allProtocolDrawingTool svg{
+  width:17px;
+  height:17px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  flex:none;
+}
+body.allInOneApp #allProtocolApply{
+  margin-left:auto;
+}
+@media(max-width:600px){
+  body.allInOneApp .allProtocolActions{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    align-items:stretch!important;
+    gap:7px!important;
+  }
+  body.allInOneApp .allProtocolDrawingTool,
+  body.allInOneApp #allProtocolApply{
+    width:100%!important;
+    min-width:0!important;
+    min-height:40px!important;
+    padding:6px 7px!important;
+    font-size:10px!important;
+  }
+  body.allInOneApp .allProtocolDrawingTool svg{
+    width:16px;
+    height:16px;
+  }
+}
+
+
+/* 2.4.168: shorter Kontrollflöde chooser heading. */
+body.allInOneApp .allProtocolLead{
+  margin:4px 0 0;
+  color:#6a7e89;
+  font-size:10px;
+  line-height:1.35;
+  font-weight:500;
+}
+@media(max-width:600px){
+  body.allInOneApp .allProtocolLead{
+    font-size:9px;
+    margin-top:3px;
+  }
+}
+
+
+/* 2.4.192: Overview uses the full phone workspace instead of opening as a half-height sheet. */
+@media(max-width:800px){
+  body.allInOneApp #securityOverview[open]{
+    position:fixed!important;
+    inset:6px 6px calc(58px + env(safe-area-inset-bottom,0px)) 6px!important;
+    width:auto!important;
+    height:auto!important;
+    max-width:none!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:10px!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain;
+    border-radius:12px!important;
+  }
+  body.allInOneApp #securityOverview .overviewHead{
+    position:sticky;
+    top:-10px;
+    z-index:3;
+    background:#fff;
+    padding-top:8px;
+  }
+}
+
+
+/* 2.4.199: Overview fills the full workspace on every screen size while bottom navigation stays clickable. */
+body.allInOneApp #securityOverview[open]{
+  position:fixed!important;
+  inset:6px 6px calc(58px + env(safe-area-inset-bottom,0px)) 6px!important;
+  width:auto!important;
+  height:auto!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:10px!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+  border-radius:12px!important;
+  z-index:45!important;
+}
+body.allInOneApp #securityOverview .overviewHead{
+  position:sticky;
+  top:-10px;
+  z-index:3;
+  background:#fff;
+  padding-top:8px;
+}
+body.allInOneApp #mobileBar{
+  position:relative;
+  z-index:60;
+}
+
+
+/* Protocol chooser: Ritningsverktyg · Hem · Fortsätt */
+body.allInOneApp .allProtocolHome{
+  min-height:40px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:7px 11px;
+  border:1px solid #b9c9d2;
+  border-radius:8px;
+  background:#fff;
+  color:#294653;
+  text-decoration:none;
+  font-size:11px;
+  font-weight:750;
+  white-space:nowrap;
+}
+body.allInOneApp .allProtocolHome svg{
+  width:17px;
+  height:17px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  flex:none;
+}
+body.allInOneApp .allProtocolActions{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(110px,.72fr) minmax(0,1fr)!important;
+  align-items:stretch!important;
+  gap:8px!important;
+}
+body.allInOneApp #allProtocolApply{margin-left:0!important}
+@media(max-width:600px){
+  body.allInOneApp .allProtocolActions{
+    grid-template-columns:minmax(0,1fr) minmax(72px,.7fr) minmax(0,1fr)!important;
+    gap:6px!important;
+  }
+  body.allInOneApp .allProtocolDrawingTool,
+  body.allInOneApp .allProtocolHome,
+  body.allInOneApp #allProtocolApply{
+    width:100%!important;
+    min-width:0!important;
+    min-height:40px!important;
+    padding:6px 5px!important;
+    font-size:9.5px!important;
+  }
+  body.allInOneApp .allProtocolDrawingTool svg,
+  body.allInOneApp .allProtocolHome svg{
+    width:15px;
+    height:15px;
+  }
+}
+
+
+/* 2.4.200: Overview is a full workspace view inside main, never underneath the app header/menu. */
+body.allInOneApp #securityOverview[open]{
+  position:absolute!important;
+  inset:6px!important;
+  width:auto!important;
+  height:auto!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:10px!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+  border-radius:12px!important;
+  z-index:45!important;
+}
+body.allInOneApp #securityOverview .overviewHead{
+  position:sticky;
+  top:-10px;
+  z-index:3;
+  background:#fff;
+  padding-top:8px;
+}

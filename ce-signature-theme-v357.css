@@ -1,0 +1,19 @@
+/* CE form chrome follows the chosen palette. Signature bytes and PDF rendering are untouched. */
+html[data-tillsyno-theme] body #ceWorkspace .ceSignatureGroup :is(.ceSignIntro,.ceSignOptions label,.ceSignOptions label span){color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body #ceWorkspace .ceSignatureGroup .ceSignOptions{background:var(--ta-card)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #ceWorkspace .ceSignatureGroup .ceSignOptions label{background:transparent!important}
+html[data-tillsyno-theme] body #ceWorkspace .ceSignatureGroup .ceSignaturePreviewTop{background:transparent!important;color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body #ceWorkspace .ceSignatureGroup .ceSignaturePreviewTop strong{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body #ceWorkspace .ceSignatureGroup .ceSignOptions :is(input,select){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;accent-color:var(--ta-blue)}
+html[data-tillsyno-theme] body #ceWorkspace .ceSignatureGroup .ceSignOptions :is(input,select):focus-visible{outline:2px solid var(--ta-blue);outline-offset:2px}
+html[data-tillsyno-theme] body #ceWorkspace .ceSignatureGroup .ceSignOptions option{background:var(--ta-card);color:var(--ta-ink)}
+html[data-tillsyno-theme] body #ceWorkspace .ceSignatureGroup .ceSignaturePreviewPaper{background:var(--ta-soft2)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #ceWorkspace .ceSignatureGroup #ceProjectSignEmpty{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body #ceWorkspace .ceSignatureGroup #ceProjectSignPreviewDate{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body #ceWorkspace .ceSignatureGroup #ceProjectSignStatus:not(.is-saved){background:var(--ta-soft2)!important;color:var(--ta-muted)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #ceWorkspace .ceSignatureGroup .ceSignButtons button{background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body #ceWorkspace .ceSignatureGroup input[type="date"]{color-scheme:dark}
+html:is([data-tillsyno-theme="ice"],[data-tillsyno-theme="mist"],[data-tillsyno-theme="coast"],[data-tillsyno-theme="sand"]) body #ceWorkspace .ceSignatureGroup input[type="date"]{color-scheme:light}
+html[data-tillsyno-theme] body dialog.ceProjectSignatureDialog{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body dialog.ceProjectSignatureDialog button{background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border:1px solid var(--ta-border);border-radius:7px;min-height:42px;padding:8px 12px;font:inherit}
+html[data-tillsyno-theme] body dialog.ceProjectSignatureDialog::backdrop{background:#081c3299}

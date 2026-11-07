@@ -1,0 +1,86 @@
+/* Stable checklist viewport and deliberate list maintenance controls. */
+html body.smDockWorkspace #pwProtocol[data-sm-window] .pwChecklistPane{overflow-anchor:none}
+html body.smDockWorkspace #pwProtocol[data-sm-window] #pwDoorReadExtras{display:none!important}
+html body.smDockWorkspace #pwProtocol[data-sm-window] #pwDoorMaintenance{margin:4px!important;border-top:1px solid var(--ta-border);padding-top:4px}
+html body.smDockWorkspace #pwProtocol[data-sm-window] #pwDoorMaintenance>summary{font-size:11px;min-height:28px;display:flex;align-items:center;cursor:pointer;color:var(--ta-muted)}
+html body.smDockWorkspace #pwProtocol[data-sm-window] #pwDoorMaintenance>summary::before{content:'▸';margin-right:5px}
+html body.smDockWorkspace #pwProtocol[data-sm-window] #pwDoorMaintenance[open]>summary::before{content:'▾'}
+html body.smDockWorkspace #pwProtocol[data-sm-window] #pwDoorMaintenanceActions{display:grid;grid-template-columns:1fr;gap:4px}
+html body.smDockWorkspace #pwProtocol[data-sm-window] #pwDoorMaintenanceActions button{width:100%!important;margin:0!important;justify-content:flex-start!important;min-height:32px!important;font-size:11px!important;padding:5px 7px!important;text-align:left;background:var(--ta-card)!important;color:var(--ta-ink)!important;border:1px solid var(--ta-border)!important}
+/* Important state colors take precedence over the legacy global button reset. */
+@layer smWorkspaceStates19{
+html body.smDockWorkspace #pwProtocol[data-sm-window] #pwDoorMaintenanceActions #rtClearDoorWork{color:#a92736!important;border-color:#c66a74!important}
+html:is([data-tillsyno-theme=night],[data-tillsyno-theme=pine],[data-tillsyno-theme=graphite]) body.smDockWorkspace #pwProtocol[data-sm-window] #pwDoorMaintenanceActions #rtClearDoorWork{color:#ffb4b4!important}
+}
+/* Page and save state: centered, readable, separate from the drawing tools. */
+html body.smDockWorkspace>.pwProjectBar{min-height:36px!important;padding:5px 12px!important;box-sizing:border-box;justify-content:center!important;background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-bottom:1px solid var(--ta-border)!important}
+html body.smDockWorkspace>.pwProjectBar .pwFileInfo{display:flex!important;flex-direction:row!important;flex-wrap:wrap;justify-content:center!important;align-items:center!important;gap:5px 12px!important;width:100%!important;max-width:100%!important}
+html body.smDockWorkspace>.pwProjectBar .pwFileHeadline{display:flex;justify-content:center;align-items:center;min-width:0}
+html body.smDockWorkspace>.pwProjectBar #pwPlanTag{font-size:12px!important;font-weight:650!important;line-height:1.4!important;padding:1px 7px!important;max-width:min(60vw,440px)!important;color:var(--ta-ink)!important;background:transparent!important}
+html body.smDockWorkspace>.pwProjectBar #pwDraftStatus{display:block;max-width:min(90vw,600px);font-size:11px!important;line-height:1.35!important;color:var(--ta-muted)!important;text-align:center;white-space:normal!important;margin:0!important}
+html body.smDockWorkspace>.pwProjectBar #pwDraftStatus[hidden]{display:none!important}
+html body.smDockWorkspace>.pwProjectBar #pwDraftStatus[data-state=error]{color:#b42336!important;font-weight:650}
+html:is([data-tillsyno-theme=night],[data-tillsyno-theme=pine],[data-tillsyno-theme=graphite]) body.smDockWorkspace>.pwProjectBar #pwDraftStatus[data-state=error]{color:#ffb4b4!important}
+/* One transparent button over the original text; only the status sits beside it. */
+#pwTextCheckMarkers{position:absolute;inset:0;pointer-events:none;z-index:6}
+#pwTextCheckMarkers .smTextCheckHit{position:absolute;box-sizing:border-box;min-width:0!important;min-height:0!important;margin:0!important;padding:0!important;border:1px solid #427f99!important;border-radius:3px;background:transparent!important;pointer-events:auto;cursor:pointer;color:#173746!important}
+#pwTextCheckMarkers .smTextCheckHit:focus-visible{outline:2px solid #326f8a;outline-offset:3px}
+.pmPlacing #pwTextCheckMarkers .smTextCheckHit{pointer-events:none}
+.smTextCheckBadge{position:absolute;left:calc(100% + 2px);top:50%;display:grid;place-items:center;width:21px;height:21px;box-sizing:border-box;border:1px solid #fff;border-radius:50%;background:#526776;color:#fff;font:700 16px/1 system-ui;transform:translateY(-50%) scale(var(--text-check-scale,1));transform-origin:left center;pointer-events:none}
+[data-status=done]>.smTextCheckBadge{background:#168147}
+[data-status=open]>.smTextCheckBadge{background:#b42336}
+.smTextCheckCommentBadge{position:absolute;right:0;top:100%;background:#173746;color:#fff;border-radius:3px;font:700 13px/1 system-ui;padding:1px 3px;transform:scale(var(--text-check-scale,1));transform-origin:right top;pointer-events:none}
+html body.smDockWorkspace #pwTextCheckDialog[data-sm-window] #pwTextCheckForm{display:grid;gap:8px;padding:10px;color:var(--ta-ink);background:var(--ta-card)}
+#pwTextCheckForm label{display:grid;gap:3px;font-size:12px;font-weight:600;min-width:0}
+html body.smDockWorkspace #pwTextCheckDialog[data-sm-window] :is(input,textarea){box-sizing:border-box;width:100%;min-width:0;font:16px/1.35 system-ui;padding:6px;border:1px solid var(--ta-border);border-radius:5px;background:var(--ta-soft2);color:var(--ta-ink)}
+#pwTextCheckForm textarea{resize:vertical;min-height:52px}
+#pwTextCheckForm :is(input,textarea)::placeholder{color:var(--ta-muted);opacity:1}
+#pwTextCheckLocation,#pwTextCheckStatus{font-size:11px;line-height:1.4;color:var(--ta-muted);margin:0}
+#pwTextCheckStatus:empty{display:none}
+#pwTextCheckPreview{display:block;max-width:100%;max-height:72px;width:auto;height:auto;background:#fff;border:1px solid var(--ta-border)}
+#pwTextCheckPreview[hidden]{display:none}
+#pwTextCheckForm .smTextCheckStates{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+html body.smDockWorkspace #pwTextCheckDialog[data-sm-window] button{min-height:34px;font-size:12px;padding:5px 8px;background:var(--ta-soft2);color:var(--ta-ink);border:1px solid var(--ta-border);border-radius:5px}
+@layer smWorkspaceStates19{
+html body.smDockWorkspace #pwTextCheckDialog[data-sm-window] [data-check-status=done][aria-pressed=true]{background:#168147!important;color:#fff!important;border-color:#168147!important}
+html body.smDockWorkspace #pwTextCheckDialog[data-sm-window] [data-check-status=open][aria-pressed=true]{background:#b42336!important;color:#fff!important;border-color:#b42336!important}
+}
+.smTextCheckActions{display:flex;justify-content:flex-end;gap:6px}
+#pwTextPickHint{position:fixed;z-index:12030;left:50%;bottom:calc(var(--sm-dock-height,76px) + 10px);transform:translateX(-50%);max-width:calc(100vw - 24px);display:flex;align-items:center;gap:10px;box-sizing:border-box;padding:8px 10px;border:1px solid var(--ta-border);border-radius:8px;background:var(--ta-card);color:var(--ta-ink);box-shadow:0 4px 18px #0002;font-size:12px}
+#pwTextPickHint[hidden]{display:none!important}
+#pwTextPickHint button{min-height:32px;font-size:12px}
+.smTextCheckGroup>input{box-sizing:border-box;width:calc(100% - 12px);margin:6px;padding:6px;background:var(--ta-card);color:var(--ta-ink);border:1px solid var(--ta-border);border-radius:5px}
+.smTextCheckPosition strong{overflow-wrap:anywhere}
+.smTextCheckPosition[data-status=done]>b{color:#168147}
+.smTextCheckPosition[data-status=open]>b{color:#b42336}
+html:is([data-tillsyno-theme=night],[data-tillsyno-theme=pine],[data-tillsyno-theme=graphite]) .smTextCheckPosition[data-status=done]>b{color:#83e1b0}
+html:is([data-tillsyno-theme=night],[data-tillsyno-theme=pine],[data-tillsyno-theme=graphite]) .smTextCheckPosition[data-status=open]>b{color:#ffb4b4}
+/* Workspace controls inherit their palette, including active tools. */
+@layer smWorkspaceControls20 {
+ html body.smDockWorkspace :is(#pwBulkSelect,#pwToolMenuButton,#smMoreButton){background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+ html body.smDockWorkspace :is(#pwBulkSelect[aria-pressed=true],#pwToolMenuButton.active,#pwToolMenuButton[aria-expanded=true],#smMoreButton[aria-expanded=true]){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-blue)!important;box-shadow:inset 0 -3px 0 var(--ta-blue)!important}
+ html body.smDockWorkspace #pwToolMenu{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+ html body.smDockWorkspace #pwToolMenu>button{background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+ html body.smDockWorkspace #pwToolMenu>button:is(:hover,[aria-pressed=true]){background:var(--ta-soft)!important;color:var(--ta-ink)!important;border-color:var(--ta-blue)!important}
+ html body.smDockWorkspace #pwToolMenu :is(.smToolLabel,.smToolHelp){color:var(--ta-ink)!important}
+ html body.smDockWorkspace #pwToolMenu button:disabled{opacity:.45!important}
+ html body.smDockWorkspace #pwBulkBar{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+ html body.smDockWorkspace #pwInlineNoteEditor[data-sm-window] :is(label,strong,.smNoteTextField,.smNoteColors>span){color:var(--ta-ink)!important}
+ html body.smDockWorkspace #pwInlineNoteEditor[data-sm-window] :is(input,textarea,select){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border:1px solid var(--ta-border)!important;border-radius:5px!important}
+ html body.smDockWorkspace #pwInlineNoteEditor[data-sm-window] :is(input,textarea)::placeholder{color:var(--ta-muted)!important;opacity:1!important}
+ html body.smDockWorkspace #pwInlineNoteEditor[data-sm-window] button:not(.smNoteColor){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+ html body.smDockWorkspace #pwInlineNoteEditor[data-sm-window] button:not(.smNoteColor)[aria-pressed=true]{background:var(--ta-soft)!important;border-color:var(--ta-blue)!important;box-shadow:inset 0 -2px var(--ta-blue)!important}
+ html body.smDockWorkspace #pwInlineNoteEditor[data-sm-window] .smNoteColor[aria-pressed=true]{outline:2px solid var(--ta-ink)!important;outline-offset:2px!important}
+ html body.smDockWorkspace .rtCardViewDialog[data-sm-window] :is(p,label){color:var(--ta-ink)!important}
+ html body.smDockWorkspace .rtCardViewDialog[data-sm-window] :is(input,button){color:var(--ta-ink)!important;background:var(--ta-soft2)!important;border-color:var(--ta-border)!important}
+}
+html body.smDockWorkspace .rtCardViewDialog[data-sm-window]>.smWindowBody{padding:10px!important;box-sizing:border-box;display:flex;flex-direction:column;gap:7px}
+html body.smDockWorkspace .rtCardViewDialog[data-sm-window] .rtCardViewViewport{flex:1 0 auto;min-height:80px;max-height:none;box-sizing:border-box;background:var(--ta-soft2);padding:6px;border:1px solid var(--ta-border);border-radius:5px}
+html body.smDockWorkspace .rtCardViewDialog[data-sm-window] .rtCardViewNumbers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0}
+html body.smDockWorkspace .rtCardViewDialog[data-sm-window] .rtCardViewNumbers label{font-size:11px;display:grid;gap:3px;min-width:0}
+html body.smDockWorkspace .rtCardViewDialog[data-sm-window] input{width:100%;min-width:0;min-height:32px;box-sizing:border-box;font-size:14px;padding:5px}
+html body.smDockWorkspace .rtCardViewDialog[data-sm-window] p{margin:0;font-size:11px;line-height:1.4}
+html body.smDockWorkspace .rtCardViewDialog[data-sm-window] footer{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px}
+html body.smDockWorkspace .rtCardViewDialog[data-sm-window] footer button{min-height:32px;padding:5px 8px;font-size:11px}
+html body.smDockWorkspace #pwInlineNoteEditor[data-sm-window] :is(input,textarea,select){font-size:14px;max-width:100%;box-sizing:border-box}
+@media(max-width:620px),(pointer:coarse){html body.smDockWorkspace :is(.rtCardViewDialog,#pwInlineNoteEditor)[data-sm-window] :is(input,textarea,select){font-size:16px!important}}

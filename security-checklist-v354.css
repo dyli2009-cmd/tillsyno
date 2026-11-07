@@ -1,0 +1,33 @@
+/* Säkerhetsservice uses the revision checklist's columns and result symbols. */
+body.securityApp #securityProtocol .securityCheckTable{--result-width:64px}
+body.securityApp #securityProtocol .securityCheckTable .revisionCheckColumns{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,var(--result-width));gap:4px;align-items:center;padding:7px 6px;background:#edf3f6;border-top:1px solid #d4e0e7;font-size:10px;line-height:1.25;color:#395363}
+body.securityApp #securityProtocol .securityCheckTable .revisionCheckColumns>span:not(:first-child){text-align:center;font-weight:500}
+body.securityApp #securityProtocol .securityCheckTable .revisionColumnShort{display:none}
+body.securityApp #securityProtocol .securityCheckTable .secCheck{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:4px!important;padding:5px 6px!important;margin:0!important;border-radius:0!important;align-items:center}
+body.securityApp #securityProtocol .securityCheckTable .secCheckHead{grid-column:1;grid-row:1;align-items:center!important;flex-wrap:wrap;line-height:1.35!important;min-width:0}
+body.securityApp #securityProtocol .securityCheckTable .secCheckHead .secCheckText{flex:1 1 60px!important;overflow-wrap:anywhere}
+body.securityApp #securityProtocol .securityCheckTable .secCheckHead .checkNumber{flex:0 0 auto!important;min-width:25px!important;width:auto!important;max-width:none!important}
+body.securityApp #securityProtocol .securityCheckTable .secChoices{grid-column:2;grid-row:1;display:grid!important;grid-template-columns:repeat(3,var(--result-width))!important;gap:4px!important;margin:0!important;align-self:center}
+body.securityApp #securityProtocol .securityCheckTable .secChoices button{display:flex;align-items:center;justify-content:center;width:var(--result-width);min-width:0;min-height:40px!important;height:40px;margin:0;padding:0!important;font-family:Arial,sans-serif;font-size:21px!important;line-height:1!important;font-weight:400;background:#f7f9fa;border:1px solid #d3dfe5;border-radius:5px!important;color:#647885;outline:0}
+body.securityApp #securityProtocol .securityCheckTable .secChoices button.active{box-shadow:inset 0 0 0 1px currentColor}
+body.securityApp #securityProtocol .securityCheckTable .secChoices button.active[data-v="na"]{color:#405968;background:#e4ebef;border-color:#7e949f}
+body.securityApp #securityProtocol .securityCheckTable .secChoices button.active[data-v="ok"]{color:#216d49;background:#e1f2e8;border-color:#4b926c}
+body.securityApp #securityProtocol .securityCheckTable .secChoices button.active[data-v="remark"]{color:#ac3931;background:#fbe7e3;border-color:#c57b6e}
+body.securityApp #securityProtocol .securityCheckTable .secChoices button:focus-visible{outline:2px solid #287caa;outline-offset:2px}
+body.securityApp #securityProtocol .securityCheckTable .secChoices button::before{content:none!important}
+body.securityApp #securityProtocol .securityCheckTable .secFault{grid-column:1/-1;grid-row:2;min-width:0;padding:5px 0!important}
+body.securityApp #securityProtocol .securityCheckTable .secCheckHead .secEditActions{flex-basis:100%!important;justify-content:flex-start;margin:4px 0 0!important}
+body.securityApp #securityProtocol .securityCheckTable .revisionCheckColumns{--revision-heading-size:11px}
+body.securityApp #securityProtocol .securityCheckTable .revisionCheckColumns,body.securityApp #securityProtocol .securityCheckTable .revisionCheckColumns span{font-size:var(--revision-heading-size)!important}
+body.securityApp #securityProtocol .securityCheckTable .revisionCheckColumns>span{min-width:0;overflow-wrap:anywhere}
+@media(max-width:560px){
+ body.securityApp #securityProtocol .securityCheckTable{--result-width:40px}
+ body.securityApp #securityProtocol .securityCheckTable .revisionColumnFull{display:none}
+ body.securityApp #securityProtocol .securityCheckTable .revisionColumnShort{display:inline}
+ body.securityApp #securityProtocol .securityCheckTable .revisionCheckColumns{--revision-heading-size:10px}
+ body.securityApp #securityProtocol .securityCheckTable .secCheckHead .secCustomBadge{display:none}
+}
+body.securityApp[data-app-text-size="-1"] #securityProtocol .securityCheckTable .revisionCheckColumns{--revision-heading-size:9px}
+body.securityApp[data-app-text-size="1"] #securityProtocol .securityCheckTable .revisionCheckColumns{--revision-heading-size:11px}
+body.securityApp[data-app-text-size="2"] #securityProtocol .securityCheckTable .revisionCheckColumns{--revision-heading-size:12px}
+body.securityApp[data-app-text-size="3"] #securityProtocol .securityCheckTable .revisionCheckColumns{--revision-heading-size:13px}

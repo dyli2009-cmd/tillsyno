@@ -1,0 +1,24 @@
+# Tillsyno
+
+Webbapp (PWA) för tillsyn, kontroll och dokumentation: Kontrollflöde, Avläsning + SmartMatch, Tillsyno Projekt, CE-märkning och Ritningsverktyg.
+
+## Så fungerar appen
+- Ritningar och protokoll öppnas och bearbetas **lokalt i webbläsaren** (pdf.js, pdf-lib, Tesseract OCR från `vendor/`). Inga ritningar skickas till någon server.
+- Arbetsdata sparas lokalt i webbläsaren (IndexedDB/localStorage) tills användaren exporterar PDF/ZIP. **Logga ut** och **Rensa enhetens data** raderar den efter bekräftelse (`auth/clear-device.html`).
+- Inloggning, roller, modulbehörighet och licenstid hanteras i Supabase (`auth/`, `supabase/functions/tillsyno-admin`). Konton skapas av administratören; självregistrering är stängd.
+
+## Publicering
+`.github/workflows/pages.yml` bygger med `tools/build-release.mjs` och publicerar **bara de filer appen använder** till GitHub Pages. Dokument, tester och serverkod i repot publiceras inte.
+
+```sh
+node tools/build-release.mjs                      # bygger build/release
+node tools/build-release.mjs --denylist <fil>     # stoppar bygget om förbjudna ord/mönster finns
+```
+
+## Kunddata
+Inga kundritningar, ritningsutdrag, projektnamn eller objektnummer från kunder får läggas i repot. `.gitignore` stoppar PDF/DWG/DXF m.fl. Tester använder genererade data.
+
+## Regler för utveckling
+Läs [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md) före ändringar. Låsta regler: [CONTROLFLOW_LOCK.md](CONTROLFLOW_LOCK.md), [TILLSYNO_LICENSE_RULES_LOCK.md](TILLSYNO_LICENSE_RULES_LOCK.md), [SMARTMATCH_FUNCTION_RULES_LOCK.md](SMARTMATCH_FUNCTION_RULES_LOCK.md), [SMARTMATCH_TABLE_RULE_LOCK.md](SMARTMATCH_TABLE_RULE_LOCK.md), [SMARTMATCH_AUTOMATION_RULE_LOCK.md](SMARTMATCH_AUTOMATION_RULE_LOCK.md), [UI_RULES.md](UI_RULES.md).
+
+Äldre versionsrapporter och tidigare versioner av modulerna finns inte i detta repo. Historiken från det tidigare repot är inte medtagen.

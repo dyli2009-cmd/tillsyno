@@ -1,0 +1,55 @@
+#smStampPanel[hidden]{display:none!important}
+#smStampPanel{
+ position:fixed;z-index:1250;right:12px;bottom:max(12px,env(safe-area-inset-bottom));
+ box-sizing:border-box;width:min(360px,calc(100vw - 24px));max-height:min(52dvh,520px);overflow:auto;
+ padding:0;border:1px solid var(--ta-border,#b9cbd3);border-radius:14px;
+ background:var(--ta-card,#fff);color:var(--ta-text,#193746);
+ box-shadow:0 16px 44px #102d3a33;font:13px/1.4 system-ui,-apple-system,sans-serif
+}
+#smStampPanel .smStampPanelHead{
+ position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;
+ min-height:52px;padding:8px 10px 8px 12px;background:#f8fbfc;border-bottom:1px solid #d9e5ea
+}
+#smStampPanel .smStampPanelHead>div{min-width:0;display:grid;gap:1px}
+#smStampPanel .smStampPanelHead small{font-size:8px;font-weight:800;letter-spacing:1px;color:#78909c}
+#smStampPanel .smStampPanelHead strong{font-size:15px;line-height:1.2;color:#1f4354}
+#smStampPanel .smStampClose{
+ width:38px!important;min-width:38px!important;height:38px!important;min-height:38px!important;padding:0!important;
+ display:grid!important;place-items:center!important;border-radius:9px!important;background:#fff!important;
+ border:1px solid #cfdae0!important;color:#385765!important;font-size:24px!important;line-height:1!important
+}
+#smStampPanel .smStampActions{display:flex;gap:7px;padding:10px 10px 0;margin:0!important}
+#smStampPanel .smStampActions button{flex:1}
+#smStampPanel>p{margin:9px 11px;padding:8px 9px;border-radius:8px;background:#f2f7f9;color:#536d79;font-size:11px;line-height:1.45}
+#smStampPanel button{
+ min-height:38px;padding:6px 9px;white-space:normal;background:#fff;color:inherit;
+ border:1px solid #c8d8df;border-radius:8px;font:700 11px/1.2 system-ui,-apple-system,sans-serif;cursor:pointer
+}
+#smStampPanel button:hover,#smStampPanel button:focus-visible{background:#edf6fa;border-color:#93b9c8;outline:2px solid #8ab8ca;outline-offset:-2px}
+#smStampPanel .smStampPrimary{background:#17688e!important;border-color:#17688e!important;color:#fff!important}
+#smStampPanel .smStampDanger{color:#973f39!important;border-color:#deb9b5!important;background:#fff9f8!important}
+#smStampPanel[aria-busy=true] button{pointer-events:none;opacity:.6}
+#smStampPanel .smStampResults{display:grid;gap:6px;padding:0 10px 11px}
+#smStampPanel .smStampResults>button{width:100%;text-align:left}
+#smStampPanel .smStampResults>div{
+ display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;
+ padding:7px 8px;border:1px solid #e1eaee;border-radius:8px;background:#fbfdfe
+}
+#smStampPanel .smStampResults>div span{min-width:0;font-size:11px;line-height:1.35;overflow-wrap:anywhere}
+#smStampPanel .smStampResults>div button{min-height:32px;font-size:10px;padding:4px 8px}
+.smStampSelector{position:absolute;inset:0;z-index:90;touch-action:none;cursor:crosshair}
+.smStampSelectionBox,.smStampHighlight{position:absolute;border:2px solid #e16109;background:#ffb00025;pointer-events:none;box-sizing:border-box}
+.smStampHighlight{z-index:90;outline:2px solid #fff}
+#smSelectPdfStamp{min-height:54px!important}
+@media(pointer:coarse),(max-width:900px){
+ #smStampPanel{right:10px;left:10px;bottom:max(10px,env(safe-area-inset-bottom));width:auto;max-height:62dvh}
+ #smStampPanel button{min-height:44px;font-size:12px}
+ #smStampPanel .smStampClose{width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;font-size:26px!important}
+}
+@media(max-width:620px){
+ #smStampPanel{right:7px;left:7px;bottom:calc(72px + env(safe-area-inset-bottom));max-height:54dvh;border-radius:13px}
+ #smStampPanel .smStampPanelHead{min-height:50px;padding:6px 7px 6px 10px}
+ #smStampPanel .smStampActions{padding:8px 8px 0}
+ #smStampPanel>p{margin:8px}
+ #smStampPanel .smStampResults{padding:0 8px 9px}
+}

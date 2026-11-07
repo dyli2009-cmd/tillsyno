@@ -1,0 +1,45 @@
+name: Publish app (release files only)
+# Publishes only the files the app needs (tools/build-release.mjs).
+# Development notes, tests and server code in this repository are never published.
+# One-time setting: Settings → Pages → Build and deployment → Source: GitHub Actions.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build release (only files the app uses)
+        run: node tools/build-release.mjs --out build/release
+      - name: Refuse document files in the release
+        run: |
+          if find build/release -type f \( -iname '*.pdf' -o -iname '*.dwg' -o -iname '*.dxf' -o -iname '*.md' \) -not -path 'build/release/vendor/*' | grep -q .; then
+            echo 'Document files found in the release'; exit 1
+          fi
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/release
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

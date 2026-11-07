@@ -1,0 +1,9 @@
+.revisionSignatureActions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.revisionSignatureActions button{min-height:44px}
+#revisionSignaturePreview,#revisionProtocolSignaturePreview{display:block;max-width:100%;width:auto;height:54px;object-fit:contain;object-position:left center;background:#fff;border-radius:6px;padding:6px;box-sizing:border-box}
+#revisionSignaturePreview[hidden],#revisionProtocolSignaturePreview[hidden]{display:none}
+#secProtocolSignature[hidden]{display:none!important}
+#revisionSignatureDialog{width:min(640px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;box-sizing:border-box;border:1px solid #7892a2;border-radius:16px;padding:20px;background:#f6f8fa;color:#132b38}
+#revisionSignatureDialog::backdrop{background:rgba(8,22,32,.65)}
+#revisionSignatureCanvas{display:block;width:100%;height:auto;aspect-ratio:10/3;background:#fff;border:1px solid #93a8b4;border-radius:8px;touch-action:none;cursor:crosshair}
+#revisionSignatureDialog h2{margin-top:0}

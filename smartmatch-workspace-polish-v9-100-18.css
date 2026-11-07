@@ -1,0 +1,41 @@
+/* SmartMatch-only surfaces inherit the chosen palette; document pixels stay unchanged. */
+html[data-tillsyno-theme] body.smDockWorkspace #pwProtocol[data-sm-window] :is(.pwCheckRow,.pwCheckRow.done,.pwCheckRow.isDone,.pwCheckRow.partial,.pwCheckRow.excluded,.pwPositionChangeEditor,.pwPositionChange){background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body.smDockWorkspace #pwProtocol[data-sm-window] .pwCheckRow:is(.done,.checked,.partial){background:var(--ta-soft2)!important}
+html[data-tillsyno-theme] body.smDockWorkspace #pwProtocol[data-sm-window] :is(.pwCheckContent strong,.pwWorkSides label,.pwPositionChangeEditor label,.pwPositionChangeEditor strong){color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body.smDockWorkspace #pwProtocol[data-sm-window] :is(.pwCheckTime,.pwPositionChangeEditor small){color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body.smDockWorkspace :is(.pwBottomNav,.pwToolMenu,.smMoreMenu){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body.smDockWorkspace .pwBottomNav :is(button,#pwPageInfo,.smToolbarLabel,.smToolLabel){color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body.smDockWorkspace .pwBottomNav :is(.smDockLeft,.smDockRight) button{background:var(--ta-card)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body.smDockWorkspace :is(#pwToolMenu,#smMoreMenu) :is(button,.smToolLabel,.smToolHelp,.smToolbarLabel){color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body.smDockWorkspace :is(#pwShowPositions,#pwPlanTag){color:var(--ta-ink)!important;background:var(--ta-card)!important;border-color:var(--ta-border)!important}
+html body.smDockWorkspace .pwBottomNav .pwBottomZoom{display:none!important}
+html body.smDockWorkspace .pwBottomNav button:disabled{opacity:.38!important}
+/* Flag editor stays inside its row, compact and responsive. */
+html body.smDockWorkspace #pwProtocol[data-sm-window] .pwPositionChangeEditor{grid-column:1/-1!important;grid-row:2;gap:5px!important;padding:6px!important;margin:3px 0!important;min-width:0;border-radius:5px}
+html body.smDockWorkspace #pwProtocol[data-sm-window] .pwPositionChangeEditor>strong{font-size:11px!important;line-height:1.25}
+html body.smDockWorkspace #pwProtocol[data-sm-window] .pwPositionChangeEditor>small{font-size:9px!important;line-height:1.3}
+html body.smDockWorkspace #pwProtocol[data-sm-window] .pwPositionChangeEditor label{gap:3px!important;font-size:11px!important;line-height:1.3}
+html body.smDockWorkspace #pwProtocol[data-sm-window] .pwPositionChangeEditor :is(textarea,select){padding:4px 6px!important;min-height:30px!important;background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html body.smDockWorkspace #pwProtocol[data-sm-window] .pwPositionChangeEditor textarea{height:52px!important;min-height:52px!important;resize:vertical;line-height:1.35!important}
+html body.smDockWorkspace #pwProtocol[data-sm-window] .pwPositionChangeToggle input{width:16px!important;height:16px!important;min-width:16px!important;min-height:16px!important;margin:0!important}
+html body.smDockWorkspace #pwProtocol[data-sm-window] .pwPositionChangeActions{gap:4px!important;margin-top:2px!important}
+html body.smDockWorkspace #pwProtocol[data-sm-window] .pwPositionChangeActions button{min-height:30px!important;padding:4px 8px!important;font-size:11px!important}
+/* Edit: paired fields, short notes, and one existing window header. */
+html body.smDockWorkspace #pwItemEditor[data-sm-window] .pwItemEditorBody{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:7px!important;padding:9px!important;background:var(--ta-card)!important;color:var(--ta-ink)!important}
+html body.smDockWorkspace #pwItemEditor[data-sm-window] .pwItemEditorBody>label{display:grid!important;align-content:start;gap:3px!important;min-width:0;font-size:11px!important;line-height:1.3;color:var(--ta-ink)!important}
+html body.smDockWorkspace #pwItemEditor[data-sm-window] :is(#pwItemSectionField,#pwItemScopeField,.smEditComment){grid-column:1/-1!important}
+html body.smDockWorkspace #pwItemEditor[data-sm-window] :is(input,select,textarea){box-sizing:border-box;width:100%;min-width:0!important;min-height:32px!important;padding:5px 6px!important;font-size:14px!important;background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border:1px solid var(--ta-border)!important;border-radius:5px!important}
+html body.smDockWorkspace #pwItemEditor[data-sm-window] small{font-size:10px!important;line-height:1.3!important;color:var(--ta-muted)!important}
+html body.smDockWorkspace #pwItemEditor[data-sm-window] textarea{height:48px!important;min-height:48px!important;resize:vertical}
+html body.smDockWorkspace #pwItemEditor[data-sm-window] .pwItemEditorActions{padding:6px 9px!important;gap:6px!important;background:var(--ta-card)!important;border-color:var(--ta-border)!important}
+html body.smDockWorkspace #pwItemEditor[data-sm-window] .pwItemEditorActions button{min-height:32px!important;padding:5px 12px!important;font-size:12px!important}
+@media(pointer:coarse){html body.smDockWorkspace #pwItemEditor[data-sm-window] :is(input,select,textarea){font-size:16px!important}}
+/* Percentage badges scale with the actual stamp footprint, down as well as up. */
+html body.smDockWorkspace #pwMarkers button.pwStampHit .pwProgressBadge{display:flex!important;align-items:center;justify-content:center;left:50%!important;right:auto!important;top:100%!important;bottom:auto!important;min-width:34px!important;width:auto!important;height:20px!important;font-size:11px!important;padding:0 4px!important;border-width:1px!important;transform:translateX(-50%) scale(var(--pw-status-scale,1))!important;transform-origin:top center!important;pointer-events:none!important}
+html body.smDockWorkspace #pwMarkers .pwPositionChangeBadge{transform:scale(var(--pw-status-scale,1));transform-origin:bottom left}
+html body.smDockWorkspace #pwProtocol[data-sm-window] .pwCheckRow>.pwPositionChangeEditor>strong{display:none!important}
+html[data-tillsyno-theme] body.smDockWorkspace #pwProtocol[data-sm-window] .pwPositionChangeTitle{color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme=night],[data-tillsyno-theme=graphite],[data-tillsyno-theme=pine]) body.smDockWorkspace .pwPositionChangeError{color:#ffb4b4!important}
+
+html[data-tillsyno-theme] body.smDockWorkspace :is(#pwItemEditor,.pwPositionChangeEditor) :is(input,textarea)::placeholder{color:var(--ta-muted)!important;opacity:1}
+html body.smDockWorkspace #pwItemEditor[data-sm-window] .pwItemEditorBody>[hidden]{display:none!important}

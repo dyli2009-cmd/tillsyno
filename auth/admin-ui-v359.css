@@ -1,0 +1,137 @@
+/* Tillsyno v2.4.359. Admin-only layout and palette coverage. */
+html[data-tillsyno-theme] body.adminPage{
+ --admin-good:#246744;--admin-good-bg:#e8f4ed;--admin-warn:#805719;--admin-warn-bg:#fff3db;--admin-bad:#9c3542;--admin-bad-bg:#fff0f1;
+ background:var(--ta-page)!important;color:var(--ta-ink)!important;padding-bottom:36px;
+}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body.adminPage{
+ --admin-good:#b1e4c7;--admin-good-bg:#183f35;--admin-warn:#f6d39b;--admin-warn-bg:#45371f;--admin-bad:#ffc0c6;--admin-bad-bg:#47282e;
+}
+body.adminPage *{box-sizing:border-box}
+body.adminPage [hidden]{display:none!important}
+html[data-tillsyno-theme] body.adminPage .topbar{padding:16px max(22px,calc((100vw - 1056px)/2));gap:20px;box-shadow:none!important}
+html[data-tillsyno-theme] body.adminPage .ta-admin-brand .ta-brandmark{width:42px!important;min-width:42px!important;height:42px!important;min-height:42px!important;font-size:26px!important;border-radius:11px!important}
+html[data-tillsyno-theme] body.adminPage .ta-admin-brand .ta-brandcopy{height:42px!important;min-height:42px!important}
+html[data-tillsyno-theme] body.adminPage .ta-admin-brand .ta-brandcopy>strong{font-size:24px!important}
+html[data-tillsyno-theme] body.adminPage .ta-admin-brand .ta-brandcopy>small{font-size:10px!important}
+html[data-tillsyno-theme] body.adminPage .toplinks{gap:8px}
+html[data-tillsyno-theme] body.adminPage .toplinks :is(a,button){display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:9px 14px;background:var(--ta-card)!important;border:1px solid var(--ta-border)!important;border-radius:10px;color:var(--ta-ink)!important;font-size:13px;font-weight:650}
+body.adminPage .shell{max-width:1100px;padding:30px 22px 48px}
+body.adminPage .heading{align-items:center;gap:24px;margin-bottom:24px}
+html[data-tillsyno-theme] body.adminPage .eyebrow{color:var(--ta-blue-dark)!important;font-size:11px;letter-spacing:1.3px}
+html[data-tillsyno-theme] body.adminPage h1{color:var(--ta-ink)!important;font-size:30px;letter-spacing:-.8px;margin:8px 0}
+html[data-tillsyno-theme] body.adminPage p{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body.adminPage .owner{border:1px solid var(--ta-border)!important;background:var(--ta-soft2)!important;color:var(--ta-muted)!important;padding:12px 14px;border-radius:12px;font-size:12px;line-height:1.5}
+html[data-tillsyno-theme] body.adminPage .owner strong{color:var(--ta-ink)!important;font-size:12px;margin-bottom:3px}
+body.adminPage .stats{gap:12px;margin-bottom:24px}
+html[data-tillsyno-theme] body.adminPage .stat{display:flex;align-items:center;justify-content:flex-start;gap:14px;min-height:84px;margin:0;padding:18px 20px;text-align:left;border:1px solid var(--ta-border)!important;background:var(--ta-card)!important;color:var(--ta-ink)!important;border-radius:14px;box-shadow:none!important;cursor:pointer}
+html[data-tillsyno-theme] body.adminPage .stat[aria-pressed="true"]{border-color:var(--ta-blue)!important;background:var(--ta-soft)!important;box-shadow:inset 0 0 0 1px var(--ta-blue)!important}
+html[data-tillsyno-theme] body.adminPage .stat strong{font-size:28px;font-weight:750;letter-spacing:-1px;color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body.adminPage .stat span{font-size:13px;font-weight:650;color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body.adminPage .panel{overflow:visible;background:var(--ta-card)!important;border:1px solid var(--ta-border)!important;border-radius:16px;box-shadow:var(--ta-shadow)!important}
+html[data-tillsyno-theme] body.adminPage .panelhead{padding:20px 22px;background:var(--ta-card)!important;border-color:var(--ta-border)!important;border-radius:16px 16px 0 0;gap:12px}
+html[data-tillsyno-theme] body.adminPage .panelhead h2{color:var(--ta-ink)!important;font-size:18px;margin-bottom:5px}
+body.adminPage .panelhead p{font-size:13px}
+html[data-tillsyno-theme] body.adminPage .listCount{color:var(--ta-muted)!important;white-space:nowrap;font-size:12px}
+html[data-tillsyno-theme] body.adminPage .filterbar{padding:14px 22px;background:var(--ta-soft2)!important;border-bottom:1px solid var(--ta-border)!important}
+html[data-tillsyno-theme] body.adminPage .search{max-width:none;min-width:0;min-height:44px;background:var(--ta-card)!important;border-color:var(--ta-border)!important;color:var(--ta-ink)!important}
+body.adminPage .userrow{grid-template-columns:minmax(220px,1.1fr) minmax(175px,1fr) auto;gap:20px;padding:22px;border-top:0}
+html[data-tillsyno-theme] body.adminPage .userrow{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-bottom:1px solid var(--ta-border)!important}
+body.adminPage .userrow:last-child{border-bottom:0!important;border-radius:0 0 16px 16px}
+body.adminPage .identity{align-items:flex-start;gap:12px}
+html[data-tillsyno-theme] body.adminPage .avatar{width:42px;height:42px;flex:0 0 42px;border-radius:12px;background:var(--ta-soft)!important;color:var(--ta-blue-dark)!important;font-size:13px;font-weight:750}
+body.adminPage .userInfo{min-width:0}
+html[data-tillsyno-theme] body.adminPage .identity strong{font-size:15px;color:var(--ta-ink)!important;line-height:1.35}
+html[data-tillsyno-theme] body.adminPage .identity small{font-size:12px;color:var(--ta-muted)!important;margin-top:5px;line-height:1.4}
+body.adminPage .userModules{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+html[data-tillsyno-theme] body.adminPage .userModules span{padding:3px 6px;border-radius:5px;background:var(--ta-soft2)!important;color:var(--ta-muted)!important;font-size:10px;line-height:1.5}
+body.adminPage .userStatus{display:grid;justify-items:start;gap:8px}
+html[data-tillsyno-theme] body.adminPage .accessNote{display:block;color:var(--ta-muted)!important;font-size:12px;line-height:1.45;overflow-wrap:anywhere}
+html[data-tillsyno-theme] body.adminPage .badge{font-size:11px;font-weight:700;padding:5px 9px;background:var(--ta-soft)!important;color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body.adminPage .badge.active{background:var(--admin-good-bg)!important;color:var(--admin-good)!important}
+html[data-tillsyno-theme] body.adminPage :is(.badge.pending,.badge.invited){background:var(--admin-warn-bg)!important;color:var(--admin-warn)!important}
+html[data-tillsyno-theme] body.adminPage :is(.badge.expired,.badge.revoked,.badge.removed){background:var(--admin-bad-bg)!important;color:var(--admin-bad)!important}
+html[data-tillsyno-theme] body.adminPage .ownerlabel{font-size:12px;color:var(--ta-muted)!important}
+body.adminPage .actions{gap:8px;align-items:center}
+html[data-tillsyno-theme] body.adminPage :is(button.secondary,button.primary){min-height:44px;border-radius:10px;padding:10px 13px;font-size:13px;font-weight:650}
+html[data-tillsyno-theme] body.adminPage button.secondary{background:var(--ta-soft2)!important;border-color:var(--ta-border)!important;color:var(--ta-blue-dark)!important}
+html[data-tillsyno-theme] body.adminPage button.primary{background:var(--ta-blue)!important;border-color:var(--ta-blue)!important;color:#fff!important}
+html[data-tillsyno-theme] body.adminPage button.danger{background:var(--admin-bad-bg)!important;color:var(--admin-bad)!important;border-color:var(--ta-border)!important}
+body.adminPage button:disabled{cursor:default;opacity:.55}
+body.adminPage .userMenu{position:relative;flex:none}
+html[data-tillsyno-theme] body.adminPage .userMenu>summary{list-style:none;display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--ta-border)!important;border-radius:10px;background:var(--ta-card)!important;color:var(--ta-ink)!important;cursor:pointer}
+body.adminPage .userMenu>summary::-webkit-details-marker{display:none}
+body.adminPage .userMenu svg{width:20px;height:20px}
+html[data-tillsyno-theme] body.adminPage .userMenuOptions{position:absolute;right:0;top:50px;z-index:20;width:180px;padding:6px;border:1px solid var(--ta-border)!important;border-radius:12px;background:var(--ta-card)!important;box-shadow:var(--ta-shadow)!important}
+body.adminPage .userMenuOptions button{width:100%;min-height:44px;border-radius:8px;padding:10px;text-align:left;font-size:13px;font-weight:650}
+html[data-tillsyno-theme] body.adminPage :is(button,input,select,summary,a):focus-visible{outline:3px solid var(--ta-blue-dark)!important;outline-offset:3px}
+html[data-tillsyno-theme] body.adminPage .empty{color:var(--ta-muted)!important;font-size:14px;padding:34px 20px}
+html[data-tillsyno-theme] body.adminPage .footer{color:var(--ta-muted)!important;padding-top:18px;font-size:11px;line-height:1.5}
+html[data-tillsyno-theme] body.adminPage .adminVersion{position:fixed;right:10px;bottom:max(8px,env(safe-area-inset-bottom));padding:3px 6px;border-radius:5px;background:var(--ta-page)!important;color:var(--ta-muted)!important;font-size:10px;z-index:5}
+html[data-tillsyno-theme] body.adminPage :is(#licenseDialog,#approvalDialog,#confirmDialog){width:min(520px,calc(100% - 24px));max-height:calc(100dvh - 32px);margin:auto;padding:0;overflow:auto;border:1px solid var(--ta-border)!important;border-radius:18px;background:var(--ta-card)!important;color:var(--ta-ink)!important;box-shadow:0 24px 80px #0003}
+body.adminPage dialog::backdrop{background:#0b1e3277;backdrop-filter:blur(3px)}
+html[data-tillsyno-theme] body.adminPage :is(#licenseDialog,#approvalDialog,#confirmDialog) .dialoghead{padding:20px 22px 16px;background:var(--ta-card)!important;border-bottom:1px solid var(--ta-border)!important;color:var(--ta-ink)!important;gap:14px;position:sticky;top:0;z-index:2}
+html[data-tillsyno-theme] body.adminPage :is(#licenseDialog,#approvalDialog,#confirmDialog) h2{font-size:21px;color:var(--ta-ink)!important;line-height:1.25}
+html[data-tillsyno-theme] body.adminPage :is(#licenseDialog,#approvalDialog,#confirmDialog) .close{width:40px;min-width:40px;height:40px;border-radius:10px;background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important}
+html[data-tillsyno-theme] body.adminPage :is(#licenseDialog,#approvalDialog,#confirmDialog) .dialogbody{padding:18px 22px 22px;background:var(--ta-card)!important;color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body.adminPage .dialogbody p.dialogPerson{padding-bottom:14px;margin-bottom:14px!important;border-bottom:1px solid var(--ta-border);color:var(--ta-ink)!important;font-size:14px!important;font-weight:700;overflow-wrap:anywhere}
+html[data-tillsyno-theme] body.adminPage #licenseCurrent{padding:10px 12px;border-radius:9px;background:var(--ta-soft2)!important;color:var(--ta-ink)!important;font-size:13px}
+html[data-tillsyno-theme] body.adminPage :is(#licenseDialog,#approvalDialog,#confirmDialog) :is(label,legend){color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body.adminPage .moduleGroup{border-color:var(--ta-border)!important;background:var(--ta-soft2)!important;padding:12px;gap:7px}
+html[data-tillsyno-theme] body.adminPage .moduleGroup .checkRow{min-height:44px;padding:10px 12px;background:var(--ta-card)!important;border-color:var(--ta-border)!important;color:var(--ta-ink)!important;font-size:14px}
+html[data-tillsyno-theme] body.adminPage .moduleGroup .checkRow:has(input:checked){background:var(--ta-highlight)!important;border-color:var(--ta-blue)!important;color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body.adminPage .moduleGroup input{accent-color:var(--ta-blue)!important}
+html[data-tillsyno-theme] body.adminPage :is(#licenseDialog,#approvalDialog,#confirmDialog) :is(input:not([type="checkbox"]),select){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;min-height:44px;font-size:16px;color-scheme:inherit}
+html[data-tillsyno-theme] body.adminPage #licenseUntil{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body.adminPage .adminExtra{margin:16px 0 0;border-top:1px solid var(--ta-border)!important;padding-top:14px}
+html[data-tillsyno-theme] body.adminPage .adminExtra>summary{min-height:40px;cursor:pointer;font-size:13px;font-weight:700;color:var(--ta-blue-dark)!important;line-height:1.5;padding:9px 0}
+body.adminPage .adminExtra.dialogbody{margin:0}
+body.adminPage .adminExtra.dialogbody:not([open]){padding-top:10px!important;padding-bottom:10px!important}
+html[data-tillsyno-theme] body.adminPage :is(.licenseHint,.dialogbody p){color:var(--ta-muted)!important;line-height:1.5}
+body.adminPage .extendRow{gap:10px}
+html[data-tillsyno-theme] body.adminPage .cancelLicenseConfirm{background:var(--admin-bad-bg)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body.adminPage .cancelLicenseConfirm :is(strong,p){color:var(--admin-bad)!important}
+html[data-tillsyno-theme] body.adminPage :is(#confirmCancelLicense,#confirmRemove):not(:disabled){background:#a13745!important;border-color:#a13745!important;color:#fff!important}
+html[data-tillsyno-theme] body.adminPage .notice{border:1px solid var(--ta-border)!important;font-size:13px}
+html[data-tillsyno-theme] body.adminPage .notice.success{background:var(--admin-good-bg)!important;color:var(--admin-good)!important}
+html[data-tillsyno-theme] body.adminPage .notice.error{background:var(--admin-bad-bg)!important;color:var(--admin-bad)!important;margin-top:16px}
+@media(max-width:960px){
+ body.adminPage .userrow{grid-template-columns:minmax(180px,1fr) auto;gap:14px}
+ body.adminPage .userStatus{grid-column:1;grid-row:2;padding-left:54px}
+ body.adminPage .actions{grid-column:2;grid-row:1/3}
+ body.adminPage .heading{align-items:flex-start}
+ body.adminPage .owner{max-width:240px}
+}
+@media(max-width:650px){
+ html[data-tillsyno-theme] body.adminPage .topbar{padding:14px 16px;gap:12px!important}
+ html[data-tillsyno-theme] body.adminPage .toplinks{width:auto!important;margin-left:auto;justify-content:flex-end}
+ html[data-tillsyno-theme] body.adminPage .toplinks :is(a,button){font-size:12px;padding:9px 11px}
+ html[data-tillsyno-theme] body.adminPage .ta-admin-brand .ta-brandcopy>small{display:none!important}
+ html[data-tillsyno-theme] body.adminPage .ta-admin-brand .ta-brandcopy{justify-content:center!important}
+ body.adminPage .shell{padding:24px 16px 40px}
+ body.adminPage .heading{display:block;margin-bottom:20px}
+ html[data-tillsyno-theme] body.adminPage h1{font-size:26px}
+ body.adminPage .heading p{font-size:14px}
+ html[data-tillsyno-theme] body.adminPage .owner{display:block;max-width:100%;margin-top:16px;padding:10px 12px;text-align:left}
+ html[data-tillsyno-theme] body.adminPage .owner strong{display:inline;margin-right:7px}
+ body.adminPage .stats{gap:8px;margin-bottom:20px}
+ html[data-tillsyno-theme] body.adminPage .stat{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:5px;padding:12px;min-height:90px}
+ html[data-tillsyno-theme] body.adminPage .stat strong{font-size:26px}
+ html[data-tillsyno-theme] body.adminPage .stat span{font-size:11px;line-height:1.35}
+ html[data-tillsyno-theme] body.adminPage .panelhead{padding:17px 16px}
+ html[data-tillsyno-theme] body.adminPage .filterbar{padding:12px 16px;gap:8px}
+ html[data-tillsyno-theme] body.adminPage .filterbar button{padding:10px;font-size:12px}
+ body.adminPage .userrow{display:flex;flex-direction:column;align-items:stretch;padding:18px 16px;gap:13px}
+ body.adminPage .userStatus{padding-left:54px;gap:7px}
+ body.adminPage .actions{padding-left:54px;justify-content:flex-start;flex-wrap:nowrap}
+ body.adminPage .actions>button{flex:1;white-space:normal;text-align:center}
+ body.adminPage .userMenuOptions{right:0}
+ body.adminPage .dialogactions{flex-wrap:wrap}
+ body.adminPage .dialogactions button{flex:1}
+ body.adminPage .footer{font-size:10px}
+}
+@media(max-width:360px){
+ html[data-tillsyno-theme] body.adminPage .ta-admin-brand .ta-brandcopy>strong{font-size:20px!important}
+ html[data-tillsyno-theme] body.adminPage .ta-admin-brand .ta-brandmark{width:36px!important;min-width:36px!important;height:36px!important;min-height:36px!important;font-size:22px!important}
+ html[data-tillsyno-theme] body.adminPage .toplinks :is(a,button){padding:8px;font-size:11px}
+ body.adminPage .shell{padding-left:12px;padding-right:12px}
+}

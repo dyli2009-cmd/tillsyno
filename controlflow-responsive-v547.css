@@ -1,0 +1,151 @@
+/* v2.4.547: responsive area/checklist chooser only.
+   Shared chooser markup is identical in root and controlflow-revision.
+   Native modal sizing never applies to revisionInlinePage workspaces. */
+@layer controlflowStandard {
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog[open]:not([hidden]):not(.revisionInlinePage) {
+  display:flex!important;
+  flex-direction:column;
+  width:min(480px,calc(100vw - 24px))!important;
+  max-width:100%!important;
+  max-height:min(760px,calc(100dvh - 32px))!important;
+  overflow:hidden!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog :is(.allProtocolHead,.allProtocolActions) {
+  flex:0 0 auto;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog[open]:not(.revisionInlinePage) .allProtocolChoices {
+  flex:1 1 auto;
+  min-height:0;
+  max-height:none!important;
+  overflow:auto!important;
+  overscroll-behavior:contain;
+ }
+ /* Inline revision pages use their existing workspace scroll container. */
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog.revisionInlinePage .allProtocolChoices {
+  max-height:none!important;
+  overflow:visible!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog :is(.allProtocolChoices,.allProtocolChildren) {
+  align-content:start;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog[data-stage="folders"] .allProtocolChoices,
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolChildren {
+  grid-template-columns:minmax(0,1fr)!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog .allProtocolChildren>.allCeStandalone {
+  grid-column:1/-1;
+ }
+ /* The old unconditional summary display rule defeated the folder state on touch devices. */
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolGroup>summary {
+  display:none!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog :is(.allFolderHeading,.allAreaCopy,.allProtocolText,.allCeStandaloneText) {
+  overflow-wrap:anywhere;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog #allProtocolTitle {
+  white-space:normal;
+  overflow-wrap:anywhere;
+ }
+
+ /* Two secondary actions; the primary action gets its own row on compact layouts. */
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog .allProtocolActions {
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-items:stretch!important;
+  gap:8px!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog .allProtocolActions>:is(a,button) {
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  gap:8px!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:44px!important;
+  height:auto!important;
+  padding:8px 12px!important;
+  font-size:calc(.875rem * var(--cf-text-scale,1))!important;
+  font-weight:600!important;
+  line-height:1.35!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog .allProtocolActions>:is(a,button) span {
+  min-width:0;
+  white-space:normal;
+  overflow-wrap:anywhere;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog .allProtocolActions svg {
+  width:20px!important;
+  height:20px!important;
+  flex:0 0 20px;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog #allProtocolApply {
+  grid-column:1/-1;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog[data-stage="folders"] #allProtocolApply,
+ html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog .allProtocolActions>[hidden] {
+  display:none!important;
+ }
+
+ /* Tablet width uses available space; an explicit Phone preference stays compact. */
+ @media(min-width:700px) {
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:not(:where([data-tillsyno-device="phone"])) body.allInOneApp #allProtocolDialog[open]:not([hidden]):not(.revisionInlinePage) {
+   width:min(928px,calc(100vw - 40px))!important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:not(:where([data-tillsyno-device="phone"])) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allProtocolChoices {
+   grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:not(:where([data-tillsyno-device="phone"])) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allProtocolGroup>summary {
+   flex-direction:column;
+   align-items:flex-start!important;
+   justify-content:flex-start!important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:not(:where([data-tillsyno-device="phone"])) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolChildren {
+   grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+ }
+ /* Keep the established wide desktop cards and three-action checklist footer. */
+ @media(min-width:1100px) and (hover:hover) and (pointer:fine) {
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:not(:where([data-tillsyno-device="phone"],[data-tillsyno-device="tablet"])) body.allInOneApp #allProtocolDialog[open]:not([hidden]):not(.revisionInlinePage) {
+   width:min(1020px,calc(100vw - 80px))!important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:not(:where([data-tillsyno-device="phone"],[data-tillsyno-device="tablet"])) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolActions {
+   grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme]:not(:where([data-tillsyno-device="phone"],[data-tillsyno-device="tablet"])) body.allInOneApp #allProtocolDialog[data-stage="folder"] #allProtocolApply {
+   grid-column:auto;
+  }
+ }
+
+ /* The saved A+/A- scale changes type size, while the layout makes room for it. */
+ html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #allProtocolDialog[data-stage="folders"] .allProtocolChoices,
+ html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolChildren,
+ html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #allProtocolDialog .allProtocolActions {
+  grid-template-columns:minmax(0,1fr)!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolHead {
+  flex-wrap:wrap;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #allProtocolDialog[data-stage="folder"] .allFolderHeading {
+  flex:1 1 100%!important;
+ }
+ /* Enlarged header/footer text may need more height than the modal, even in tall windows. */
+ html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #allProtocolDialog[open]:not([hidden]):not(.revisionInlinePage) {
+  overflow:auto!important;
+ }
+ html[data-controlflow-ui="1"][data-tillsyno-theme][data-cf-large-text] body.allInOneApp #allProtocolDialog[open]:not(.revisionInlinePage) .allProtocolChoices {
+  flex:0 0 auto;
+  overflow:visible!important;
+ }
+ /* In short landscape windows, the whole modal scrolls if its chrome needs the height. */
+ @media(max-height:480px) {
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog[open]:not([hidden]):not(.revisionInlinePage) {
+   overflow:auto!important;
+  }
+  html[data-controlflow-ui="1"][data-tillsyno-theme] body.allInOneApp #allProtocolDialog[open]:not(.revisionInlinePage) .allProtocolChoices {
+   flex:0 0 auto;
+   overflow:visible!important;
+  }
+ }
+}

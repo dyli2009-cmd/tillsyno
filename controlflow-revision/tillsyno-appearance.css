@@ -1,0 +1,1403 @@
+/* Tillsyno appearance v2.4.359. Shared UI-only theme. Never touches PDF pixels, rendered canvases, data or status semantics. */
+html[data-tillsyno-theme="ice"]{--ta-page:#edf6fb;--ta-sidebar:#e2f1f8;--ta-soft:#dceef7;--ta-soft2:#eaf5fb;--ta-card:#fff;--ta-header:#e1f0f8;--ta-ink:#173f55;--ta-muted:#587b8d;--ta-blue:#2b7192;--ta-blue-dark:#1e5b78;--ta-border:#c3dce9;--ta-line:#d5e6ef;--ta-highlight:#cce8f5;--ta-shadow:0 10px 27px #173e570e}
+html[data-tillsyno-theme="mist"]{--ta-page:#ebf1f5;--ta-sidebar:#e2edf3;--ta-soft:#dfeef3;--ta-soft2:#edf5f8;--ta-card:#fff;--ta-header:#e2eef4;--ta-ink:#233f52;--ta-muted:#617d8d;--ta-blue:#356e86;--ta-blue-dark:#285b73;--ta-border:#cbdde6;--ta-line:#dce8ee;--ta-highlight:#d6ecf5;--ta-shadow:0 10px 27px #234d600e}
+html[data-tillsyno-theme="coast"]{--ta-page:#edf7f6;--ta-sidebar:#e2f3f0;--ta-soft:#d9f0ef;--ta-soft2:#e8f6f3;--ta-card:#fff;--ta-header:#dcf0eb;--ta-ink:#1d4852;--ta-muted:#587e82;--ta-blue:#247f85;--ta-blue-dark:#1b626c;--ta-border:#c3dedb;--ta-line:#d9ebe7;--ta-highlight:#d9f2ee;--ta-shadow:0 10px 27px #164e490d}
+html[data-tillsyno-theme="sand"]{--ta-page:#f7f5f1;--ta-sidebar:#eeeee9;--ta-soft:#e8f0ef;--ta-soft2:#f2f6f2;--ta-card:#fff;--ta-header:#f0f0e8;--ta-ink:#2e4b58;--ta-muted:#687e85;--ta-blue:#356b81;--ta-blue-dark:#29566a;--ta-border:#d9e2df;--ta-line:#e7eae5;--ta-highlight:#e5f0ec;--ta-shadow:0 10px 27px #3546380e}
+html[data-tillsyno-theme]{background:var(--ta-page);--blue:var(--ta-blue);--navy:var(--ta-blue-dark);--line:var(--ta-border)}
+html[data-tillsyno-theme] #tillsynoNavCurtain{background:var(--ta-page)!important}
+html[data-tillsyno-theme] body{accent-color:var(--ta-blue)}
+html[data-tillsyno-theme] .ta-inline-icon{display:inline-flex;vertical-align:middle;width:16px;height:16px;min-width:16px;margin-right:5px;color:inherit;pointer-events:none}
+html[data-tillsyno-theme] .ta-inline-icon svg{width:16px;height:16px;display:block;stroke:currentColor;fill:none}
+html[data-tillsyno-theme] :is(button,a):has(>.ta-inline-icon){align-items:center;gap:5px}
+/* Shared light application header / primary surfaces, without affecting the original canvas or document preview. */
+html[data-tillsyno-theme] body :is(.appHeader,.pwHeader),
+html[data-tillsyno-theme] body .toolHeader,
+html[data-tillsyno-theme] body .pfHeader,
+html[data-tillsyno-theme] body .ceTop{
+ background:var(--ta-header)!important;color:var(--ta-ink)!important;
+ border-bottom:1px solid var(--ta-border)!important;box-shadow:none!important;
+}
+html[data-tillsyno-theme] body :is(.appHeader,.pwHeader,.toolHeader,.pfHeader,.ceTop) :is(.brand,.brand strong,.pwTitle strong,.toolHeader strong,.pfHeader strong,.ceTopIdentity strong){
+ color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body :is(.appHeader,.pwHeader,.toolHeader,.pfHeader,.ceTop) :is(.headerSubtitle,.pwTitleVersion,.pwHeader small,.toolHeader small,.pfHeader small,.ceTopIdentity small,.version){
+ color:var(--ta-muted)!important;
+}
+html[data-tillsyno-theme] body :is(.appHeader,.pwHeader,.toolHeader,.pfHeader,.ceTop) :is(a,button):not(.primary):not(.savePdfButton){
+ color:var(--ta-blue-dark)!important;
+}
+html[data-tillsyno-theme] body .toolHeader .backBtn,
+html[data-tillsyno-theme] body .ceTop .ceBackHome,
+html[data-tillsyno-theme] body .pfHeader .pfHome,
+html[data-tillsyno-theme] body .pwHeader .pwHome{
+ background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;
+ border:1px solid var(--ta-border)!important;text-decoration:none!important;
+}
+html[data-tillsyno-theme] body :is(.appHeader,.pwHeader,.toolHeader,.pfHeader,.ceTop) :is(.primary,.savePdfButton):not(:disabled){
+ background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body .pwHeader .pwHeaderActions :is(button,a) svg,
+html[data-tillsyno-theme] body .ceTop .ceBackHome svg{stroke:currentColor!important}
+html[data-tillsyno-theme] body .objectBar,
+html[data-tillsyno-theme] body .securityApp .objectBar{
+ background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body .toolShell,
+html[data-tillsyno-theme] body .pfSummary{color:var(--ta-ink)}
+/* Tillsyno startsida. Account/license elements keep the same IDs and handlers. */
+html[data-tillsyno-theme] body #appHome{
+ background:var(--ta-page)!important;background-image:radial-gradient(ellipse at 52% 24%,var(--ta-soft),transparent 66%)!important;color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body #appHome :is(.homeBrandCopy>strong,.homeIntro h1){
+ color:var(--ta-ink)!important;text-shadow:none!important;
+}
+html[data-tillsyno-theme] body #appHome :is(.homeIntro p,.homeTagline,.homeVersion,.homeSectionLabel,.homeFooterAccount){
+ color:var(--ta-muted)!important;
+}
+html[data-tillsyno-theme] body #appHome :is(.homeBrand,.homeFooter){border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #appHome .homeBrandMark{
+ background:var(--ta-soft)!important;border-color:var(--ta-border)!important;color:var(--ta-blue-dark)!important;
+}
+html[data-tillsyno-theme] body #appHome .homeBrand .homeProfile>summary{
+ background:var(--ta-card)!important;border-color:var(--ta-border)!important;color:var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body #appHome .homeBrand .homeProfile>summary svg{stroke:var(--ta-blue)!important}
+html[data-tillsyno-theme] body #appHome .homeChoice,
+html[data-tillsyno-theme] body #appHome .homeToolsLink{
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;
+ box-shadow:var(--ta-shadow)!important;
+}
+html[data-tillsyno-theme] body #appHome .homeChoice:hover,
+html[data-tillsyno-theme] body #appHome .homeToolsLink:hover{background:var(--ta-soft2)!important}
+html[data-tillsyno-theme] body #appHome :is(.homeChoiceIcon,.homeToolsIcon){
+ background:var(--ta-soft)!important;color:var(--ta-blue)!important;border:1px solid var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body #appHome :is(.homeChoiceCopy strong,.homeToolCopy strong,.homeChoiceArrow){
+ color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body #appHome :is(.homeChoiceCopy small,.homeToolCopy small){
+ color:var(--ta-muted)!important;
+}
+html[data-tillsyno-theme] body #appHome .homeProfileMenu{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;box-shadow:var(--ta-shadow)!important}
+html[data-tillsyno-theme] body #appHome :is(.homeProfileStatus strong,.homeProfileMenu a,.homeProfileMenu button){color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body #appHome .homeProfileStatus small{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body #appHome :is(.homeProfileMenu a:hover,.homeProfileMenu button:hover){background:var(--ta-soft2)!important}
+html[data-tillsyno-theme] body #appHome .homeFooterAccount svg{stroke:var(--ta-blue)!important}
+html[data-tillsyno-theme] body #appHome #tillsynoWaitingNotice{
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body #appHome #tillsynoWaitingNotice :is(p,small){color:var(--ta-muted)!important}
+/* Kontrollflöde's picker: functional checkboxes, folder selection and CE link stay intact. */
+html[data-tillsyno-theme] body.allInOneApp #allProtocolDialog{
+ background:var(--ta-page)!important;color:var(--ta-ink)!important;border:1px solid var(--ta-border)!important;
+ box-shadow:0 17px 50px #17465d24!important;
+}
+html[data-tillsyno-theme] body.allInOneApp #allProtocolDialog::backdrop{background:#294a5a60!important}
+html[data-tillsyno-theme] body.allInOneApp #allProtocolDialog :is(.allProtocolHead,.allProtocolActions){
+ background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-line)!important;
+}
+html[data-tillsyno-theme] body.allInOneApp #allProtocolDialog :is(.allProtocolHead h2,.allProtocolLead,.eyebrow){
+ color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body.allInOneApp #allProtocolDialog :is(.allProtocolGroup,.allProtocolChoices label){
+ background:var(--ta-card)!important;border-color:var(--ta-border)!important;color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body.allInOneApp #allProtocolDialog .allProtocolChoices label:has(input:checked){
+ background:var(--ta-highlight)!important;border-color:var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body.allInOneApp #allProtocolDialog :is(.allProtocolChoices label strong,.allProtocolGroup>summary .allAreaCopy strong){
+ color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body.allInOneApp #allProtocolDialog :is(.allProtocolChoices label small,.allProtocolGroup>summary .allAreaCopy small){
+ color:var(--ta-muted)!important;
+}
+html[data-tillsyno-theme] body.allInOneApp #allProtocolDialog :is(.allAreaIcon,.allProtocolIcon){
+ background:var(--ta-soft)!important;color:var(--ta-blue)!important;border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body.allInOneApp #allProtocolDialog :is(#allFolderBack,.allProtocolHome,.allProtocolDrawingTool){
+ background:var(--ta-card)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body.allInOneApp #allProtocolDialog .allProtocolActions :is(a,button) :is(svg,span){color:inherit!important;stroke:currentColor!important}
+html[data-tillsyno-theme] body.allInOneApp #allProtocolDialog #allProtocolApply:not(:disabled){
+ background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body.allInOneApp #allProtocolDialog .allCeStandalone{
+ background:var(--ta-soft)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body.allInOneApp #allProtocolDialog .allCeStandalone :is(.allProtocolIcon,.allCeStandaloneText strong,.allCeStandaloneText small,.allCeStandaloneArrow){
+ color:var(--ta-blue-dark)!important;
+}
+/* SmartMatch: only landing, toolbar, cards and controls; the actual drawing canvas stays white. */
+html[data-tillsyno-theme] body #pwEmpty{
+ background:var(--ta-page)!important;background-image:radial-gradient(ellipse at 50% 40%,var(--ta-soft),transparent 70%)!important;color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body #pwEmpty :is(.pwEmptyCard,.smRecentProjects){
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body #pwEmpty :is(.pwEmptyMark,.pwEmptyIcon){
+ color:var(--ta-blue)!important;background:var(--ta-soft)!important;border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body #pwEmpty :is(h1,h2,h3,strong,.pwHomeStatus,.pwProjectTitle,.pwEmptyTitle){color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body #pwEmpty :is(p,small,.pwEmptyIntro,.pwEmptySubtitle){color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body :is(.pwToolbar,.smartCardsTools,.pwTools,.pwHeaderActions,.smPanelHeader,.pwPanelHead){
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(.pwToolbar,.smartCardsTools){background:var(--ta-soft2)!important}
+html[data-tillsyno-theme] body :is(.pwToolbar,.smartCardsTools,.pwHeaderActions,.pwEmptyCard) button:not(.primary):not(:disabled){
+ border-color:var(--ta-border)!important;color:var(--ta-blue-dark)!important;
+}
+html[data-tillsyno-theme] body #pwEmpty :is(button,.pwOpen):not(:disabled):not(.primary){
+ background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;
+}
+/* CE: project landing and folder chrome, not Acrobat forms or PDF previews. */
+html[data-tillsyno-theme] body.ceProjectPickerOpen{
+ background:var(--ta-page)!important;background-image:radial-gradient(ellipse at 54% 35%,var(--ta-soft),transparent 72%)!important;
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen::before,
+html[data-tillsyno-theme] body.ceProjectPickerOpen::after{opacity:.18!important}
+html[data-tillsyno-theme] body.ceProjectPickerOpen :is(.ceHomeBrandText strong,.ceHomeBrandText small,.ceProjectHome .ceHomeHero h2,.ceProjectHome .ceHomeHero p){
+ color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen .ceHomeBrandMark{
+ color:var(--ta-blue)!important;background:var(--ta-soft)!important;border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen .ceHomeActions button{
+ background:var(--ta-card)!important;border-color:var(--ta-border)!important;color:var(--ta-ink)!important;box-shadow:var(--ta-shadow)!important;
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen .ceHomeActions button.ceHomePrimary{
+ background:var(--ta-soft2)!important;border-color:var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen .ceHomeActions button :is(strong,.ceHomeActionCopy strong){color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body.ceProjectPickerOpen .ceHomeActions button :is(small,.ceHomeActionCopy small){color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body.ceProjectPickerOpen .ceHomeActionIcon{
+ color:var(--ta-blue)!important;background:var(--ta-soft)!important;border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen .ceHomeActionArrow{color:var(--ta-blue-dark)!important}
+html[data-tillsyno-theme] body :is(#ceWorkspace,.ceDocMore,.ceImportCEBody,.ceImportNextToProfile){
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(.ceImportNextToProfile,.ceDocMore){background:var(--ta-soft2)!important}
+html[data-tillsyno-theme] body #slrFlowTestDialog .ceBatchImportButton:not(:disabled){
+ background:var(--ta-blue)!important;border-color:var(--ta-blue)!important;color:#fff!important;
+}
+/* Ritningsverktyg and project-flow: light toolbar, preserved PDF canvas. */
+html[data-tillsyno-theme] body .toolHeader :is(.headerActions button,.backBtn):not(.primary){
+ background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border:1px solid var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body .toolIntro,
+html[data-tillsyno-theme] body .toolPanel,
+html[data-tillsyno-theme] body .previewPane,
+html[data-tillsyno-theme] body .resultCard,
+html[data-tillsyno-theme] body .outputActions{
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body .pfSummary,
+html[data-tillsyno-theme] body .pfTools{
+ background:var(--ta-soft2)!important;border-color:var(--ta-border)!important;color:var(--ta-ink)!important;
+}
+/* Account / administration / auth screens: no changes to actual authorization logic. */
+html[data-tillsyno-theme] body.loginbody,
+html[data-tillsyno-theme] body[data-require-role="admin"]{
+ background:var(--ta-page)!important;color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body.loginbody :is(.logincard,.loginshell,.notice),
+html[data-tillsyno-theme] body[data-require-role="admin"] :is(.panel,.stat,.owner,.user,.userCard){
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(.logincard,.panel,.stat,.owner){
+ background:var(--ta-card)!important;
+}
+html[data-tillsyno-theme] body :is(.loginbrand,.logincard h1,.shell h1,.panel h2){color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body .loginbrand small{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body[data-require-role="admin"] .topbar{
+ background:var(--ta-header)!important;color:var(--ta-ink)!important;border-bottom:1px solid var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body[data-require-role="admin"] .topbar :is(.brand,.toplinks a,.toplinks button){
+ color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body :is(.loginbody .primary,.logincard .primary,.shell .primary,.panel .primary):not(:disabled){
+ background:var(--ta-blue)!important;border-color:var(--ta-blue)!important;color:#fff!important;
+}
+/* Appearance launcher. Fixed and isolated from every underlying PDF canvas and form. */
+.ta-launcher{
+ position:fixed!important;right:12px!important;bottom:calc(14px + env(safe-area-inset-bottom))!important;
+ z-index:19500!important;box-sizing:border-box!important;width:39px!important;height:39px!important;
+ min-width:39px!important;min-height:39px!important;padding:8px!important;
+ display:grid!important;place-items:center!important;
+ border:1px solid var(--ta-border)!important;border-radius:12px!important;
+ color:var(--ta-blue-dark)!important;background:var(--ta-card)!important;
+ box-shadow:0 5px 18px #143c5040!important;opacity:.94!important;cursor:pointer!important;
+}
+.ta-launcher:hover,.ta-launcher:focus-visible{opacity:1!important;background:var(--ta-soft2)!important}
+.ta-launcher svg{width:21px;height:21px;stroke:currentColor;fill:none;pointer-events:none}
+@media(max-width:820px){
+ .ta-launcher{right:12px!important;bottom:calc(77px + env(safe-area-inset-bottom))!important;width:39px!important;height:39px!important;min-height:39px!important}
+}
+html[data-tillsyno-theme] body.homeMode .ta-launcher{bottom:calc(12px + env(safe-area-inset-bottom))!important}
+/* Dialog is an independent UI widget with fixed colors; never modifies app data. */
+dialog.ta-modal{
+ box-sizing:border-box!important;position:fixed!important;inset:0!important;margin:auto!important;
+ width:min(550px,calc(100vw - 20px))!important;max-width:550px!important;
+ max-height:min(88dvh,760px)!important;padding:0!important;
+ color:#24485b!important;background:#fff!important;border:1px solid #bcd8e5!important;
+ border-radius:17px!important;box-shadow:0 22px 70px #09283c60!important;
+ overflow:hidden!important;font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+ z-index:2147483640!important;
+}
+dialog.ta-modal::backdrop{background:#112f42a8!important}
+.ta-modal .ta-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:17px 18px;background:#eaf5fa;border-bottom:1px solid #cfe1ea}
+.ta-modal .ta-head>div{display:grid;gap:3px}.ta-modal .ta-head strong{font-size:17px;font-weight:750;color:#214f66}
+.ta-modal .ta-head small{font-size:11px;color:#6d8b9c}
+.ta-modal .ta-close{display:grid;place-items:center;box-sizing:border-box;width:35px;height:35px;min-width:35px;min-height:35px;padding:7px;border:1px solid #c3dae5;border-radius:9px;background:#fff;color:#285e79;cursor:pointer}
+.ta-modal .ta-close svg{width:19px;height:19px}
+.ta-modal .ta-body{padding:16px 18px;overflow-y:auto;overscroll-behavior:contain;max-height:calc(min(88dvh,760px) - 145px)}
+.ta-modal .ta-section{margin-bottom:20px}.ta-modal .ta-section:last-child{margin-bottom:2px}
+.ta-modal .ta-section h3{font-size:13px;margin:0 0 10px;color:#2c5770;font-weight:760}
+.ta-modal .ta-section p{font-size:10px;margin:0 0 10px;color:#6b8898;line-height:1.5}
+.ta-modal .ta-palettes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ta-modal .ta-devices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ta-modal button.ta-choice{box-sizing:border-box;width:100%;min-width:0;min-height:64px!important;padding:10px!important;display:flex;align-items:center;gap:9px;border:1px solid #d4e5ee;border-radius:10px;background:#f7fbfd;color:#2c5064;text-align:left;cursor:pointer}
+.ta-modal button.ta-choice:hover{border-color:#8fbfd4;background:#f0f9fd}
+.ta-modal button.ta-choice.is-selected{border-color:#5e9bb8;background:#e8f5fb;box-shadow:inset 0 0 0 1px #8cc3da}
+.ta-modal .ta-swatches{display:flex;align-items:center;flex:none;overflow:hidden;border:1px solid #c7dce6;border-radius:6px}
+.ta-modal .ta-swatches i{display:block;width:11px;height:35px}
+.ta-modal .ta-swatches i:first-child{width:16px}
+.ta-modal .ta-choice-text{display:grid;gap:4px;flex:1;min-width:0}
+.ta-modal .ta-choice-text strong{font-size:11px;font-weight:720;line-height:1.25;color:#244b60;overflow-wrap:anywhere}
+.ta-modal .ta-choice-text small{font-size:10px;line-height:1.35;color:#688797;overflow-wrap:anywhere}
+.ta-modal .ta-device-icon{display:grid;place-items:center;width:28px;height:28px;flex:none;border-radius:8px;background:#e4f1f8;color:#2e7392}
+.ta-modal .ta-device-icon svg{width:18px;height:18px}
+.ta-modal .ta-choice-check{width:16px;height:16px;min-width:16px;color:#2782a6}
+.ta-modal .ta-choice-check svg{width:16px;height:16px}
+.ta-modal .ta-foot{display:flex;gap:9px;justify-content:space-between;align-items:center;padding:12px 17px;border-top:1px solid #d9e9f1;background:#fff}
+.ta-modal .ta-foot button{min-height:41px;min-width:0;border-radius:8px;border:1px solid #bcd5e2;padding:9px 13px;background:#f3f9fc;color:#285d76;font-size:11px;font-weight:720;cursor:pointer}
+.ta-modal .ta-foot .ta-apply{color:#fff;background:#2b7192;border-color:#2b7192}
+@media(max-width:540px){
+ .ta-modal .ta-body{padding:13px 12px}.ta-modal .ta-palettes,.ta-modal .ta-devices{gap:6px}
+ .ta-modal button.ta-choice{padding:8px!important;min-height:62px!important;gap:7px}
+ .ta-modal .ta-head{padding:12px 13px}.ta-modal .ta-foot{padding:10px 12px}
+}
+@media(max-width:350px){.ta-modal .ta-devices{grid-template-columns:1fr 1fr}.ta-modal .ta-swatches i{width:8px}.ta-modal .ta-choice-text strong{font-size:10px}}
+/* Device selection is a density preference, NOT an artificial viewport/zoom override.
+   iOS/Android and web still respond to real screen dimensions; preserve canvas geometry. */
+html[data-tillsyno-device="phone"] body :is(#appHome .homeChoice,#appHome .homeToolsLink){min-height:60px!important}
+html[data-tillsyno-device="phone"] body :is(.allProtocolGroup>summary,.allProtocolChoices label){min-height:58px!important}
+html[data-tillsyno-device="phone"] body :is(.ta-modal .ta-choice){min-height:48px!important}
+html[data-tillsyno-device="tablet"] body :is(#appHome .homeChoice,#appHome .homeToolsLink){min-height:76px!important}
+html[data-tillsyno-device="tablet"] body :is(.allProtocolGroup>summary,.allProtocolChoices label){min-height:68px!important}
+html[data-tillsyno-device="desktop"] body :is(#appHome .homeChoice,#appHome .homeToolsLink){min-height:69px!important}
+/* Keep the PDF status colors and access-control locked/disabled states intact. */
+/* Status colours (green/amber/red) are intentionally left to each module's original CSS. */
+@media(prefers-reduced-motion:reduce){.ta-launcher,.ta-modal *{transition:none!important}}
+
+/* On the home screen, show the appearance icon beside the existing account icon,
+   never over the version number or the bottom of the home page. */
+html[data-tillsyno-theme] body #appHome .homeBrand>.ta-launcher{
+ position:relative!important;right:auto!important;bottom:auto!important;
+ width:40px!important;height:40px!important;min-height:40px!important;min-width:40px!important;
+ margin:0!important;flex:none!important;border-radius:11px!important;
+ background:var(--ta-card)!important;border-color:var(--ta-border)!important;
+ box-shadow:none!important;z-index:50!important;
+}
+@media(max-width:620px){
+ html[data-tillsyno-theme] body #appHome .homeBrand>.ta-launcher{
+  width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;
+ }
+}
+
+/* Licensed entry wrappers may open full-screen app iframes. The inner app then owns
+   the palette launcher, so hide the outer wrapper's launcher to prevent duplicates. */
+html[data-tillsyno-theme] body.workspaceMode>.ta-launcher,
+html[data-tillsyno-theme] body:has(>iframe.licensedFrame)>.ta-launcher{
+ display:none!important;
+}
+/* Licensed module and legacy landing cards only — not work forms or document pages. */
+html[data-tillsyno-theme] body:not(.securityApp):not(.allInOneApp) :is(.shell>.card,.shell>.module,.shell>.list>.choice,.shell .choice,.shell .module){
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body:not(.securityApp):not(.allInOneApp) .shell>.card{
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body:not(.securityApp):not(.allInOneApp) .shell :is(.choice,.module){
+ background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;
+}
+html[data-tillsyno-theme] body:not(.securityApp):not(.allInOneApp) .shell :is(.choice,.module) :is(strong,small){
+ color:inherit!important;
+}
+html[data-tillsyno-theme] body:not(.securityApp):not(.allInOneApp) .shell :is(.choice,.module):focus-visible{
+ outline:2px solid var(--ta-blue)!important;
+}
+
+/* SmartMatch's original dark landing uses stronger ID selectors. Ensure accessible
+   contrast when switching to white project cards. */
+html[data-tillsyno-theme] body #pwEmpty .pwEmptyCard h1{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body #pwEmpty #pwHomeStatus{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body #pwEmpty #pwOpenProjectEmpty{
+ background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important;
+}
+
+/* v2.4.300 CE project visual harmonization */
+/* Palettes in top menus, not in floating corners for SmartMatch and CE. */
+html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar{
+ grid-column:1;grid-row:1;display:flex;align-items:center;gap:6px;justify-self:start;min-width:0;z-index:2
+}
+html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar .pwHome{flex:none}
+html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar .ta-launcher,
+html[data-tillsyno-theme] body > header.ceTop > .ta-launcher{
+ position:relative!important;inset:auto!important;right:auto!important;bottom:auto!important;
+ width:34px!important;min-width:34px!important;height:34px!important;min-height:34px!important;
+ padding:6px!important;margin:0!important;z-index:3!important;flex:none!important;
+ border-radius:9px!important;box-shadow:none!important;opacity:1!important;
+ color:var(--ta-blue-dark)!important;background:var(--ta-card)!important;border-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] body > header.ceTop > .ta-launcher{margin-left:auto!important;margin-right:6px!important}
+html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar .ta-launcher svg,
+html[data-tillsyno-theme] body > header.ceTop > .ta-launcher svg{width:19px;height:19px}
+@media(max-width:520px){
+ html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar{gap:3px}
+ html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar .pwHome{
+  font-size:0!important;min-height:34px;min-width:34px;padding:5px 6px
+ }
+ html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar .pwHome svg{width:17px;height:17px}
+ html[data-tillsyno-theme] body .pwHeader .ta-smartmatch-topbar .ta-launcher{min-width:32px!important;width:32px!important}
+}
+/* CE start cards and recent projects, override older dark-blue !important rules. */
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeBrandText :is(strong,small),
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeHero h2,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeHistoryHeading h3{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeHero p,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeHistoryHeading span,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeFootnote,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeHistory>p{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeBrandMark,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeActionIcon,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHistoryFileIcon{
+ background:var(--ta-soft)!important;color:var(--ta-blue)!important;border-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeActions button{
+ color:var(--ta-ink)!important;background:var(--ta-card)!important;
+ border-color:var(--ta-border)!important;box-shadow:var(--ta-shadow)!important;backdrop-filter:none!important
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeActions button.ceHomePrimary{
+ background:var(--ta-soft2)!important;border-color:var(--ta-blue)!important
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeActions button:hover:not(:disabled){
+ background:var(--ta-soft2)!important;border-color:var(--ta-blue)!important
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeActionCopy strong,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHistoryInfo strong{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeActionCopy small,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHistoryInfo small{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeActionArrow,
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeHistoryHeading svg{color:var(--ta-blue-dark)!important}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHistoryRow{
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;
+ box-shadow:var(--ta-shadow)!important
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHistoryButtons button:not(:last-child){
+ background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen #ceProjectHome .ceHomeHistoryHeading{border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #ceWorkspace{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #ceWorkspace .ceWorkspaceCaption strong{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body #ceWorkspace .ceWorkspaceClose{
+ background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important
+}
+/* "Starta nytt projekt" dialog is CE only; keep its event handlers and data unchanged. */
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog{
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;box-shadow:0 22px 60px #143c5040!important
+}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog .ceNewDialogHeader{
+ background:var(--ta-header)!important;color:var(--ta-ink)!important;border-bottom-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog .ceNewDialogHeader strong{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog :is(.ceNewDialogIcon,.ceNewDialogButtonIcon){
+ background:var(--ta-soft)!important;color:var(--ta-blue-dark)!important
+}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog #ceNewProjectMessage{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog .ceNewProjectActions button:not(#ceNewProjectDiscard){
+ background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog .ceNewProjectActions #ceNewProjectStart{
+ background:var(--ta-soft)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-blue)!important
+}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog .ceNewProjectActions button:hover:not(:disabled){
+ background:var(--ta-highlight)!important;border-color:var(--ta-blue)!important
+}
+html[data-tillsyno-theme] body dialog.ceNewProjectDialog .ceNewProjectActions #ceNewProjectCancel{
+ background:var(--ta-card)!important;color:var(--ta-muted)!important;border-color:var(--ta-border)!important
+}
+/* CE headers and toolbar, not PDF previews or status/checklist colors. */
+html[data-tillsyno-theme] body .ceTop .ceTopIdentity small{
+ background:var(--ta-soft2)!important;color:var(--ta-muted)!important;border-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] body .ceTop .ceTopIdentity strong{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body .ceToolbarMenu>summary,
+html[data-tillsyno-theme] body .ceToolbarMenu .ceMenuPanel{
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] body .ceToolbarMenu .ceMenuPanel button:not(.ceMenuDanger){
+ background:var(--ta-soft2)!important;color:var(--ta-ink)!important
+}
+html[data-tillsyno-theme] dialog.ta-modal .ta-head{
+ background:var(--ta-soft2)!important;border-color:var(--ta-border)!important
+}
+html[data-tillsyno-theme] dialog.ta-modal .ta-head strong{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] dialog.ta-modal .ta-head small{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] dialog.ta-modal .ta-foot .ta-apply{
+ background:var(--ta-blue)!important;border-color:var(--ta-blue)!important
+}
+
+/* v2.4.301: deep SmartMatch and CE surfaces; appearance only.
+   Do not alter rendered PDF/canvas, stamp/GS alignment, checkboxes,
+   completion colors, warnings or user-entered content. */
+
+/* SmartMatch dialogs: automation, revision, SLR folders, protocols and saving. */
+html[data-tillsyno-theme] body :is(
+ #pwDALinkDialog,#pwDADoorDialog,#pwSLRDialog,#pwAutomationDialog,
+ #pwAutomationPreviewDialog,#pwProtocol,#pwSelfcheckExportDialog,
+ #pwItemEditor,#pwSmartActionDialog,#smartExportDialog,
+ #labDiagnosticDialog,#pwFinishDialog,#pwRefreshDialog){
+ background:var(--ta-page)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDAHead,.pwAutomationHead,.pwProtocolHeader,.pwItemEditorHead,
+ .pwSmartActionDialog form>header,.smartExportHeader,.labDiagnosticHead,
+ .smFinishHead,.smRefreshHead){
+ background:var(--ta-header)!important;color:var(--ta-ink)!important;
+ border-bottom:1px solid var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDAHead strong,.pwAutomationHead strong,.pwProtocolHeader strong,
+ .pwItemEditorHead strong,.smartExportHeader h2,.labDiagnosticHead h2,
+ .pwProtocolIdentity strong,.pwAutomationHead h2,.smFinishHead strong){
+ color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDAHead small,.pwAutomationHead small,.pwProtocolIdentity small,
+ .pwProtocolIdentity span,.pwItemEditorHead span,.labDiagnosticHead small){
+ color:var(--ta-muted)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDAHead button,.pwAutomationHeadActions button,#pwAutomationClose,
+ #pwProtocolClose,#pwBack,#pwItemEditorClose,#pwSLRClose,
+ #pwDADoorClose,#pwDALinkClose,.labDiagnosticHead button,
+ .smartExportHeader button,.pwSmartActionDialog form>header button){
+ color:var(--ta-blue-dark)!important;background:var(--ta-card)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDABody,.pwAutomationBody,.pwSelfcheckExportBody,.pwItemEditorBody,
+ #pwSmartActionForm,.pwChecklistPane,.pwRevisionProjectBody){
+ background:var(--ta-page)!important;color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwProtocolTools,.pwChecklistHead,.pwProtocolPreviewNav,
+ .smRevisionSizeBar,.pwAutomationProject>summary,.pwAutomationMeta>summary,
+ .pwRevisionAdvanced>summary,.pwDAGsEdit,.pwSLRList,
+ .pwSmartActionDialog form>footer,.pwSelfcheckExportFooter){
+ background:var(--ta-soft2)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDADoorChoices>button,.pwDAActions button,.pwDAGsManualMatches button,
+ .pwSLRSection:not(.active),.pwProtocolZoomTools button,
+ .pwChecklistHeadActions button,.pwAutomationHeadActions button,
+ .pwSmartActionDialog form>footer button,.pwSelfcheckExportFooterButtons button,
+ .pwItemEditorBody button,.smSizeControls button,
+ .smSaveModes button,.smSaveActions button){
+ background:var(--ta-card)!important;color:var(--ta-blue-dark)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDADoorChoices>button,.pwSLRSection,.pwDAActions button,
+ .smSaveModes button,.smSaveActions button):hover:not(:disabled){
+ background:var(--ta-soft)!important;border-color:var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body :is(
+ #pwDASaveLink,#pwDAManual,#pwDARevisionSave,
+ #pwSelfcheckExportCreate,#smartExportBuild,#pwSmartActionSave,
+ #pwItemEditorSave,#pwDAExportRevision):not(:disabled){
+ background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body .pwSLRSection.active{
+ background:var(--ta-soft)!important;border-color:var(--ta-blue)!important;
+ color:var(--ta-blue-dark)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwSLRSection small,.pwDASub,.pwDAFeedback,
+ .pwProtocolMouseHint,.pwChecklistHead small,.pwRevisionData label small){
+ color:var(--ta-muted)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwAutomationProject,.pwAutomationMeta,.pwRevisionParty,.pwRevisionBasics,
+ .pwRevisionAdvanced,.pwAutomationChecks,.pwSLRRow,.pwDADoorDivider,
+ .pwChecklistReference,.pwRevisionData .pwRevisionParty){
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwAutomationProject,.pwAutomationMeta,.pwRevisionParty,.pwRevisionBasics,
+ .pwRevisionAdvanced,.pwAutomationChecks,.pwRevisionData .pwRevisionParty){
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body .pwRevisionData .pwRevisionParty h3{
+ color:var(--ta-ink)!important;border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ .pwDABody input,.pwDABody select,
+ #pwAutomationDialog .pwRevisionData input:not([type="file"]),
+ #pwAutomationDialog .pwRevisionData select,
+ #pwAutomationDialog .pwAutomationNotes textarea,
+ .smSaveDialog input,.pwSmartActionDialog input,
+ .pwItemEditor input,.pwItemEditor textarea){
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+/* Preserve selected, pending, approved, remark and action-required meanings. */
+html[data-tillsyno-theme] body .pwAutomationProgress[data-inspection-status="pending"]{
+ background:var(--ta-soft2)!important;border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body .pwProtocol .pwCheckComment{
+ background:var(--ta-soft2)!important;color:var(--ta-muted)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body .smSaveDialog .smSaveModes .smModeActive{
+ background:var(--ta-soft)!important;color:var(--ta-blue-dark)!important;
+ border:1px solid var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body .smSaveDialog :is(.smSaveSummary,.smartFileReviewMeta){
+ background:var(--ta-soft2)!important;border-color:var(--ta-border)!important;
+ color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body #labDiagnosticDialog :is(
+ .smartReport,.smartScanAudit,.smartDiscoveryNotice,.smartDiagnosticSection,
+ .smartFileSizeCard,.smartReportsList>section){
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+/* CE document folders, import dialogs and menus (including injected SLR content). */
+html[data-tillsyno-theme] body :is(
+ #slrFlowTestDialog,#slrPdfPreviewDialog,.ceSensorPicker,
+ #ceImportCEDialog){
+ background:var(--ta-page)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ #slrFlowTestDialog>header,#slrPdfPreviewDialog>header,
+ #ceImportCEDialog .ceImportCEHeader){
+ background:var(--ta-header)!important;color:var(--ta-ink)!important;
+ border-bottom:1px solid var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ #slrFlowTestDialog>header strong,
+ #slrPdfPreviewDialog>header strong,
+ #ceImportCEDialog .ceImportCEHeader strong){
+ color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body :is(
+ #slrFlowTestDialog>main,#ceImportCEDialog .ceImportCEBody){
+ background:var(--ta-page)!important;color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ #slrProfilesPanel,.slrFolder,.slrDocSection,.slrPdfTip,
+ .slrChoiceInfo,.ceDocMenu,.slrEditToolbar,.ceProductTools,
+ .ceProductRow,.ceProductTableRow){
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ .slrFolder>summary,.ceProductHead,.ceDocMore>summary,
+ .slrZoomOptions,.slrEditToolbar,.ceProductTools){
+ background:var(--ta-soft2)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ .slrFolder>summary strong,.ceProductHead,
+ #slrEditHeading,.slrFolderIcon,#slrTestHeading){
+ color:var(--ta-ink)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ .slrFolder>summary small,.slrFolderFile,.ceFolderSize,
+ #slrDoorProfileCaption,#slrTestSource){
+ color:var(--ta-muted)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ .slrFolderActions>button:not(.ceReviewed),
+ .ceDocActions>button:not(.ceReviewed),
+ .ceDocMenu button,.slrZoomOptions button,
+ #slrProfilesPanel button,.ceProductTools button,
+ .ceSensorShortcuts button,.ceImportNextToProfile button){
+ background:var(--ta-card)!important;color:var(--ta-blue-dark)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ .ceDocActions>button:not(.ceReviewed),.ceDocMenu button,
+ .slrZoomOptions button):hover:not(:disabled){
+ background:var(--ta-soft)!important;border-color:var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ .ceDocMore>summary,.ceDocMenu,.ceFolderSize,
+ #slrProfilesPanel,#slrDoorProfile){
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(
+ #slrDoorProfile,#slrFields input:not([type="checkbox"]),
+ #slrFields select,#slrFields textarea,
+ .ceProductTableRow input,.ceProductTableRow select){
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ #ceImportCEDialog .ceImportCERow,#ceImportCEDialog #ceImportCEChoose,
+ .ceSensorPicker input,.ceSensorPicker select,.ceSensorPresets button){
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body #ceImportCEDialog .ceImportCEBody>p{
+ color:var(--ta-muted)!important;
+}
+html[data-tillsyno-theme] body #ceImportCEDialog .ceImportCEActions button:not(:disabled){
+ background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body :is(
+ #slrFlowTestDialog>header button,#slrPdfPreviewDialog>header button,
+ #ceImportCEDialog .ceImportCEHeader button){
+ background:var(--ta-card)!important;color:var(--ta-blue-dark)!important;
+ border-color:var(--ta-border)!important;
+}
+/* Do not re-theme overlay marks (slrOverlayTick, slrOverlayText), document
+   completion badges, red/green statuses, progress bars or PDF previews. */
+
+/* v2.4.304 — approved T / Tillsyno lockup, identical hierarchy across phone,
+   tablet and desktop. Branding only; existing profile, auth and form handlers stay. */
+html[data-tillsyno-theme] body #appHome .homeBrand{
+ align-items:center!important;gap:7px!important;
+}
+html[data-tillsyno-theme] body #appHome .homeBrandIdentity{
+ display:flex!important;align-items:center!important;gap:9px!important;min-width:0!important;
+}
+html[data-tillsyno-theme] body #appHome .homeBrandMark{
+ width:55px!important;min-width:55px!important;height:55px!important;min-height:55px!important;
+ border-radius:12px!important;font-size:32px!important;font-weight:830!important;line-height:1!important;
+ display:grid!important;place-items:center!important;flex:none!important;
+ box-shadow:none!important;
+}
+html[data-tillsyno-theme] body #appHome .homeBrandCopy{
+ display:flex!important;flex-direction:column!important;justify-content:space-between!important;
+ gap:4px!important;min-width:0!important;height:55px!important;min-height:55px!important;
+ padding:2px 0 4px!important;
+}
+html[data-tillsyno-theme] body #appHome .homeBrandCopy>strong{
+ font-size:24px!important;line-height:1.12!important;letter-spacing:-.035em!important;
+ color:var(--ta-ink)!important;white-space:nowrap;
+}
+html[data-tillsyno-theme] body #appHome .homeBrandCopy>.homeTagline{
+ font-size:10px!important;line-height:1.25!important;letter-spacing:0!important;
+ color:var(--ta-muted)!important;white-space:normal!important;overflow-wrap:normal!important;
+}
+html[data-tillsyno-theme] body #appHome .homeBrand>.ta-launcher{
+ width:38px!important;min-width:38px!important;height:38px!important;min-height:38px!important;
+}
+@media(max-width:380px){
+ html[data-tillsyno-theme] body #appHome .homeBrand{gap:5px!important}
+ html[data-tillsyno-theme] body #appHome .homeBrandIdentity{gap:7px!important}
+ html[data-tillsyno-theme] body #appHome .homeBrandMark{
+  width:52px!important;min-width:52px!important;height:52px!important;min-height:52px!important;
+  font-size:30px!important;
+ }
+ html[data-tillsyno-theme] body #appHome .homeBrandCopy{height:52px!important;min-height:52px!important}
+ html[data-tillsyno-theme] body #appHome .homeBrandCopy>strong{font-size:22px!important}
+ html[data-tillsyno-theme] body #appHome .homeBrandCopy>.homeTagline{font-size:9px!important;line-height:1.17!important}
+ html[data-tillsyno-theme] body #appHome .homeBrand>.ta-launcher{width:34px!important;min-width:34px!important;height:34px!important;min-height:34px!important}
+}
+/* Shared lockup for login, registration, password reset, pending approval
+   and the admin header. The left T block and right copy have the same height. */
+html[data-tillsyno-theme] body .ta-brandlockup{
+ display:flex!important;align-items:center!important;justify-content:flex-start!important;
+ flex-wrap:nowrap!important;gap:9px!important;min-width:0!important;text-align:left!important;
+ font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+html[data-tillsyno-theme] body .ta-brandlockup .ta-brandmark{
+ display:grid!important;place-items:center!important;flex:none!important;
+ width:55px!important;height:55px!important;min-width:55px!important;min-height:55px!important;
+ border:1px solid var(--ta-border)!important;border-radius:12px!important;
+ background:var(--ta-soft)!important;color:var(--ta-blue-dark)!important;
+ font-size:32px!important;font-weight:830!important;letter-spacing:-.04em!important;line-height:1!important;
+ box-shadow:none!important;
+}
+html[data-tillsyno-theme] body .ta-brandlockup .ta-brandcopy{
+ display:flex!important;flex-direction:column!important;justify-content:space-between!important;
+ gap:4px!important;min-width:0!important;height:55px!important;min-height:55px!important;
+ padding:2px 0 4px!important;
+}
+html[data-tillsyno-theme] body .ta-brandlockup .ta-brandcopy>strong{
+ display:block!important;font-size:24px!important;font-weight:780!important;
+ line-height:1.12!important;letter-spacing:-.035em!important;text-transform:none!important;
+ color:var(--ta-ink)!important;white-space:nowrap!important;
+}
+html[data-tillsyno-theme] body .ta-brandlockup .ta-brandcopy>small{
+ display:block!important;color:var(--ta-muted)!important;
+ font-size:10px!important;font-weight:450!important;letter-spacing:0!important;
+ line-height:1.25!important;text-transform:none!important;white-space:normal!important;
+ margin:0!important;overflow-wrap:normal!important;
+}
+html[data-tillsyno-theme] body.loginbody :is(.loginshell,.pendingShell){
+ position:relative!important;
+}
+html[data-tillsyno-theme] body.loginbody .loginbrand.ta-brandlockup{
+ margin:0 0 19px!important;padding:0 44px 0 0!important;
+ width:100%!important;max-width:100%!important;
+}
+html[data-tillsyno-theme] body.loginbody :is(.loginshell,.pendingShell)>.ta-launcher{
+ position:absolute!important;left:auto!important;right:0!important;top:7px!important;
+ bottom:auto!important;inset-block-end:auto!important;
+ width:38px!important;min-width:38px!important;height:38px!important;min-height:38px!important;
+ border-radius:10px!important;box-shadow:none!important;z-index:3!important;
+ background:var(--ta-card)!important;color:var(--ta-blue-dark)!important;
+ border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body.loginbody .logincard{
+ color:var(--ta-ink)!important;border:1px solid var(--ta-border)!important;
+ box-shadow:var(--ta-shadow)!important;
+}
+html[data-tillsyno-theme] body.loginbody .logincard :is(input,select){
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body.loginbody .loginhelp{
+ color:var(--ta-muted)!important;
+}
+html[data-tillsyno-theme] body.loginbody .loginhelp a:not(.signupLink){
+ color:var(--ta-blue-dark)!important;
+}
+html[data-tillsyno-theme] body.loginbody .loginhelp .signupLink{
+ background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important;
+}
+html[data-tillsyno-theme] body.loginbody .pendingCard{
+ background:var(--ta-card)!important;color:var(--ta-ink)!important;
+ border:1px solid var(--ta-border)!important;box-shadow:var(--ta-shadow)!important;
+}
+html[data-tillsyno-theme] body.loginbody .pendingModule{
+ background:var(--ta-soft2)!important;color:var(--ta-muted)!important;border-color:var(--ta-border)!important;
+}
+html[data-tillsyno-theme] body.loginbody .pendingHelp{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body[data-require-role="admin"] > .topbar > .ta-admin-brand{
+ gap:9px!important;flex:0 1 auto!important;
+}
+html[data-tillsyno-theme] body[data-require-role="admin"] > .topbar > .ta-launcher{
+ position:relative!important;top:auto!important;right:auto!important;bottom:auto!important;
+ margin-left:auto!important;margin-right:0!important;flex:none!important;
+ width:38px!important;min-width:38px!important;height:38px!important;min-height:38px!important;
+ box-shadow:none!important;border-radius:10px!important;
+ background:var(--ta-card)!important;border-color:var(--ta-border)!important;
+ color:var(--ta-blue-dark)!important;
+}
+@media(max-width:640px){
+ html[data-tillsyno-theme] body[data-require-role="admin"] > .topbar{
+  flex-wrap:wrap!important;justify-content:flex-start!important;gap:8px!important;
+ }
+ html[data-tillsyno-theme] body[data-require-role="admin"] > .topbar > .toplinks{
+  width:100%!important;justify-content:flex-end!important;
+ }
+ html[data-tillsyno-theme] body .ta-brandlockup .ta-brandmark{
+  width:52px!important;min-width:52px!important;height:52px!important;min-height:52px!important;
+  font-size:30px!important;
+ }
+ html[data-tillsyno-theme] body .ta-brandlockup .ta-brandcopy{
+  height:52px!important;min-height:52px!important;
+ }
+ html[data-tillsyno-theme] body .ta-brandlockup .ta-brandcopy>strong{font-size:22px!important}
+ html[data-tillsyno-theme] body .ta-brandlockup .ta-brandcopy>small{
+  font-size:9px!important;line-height:1.17!important;
+ }
+}
+
+/* v2.4.306: approved T logo only on post-login landing page. */
+html[data-tillsyno-theme] body #appHome .homeBrandIdentity.ta-brandlockup{
+ display:flex!important;align-items:center!important;gap:9px!important;
+ flex:1 1 auto!important;min-width:0!important;
+}
+html[data-tillsyno-theme] body #appHome .homeBrandIdentity.ta-brandlockup .homeBrandMark.ta-brandmark{
+ box-sizing:border-box!important;width:55px!important;min-width:55px!important;
+ height:55px!important;min-height:55px!important;max-width:55px!important;
+ font:830 32px/1 system-ui,-apple-system,sans-serif!important;
+ border:1px solid var(--ta-border)!important;border-radius:12px!important;
+ background:var(--ta-soft)!important;color:var(--ta-blue-dark)!important;
+ box-shadow:none!important;padding:0!important;display:grid!important;place-items:center!important;
+}
+html[data-tillsyno-theme] body #appHome .homeBrandIdentity.ta-brandlockup .homeBrandCopy.ta-brandcopy{
+ height:55px!important;min-height:55px!important;max-height:55px!important;
+ flex:1 1 auto!important;display:flex!important;flex-direction:column!important;
+ justify-content:space-between!important;align-items:flex-start!important;
+ padding:2px 0 4px!important;gap:4px!important;min-width:0!important;
+}
+html[data-tillsyno-theme] body #appHome .homeBrandIdentity.ta-brandlockup .homeBrandCopy.ta-brandcopy>strong{
+ color:var(--ta-ink)!important;font-size:24px!important;line-height:1.12!important;
+ font-weight:780!important;letter-spacing:-.035em!important;
+}
+html[data-tillsyno-theme] body #appHome .homeBrandIdentity.ta-brandlockup .homeBrandCopy.ta-brandcopy>small.homeTagline{
+ color:var(--ta-muted)!important;font-size:10px!important;line-height:1.25!important;
+ letter-spacing:0!important;font-weight:450!important;
+ white-space:normal!important;overflow-wrap:normal!important;
+}
+/* Only the first page after login uses the large T branding.
+   Working headers stay compact for back, drawing and save controls. */
+@media(max-width:380px){
+ html[data-tillsyno-theme] body #appHome .homeBrandIdentity.ta-brandlockup{gap:7px!important}
+ html[data-tillsyno-theme] body #appHome .homeBrandIdentity.ta-brandlockup .homeBrandMark.ta-brandmark{
+  width:52px!important;min-width:52px!important;max-width:52px!important;
+  height:52px!important;min-height:52px!important;max-height:52px!important;font-size:30px!important;
+ }
+ html[data-tillsyno-theme] body #appHome .homeBrandIdentity.ta-brandlockup .homeBrandCopy.ta-brandcopy{
+  height:52px!important;min-height:52px!important;max-height:52px!important;
+ }
+ html[data-tillsyno-theme] body #appHome .homeBrandIdentity.ta-brandlockup .homeBrandCopy.ta-brandcopy>strong{font-size:22px!important}
+ html[data-tillsyno-theme] body #appHome .homeBrandIdentity.ta-brandlockup .homeBrandCopy.ta-brandcopy>small.homeTagline{
+  font-size:9px!important;line-height:1.17!important;
+ }
+}
+
+/* Tillsyno v2.4.307 – FIRST page after sign-in only: T is LEFT of both lines.
+   Old style.css used .homeBrand>div {flex-direction:column}; override explicitly. */
+html[data-tillsyno-theme] body #appHome .homeBrand > .homeBrandIdentity.ta-brandlockup {
+ display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
+ justify-content:flex-start!important;align-items:center!important;
+ align-self:center!important;gap:9px!important;min-width:0!important;flex:1 1 auto!important;
+}
+html[data-tillsyno-theme] body #appHome .homeBrandIdentity .homeBrandMark.ta-brandmark {
+ align-self:center!important;justify-self:start!important;flex:none!important;
+}
+html[data-tillsyno-theme] body #appHome .homeBrandIdentity .homeBrandCopy.ta-brandcopy {
+ display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;
+ justify-content:space-between!important;align-items:flex-start!important;
+ text-align:left!important;min-width:0!important;flex:1 1 auto!important;
+}
+html[data-tillsyno-theme] body #appHome .homeBrandIdentity .homeBrandCopy.ta-brandcopy > :is(strong,small) {
+ text-align:left!important;
+}
+/* A single, unobtrusive version anchored to the bottom-right of each module.
+   The element is MOVED from the original header, never cloned. */
+html[data-tillsyno-theme] body > .ta-page-version {
+ box-sizing:border-box!important;position:fixed!important;
+ right:max(12px,env(safe-area-inset-right))!important;
+ bottom:calc(8px + env(safe-area-inset-bottom))!important;
+ left:auto!important;top:auto!important;
+ display:inline-flex!important;align-items:center!important;justify-content:flex-end!important;gap:5px!important;
+ width:auto!important;max-width:32vw!important;height:auto!important;min-height:0!important;
+ padding:3px 5px!important;margin:0!important;
+ border:0!important;border-radius:5px!important;
+ background:var(--ta-page)!important;box-shadow:none!important;
+ color:var(--ta-muted)!important;
+ font:500 10px/1.3 system-ui,-apple-system,sans-serif!important;
+ white-space:nowrap!important;text-transform:none!important;text-align:right!important;
+ pointer-events:none!important;user-select:none!important;z-index:18!important;
+}
+html[data-tillsyno-theme] body > .ta-page-version .pwTitleVersion {
+ position:static!important;display:inline!important;
+ background:transparent!important;color:var(--ta-muted)!important;
+ border:0!important;box-shadow:none!important;margin:0!important;padding:0!important;
+ font:500 10px/1.3 system-ui,-apple-system,sans-serif!important;
+}
+html[data-tillsyno-theme] body > .ta-page-version .pwUpdateStatus[hidden] {display:none!important}
+html[data-tillsyno-theme] body.allInOneApp > .ta-page-version {
+ /* The project button is in the bottom navigation; keep the version ABOVE it. */
+ bottom:calc(60px + env(safe-area-inset-bottom))!important;
+}
+html[data-tillsyno-theme] body:has(>.pwBottomNav) > .ta-page-version {
+ /* SmartMatch has centered navigation; far right is available. */
+ bottom:calc(6px + env(safe-area-inset-bottom))!important;
+}
+html[data-tillsyno-theme] body.ceProjectPickerOpen > .ta-page-version {
+ bottom:calc(8px + env(safe-area-inset-bottom))!important;
+}
+@media(max-width:380px){
+ html[data-tillsyno-theme] body #appHome .homeBrand > .homeBrandIdentity.ta-brandlockup {gap:7px!important}
+ html[data-tillsyno-theme] body > .ta-page-version {font-size:9px!important;padding:2px 3px!important}
+}
+
+/* CE has an additional header version; it stays hidden after the single version moves to the footer. */
+html[data-tillsyno-theme] body .ceTopIdentity > small[hidden]{display:none!important}
+
+/* Tillsyno v2.4.359: optional dark UI palettes. Never filter/invert PDF or canvas pixels. */
+html[data-tillsyno-theme="night"]{color-scheme:dark;--ta-page:#081523;--ta-sidebar:#0c1d2c;--ta-soft:#203b50;--ta-soft2:#102638;--ta-card:#152b3e;--ta-header:#102334;--ta-ink:#e5eef5;--ta-muted:#adc0cf;--ta-blue:#336a96;--ta-blue-dark:#a5d8ff;--ta-border:#3f5d73;--ta-line:#2d475b;--ta-highlight:#254c68;--ta-shadow:0 12px 32px #0005}
+html[data-tillsyno-theme="graphite"]{color-scheme:dark;--ta-page:#12151c;--ta-sidebar:#171c25;--ta-soft:#2c3543;--ta-soft2:#1e2632;--ta-card:#232a35;--ta-header:#1b202a;--ta-ink:#eef0f7;--ta-muted:#bcc5d5;--ta-blue:#526886;--ta-blue-dark:#c1d2f2;--ta-border:#455468;--ta-line:#364150;--ta-highlight:#344861;--ta-shadow:0 12px 32px #0005}
+html[data-tillsyno-theme="pine"]{color-scheme:dark;--ta-page:#091c1e;--ta-sidebar:#0d2326;--ta-soft:#204447;--ta-soft2:#112b2d;--ta-card:#163436;--ta-header:#10272a;--ta-ink:#e5f4f0;--ta-muted:#a9c9c3;--ta-blue:#32776c;--ta-blue-dark:#a0dcd2;--ta-border:#3f6562;--ta-line:#2d514e;--ta-highlight:#285752;--ta-shadow:0 12px 32px #0005}
+/* html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) below is expanded to the three explicit theme selectors at build time. */
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]){--page:var(--ta-page);--card:var(--ta-card);--ink:var(--ta-ink);--muted:var(--ta-muted);--navy:var(--ta-header);--line:var(--ta-border)}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body{background:var(--ta-page)!important;color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(.muted,.ceMuted,.eyebrow,.ceMetaIntro,.ceToolbarHint,.ceWorkspaceCaption>span,.ceEmpty,.ceProjectColumn>p,.ceDoorInfo small,.ceHomeFootnote,.toolIntro p,.toolPanel p,.loginhelp,.loginbrand p,.loginbrand small,.panelhead p,.heading p,.filterbar label,.identity small,.licenseHint){color:var(--ta-muted)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(#revisionInlineWorkspace,.revisionInlineContent,#securityProtocol,#securityProject,#securityDoors,#secEmpty,.view,.toolShell,.pwSidebar,.pwPanel,.pwSidePanel){background:var(--ta-page)!important;color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(.securityTools,.bottomNav,.sheetHead,.overviewHead,.secCheckGroup>summary,.revisionCheckColumns,.secGroupTitle,.revisionInlineNavigation,.ceProject>summary,.ceMetaGroup>summary,.ceSignaturePreviewTop,.ceFileExport header,.toolPanel>summary,.panelhead,.filterbar,.dialoghead){background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(.secCheckGroup,.secCheck,.secDoorRow,.revisionCheckEditor,.secProjectGroup,.secRemarkPicker,.secCustomForm,.ceProject,.ceProjectColumn,.ceMetaGroup,.ceDoorForm,.ceDoorOpen,.ceEmpty,.ceSignaturePreview,.ceFileExport,.ceFileExport fieldset,.ceFileExport label,.ceMenuPanel,.ceMenuPane,.ceButton,.toolDrop,.toolOption,.userrow,.moduleGroup,.dialogbody,.logincard,.notice,.revisionInlinePage){background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body #securityProtocol :is(.secCheckHead,.secCheckHead strong,.secCheckHead span,.secCheckText,.secCheckGroup>summary,.revisionCheckEditor h3,.revisionCheckEditor label){color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(#securityProject,#securityDoors,#securityProtocol,.revisionInlinePage,#ceWorkspace,.toolPanel,.toolIntro,.logincard,.dialogbody,.filterbar) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),select,textarea):not(.slrOverlayText){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(#securityProject,#securityDoors,#securityProtocol,.revisionInlinePage,#ceWorkspace,.toolPanel,.toolIntro,.logincard,.dialogbody,.filterbar) input::placeholder,
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(#securityProject,#securityProtocol,#ceWorkspace,.toolPanel,.dialogbody) textarea::placeholder{color:var(--ta-muted)!important;opacity:1}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(.securityTools,.sheetHead,.overviewHead,.appHeader,.objectBar,.revisionInlineNavigation,#secSaveDialog,#secOpenWorkDialog,#secVisibilityDialog,.revisionCheckEditor,.toolHeader,.toolPanel,.toolIntro,#ceWorkspace,.logincard,.toplinks,.filterbar,.dialogbody,.dialoghead) :is(button,a.filebtn,.ceButton):not(.primary):not(.cePrimary):not(.danger):not(.active):not(.ceDoorRemove):not(.ceDoorDeleteYes):not(.revisionInlineRemove):not(.secRemoveCheck):not(.secRemoveCustom){background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body #securityProtocol .secChoices button:not(.active){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(#securityProject,#securityProtocol,.revisionInlinePage,#ceWorkspace,.toolHeader,.toolPanel,.logincard,.dialogbody) :is(button.primary,button.cePrimary){background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(#securityProject,#securityProtocol,.ceProjectColumn,.ceMetaGroup,.ceFileExport) :is(h2,h3,legend,label){color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .ceFileExport :is(small,.ceFilesChoices small){color:var(--ta-muted)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .ceFileExport .is-error{color:#ffb2ad!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body #ceWorkspace :is(.ceSignIntro,.ceMetaSub,.ceImportCEHint,.ceSignOptions label){color:var(--ta-muted)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body #ceWorkspace .ceSignaturePreviewPaper{background:#fff!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .ceFileExport{box-shadow:var(--ta-shadow)}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body #slrFlowTestDialog :is(#ceSizeSummary,.ceProductQuickPick){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body #slrFlowTestDialog :is(#ceSizeSummary strong,#slrProfilesPanel label,.slrProfileSettings>summary,.slrEditToolbar h3){color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body #slrFlowTestDialog :is(#ceSizeSummary small,.ceImportNextToProfile p,.slrProfileSettings>div:last-child){color:var(--ta-muted)!important}
+/* PDF form widgets sit ON a white document and keep document ink, not theme ink. */
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body #slrFlowTestDialog #slrFields .slrOriginalPage :is(input.slrOverlayText,textarea.slrOverlayText,select.slrOverlayChoice){background:transparent!important;color:#102c3b!important;color-scheme:light}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body #slrFlowTestDialog #slrFields .slrOriginalPage select.slrOverlayChoice option{background:#fff;color:#102c3b}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(.toolIntro,.toolPanel,.resultCard,.outputActions,.pwEmptyCard) :is(h1,h2,h3,label,legend){color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(.toolIntro,.toolPanel,.resultCard,.outputActions) :is(small,.hint,.help){color:var(--ta-muted)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .logincard :is(label,h1,h2){color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .logincard a{color:var(--ta-blue-dark)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(.userrow,.identity,.moduleGroup,.dialogbody,.filterbar,.stat,.owner){color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .filterbar :is(input,select),html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .dialogbody :is(input,select,textarea){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body dialog.ta-modal{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .ta-modal :is(.ta-head,.ta-foot){background:var(--ta-header)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .ta-modal :is(.ta-head strong,.ta-section h3,.ta-choice-text strong){color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .ta-modal :is(.ta-head small,.ta-section p,.ta-choice-text small){color:var(--ta-muted)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .ta-modal :is(button.ta-choice,.ta-close,.ta-foot button){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .ta-modal button.ta-choice.is-selected{background:var(--ta-highlight)!important;border-color:var(--ta-blue-dark)!important;box-shadow:inset 0 0 0 1px var(--ta-blue-dark)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .ta-modal :is(.ta-device-icon,.ta-choice-check){background:transparent!important;color:var(--ta-blue-dark)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .ta-modal .ta-foot .ta-apply{background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important}
+/* Ensure nested work surfaces stay in the light palettes when returning to them. No layout/geometry changes. */
+
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body #appHome :is(.homeChoiceIcon,.homeToolsIcon,.homeProfile>summary,.homeAccountIcon),
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(.allAreaIcon,.allProtocolIcon,.pwEmptyIcon,.pwEmptyMark){color:var(--ta-blue-dark)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .toolIntro .openBtn{background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body #toolMessage{background:var(--ta-soft2)!important;color:var(--ta-muted)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .logincard>p{color:var(--ta-muted)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(.pfControls,.pfSide,.pfSideHead,.pfGroupItem,.pfProtocolToolbar){background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .pfSummary :is(strong,b){color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .pfSide :is(strong,h2,h3){color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(.pfMuted,.pfEmpty p,.pfEmpty small){color:var(--ta-muted)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .pfEmpty{background:var(--ta-page)!important;color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(.pfControls,.pfSide,.pfProtocolToolbar) button,
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .pfOpen:not(.pfOpenLarge){background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .pfControls button.active{background:var(--ta-highlight)!important}
+
+/* The production checklist has older !important rules with module IDs. */
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body.allInOneApp #securityProtocol :is(.secCheck,.secCheckGroup,.revisionCheckEditor){background:var(--ta-card)!important;border-color:var(--ta-border)!important;color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body.allInOneApp #securityProtocol :is(.secCheckGroup>summary,.sheetHead,.revisionCheckColumns){background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body #securityDrawing .securityTools{background:var(--ta-header)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body #securityDrawing .securityTools button:not(.active):not([aria-pressed="true"]){background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(#securityMessage,#appMessage):not(.error){background:var(--ta-soft2)!important;color:var(--ta-muted)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(.secPreviewHead,.secSaveHead,.secOpenWorkHead,.secVisibilityHead){background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body :is(.secPreviewHead,.secSaveHead,.secOpenWorkHead,.secVisibilityHead) button{background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important}
+
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .sessionHistoryBar{background:var(--ta-header)!important;border-color:var(--ta-border)!important;color:var(--ta-ink)!important}
+html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body .sessionHistoryBar button,html:is([data-tillsyno-theme="night"],[data-tillsyno-theme="graphite"],[data-tillsyno-theme="pine"]) body #securityProtocol .secEditCheck{background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important}
+
+@media(max-width:540px){.ta-modal .ta-swatches i{width:7px;height:32px}.ta-modal .ta-swatches i:first-child{width:10px}}
+
+/* v2.4.359: desktop workspaces only. Real touch devices and phone/tablet preferences retain their existing UI. */
+@media (min-width:1100px) and (hover:hover) and (pointer:fine){
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body{background:var(--ta-page)!important;color:var(--ta-ink)!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #revisionInlineWorkspace{background:transparent!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #revisionInlineWorkspace[data-panel="allProtocolDialog"]{--panel-width:1020px}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #revisionInlineWorkspace:is([data-panel="secSaveDialog"],[data-panel="secOpenWorkDialog"],[data-panel="secVisibilityDialog"]){--panel-width:560px}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #revisionInlineWorkspace:not([data-panel="secPreviewDialog"]) .revisionInlineContent{margin:16px auto 28px;width:min(var(--panel-width),calc(100% - 72px))}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #revisionInlineWorkspace .revisionInlineNavigation{width:min(var(--panel-width),calc(100% - 72px));margin-top:24px;background:transparent!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #revisionInlineWorkspace .revisionInlineNavigation button{font-size:13px;min-height:38px;padding:7px 13px}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[open]{width:min(1020px,calc(100vw - 80px))!important;max-width:1020px!important;border-radius:16px!important;background:var(--ta-card)!important;color:var(--ta-ink)!important;box-shadow:var(--ta-shadow)!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #revisionInlineWorkspace #allProtocolDialog[open]{width:100%!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog .allProtocolHead{padding:24px 26px 18px!important;text-align:left}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog .allProtocolHead h2{font-size:25px!important;line-height:1.25!important;margin:4px 0 8px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog .allProtocolLead{display:block!important;font-size:13px!important;line-height:1.5!important;color:var(--ta-muted)!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allProtocolChoices{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;padding:24px 26px!important;gap:16px!important;max-height:none!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog .allProtocolGroup{width:100%!important;min-width:0!important;max-width:none!important;margin:0!important;background:var(--ta-soft2)!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allProtocolGroup>summary{display:flex!important;flex-direction:column;align-items:flex-start!important;justify-content:flex-start!important;text-align:left!important;gap:18px!important;min-height:198px!important;padding:22px!important;background:var(--ta-soft2)!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allProtocolGroup>summary::after{right:18px;top:23px}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allAreaIcon{position:static!important;flex:none!important;width:44px!important;height:44px!important;border-radius:12px!important;background:var(--ta-soft)!important;color:var(--ta-blue-dark)!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allAreaIcon svg{width:26px!important;height:26px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog .allAreaCopy{display:block!important;flex:0 1 auto!important;text-align:left!important;min-width:0!important;width:auto!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog .allAreaCopy strong{font-size:16px!important;line-height:1.35!important;font-weight:650!important;color:var(--ta-ink)!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog .allAreaCopy small{display:block!important;margin-top:7px;font-size:12px!important;line-height:1.5!important;color:var(--ta-muted)!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolChoices{padding:22px 26px!important;max-height:none!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolChildren{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog .allProtocolChildren label{min-height:94px!important;padding:18px!important;background:var(--ta-soft2)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog .allProtocolChildren label strong{font-size:15px!important;line-height:1.4!important;color:var(--ta-ink)!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog .allProtocolChildren label small{font-size:12px!important;line-height:1.5!important;color:var(--ta-muted)!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog .allCeStandalone{grid-column:1/-1;padding:16px 18px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog .allProtocolActions{padding:18px 26px!important;justify-content:flex-end!important;gap:12px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog .allProtocolActions a{display:inline-flex!important;width:auto!important;min-width:0!important;flex:0 0 auto!important;min-height:42px!important;height:auto!important;padding:9px 14px!important;gap:8px!important;font-size:13px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog .allProtocolActions a span{display:inline!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog #allProtocolApply{min-width:165px!important;max-width:none!important;min-height:44px!important;font-size:14px!important;padding:10px 20px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp :is(#securityProtocol,#securityProject){width:min(1180px,calc(100% - 72px))!important;max-width:1180px!important;margin:22px auto!important;height:calc(100% - 44px)!important;border:1px solid var(--ta-border);border-radius:14px;padding:22px!important;background:var(--ta-card)!important;color:var(--ta-ink)!important;box-shadow:var(--ta-shadow)}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #securityProtocol{--result-width:40px}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #securityProtocol .secCheckHead{font-size:14px!important;line-height:1.5!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #securityProtocol .secCheck{padding:10px 12px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #securityProtocol .revisionCheckColumns{font-size:12px!important;padding:12px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #securityProtocol .secChoices button{width:40px!important;height:36px!important;min-height:36px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #securityProtocol .secCheckHead .checkNumber{flex-basis:36px!important;min-width:36px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #securityProject :is(label,input,select,textarea){font-size:14px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body .ceShell{width:min(1180px,calc(100% - 64px));max-width:1180px;padding:24px 0 32px}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #ceProjectHome{max-width:850px;margin-inline:auto}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #ceWorkspace{padding:22px;border-radius:16px}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body .ceProjectColumn{padding:18px}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body .ceProjectColumn h3{font-size:16px}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #ceWorkspace :is(input,select){min-height:40px;font-size:15px}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #ceWorkspace :is(label,.ceDoorInfo strong,.ceListHead){font-size:13px}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #ceWorkspace .ceDoorOpen{padding:14px}
+}
+
+@media (min-width:1100px) and (hover:hover) and (pointer:fine){
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body #revisionInlineWorkspace[data-panel="allProtocolDialog"] .revisionInlineContent{background:transparent!important;border-radius:16px;overflow:hidden}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolGroup>summary{display:none!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog .allProtocolGroup>summary::after{color:var(--ta-blue-dark)!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #securityProtocol .revisionCheckTable{--result-width:100px}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #securityProtocol .secChoices button{justify-self:center}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body .ceTop .ceBackHome,html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body .ceTop .ceBackHome span{color:var(--ta-blue-dark)!important}
+}
+
+/* v2.4.359: one saved palette for all work views and devices; geometry and document/status pixels stay unchanged. */
+html[data-tillsyno-theme] body{background:var(--ta-page)!important;color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body #revisionInlineWorkspace,
+html[data-tillsyno-theme] body .revisionInlineContent,
+html[data-tillsyno-theme] body #securityProject,
+html[data-tillsyno-theme] body #securityDoors,
+html[data-tillsyno-theme] body #securityProtocol,
+html[data-tillsyno-theme] body #secEmpty{background:var(--ta-page)!important;color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body #securityProject .projectCard,
+html[data-tillsyno-theme] body #securityProject.revisionProjectLayout .projectCard,
+html[data-tillsyno-theme] body #securityOverview,
+html[data-tillsyno-theme] body #secOverviewSummary .overviewStat,
+html[data-tillsyno-theme] body #securityDoors .secDoorRow,
+html[data-tillsyno-theme] body #securityProtocol .secCheck,
+html[data-tillsyno-theme] body #securityProtocol .secCheckGroup,
+html[data-tillsyno-theme] body #securityProtocol .revisionCheckEditor,
+html[data-tillsyno-theme] body #revisionInlineWorkspace dialog.revisionInlinePage:not(#secPreviewDialog){background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #securityOverview .secSummaryCard{background:var(--ta-card)!important;color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body #securityProtocol .protocolMetaPanel,
+html[data-tillsyno-theme] body #securityProtocol .doorDetails,
+html[data-tillsyno-theme] body #securityProtocol .securityDetails{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #securityProtocol .protocolMetaPanel>summary{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #securityProtocol .doorCheckActions button:not(.approveAll){background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #securityProtocol .protocolMetaPanel :is(label,.protocolMetaHint),
+html[data-tillsyno-theme] body #securityProtocol .progressLine{color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body #securityProject .revisionColumnHead,
+html[data-tillsyno-theme] body #securityProject .sheetHead,
+html[data-tillsyno-theme] body #securityOverview .overviewHead,
+html[data-tillsyno-theme] body #securityOverview .overviewFilters,
+html[data-tillsyno-theme] body #securityProtocol .sheetHead,
+html[data-tillsyno-theme] body #securityProtocol .secCheckGroup>summary,
+html[data-tillsyno-theme] body #securityProtocol .revisionCheckColumns,
+html[data-tillsyno-theme] body .revisionInlineNavigation,
+html[data-tillsyno-theme] body .bottomNav,
+html[data-tillsyno-theme] body .sessionHistoryBar,
+html[data-tillsyno-theme] body #securityDrawing .securityTools{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #securityProject :is(h2,h3,label,.secLogoLabel),
+html[data-tillsyno-theme] body #securityProtocol :is(h2,h3,label,.secCheckHead,.secCheckHead strong,.secCheckText),
+html[data-tillsyno-theme] body #securityOverview :is(h2,h3,label,.overviewStat strong),
+html[data-tillsyno-theme] body #securityDoors :is(h2,h3,strong){color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body #securityProject :is(.projectCardHead p,.revisionColumnHead p,.muted),
+html[data-tillsyno-theme] body #securityOverview :is(.secSummaryMeta,.overviewStat small,.overviewMeaning),
+html[data-tillsyno-theme] body #securityDoors small{color:var(--ta-muted)!important;}
+html[data-tillsyno-theme] body #securityProject :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea),
+html[data-tillsyno-theme] body #securityProtocol :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea),
+html[data-tillsyno-theme] body #securityOverview :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea),
+html[data-tillsyno-theme] body #securityDoors :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #securityProject :is(button.secondary,.revisionSignatureActions button),
+html[data-tillsyno-theme] body #securityProtocol .secChoices button:not(.active),
+html[data-tillsyno-theme] body #securityProtocol .secEditCheck,
+html[data-tillsyno-theme] body #securityProject .sheetHead button,
+html[data-tillsyno-theme] body #securityOverview .overviewHead button,
+html[data-tillsyno-theme] body .revisionInlineNavigation button,
+html[data-tillsyno-theme] body .sessionHistoryBar button{background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #securityProject :is(button.primary,label.primary),
+html[data-tillsyno-theme] body #secEmpty label.primary{background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important;}
+html[data-tillsyno-theme] body #securityDrawing .securityTools button:not(.active):not([aria-pressed="true"]){background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #ceWorkspace,
+html[data-tillsyno-theme] body #ceWorkspace :is(.ceProject,.ceProjectColumn,.ceMetaGroup,.ceDoorForm,.ceDoorOpen,.ceEmpty,.ceSignaturePreview),
+html[data-tillsyno-theme] body .ceMenuPanel,
+html[data-tillsyno-theme] body .ceMenuPane,
+html[data-tillsyno-theme] body .ceFileExport,
+html[data-tillsyno-theme] body .ceFileExport fieldset,
+html[data-tillsyno-theme] body .ceFileExport label{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #ceWorkspace .ceProject>summary,
+html[data-tillsyno-theme] body #ceWorkspace .ceMetaGroup>summary,
+html[data-tillsyno-theme] body #ceWorkspace .ceSignaturePreviewTop,
+html[data-tillsyno-theme] body .ceMenuPanel header,
+html[data-tillsyno-theme] body .ceFileExport header{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #ceWorkspace :is(h2,h3,legend,label,.ceListHead,.ceDoorInfo strong),
+html[data-tillsyno-theme] body .ceMenuPanel :is(h2,h3,strong),
+html[data-tillsyno-theme] body .ceMenuPane :is(h2,h3,strong){color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body #ceWorkspace :is(.ceMetaIntro,.ceMetaSub,.ceSignIntro,.ceImportCEHint,.ceDoorInfo small,.ceDoorScope,.ceWorkspaceCaption>span),
+html[data-tillsyno-theme] body .ceMenuPanel small,
+html[data-tillsyno-theme] body .ceMenuPane small{color:var(--ta-muted)!important;}
+html[data-tillsyno-theme] body #ceWorkspace :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea),
+html[data-tillsyno-theme] body .ceFileExport :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #ceWorkspace button:not(.cePrimary):not(.ceDoorRemove):not(.ceDoorDeleteYes):not(.danger),
+html[data-tillsyno-theme] body #ceWorkspace .ceButton:not(.cePrimary),
+html[data-tillsyno-theme] body .ceTop .ceBackHome,
+html[data-tillsyno-theme] body .ceTop .ceBackHome span{background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #ceWorkspace .cePrimary{background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important;}
+html[data-tillsyno-theme] body #slrFlowTestDialog>header,
+html[data-tillsyno-theme] body #slrFlowTestDialog .slrFolder>summary,
+html[data-tillsyno-theme] body #slrFlowTestDialog .slrEditToolbar,
+html[data-tillsyno-theme] body #slrFlowTestDialog .ceProductHead{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #slrFlowTestDialog .slrFolder,
+html[data-tillsyno-theme] body #slrFlowTestDialog .ceProductRows,
+html[data-tillsyno-theme] body #slrFlowTestDialog .ceProductTableRow,
+html[data-tillsyno-theme] body #slrFlowTestDialog .ceImportNextToProfile,
+html[data-tillsyno-theme] body #slrFlowTestDialog .slrProfileSettings,
+html[data-tillsyno-theme] body #slrExportDialog,
+html[data-tillsyno-theme] body #ceImportCEDialog{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #slrFlowTestDialog .ceImportNextToProfile small,
+html[data-tillsyno-theme] body #slrFlowTestDialog .slrFolder small,
+html[data-tillsyno-theme] body #slrFlowTestDialog #slrDoorProfileCaption{color:var(--ta-muted)!important;}
+html[data-tillsyno-theme] body #slrFlowTestDialog #ceSizeRefresh{background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #slrFlowTestDialog :is(.slrFolderTitle,.slrEditToolbar h3,.ceProductHead),
+html[data-tillsyno-theme] body #slrExportDialog :is(h2,h3,label),
+html[data-tillsyno-theme] body #ceImportCEDialog :is(h2,h3,label){color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body .toolIntro,
+html[data-tillsyno-theme] body .toolPanel,
+html[data-tillsyno-theme] body .previewPane,
+html[data-tillsyno-theme] body .outputActions,
+html[data-tillsyno-theme] body .resultCard,
+html[data-tillsyno-theme] body .sizeCompare{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body .toolIntro :is(h1,h2,.eyebrow),
+html[data-tillsyno-theme] body .toolPanel :is(h2,label),
+html[data-tillsyno-theme] body .sizeCompare :is(strong,h2){color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body .toolIntro p,
+html[data-tillsyno-theme] body .toolPanel :is(p,small,.hint),
+html[data-tillsyno-theme] body .previewPane :is(.previewNote,#pageState),
+html[data-tillsyno-theme] body .sizeCompare :is(p,small),
+html[data-tillsyno-theme] body #drawingDoorCount{color:var(--ta-muted)!important;}
+html[data-tillsyno-theme] body .toolIntro .openBtn{background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important;}
+html[data-tillsyno-theme] body .toolPanel :is(.toggleRow,.drawingDoorEditor),
+html[data-tillsyno-theme] body .sizeCompare .sizeStats>div,
+html[data-tillsyno-theme] body .previewToolbar{background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body .toolPanel :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body .toolPanel button:not(.active):not(.dangerBtn):not(#deleteDrawingDoor),
+html[data-tillsyno-theme] body .previewToolbar button,
+html[data-tillsyno-theme] body .outputActions button:not(.primary){background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body .toolHeader .globalTextControls,
+html[data-tillsyno-theme] body .toolHeader .globalTextControls button{background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #projectPanel,
+html[data-tillsyno-theme] body #protocolPanel,
+html[data-tillsyno-theme] body #overviewDialog{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #projectPanel .projectCard,
+html[data-tillsyno-theme] body #protocolPanel .protocolMetaPanel,
+html[data-tillsyno-theme] body #protocolPanel .doorDetails,
+html[data-tillsyno-theme] body #protocolPanel .checkGroup,
+html[data-tillsyno-theme] body #protocolPanel .check{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #projectPanel .sheetHead,
+html[data-tillsyno-theme] body #protocolPanel .sheetHead,
+html[data-tillsyno-theme] body #protocolPanel .protocolMetaPanel>summary,
+html[data-tillsyno-theme] body #overviewDialog .overviewHead{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+html[data-tillsyno-theme] body #projectPanel :is(h2,h3,label),
+html[data-tillsyno-theme] body #protocolPanel :is(h2,h3,label),
+html[data-tillsyno-theme] body #overviewDialog :is(h2,h3,label){color:var(--ta-ink)!important;}
+html[data-tillsyno-theme] body #projectPanel .projectCardHead p,
+html[data-tillsyno-theme] body #protocolPanel .protocolMetaHint{color:var(--ta-muted)!important;}
+html[data-tillsyno-theme] body #projectPanel :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea),
+html[data-tillsyno-theme] body #protocolPanel :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea),
+html[data-tillsyno-theme] body #overviewDialog :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]),select,textarea){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;}
+
+/* v2.4.359: PDF save-choice UI uses the saved palette; exported documents untouched. */
+html[data-tillsyno-theme] body #secSaveDialog{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #secSaveDialog::backdrop{background:color-mix(in srgb,var(--ta-page) 65%,transparent)!important}
+html[data-tillsyno-theme] body #secSaveDialog .secSaveHead{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #secSaveDialog .secSaveHead strong{color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body #secSaveDialog .secSaveHead button,
+html[data-tillsyno-theme] body #secSaveDialog .secSaveChoice:not(.primary){background:var(--ta-soft2)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #secSaveDialog .secSaveChoice:not(.primary) small{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body #secSaveDialog .secSaveChoiceIcon{background:var(--ta-soft)!important;color:var(--ta-blue-dark)!important}
+html[data-tillsyno-theme] body #secSaveDialog .secSaveChoice.primary{background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important}
+html[data-tillsyno-theme] body #secSaveDialog .secSaveChoice.primary :is(strong,small,.secSaveChoiceIcon){color:#fff!important}
+html[data-tillsyno-theme] body #secSaveDialog .secSaveChoice.primary .secSaveChoiceIcon{background:#ffffff1c!important}
+
+/* v2.4.359: customer-preview header/controls only. PDF canvas and export pixels stay unchanged. */
+html[data-tillsyno-theme] body #secPreviewDialog .secPreviewHead,
+html[data-tillsyno-theme] body #customerPreviewPane .customerPreviewHead{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #secPreviewDialog .secPreviewHead :is(strong,span),
+html[data-tillsyno-theme] body #customerPreviewPane .customerPreviewHead :is(strong,span){color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body #secPreviewDialog .secPreviewHead #secPreviewTitle,
+html[data-tillsyno-theme] body #customerPreviewPane .customerPreviewHead #customerPreviewStatus{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body #secPreviewDialog .secPreviewControls button,
+html[data-tillsyno-theme] body #customerPreviewPane .customerPreviewControls button{background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important}
+
+/* v2.4.359: enlarge Home only for desktop mouse/trackpad layouts. */
+@media (min-width:1100px) and (hover:hover) and (pointer:fine){
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.homeMode #appHome .homeShell{
+  width:min(700px,100%)!important;max-width:700px!important;padding:28px 24px!important;
+ }
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.homeMode #appHome :is(.homeBrand,.homeIntro,.homeChoices,.homeTools,.homeFooter){
+  width:100%!important;max-width:640px!important;
+ }
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.homeMode #appHome .homeIntro h1{font-size:28px!important;line-height:1.25!important;margin-bottom:8px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.homeMode #appHome .homeIntro p{font-size:15px!important;line-height:1.5!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.homeMode #appHome .homeChoices{gap:14px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.homeMode #appHome :is(.homeChoice,.homeToolsLink){
+  min-height:108px!important;padding:18px 20px!important;gap:18px!important;grid-template-columns:60px minmax(0,1fr) 24px!important;border-radius:16px!important;
+ }
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.homeMode #appHome :is(.homeChoiceIcon,.homeToolsIcon){width:60px!important;min-width:60px!important;height:60px!important;min-height:60px!important;border-radius:14px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.homeMode #appHome :is(.homeChoiceIcon,.homeToolsIcon) svg{width:32px!important;height:32px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.homeMode #appHome :is(.homeChoiceCopy,.homeToolCopy) strong{font-size:20px!important;line-height:1.3!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.homeMode #appHome :is(.homeChoiceCopy,.homeToolCopy) small{font-size:14px!important;line-height:1.5!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.homeMode #appHome .homeSectionLabel{font-size:12px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.homeMode #appHome .homeToolsLink{min-height:98px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body.homeMode #appHome .homeFooterAccount{font-size:14px!important}
+}
+
+/* v2.4.359: improve desktop area-picker legibility; keep card geometry. */
+@media (min-width:1100px) and (hover:hover) and (pointer:fine){
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allProtocolHead h2{font-size:28px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allProtocolLead{font-size:15px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allAreaIcon{width:56px!important;height:56px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allAreaIcon svg{width:32px!important;height:32px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allAreaCopy strong{font-size:20px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allAreaCopy small{font-size:14px!important}
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allProtocolGroup>summary{position:relative!important;gap:10px!important;padding:18px 22px!important}
+
+ html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folders"] .allProtocolGroup>summary::after{position:absolute!important;top:auto!important;bottom:14px!important;right:18px!important;margin:0!important}
+
+}
+
+/* v2.4.359: desktop checklist selection for all three areas only. */
+@media (min-width:1100px) and (hover:hover) and (pointer:fine){
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolHead h2{font-size:28px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolLead{font-size:15px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolChildren label{min-height:110px!important;padding:20px!important;gap:12px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolChildren label strong{font-size:18px!important;line-height:1.4!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolChildren label small{font-size:14px!important;line-height:1.5!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolChildren input[type="checkbox"]{width:24px!important;height:24px!important;min-width:24px!important;min-height:24px!important;flex:0 0 24px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolIcon{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;flex:0 0 40px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolIcon svg{width:24px!important;height:24px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allCeStandaloneText strong{font-size:18px!important;line-height:1.4!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allCeStandaloneText small{font-size:14px!important;line-height:1.5!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]):not(:has(#appHome)) body.allInOneApp #allProtocolDialog[data-stage="folder"] .allProtocolActions :is(a,#allProtocolApply){font-size:16px!important;min-height:48px!important}
+}
+
+/* v2.4.359: desktop drawing entry header; current protocols supplied by revision picker. */
+@media (min-width:1100px) and (hover:hover) and (pointer:fine){
+html[data-tillsyno-theme] body[data-desktop-protocol-context] .secAppHeader{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:10px 24px!important;padding:18px 28px!important}
+html[data-tillsyno-theme] body[data-desktop-protocol-context] .secAppHeader .brand{min-width:0!important;max-width:none!important;white-space:normal!important;margin:0!important}
+html[data-tillsyno-theme] body[data-desktop-protocol-context] .secAppHeader .brand strong{font-size:24px!important;line-height:1.3!important;overflow-wrap:anywhere!important}
+html[data-tillsyno-theme] body[data-desktop-protocol-context] .secAppHeader .headerActions{display:flex!important;gap:10px!important;align-items:center!important}
+html[data-tillsyno-theme] body[data-desktop-protocol-context] .secAppHeader .headerActions :is(button,a){font-size:15px!important;min-height:46px!important;padding:10px 14px!important}
+html[data-tillsyno-theme] body[data-desktop-protocol-context] .secAppHeader .headerDetails{display:block!important;grid-column:1/-1!important;min-width:0!important}
+html[data-tillsyno-theme] body[data-desktop-protocol-context] .secAppHeader .headerSubtitle{display:block!important;font-size:14px!important;line-height:1.5!important;white-space:normal!important;overflow-wrap:anywhere!important}
+html[data-tillsyno-theme] body[data-desktop-protocol-context] .objectBar{min-height:44px!important;padding:8px 24px!important}
+html[data-tillsyno-theme] body[data-desktop-protocol-context] #securityObject{font-size:18px!important;line-height:1.4!important}
+html[data-tillsyno-theme] body[data-desktop-protocol-context] #secEmpty{padding:32px!important;gap:10px!important;overflow:auto!important}
+html[data-tillsyno-theme] body[data-desktop-protocol-context] #secEmpty h1{font-size:32px!important;line-height:1.3!important;margin:0!important;max-width:850px!important}
+html[data-tillsyno-theme] body[data-desktop-protocol-context] #secEmpty p{font-size:18px!important;line-height:1.5!important;margin:0!important}
+html[data-tillsyno-theme] body[data-desktop-protocol-context] #secEmpty label.filebtn{font-size:18px!important;min-height:52px!important;padding:12px 24px!important;margin-top:12px!important}
+}
+
+/* Shared selected-protocol text on phone, tablet and desktop. */
+html[data-tillsyno-theme] body.allInOneApp[data-protocol-context] .secAppHeader .headerDetails{display:block!important;grid-column:1/-1!important;min-width:0!important}
+html[data-tillsyno-theme] body.allInOneApp[data-protocol-context] .secAppHeader .headerSubtitle{display:block!important;white-space:normal!important;overflow-wrap:anywhere!important;line-height:1.5!important}
+
+/* Saved service prompt follows the selected palette on every device. */
+html[data-tillsyno-theme] body #secOpenWorkDialog{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #secOpenWorkDialog::backdrop{background:color-mix(in srgb,var(--ta-page) 65%,transparent)!important}
+html[data-tillsyno-theme] body #secOpenWorkDialog .secOpenWorkHead{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #secOpenWorkDialog :is(.secOpenWorkHead strong,.secOpenWorkHead span,p){color:var(--ta-ink)!important}
+html[data-tillsyno-theme] body #secOpenWorkDialog>.muted{color:var(--ta-muted)!important}
+html[data-tillsyno-theme] body #secOpenWorkDialog .secOpenWorkActions button{background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #secOpenWorkDialog .secOpenWorkActions button.primary{background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important}
+
+/* Larger saved-service prompt on desktop only. */
+@media (min-width:1100px) and (hover:hover) and (pointer:fine){
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body #revisionInlineWorkspace[data-panel="secOpenWorkDialog"]{--panel-width:640px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body #secOpenWorkDialog{width:min(640px,92vw)!important;max-width:100%!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body #secOpenWorkDialog .secOpenWorkHead{padding:20px 24px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body #secOpenWorkDialog .secOpenWorkHead strong{font-size:22px!important;line-height:1.35!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body #secOpenWorkDialog>p{padding:14px 24px 8px!important;margin:0!important;font-size:16px!important;line-height:1.5!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body #secOpenWorkDialog>.muted{padding:12px 24px 22px!important;font-size:14px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body #secOpenWorkDialog .secOpenWorkActions{gap:12px!important;padding:12px 24px 6px!important}
+html[data-tillsyno-theme]:not([data-tillsyno-device="phone"]):not([data-tillsyno-device="tablet"]) body #secOpenWorkDialog .secOpenWorkActions button{font-size:16px!important;min-height:48px!important;padding:10px 20px!important}
+}
+
+/* Bottom navigation follows the saved palette on every device. */
+html[data-tillsyno-theme] body #mobileBar{background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body #mobileBar button{background:transparent!important;color:var(--ta-ink)!important;border-color:transparent!important}
+html[data-tillsyno-theme] body #mobileBar button :is(.navLabel,.navIcon,svg){color:inherit!important}
+html[data-tillsyno-theme] body #mobileBar button.active{background:var(--ta-blue)!important;color:#fff!important;border-color:var(--ta-blue)!important}
+html[data-tillsyno-theme] body #mobileBar button:not(.active):hover{background:var(--ta-soft2)!important}
+html[data-tillsyno-theme] body #mobileBar button:focus-visible{outline-color:var(--ta-blue)!important}
+
+/* Shared toolbar icons; workspace geometry changes only on desktop with a PDF. */
+body.allInOneApp #securityDrawing .pagebar .workspaceControlIcon{width:18px;height:18px;display:block;pointer-events:none}
+@media (min-width:1100px) and (hover:hover) and (pointer:fine){
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .secAppHeader{padding:8px 20px!important;gap:3px 16px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .secAppHeader .brand strong{font-size:20px!important;line-height:1.25!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .secAppHeader .headerSubtitle{font-size:12px!important;line-height:1.4!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .objectBar{min-height:28px!important;padding:4px 20px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] #securityObject{font-size:16px!important;line-height:1.3!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] #securityDrawing .pagebar{display:flex!important;flex-wrap:wrap!important;align-items:center!important;justify-content:center!important;gap:6px!important;padding:5px 16px!important;overflow:visible!important;background:var(--ta-header)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] #securityDrawing .pagebar>.sessionHistoryBar{display:flex!important;flex:0 1 auto!important;align-items:center!important;gap:6px!important;width:auto!important;min-height:0!important;padding:0 12px 0 0!important;margin:0 8px 0 0!important;border:0!important;border-right:1px solid var(--ta-border)!important;background:transparent!important;overflow:visible!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar .sessionHistoryCenter{display:flex!important;flex:0 1 auto!important;gap:6px!important;position:static!important;transform:none!important;margin:0!important;min-width:0!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar .historyChangeDrawing{position:static!important;transform:none!important;margin:0!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar :is(.historyStatus,.historyTextControls){margin:0!important;padding:0!important;border:0!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar :is(.historyIconButton,.historyTextButton,.serviceToolLauncher,.historyChangeDrawing),
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar>button:not([hidden]){display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:none!important;width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;padding:8px!important;border-radius:10px!important;background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border:1px solid var(--ta-border)!important;font-size:14px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar button:disabled{opacity:.4!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar button.active{background:var(--ta-blue)!important;color:#fff!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .pagebar button svg{width:22px!important;height:22px!important;flex:none!important;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] :is(#secPage,#secZoom){font-size:14px!important;line-height:1.3!important;white-space:nowrap!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .serviceToolsMenu{background:var(--ta-card)!important;color:var(--ta-ink)!important;border-color:var(--ta-border)!important;padding:8px!important;gap:8px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .serviceToolsMenu .serviceIconButton{width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;border-radius:10px!important;background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border-color:var(--ta-border)!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .securityTools{padding:4px 12px!important;gap:6px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .securityTools button:not([hidden]){min-height:40px!important;font-size:13px!important;padding:7px 12px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] #mobileBar{padding-top:3px!important;padding-bottom:3px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] #mobileBar>button{min-height:44px!important;font-size:13px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] #mobileBar .navLabel{font-size:13px!important}
+}
+
+/* Stable desktop chrome in Drawing, Overview, Protocol and Project. */
+@media (min-width:1100px) and (hover:hover) and (pointer:fine){
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .sessionHistoryBar :is(.historyIconButton,.historyTextButton,.serviceToolLauncher,.historyChangeDrawing){display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:none!important;width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;padding:8px!important;border-radius:10px!important;background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border:1px solid var(--ta-border)!important;font-size:14px!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .sessionHistoryBar button svg{width:22px!important;height:22px!important;flex:none!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .sessionHistoryBar button:disabled{opacity:.4!important}
+html[data-tillsyno-theme] body.allInOneApp[data-workspace-desktop] .sessionHistoryBar .historyTextControls{gap:6px!important;padding:0!important;border:0!important}
+}
+
+/* File identity and an explicit open action stay together in the header. */
+html[data-tillsyno-theme] body.allInOneApp[data-protocol-context] .secAppHeader .headerDetails{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:5px 16px!important}
+html[data-tillsyno-theme] body.allInOneApp .secAppHeader .headerSubtitle{flex:1 1 220px;min-width:0}
+html[data-tillsyno-theme] body.allInOneApp .workspaceFileLine{display:flex;align-items:center;gap:8px;min-width:0;max-width:100%;margin-left:auto}
+html[data-tillsyno-theme] body.allInOneApp .workspaceFileLine[hidden]{display:none!important}
+html[data-tillsyno-theme] body.allInOneApp .workspaceFileName{display:block;min-width:0;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-height:32px;padding:4px 6px;font:inherit;font-size:11px;color:var(--ta-muted)!important;background:transparent!important;border:1px solid transparent!important;cursor:pointer;text-align:left}
+html[data-tillsyno-theme] body.allInOneApp .workspaceFileName.is-expanded{white-space:normal;overflow-wrap:anywhere}
+html[data-tillsyno-theme] body.allInOneApp .workspaceFileLine #secChangeDrawing{position:static!important;transform:none!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;width:auto!important;min-width:0!important;height:auto!important;min-height:36px!important;margin:0!important;padding:6px 10px!important;font-size:12px!important;line-height:1.3!important;border-radius:8px!important;background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border:1px solid var(--ta-border)!important;white-space:nowrap!important}
+html[data-tillsyno-theme] body.allInOneApp .workspaceFileLine #secChangeDrawing span{display:inline!important;font-size:inherit!important}
+html[data-tillsyno-theme] body.allInOneApp .workspaceFileLine #secChangeDrawing svg{display:block;flex:none;width:18px!important;height:18px!important}
+@media(max-width:599px){html[data-tillsyno-theme] body.allInOneApp .workspaceFileLine{width:100%;justify-content:space-between;margin-left:0}html[data-tillsyno-theme] body.allInOneApp .workspaceFileName{flex:1;max-width:calc(100% - 180px)}}
+
+/* Customer stamp editor: the preview zoom remains independent. */
+html[data-tillsyno-theme] body #customerStampEdit{margin-top:5px;min-height:32px;font-size:12px;padding:5px 10px;background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border:1px solid var(--ta-border)!important;border-radius:7px}
+html[data-tillsyno-theme] body .customerStampTools{display:flex;align-items:center;flex-wrap:wrap;gap:7px;padding:9px 12px;background:var(--ta-header);color:var(--ta-ink);border-bottom:1px solid var(--ta-border);flex:none;font-size:12px}
+html[data-tillsyno-theme] body .customerStampTools[hidden],html[data-tillsyno-theme] body .customerStampOverlay[hidden],html[data-tillsyno-theme] body #customerStampEdit[hidden]{display:none!important}
+html[data-tillsyno-theme] body .customerStampTools label{display:flex;align-items:center;gap:5px;min-width:0;max-width:100%}
+html[data-tillsyno-theme] body .customerStampTools select{width:auto;max-width:240px;min-width:100px;margin:0;padding:5px 7px;min-height:36px;font-size:12px;background:var(--ta-soft2);color:var(--ta-ink);border:1px solid var(--ta-border);border-radius:6px}
+html[data-tillsyno-theme] body .customerStampTools button{min-height:36px;padding:6px 10px;font-size:12px;background:var(--ta-soft2)!important;color:var(--ta-blue-dark)!important;border:1px solid var(--ta-border)!important;border-radius:7px}
+html[data-tillsyno-theme] body #customerStampExport{background:var(--ta-blue)!important;color:#fff!important}
+html[data-tillsyno-theme] body .customerStampTools small{flex:1 1 100%;font-size:11px;line-height:1.4;color:var(--ta-muted)}
+body #secPreviewWrap{position:relative}
+body .customerStampOverlay{position:absolute;pointer-events:none;z-index:5}
+body .customerStampHandle{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;touch-action:none;min-width:0;min-height:0;padding:0;border:1.5px dashed var(--ta-blue,#28a4df);border-radius:3px;background:transparent;color:transparent;cursor:grab;outline-offset:2px}
+body .customerStampHandle.is-selected{border:2px solid var(--ta-blue,#007cb6);box-shadow:0 0 0 2px #fff8}
+body .customerStampHandle.is-dragging{cursor:grabbing;background:var(--ta-soft2,#e3f3fb);color:var(--ta-ink,#173f55);font-size:12px;white-space:nowrap}
+body .customerStampOverlay.is-busy .customerStampHandle{pointer-events:none}
+@media(max-width:560px){html[data-tillsyno-theme] body .customerStampTools{padding:7px 8px;gap:5px}html[data-tillsyno-theme] body .customerStampTools select{max-width:190px}html[data-tillsyno-theme] body .customerStampTools button{min-height:38px}html[data-tillsyno-theme] body #customerStampEdit{min-height:36px}}
+
+/* Keep the drawing inside its customer dialog when stamp controls wrap. */
+body #secPreviewDialog[open]{display:flex;flex-direction:column}
+body #secPreviewDialog>.secPreviewHead{flex-shrink:0}
+body #secPreviewDialog>#secPreviewWrap{flex:1 1 auto;min-height:0;height:auto}
+
+/* Action description uses the compact overview text size. */
+html[data-tillsyno-theme] body #secOverviewList .secRemediationDescriptionBlock textarea{font-family:inherit;font-size:12px;line-height:1.35}
+html[data-tillsyno-theme] body #secOverviewList .secRemediationDescriptionBlock textarea::placeholder{font-family:inherit;font-size:inherit}
+@media(max-width:800px){html[data-tillsyno-theme] body #secOverviewList .secRemediationDescriptionBlock textarea{font-size:10px}}
+
+/* Direct percentage entry in customer stamp controls. */
+html[data-tillsyno-theme] body .customerStampTools #customerStampPercent{box-sizing:border-box;width:90px;min-width:70px;max-width:100%;min-height:36px;margin:0;padding:6px 8px;font:inherit;font-size:16px;background:var(--ta-soft2);color:var(--ta-ink);border:1px solid var(--ta-border);border-radius:6px}

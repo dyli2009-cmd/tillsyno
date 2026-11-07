@@ -1,0 +1,8 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const root=path.resolve(__dirname,'..'),PDFLib=require(path.join(root,'vendor/pdf-lib.min.js'));globalThis.PDFLib=PDFLib;globalThis.window={};vm.runInThisContext(fs.readFileSync(path.join(root,'project-ce-markning-test-v6-storage.js'),'utf8'));
+(async()=>{const data={project:'Stor fil åäö 🧪',photo:'data:image/jpeg;base64,'+'AbC123'.repeat(50000),signature:'data:image/png;base64,'+'x'.repeat(100000),fields:{Kommentar:'Egen text'}};
+ const text=JSON.stringify(data);assert.throws(()=>PDFLib.PDFHexString.fromText(text).decodeText(),/call stack/i,'reproduces the reported library bug');
+ const legacy=await PDFLib.PDFDocument.create();legacy.addPage();legacy.catalog.set(PDFLib.PDFName.of('TillsynoCETestData'),PDFLib.PDFHexString.fromText(text));assert.deepEqual(window.TillsynoCEStorage.read(legacy,'TillsynoCETestData'),data);
+ const pdf=await PDFLib.PDFDocument.create();pdf.addPage();window.TillsynoCEStorage.write(pdf,'TillsynoCETestData',data);const bytes=await pdf.save({useObjectStreams:true});assert.deepEqual(window.TillsynoCEStorage.read(await PDFLib.PDFDocument.load(bytes),'TillsynoCETestData'),data);assert(bytes.length<10000,'large repetitive metadata is compressed, not serialized as a large PDF hex string');
+ console.log('PASS: reproduced Maximum call stack size exceeded; safe reopening of large legacy data; compressed working-PDF roundtrip with large photo/signature metadata and Unicode. PDF bytes: '+bytes.length);
+})().catch(error=>{console.error(error);process.exitCode=1;});

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#132b38">
+  <title>Tillsyno</title>
+  <style>html{background:#ebf1f5}body{margin:0;font-family:system-ui,sans-serif}noscript{display:block;padding:24px}</style>
+  <script id="tillsyno-app-launch">
+    (function(){
+      const target=new URL('app.html',location.href);
+      target.search=location.search;
+      target.hash=location.hash;
+      location.replace(target.href);
+    })();
+  </script>
+</head>
+<body><noscript><a href="app.html">Öppna Tillsyno</a></noscript></body>
+</html>

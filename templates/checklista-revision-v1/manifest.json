@@ -1,0 +1,63 @@
+{
+  "name": "Checklista revision – designmall v1",
+  "savedAt": "2026-10-08",
+  "sourceRepository": "dyli2009-cmd/tillsyno",
+  "sourceCommit": "a979b5941af0c980fcc6ceeb4e975c2483f343ac",
+  "sourceFiles": [
+    {
+      "path": "security.js",
+      "blobSha": "b964cafc684171022fab63c48d1a7eb1c8b8bb4e"
+    },
+    {
+      "path": "licensed-door-v1.html",
+      "blobSha": "98f37ccafa450d41f120ed309618bdb4db628790"
+    },
+    {
+      "path": "style.css",
+      "blobSha": "5227fa81b23522075c6b680b00681463cda6e3de"
+    },
+    {
+      "path": "security.css",
+      "blobSha": "be523ac2fc73e427f54c046e72b6eda3e3191690"
+    },
+    {
+      "path": "security-compact.css",
+      "blobSha": "97e900006dd80814fc3d53aef2386cd726e99107"
+    },
+    {
+      "path": "all-in-one.css",
+      "blobSha": "6ad33aa7a0d84f74a6c1e768a77f3fea07e3ec41"
+    }
+  ],
+  "columns": [
+    {
+      "name": "Nr",
+      "widthMm": 9
+    },
+    {
+      "name": "Benämning / kontrollpunkt",
+      "widthMm": 101
+    },
+    {
+      "name": "Ingår ej",
+      "widthMm": 14
+    },
+    {
+      "name": "Klart utan anmärkning",
+      "widthMm": 21
+    },
+    {
+      "name": "Klart med anmärkning",
+      "widthMm": 25
+    },
+    {
+      "name": "Signatur",
+      "widthMm": 16
+    }
+  ],
+  "protectedProtocols": [
+    "automation",
+    "automation_selfcheck"
+  ],
+  "newProtocolKey": "lock_revision"
+}

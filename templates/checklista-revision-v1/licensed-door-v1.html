@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#132b38">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Dörrautomatik – Tillsyno</title>
+<link rel="stylesheet" href="style.css?v=2.4.251">
+<link rel="stylesheet" href="security.css?v=2.4.215"><link rel="stylesheet" href="security-compact.css?v=2.4.215"><link rel="stylesheet" href="all-in-one.css?v=2.4.215">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script>
+(()=>{
+  const ACCESS_KEY='tillsynoLicensedAccessV4';
+  let access=null;
+  try{access=JSON.parse(sessionStorage.getItem(ACCESS_KEY)||'null')}catch(_){}
+  const params=new URLSearchParams(location.search);
+  const moduleKey=params.get('module')||'';
+  const protocols=[...new Set((params.get('protocols')||params.get('protocol')||'').split(',').filter(Boolean))];
+  const module=access&&Array.isArray(access.modules)?access.modules.find(item=>item.key===moduleKey):null;
+  const available=module&&Array.isArray(module.protocols)?module.protocols:[];
+  const allowed=access&&Array.isArray(access.moduleKeys)&&access.moduleKeys.includes(moduleKey)&&protocols.length>0&&protocols.every(key=>['automation','automation_selfcheck'].includes(key)&&available.some(item=>item.appProtocolKey===key));
+  if(!allowed){
+    location.replace('./licensed-entry-v6.html?resume=1');
+    return;
+  }
+  const names=protocols.map(key=>available.find(item=>item.appProtocolKey===key)?.name||key);
+  window.TILLSYNO_LICENSED_MODULE=moduleKey;
+  window.TILLSYNO_LICENSED_MODULE_NAME=module?.name||'Dörrautomatik';
+  window.TILLSYNO_LICENSED_DOOR_PROTOCOLS=protocols;
+  window.TILLSYNO_LICENSED_PROTOCOL_NAME=protocols.length===1?names[0]:(module?.name||'Dörrautomatik');
+  window.TILLSYNO_LICENSED_PROTOCOL_NAMES=names;
+  window.AllInOneProtocols={...(window.AllInOneProtocols||{}),get:()=>[...protocols]};
+  try{localStorage.setItem('doorservice-all-in-one-active-protocols',JSON.stringify(protocols))}catch(_){}
+})();
+</script>\n</head>
+<body class="securityApp allInOneApp" data-view="drawing">
+<header class="appHeader secAppHeader">
+ <div class="brand"><strong>Kontrollflöde</strong></div>
+ <div class="headerActions"><a class="filebtn appHeaderIconButton homeIconLink" href="./licensed-entry-v6.html?resume=1" aria-label="Hem" title="Hem"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></svg><span>Hem</span></a><button id="securityPreview" class="appHeaderIconButton previewButton" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h9l3 3V20.5H6z"/><path d="M15 3.5v4h4"/><path d="M8.5 12.5h7M8.5 16h5"/></svg><span>Kundmall</span></button><button id="securityExport" class="primary appHeaderIconButton savePdfButton" type="button" aria-label="Spara PDF"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5h11l3 3V20.5H5z"/><path d="M8 3.5v6h8v-6M8 20.5v-7h8v7"/></svg><span>Spara PDF</span></button></div>
+ <div class="headerDetails"><small class="headerSubtitle">En ritning · valfria protokoll</small></div>
+ <input id="securityFile" type="file" accept="application/pdf" hidden>
+</header>
+<div class="objectBar"><span class="objectTitle"><span id="securityObject">Välj en ritning</span></span><span id="securityCount">0 objekt</span></div>
+<div id="securityMessage" role="status"></div>
+
+<main>
+<section id="securityDrawing" class="view">
+  <div class="pagebar">
+    <button id="secPrev" aria-label="Föregående sida">‹</button><span id="secPage">Ingen ritning</span><span class="mobileSwipeHint" aria-hidden="true">↔ Svep</span><button id="secNext" aria-label="Nästa sida">›</button>
+    <button id="secZoomOut">−</button><span id="secZoom">100%</span><button id="secZoomIn">+</button>
+    <button id="secToggleOverlays" type="button" class="drawingVisibilityButton" aria-pressed="false" aria-label="Dölj markeringar" title="Dölj markeringar"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="eyeShape" d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle class="eyePupil" cx="12" cy="12" r="2.8"/><path class="eyeSlash" d="M4 4l16 16"/></svg></button>
+    <button id="secFit" hidden style="display:none!important">Passa</button>
+  </div>
+  <div id="secHint" hidden>Tryck på ritningen där objektet finns.</div>
+  <section id="secViewer">
+    <div id="secStage"><canvas id="secCanvas"></canvas><div id="secMarkers"></div></div>
+    <div id="secEmpty"><h1>Kontrollflöde</h1><p>Välj en ritning.</p><label class="filebtn primary" for="securityFile">Öppna PDF</label></div>
+  </section>
+  <div class="securityTools allInOneProtocolTools">
+    <button data-add="automation">＋ Checklista revision dörrautomatik</button>
+    <button data-add="automation_selfcheck">＋ Egenkontroll dörrautomatik</button>
+    <button data-add="alarm">＋ Inbrottslarm</button>
+    <button data-add="lock">＋ Lås & Dörrmiljö</button>
+    <button data-add="access">＋ Passer</button>
+    <button data-add="fire_panel">＋ Brandcentral</button>
+    <button data-add="fire_detector">＋ Branddetektorer</button>
+    <button data-add="fire_door">＋ Branddörr / dörrhållning</button>
+    <button id="secPrecision" type="button" class="precisionButton" aria-pressed="false" title="Precisionsläge för exakt placering på telefon">⌖ Precision</button>
+    <button id="secAddText" hidden>＋ Text</button>
+    <button id="secChangeDrawing" type="button" hidden>Byt ritning</button>
+    <button id="secFitMobile" hidden style="display:none!important">Passa</button>
+  </div>
+</section>
+
+<aside id="securityProtocol" class="view">
+  <span id="secProtocolTitle" hidden></span>
+  <div id="secNoSelection"><p>Välj en markering på ritningen eller i översikten.</p></div>
+  <div id="secForm" hidden>
+    <details class="protocolMetaPanel" open><summary><span>Objektuppgifter</span><span class="protocolMetaHint">Visa / dölj</span></summary>
+      <div class="doorDetails securityDetails simpleDoorDetails"><div class="compactSecurityMeta compactDoorMeta">
+        <label class="secTypeField">Protokoll<input id="secType" readonly></label>
+        <label class="secNumberField doorSerialField">Nummer<input id="secNumber" readonly></label>
+        <label id="secAutomationModelField" class="secAutomationModelField" hidden>Typ av automatik<select id="secAutomationModel"><option value="">Välj modell…</option></select></label>
+        <label id="secAutomationSerialField" class="secAutomationSerialField" hidden>Antal / löpnummer<input id="secAutomationSerial" inputmode="numeric" placeholder="1"></label>
+        <label class="secIdField doorIdField">ID / märkning<input id="secId" placeholder="Objektnummer–typ–antal"></label>
+        <p id="secAutomationIdMessage" class="fieldError doorIdMessage" role="status"></p>
+        <label class="secLocationField doorLocationField">Placering / Dörrlittra<input id="secLocation"></label>
+        <label class="doorStatusField">Slutbedömning<select id="secStatus"><option value="untested">Pågående</option><option value="ok">Godkänd</option><option value="action">Åtgärd krävs</option><option value="fail">Ej godkänd</option></select></label>
+        <label class="doorSignatureField">Teknikerns signatur<input id="secProtocolSignature" readonly placeholder="Projekt"></label>
+        <button id="secDelete" class="danger compactDeleteButton">Ta bort objekt</button>
+      </div></div>
+    </details>
+    <details id="secPreviousPanel" class="previousPanel" hidden><summary>Tidigare service / anmärkningar</summary><div id="secPreviousIssues"></div><p>Kontrollera objektet på nytt och fyll i dagens resultat.</p></details>
+    <div class="progressLine"><strong id="secProgress"></strong></div>
+    <div class="doorCheckActions secProgressActions"><button id="secApproveAll" class="approveAll">✓ Godkänn alla</button><button id="secEditChecks" class="doorEditChecks">Redigera kontrollpunkter</button><button id="secAddCheck" class="doorAddCheck">＋ Egen kontrollpunkt</button><button id="secCloseProtocol" type="button" class="protocolInlineAction" aria-label="Till ritningen">×</button></div>
+    <div id="secChecklist"></div>
+    <label class="protocolNotes">Allmän anmärkning<textarea id="secNotes" rows="3"></textarea></label>
+  </div>
+</aside>
+
+<dialog id="securityOverview" tabindex="-1">
+  <div class="overviewHead"><div><span class="eyebrow">SAMMANFATTNING</span><h2>Fel och anmärkningar</h2></div><div class="overviewHeadControls"><button id="secOverviewCustomerPreview" type="button">Kundmall</button></div></div>
+  <div class="securityLegend"><span class="s-ok">Godkänd/åtgärdad</span><span class="s-action">Åtgärd krävs</span><span class="s-fail">Ej godkänd</span><span class="s-untested">Ej klar</span></div>
+  <div id="secOverviewSummary"></div>
+  <div class="overviewFilters secOverviewFilters"><label>Visa<select id="secOverviewFilter"><option value="all">Alla objekt</option><option value="problems">Objekt med fel</option><option value="untested">Ej klara</option><option value="ok">Godkända/åtgärdade</option></select></label><label>Sök<input id="secOverviewSearch" type="search" placeholder="ID, typ, placering"></label></div>
+  <div id="secOverviewList"></div>
+</dialog>
+
+<dialog id="secOpenWorkDialog" class="secOpenWorkDialog">
+  <div class="secOpenWorkHead"><strong>Sparad servicefil hittad</strong></div>
+  <p id="secOpenWorkMeta">Den här filen innehåller tidigare serviceuppgifter.</p>
+  <div class="secOpenWorkActions">
+    <button id="secOpenNewService" type="button" class="primary">Ny service</button>
+    <button id="secOpenContinue" type="button">Fortsätt / ändra</button>
+  </div>
+  <p class="muted">Ny service behåller projekt, kund, företag, logga, objekt och tekniker men nollställer dagens kontroll.</p>
+</dialog>
+
+<dialog id="secSaveDialog" class="secSaveDialog" aria-labelledby="secSaveTitle">
+  <div class="secSaveHead"><strong id="secSaveTitle">Spara PDF</strong><button id="secSaveClose" type="button" aria-label="Stäng">×</button></div>
+  <div class="secSaveChoices">
+    <button id="secSaveWork" type="button" class="secSaveChoice primary">
+      <span class="secSaveChoiceIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5h11l3 3V20.5H5z"/><path d="M8 3.5v6h8v-6M8 20.5v-7h8v7"/></svg></span>
+      <span><strong>Spara arbets-PDF</strong><small>Arbetsfil som kan öppnas igen och fortsättas vid nästa service.</small></span>
+    </button>
+    <button id="secSaveNew" type="button" class="secSaveChoice">
+      <span class="secSaveChoiceIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h8l3 3V20.5H7z"/><path d="M15 3.5v4h4"/><path d="M12 11v6M9 14h6"/></svg></span>
+      <span><strong>Skapa ny PDF</strong><small>Gör en separat kopia med nytt filnamn. Den tidigare filen ligger kvar.</small></span>
+    </button>
+  </div>
+</dialog>
+
+<dialog id="secPreviewDialog" class="secPreviewDialog">
+  <div class="secPreviewHead"><div><strong>Kundmall</strong><span id="secPreviewTitle">Förhandsvisning</span></div><div class="secPreviewControls"><button id="secPreviewPrev">‹</button><span id="secPreviewPage">1 / 1</span><button id="secPreviewNext">›</button><button id="secPreviewTextSmaller" type="button" aria-label="Mindre kundmall">A−</button><button id="secPreviewTextLarger" type="button" aria-label="Större kundmall">A+</button><button id="secPreviewClose">×</button></div></div>
+  <div id="secPreviewWrap"><canvas id="secPreviewCanvas"></canvas></div>
+</dialog>
+
+
+
+
+<section id="securityProject" class="view">
+  <div class="sheetHead"><div><span class="eyebrow">GEMENSAMT FÖR ALLA OBJEKT</span><h2>Projekt och service</h2></div><button id="secCloseProject">×</button></div>
+  <div class="projectSections">
+    <section class="projectCard"><div class="projectCardHead"><span>1</span><div><h3>Anläggning & jobb</h3><p>Grunduppgifter för hela projektet</p></div></div><div class="grid2">
+      <label class="wide">Anläggning / objekt<input id="secProjectName" placeholder="Exempel: Håsten Skolan"></label>
+      <label>Anläggningsnummer<input id="secFacilityNo"></label>
+      <label>Ordernummer / AO<input id="secOrder"></label>
+      <label>Bokat besök datum<input id="secDate" type="date"></label>
+      <label>Nästa provning datum<input id="secNextDate" type="date"></label>
+    </div></section>
+    <section class="projectCard"><div class="projectCardHead"><span>2</span><div><h3>Beställare</h3><p>Kundens uppgifter</p></div></div><div class="grid2">
+      <label>Beställare / företag<input id="secCustomer"></label>
+      <label>Avtalsnummer<input id="secAgreement"></label>
+      <label>Kontaktperson<input id="secContact"></label>
+      <label>Telefonnummer<input id="secPhone" type="tel"></label>
+      <label>Adress<input id="secAddress"></label>
+      <label>Postnummer<input id="secPostalCode" inputmode="numeric"></label>
+      <label>Postadress<input id="secPostalCity"></label>
+    </div></section>
+    <section class="projectCard"><div class="projectCardHead"><span>3</span><div><h3>Serviceföretag</h3><p>Företaget som utför servicen</p></div></div><div class="grid2">
+      <label>Företag<input id="secCompany"></label>
+      <label>Kontaktman på objektet<input id="secCompanyContact"></label>
+      <label>Telefonnummer<input id="secCompanyPhone" type="tel"></label>
+      <label>Adress<input id="secCompanyAddress"></label>
+      <label>Postnummer<input id="secCompanyPostalCode" inputmode="numeric"></label>
+      <label>Postadress<input id="secCompanyPostalCity"></label>
+    </div></section>
+    <section class="projectCard"><div class="projectCardHead"><span>4</span><div><h3>Tekniker & dokument</h3><p>Signatur och logotyp i kundrapporten</p></div></div><div class="grid2">
+      <label>Servicetekniker<input id="secTechnician"></label>
+      <label>Signatur<input id="secSignature" placeholder="Namn / initialer"></label>
+      <div class="wide secLogoField">
+        <span class="secLogoLabel">Företagslogotyp</span>
+        <div class="secLogoActions">
+          <label class="filebtn primary" for="secLogoFile">Välj logga</label>
+          <input id="secLogoFile" type="file" accept="image/*,.png,.jpg,.jpeg,.webp" hidden>
+          <button id="secLogoRemove" type="button" class="secondary" hidden>Ta bort logga</button>
+        </div>
+        <p id="secLogoStatus" class="muted">Ingen logotyp vald.</p>
+      </div>
+      <div id="secLogoPreview" class="wide"></div>
+    </div></section>
+    <section class="projectCard secNewServiceCard"><div class="projectCardHead"><span>5</span><div><h3>Ny service</h3><p>Behåll projekt, kontaktuppgifter, logga och objekt – nollställ dagens kontroller.</p></div></div><button id="secNewServiceBtn" type="button" class="primary">Starta ny service</button></section>
+  </div>
+</section>
+</main>
+
+<nav id="mobileBar">
+  <button id="secNavDrawing" class="active"><span class="navLabel">Ritning</span></button>
+  <button id="secNavOverview"><span class="navLabel">Översikt</span></button>
+  <button id="secNavProtocol"><span class="navLabel">Protokoll</span></button>
+  <button id="secNavProject"><span class="navLabel">Projekt</span></button>
+</nav>
+<script src="ui-text-scale.js?v=2.4.215"></script><script src="drawing-annotations.js?v=2.4.215"></script>
+<script src="session-history.js?v=2.4.215"></script>
+<script>window.DOORSERVICE_APP_MODE="all-in-one";</script><script src="security.js?v=2.4.251"></script><script src="legacy-door-import.js?v=2.4.215"></script>
+<script src="drawing-transfer.js?v=2.4.215"></script>
+<script>
+(()=>{
+  'use strict';
+  const protocols=window.TILLSYNO_LICENSED_DOOR_PROTOCOLS||[];
+  const moduleName=window.TILLSYNO_LICENSED_MODULE_NAME||'Dörrautomatik';
+  const protocolName=window.TILLSYNO_LICENSED_PROTOCOL_NAME||'Dörrautomatik';
+
+  try{localStorage.setItem('doorservice-all-in-one-active-protocols',JSON.stringify(protocols))}catch(_){}
+
+  function apply(){
+    document.querySelectorAll('.allInOneProtocolTools [data-add]').forEach(btn=>{
+      const ok=protocols.includes(btn.getAttribute('data-add'));
+      btn.hidden=!ok;
+      btn.style.display=ok?'':'none';
+    });
+
+    document.querySelectorAll('[data-add]').forEach(btn=>{
+      const type=btn.getAttribute('data-add');
+      if(type && !protocols.includes(type)){
+        btn.hidden=true;
+        btn.style.display='none';
+      }
+    });
+
+    const brand=document.querySelector('.brand strong');
+    if(brand)brand.textContent=protocolName;
+
+    const subtitle=document.querySelector('.headerSubtitle');
+    if(subtitle)subtitle.textContent=protocols.length>1?window.TILLSYNO_LICENSED_PROTOCOL_NAMES.join(' · '):moduleName+' · '+protocolName;
+
+    const emptyTitle=document.querySelector('#secEmpty h1');
+    if(emptyTitle)emptyTitle.textContent=protocolName;
+
+    const emptyText=document.querySelector('#secEmpty p');
+    if(emptyText)emptyText.textContent='Öppna en PDF för att börja.';
+
+    document.querySelectorAll('a[href="./licensed-entry-v6.html?resume=1"]').forEach(link=>{
+      link.addEventListener('click',()=>{});
+    });
+  }
+
+  apply();
+  setTimeout(apply,80);
+  setTimeout(apply,250);
+})();
+</script>\n</body></html>
