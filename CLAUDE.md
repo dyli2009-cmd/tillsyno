@@ -42,7 +42,10 @@ För en undermodul i Kontrollflödet: läs undermodulens dokument och `kontrollf
   - [SMARTMATCH_FUNCTION_RULES_LOCK.md](SMARTMATCH_FUNCTION_RULES_LOCK.md), [SMARTMATCH_TABLE_RULE_LOCK.md](SMARTMATCH_TABLE_RULE_LOCK.md), [SMARTMATCH_AUTOMATION_RULE_LOCK.md](SMARTMATCH_AUTOMATION_RULE_LOCK.md).
   - [UI_RULES.md](UI_RULES.md) och [DESKTOP_SIZE_RULES.md](DESKTOP_SIZE_RULES.md).
 - **Ändra bara den modul och undermodul uppgiften gäller.** En förbättring i en modul flyttas inte automatiskt till en annan.
-- **Kontrollpunkter och protokollinnehåll blandas aldrig** mellan Dörrautomatik, Lås, Säkerhetsservice och Brand. Den gemensamma PDF-designen följer [pdf-design.md](docs/moduler/kontrollflode/pdf-design.md).
+- **Kontrollpunkter och protokollinnehåll blandas aldrig** mellan Dörrautomatik, Lås, Säkerhetsservice och Brand.
+  - Den visuella PDF-designen ska vara gemensam och innehållet eget per undermodul: [pdf-design.md](docs/moduler/kontrollflode/pdf-design.md).
+- **Kontrollflödets två motorer behålls** (beslut 7 november 2026). `security.js` (Säkerhetsservice, Brand) och `controlflow-revision/security-v335.js` (Dörrautomatik, Lås) slås inte ihop, och funktioner flyttas inte mellan dem. En godkänd designändring görs i båda.
+- **Protokoll flyttas inte mellan undermoduler** utan användarens godkännande. Det gäller till exempel *Checklista revision lås* (Dörrautomatik/Lås) och *Lås & Dörrmiljö* (Säkerhetsservice).
 - **Inga kunddata i repot:** inga kundritningar, ritningsutdrag, kund- eller projektnamn eller objektnummer från kunder. Tester använder genererade data.
 - **Inga hemligheter** (nycklar, lösenord, tokens) i kod, dokument eller chatt. `auth-config.js` innehåller bara den publika nyckeln.
 - **En synlig appversion** för hela Tillsyno (`v2.4.x`). Varje användarsynlig ändring höjer den ett steg. Detaljer finns i DEVELOPMENT_RULES.md avsnitt 4, och den aktuella versionen visas i `app.html`.

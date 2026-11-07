@@ -44,7 +44,7 @@ Användaren ska arbeta lokalt och själv välja en godkänd lagringsplats.
 | Lokal lagring | IndexedDB per modul, localStorage, service worker-cache | grep efter `indexedDB` |
 
 **Återstår för verifiering:**
-- ett automatiskt test som kör appen och fångar all nätverkstrafik vid öppna, arbeta och spara PDF, och som fäller om något annat än inloggning och behörighet skickas,
+- nätverkstestet, som är förberett men inte byggt: [kvalitetskontroller.md](../kvalitetskontroller.md) avsnitt 3E. Det kör appen med syntetiska markörer och fäller om något annat än inloggning och behörighet skickas, eller om en markör eller PDF-data lämnar enheten.
 - en genomläsning av `auth/` och `tillsyno-admin`,
 - en granskning av RLS-reglerna mot schemafilen.
 

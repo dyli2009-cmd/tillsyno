@@ -8,7 +8,7 @@
 |---|---|---|---|
 | Detektorer | `detector` | DET | 1 (funktionskontroll) + nummer, kod, bedömning och anmärkning |
 | Inbrottslarm | `alarm` | I | 10 |
-| Lås & Dörrmiljö | `lock` | L | 13 (se frågan i [las.md](las.md)) |
+| Lås & Dörrmiljö | `lock` | L | 13 (eget protokoll, skilt från *Checklista revision lås*, se [las.md](las.md)) |
 | Passer | `access` | P | 7 |
 
 ## Var koden finns

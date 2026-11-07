@@ -17,16 +17,29 @@ Gemensam PDF-design: [pdf-design.md](pdf-design.md).
 
 1. Startsidan `app.html` → **Kontrollflöde** öppnar `all-in-one.html`. Där väljs protokoll i en mappvy: *Dörrautomatik / Lås*, *Säkerhetsservice* och *Brandsäkerhet*.
 2. `all-in-one.js` (`applyPicker`): om något av `automation`, `automation_selfcheck` eller `lock_revision` väljs, skickas användaren till **`controlflow-revision/all-in-one.html`** (revisionssidan). Övriga protokoll stannar på **`all-in-one.html`** (huvudsidan).
-3. Båda sidorna drivs av samma sorts motor, i `ALL_IN_ONE`-läge:
+3. Varje sida har en egen motor, och båda körs i `ALL_IN_ONE`-läge:
    - huvudsidan av `security.js`,
-   - revisionssidan av en **egen kopia**, `controlflow-revision/security-v335.js`.
-4. Kontrollpunkterna finns i objektet `SYSTEMS` överst i motorn: en post per protokolltyp, med `checks` (kontrollpunkter) och `faults` (felval). **Innehållet hålls isär genom nyckeln, inte genom separata filer.**
+   - revisionssidan av `controlflow-revision/security-v335.js`.
+4. Kontrollpunkterna finns i objektet `SYSTEMS` överst i motorn: en post per protokolltyp, med `checks` (kontrollpunkter) och `faults` (felval).
 5. Kundprotokollet byggs av `reportDoc()` (jsPDF). Det läggs efter ritningssidorna, som byggs med `buildSecurityDrawingPdf` och `exportPdf` (pdf-lib).
 
-**Viktigt om kopiorna:**
-- `SYSTEMS` är i dag **identiskt** i de två motorerna. Det är kontrollerat för alla tio protokolltyperna.
-- `reportDoc()` har däremot **börjat skilja sig åt**, till exempel ORDER/ORDERNUMMER och olika teckenstorlekar. Se [pdf-design.md](pdf-design.md).
-- En ändring i den ena kopian slår **inte** igenom i den andra.
+## De två motorerna: avsiktlig uppdelning som behålls
+
+**Användarbeslut 7 november 2026:** de två motorerna behålls. De slås inte ihop, och funktioner flyttas inte mellan dem. Undermodulerna har olika funktioner, kontrollpunkter, protokoll och arbetsflöden.
+
+| | `security.js` | `controlflow-revision/security-v335.js` |
+|---|---|---|
+| Undermoduler | Säkerhetsservice, Brand | Dörrautomatik, Lås |
+| Sida | `all-in-one.html`, och fristående `security.html` (utan `ALL_IN_ONE`) | `controlflow-revision/all-in-one.html` |
+| Egna funktioner | detektorer: identitetscell, sökning (`detector-scan-*`), numrering | revisionens kundstil, ritad signatur (`revision-signature-v6.js`), revisionsimport (`revision-callout-profile-v4.js`), egen AO-nummerkälla |
+| Egna stödfiler | `security.css`, `style.css`, `tillsyno-appearance.*`, `offline-work.js`, `drawing-transfer.js` i roten | egna kopior av samma filer i `controlflow-revision/` |
+| Delade filer | `controlflow-*` och `security-stamp-selection-v549.*`, `security-detectors-v344.*`, `customer-stamp-editor-v335.js` (se filkartan) | samma |
+
+**Beroenden att känna till:**
+- `SYSTEMS` finns i båda motorerna och är i dag **identiskt**. Det är kontrollerat för alla tio protokolltyperna, också för typer som inte används på sidan.
+- En ändring i den ena motorn slår **inte** igenom i den andra.
+- Ändras en **delad** fil (`controlflow-*` med flera) påverkas båda sidorna.
+- Den gemensamma PDF-designen (lager 1) finns i båda motorerna och har börjat skilja sig åt. Granskningen och förslagen finns i [pdf-design.md](pdf-design.md).
 
 ## Filkarta
 

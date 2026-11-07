@@ -21,18 +21,17 @@ Punkterna är:
 
 Checklistan infördes i v2.4.252 (CONTROLFLOW_LOCK.md).
 
-## Behöver beslut: var hör "Lås & Dörrmiljö" hemma?
+## Två låsprotokoll med olika placering (beslut 7 november 2026)
 
-Koden har **två** låsprotokoll:
-
-| Protokoll | Nyckel | Mapp i protokollväljaren | Sida |
+| Protokoll | Nyckel | Mapp i protokollväljaren | Sida och motor |
 |---|---|---|---|
-| Checklista revision lås | `lock_revision` | Dörrautomatik / Lås | revisionssidan |
-| Lås & Dörrmiljö (13 punkter, prefix L) | `lock` | **Säkerhetsservice** | huvudsidan |
+| Checklista revision lås | `lock_revision` | Dörrautomatik / Lås | revisionssidan, `security-v335.js` |
+| Lås & Dörrmiljö (13 punkter, prefix L) | `lock` | Säkerhetsservice | huvudsidan, `security.js` |
 
-Det här dokumentet behandlar bara `lock_revision` som undermodulen **Lås**. `lock` dokumenteras under [Säkerhetsservice](sakerhetsservice.md), eftersom det är där det ligger i appen i dag.
-
-Om `lock` i stället ska höra till undermodulen Lås är det ett användarbeslut. Det kräver upplåsning om något ska flyttas i appen.
+**Båda behålls med sin nuvarande placering.** De slås inte ihop och flyttas inte utan användarens godkännande.
+- Det här dokumentet gäller `lock_revision`.
+- `lock` dokumenteras under [Säkerhetsservice](sakerhetsservice.md).
+- En ändring i det ena protokollet ändrar inte det andra.
 
 ## Var koden finns
 

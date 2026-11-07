@@ -71,14 +71,21 @@ Testsviten är städad 7 november 2026: `node tools/run-tests.mjs`, se [tests/RE
 
 ## 8. Utvecklingsstrategi – nästa steg
 
-Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. Förslagen finns i [docs/kvalitetskontroller.md](docs/kvalitetskontroller.md) avsnitt 3. Varje punkt godkänns separat.
+Grundstrukturen (CLAUDE.md och docs/moduler/) är klar. De förberedda ändringarna finns i [docs/kvalitetskontroller.md](docs/kvalitetskontroller.md) avsnitt 3. Varje punkt godkänns separat.
 
-- [ ] **Ägaren:** slå på branchskydd för `main` (bara via PR, krav på godkända tester). Görs i GitHub → Settings → Branches.
-- [ ] **Claude, efter godkännande:** tester på varje PR (förslag A) och låskontroll för Kontrollflödet (B).
-- [ ] **Claude, efter godkännande:** test som låser kontrollpunkterna (C) och nätverkstest som visar att inga kunddata lämnar enheten (E).
-- [ ] **Ägaren, beslut:** ska *Lås & Dörrmiljö* (`lock`, i dag under Säkerhetsservice) höra till undermodulen Lås? Se [docs/moduler/kontrollflode/las.md](docs/moduler/kontrollflode/las.md).
-- [ ] **Ägaren, beslut:** PDF-designen finns i två kopior som har börjat skilja sig åt (t.ex. ORDER/ORDERNUMMER). Vilken variant gäller, och ska designen brytas ut till en gemensam fil? Kräver upplåsning. Se [pdf-design.md](docs/moduler/kontrollflode/pdf-design.md).
-- [ ] **Ägaren, godkännande:** rätta inaktuella hänvisningar i befintliga dokument, se kvalitetskontroller.md avsnitt 4.
+**Beslutat 7 november 2026:**
+- De två motorerna i Kontrollflödet (`security.js` och `controlflow-revision/security-v335.js`) behålls. De slås inte ihop, och funktioner flyttas inte mellan dem.
+- Båda låsprotokollen behålls där de ligger: *Checklista revision lås* under Dörrautomatik/Lås och *Lås & Dörrmiljö* under Säkerhetsservice.
+- PDF-designen ska vara gemensam, men innehållet egna per undermodul.
+
+**Nästa uppgift, branchskydd och automatiska tester:**
+- [ ] **Claude, efter godkännande:** tester på varje PR (3B), låskontroll (3C) och påverkan på andra moduler (3D).
+- [ ] **Ägaren:** slå på skyddet av `main` enligt 3A, när 3B och 3C har gått igenom en gång.
+
+**Därefter:**
+- [ ] **Claude, efter godkännande:** nätverkstestet för IT-granskningen (3E).
+- [ ] **Ägaren, beslut:** förbättringar av PDF-designen P1–P7 i [pdf-design.md](docs/moduler/kontrollflode/pdf-design.md). Viktigast är P6, en kundstil för alla. Görs i båda motorerna och kräver upplåsning.
+- [ ] **Ägaren, godkännande:** rättningar av dokumenthänvisningar R1–R8, se kvalitetskontroller.md avsnitt 4.
 
 ---
 
