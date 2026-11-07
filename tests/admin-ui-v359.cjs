@@ -6,12 +6,12 @@ const projectRoot=path.resolve(__dirname,'..'),root=process.env.ADMIN_UI_ROOT||p
 const output=process.env.ADMIN_REVIEW_DIR||require('node:os').tmpdir();
 const ids={owner:'11111111-1111-4111-8111-111111111111',member:'22222222-2222-4222-8222-222222222222',pending:'33333333-3333-4333-8333-333333333333',unverified:'44444444-4444-4444-8444-444444444444',expired:'55555555-5555-4555-8555-555555555555'};
 const token='header.'+Buffer.from(JSON.stringify({session_id:ids.owner})).toString('base64url')+'.signature';
-let users,roles,events=[],failNext=null;
+let users,roles,events=[],failNext=null,auditRows=[];
 const ok=data=>({data,error:null});
 function reset(){
  users=new Map(Object.entries(ids).map(([name,id])=>[id,{id,email:name+'@example.invalid',email_confirmed_at:name==='unverified'?null:'2026-01-01',created_at:'2026-10-12',user_metadata:{name:name[0].toUpperCase()+name.slice(1)}}]));
  roles=new Map([[ids.owner,{access_role:'admin',allowed_modules:['smartmatch','control','drawing'],license_expires_at:null}],[ids.member,{access_role:'member',allowed_modules:['smartmatch','control'],license_expires_at:new Date(Date.now()+20*86400000).toISOString()}],[ids.expired,{access_role:'member',allowed_modules:['drawing'],license_expires_at:'2026-01-01T00:00:00Z'}]]);
- events=[];failNext=null;
+ events=[];failNext=null;auditRows=[];
 }
 reset();
 function query(){let mode='select',id,changes;
@@ -20,7 +20,14 @@ function query(){let mode='select',id,changes;
   then(resolve,reject){if(mode==='delete'){roles.delete(id);return Promise.resolve(ok(null)).then(resolve,reject)}if(mode==='update'){roles.set(id,{...roles.get(id),...changes});return Promise.resolve(ok(null)).then(resolve,reject)}return Promise.resolve(ok([...roles].map(([user_id,row])=>({user_id,...row})))).then(resolve,reject)}
  };return q;
 }
-const api={from:query,rpc:async(_,args)=>ok(args._session_id===ids.owner&&args._user_id===ids.owner),auth:{getUser:async t=>t===token?ok({user:users.get(ids.owner)}):{data:null,error:Error('Invalid test token')},admin:{
+// Administrator log table: insert, retention delete and newest-first listing.
+function auditQuery(){let mode='select',cutoff=null;
+ const q={insert:async row=>{auditRows.push({at:new Date().toISOString(),...row});return ok(null)},
+  delete(){mode='delete';return q},lt(_,value){cutoff=value;return q},select(){return q},order(){return q},limit(){return q},
+  then(resolve,reject){if(mode==='delete'){auditRows=auditRows.filter(r=>r.at>=cutoff);return Promise.resolve(ok(null)).then(resolve,reject)}return Promise.resolve(ok([...auditRows].reverse())).then(resolve,reject)}};
+ return q;
+}
+const api={from:table=>table==='tillsyno_admin_audit'?auditQuery():query(),rpc:async(_,args)=>ok(args._session_id===ids.owner&&args._user_id===ids.owner),auth:{getUser:async t=>t===token?ok({user:users.get(ids.owner)}):{data:null,error:Error('Invalid test token')},admin:{
  listUsers:async()=>ok({users:[...users.values()]}),getUserById:async id=>ok({user:users.get(id)}),
  updateUserById:async(id,data)=>{if(data.ban_duration)users.get(id).banned_until=data.ban_duration==='none'?null:'2100-01-01';return ok({user:users.get(id)})},
  deleteUser:async id=>{users.delete(id);roles.delete(id);return ok(null)},generateLink:async()=>ok({properties:{action_link:'https://example.invalid/test'}})
@@ -77,6 +84,7 @@ async function styles(page,selectors){return page.evaluate(selectors=>Object.fro
  await row(page,'pending').getByRole('button',{name:'Godkänn',exact:true}).click();await page.locator('#approvalForm input[value="smartmatch"]').check();await page.locator('#approveUser').click();await page.waitForFunction(()=>!document.getElementById('approvalError').hidden);await waitIdle(page);const count=events.filter(x=>x.action==='approve').length;
  await page.locator('#approveUser').click();await page.waitForTimeout(150);const after=events.filter(x=>x.action==='approve').length;
  assert.equal(after,count+1,'approval retries after a temporary server error');await page.waitForFunction(()=>!document.getElementById('approvalDialog').open);await waitIdle(page);passed('Approval can be retried directly after a server error.');
+ { const approvals=auditRows.filter(r=>r.action==='approve');assert.equal(approvals.length,1,'one completed approval is logged once');assert.equal(approvals[0].actor_id,ids.owner);assert.equal(approvals[0].target_id,ids.pending);assert.deepEqual(approvals[0].details.modules,['smartmatch']);assert.ok(!JSON.stringify(auditRows).includes('example.invalid/test'),'no invitation link in the log');await page.locator('#auditRefresh').click();await page.waitForFunction(()=>document.getElementById('auditList').textContent.includes('Godkände användare'));passed('Completed administrator actions are written to the administrator log and shown on the page; links are never logged.'); }
  for(const [device,width,height]of [['phone',390,844],['tablet',820,1180],['desktop',1440,1000]]){
   await page.setViewportSize({width,height});
   for(const theme of ['ice','mist','coast','sand','night','graphite','pine']){

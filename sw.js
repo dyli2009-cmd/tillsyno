@@ -1,4 +1,4 @@
-const VERSION='2.4.574';
+const VERSION='2.4.575';
 const CACHE='tillsyno-offline-'+VERSION;
 const BASE=new URL('./',self.location.href);
 const CORE=[
@@ -19,6 +19,7 @@ const CORE=[
  "auth/forgot-password.html",
  "auth/forgot-password.js",
  "auth/guard.js",
+ "auth/integritet.html",
  "auth/login.html",
  "auth/login.js",
  "auth/module-code-gate.js",

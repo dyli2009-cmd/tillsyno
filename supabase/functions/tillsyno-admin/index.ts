@@ -36,6 +36,19 @@ export function makeHandler(clientFactory, getEnv) {
    const body=await request.json().catch(()=>null);
    if(!body||typeof body.action!=='string')return reply({error:'Ogiltig åtgärd.'},400);
    const checked=result=>{if(result.error)throw result.error;return result.data};
+   // Administrator log: one row per completed change, kept for AUDIT_DAYS days.
+   // Never stores passwords, codes, invitation links or tokens.
+   const AUDIT_DAYS=365;
+   const audit=async(action,target=null,details={})=>{
+    try{
+     const written=await admin.from('tillsyno_admin_audit').insert({actor_id:identity.user.id,actor_email:identity.user.email||'',
+      action,target_id:target?.id||null,target_email:target?.email||null,details});
+     if(written?.error)throw written.error;
+     await admin.from('tillsyno_admin_audit').delete().lt('at',new Date(Date.now()-AUDIT_DAYS*86400000).toISOString());
+     return true;
+    }catch(_){return false;}
+   };
+   const logged=(ok,message)=>ok?message:message+' Händelsen kunde inte skrivas till administratörsloggen.';
    const kinds=['smartmatch','control','drawing'];
    const goodModules=v=>Array.isArray(v)&&v.length>0&&v.length<=3&&new Set(v).size===v.length&&v.every(x=>kinds.includes(x));
    const goodDays=v=>Number.isInteger(v)&&v>=1&&v<=3650;
@@ -72,6 +85,10 @@ export function makeHandler(clientFactory, getEnv) {
      status:Date.parse(u.banned_until||'')>Date.now()?'removed':roles.has(u.id)?(Date.parse(roles.get(u.id)?.license_expires_at||'')===Date.parse(CANCELLED)?'revoked':roles.get(u.id)?.license_expires_at&&Date.parse(roles.get(u.id).license_expires_at)<=Date.now()?'expired':u.email_confirmed_at?'active':'invited'):'pending',
      emailVerified:!!u.email_confirmed_at,createdAt:u.created_at,lastSignIn:u.last_sign_in_at||null,protected:roles.get(u.id)?.access_role==='admin'||u.id===identity.user.id}))});
    }
+   if(body.action==='audit'){
+    const rows=checked(await admin.from('tillsyno_admin_audit').select('at,actor_email,action,target_email,details').order('at',{ascending:false}).limit(200))||[];
+    return reply({entries:rows,retentionDays:AUDIT_DAYS});
+   }
    if(body.action==='codeSettings'){
     const rows=checked(await admin.from('tillsyno_module_codes').select('module_key,enabled,pin_hash,updated_at').order('module_key'))||[];
     return reply({settings:rows.map(row=>({module:row.module_key,enabled:!!row.enabled,hasCode:!!row.pin_hash,updatedAt:row.updated_at||null}))});
@@ -95,7 +112,9 @@ export function makeHandler(clientFactory, getEnv) {
      const pin=setting.pin===undefined||setting.pin===null||setting.pin===''?null:String(setting.pin);
      checked(await admin.rpc('tillsyno_admin_set_module_code',{p_module:setting.module,p_enabled:setting.enabled,p_pin:pin}));
     }
-    return reply({ok:true,message:'Kodlåsen har sparats.'});
+    const auditOk=await audit('saveCodeSettings',null,{settings:settings.map(setting=>({module:setting.module,enabled:setting.enabled,
+     codeChanged:!(setting.pin===undefined||setting.pin===null||setting.pin==='')}))});
+    return reply({ok:true,message:logged(auditOk,'Kodlåsen har sparats.')});
    }
    if(body.action==='add'){
     const modules=body.modules===undefined?kinds:body.modules,days=body.licenseDays===undefined?30:body.licenseDays;
@@ -106,7 +125,8 @@ export function makeHandler(clientFactory, getEnv) {
     const data=checked(await admin.auth.admin.generateLink({type:'invite',email,options:{redirectTo,data:{name}}}));
     if(!data?.user?.id||!data.properties?.action_link)throw Error('Länken kunde inte skapas.');
     checked(await admin.from('tillsyno_access').upsert({user_id:data.user.id,access_role:'member',allowed_modules:modules,license_expires_at:expiration(days)}));
-    return reply({ok:true,email,link:data.properties.action_link,message:'Användaren är tillagd. Dela den personliga länken så att användaren kan välja lösenord.'});
+    const auditOk=await audit('add',{id:data.user.id,email},{modules,licenseDays:days});
+    return reply({ok:true,email,link:data.properties.action_link,message:logged(auditOk,'Användaren är tillagd. Dela den personliga länken så att användaren kan välja lösenord.')});
    }
    if(!['approve','remove','delete','link','update','extend','cancelLicense'].includes(body.action))return reply({error:'Okänd åtgärd.'},400);
    if(typeof body.userId!=='string'||!body.userId.match(/^[0-9a-f-]{36}$/i))return reply({error:'Välj en användare.'},400);
@@ -121,7 +141,8 @@ export function makeHandler(clientFactory, getEnv) {
      return reply({error:'Bekräfta användarens e-postadress innan du raderar kontot.'},400);
     const deletion=await admin.auth.admin.deleteUser(target.id);
     if(deletion.error)throw deletion.error;
-    return reply({ok:true,message:'Kontot har raderats från Tillsyno och Supabase. E-postadressen kan registreras på nytt.'});
+    const auditOk=await audit('delete',target);
+    return reply({ok:true,message:logged(auditOk,'Kontot har raderats från Tillsyno och Supabase. E-postadressen kan registreras på nytt.')});
    }
    if(body.action==='remove') {
     // Old cached UI used this action to ban accounts. Prevent misleading partial deletion.
@@ -133,14 +154,16 @@ export function makeHandler(clientFactory, getEnv) {
     if(!goodModules(body.modules)||!goodDays(body.licenseDays))return reply({error:'Välj moduler och giltig licenstid innan godkännande.'},400);
     checked(await admin.from('tillsyno_access').upsert({user_id:target.id,access_role:'member',allowed_modules:body.modules,license_expires_at:expiration(body.licenseDays)}));
     checked(await admin.auth.admin.updateUserById(target.id,{ban_duration:'none'}));
-    return reply({ok:true,message:'Användaren är godkänd och har fått tilldelad licens.'});
+    const auditOk=await audit('approve',target,{modules:body.modules,licenseDays:body.licenseDays});
+    return reply({ok:true,message:logged(auditOk,'Användaren är godkänd och har fått tilldelad licens.')});
    }
 
    if(body.action==='cancelLicense'){
     if(targetAccess?.access_role!=='member'||Date.parse(target.banned_until||'')>Date.now())
      return reply({error:'Godkänn användaren innan du avslutar licensen.'},409);
     checked(await admin.from('tillsyno_access').update({license_expires_at:CANCELLED}).eq('user_id',target.id));
-    return reply({ok:true,message:'Licensen har avslutats. Åtkomst nekas vid nästa onlinekontroll. Kontot är kvar och kan få ny licens.'});
+    const auditOk=await audit('cancelLicense',target);
+    return reply({ok:true,message:logged(auditOk,'Licensen har avslutats. Åtkomst nekas vid nästa onlinekontroll. Kontot är kvar och kan få ny licens.')});
    }
    if(body.action==='update'||body.action==='extend'){
     if(targetAccess?.access_role!=='member'||Date.parse(target.banned_until||'')>Date.now())
@@ -168,11 +191,14 @@ export function makeHandler(clientFactory, getEnv) {
     }
     if(!Object.keys(changes).length)return reply({error:'Inga ändringar angivna.'},400);
     checked(await admin.from('tillsyno_access').update(changes).eq('user_id',target.id));
-    return reply({ok:true,message:body.action==='extend'?'Licensen har förlängts.':'Behörigheten har sparats.'});
+    const auditOk=await audit(body.action,target,{...(changes.allowed_modules?{modules:changes.allowed_modules}:{}),...(changes.license_expires_at?{licenseExpiresAt:changes.license_expires_at}:{})});
+    return reply({ok:true,message:logged(auditOk,body.action==='extend'?'Licensen har förlängts.':'Behörigheten har sparats.')});
    }
    if(targetAccess?.access_role!=='member'||Date.parse(target.banned_until||'')>Date.now())return reply({error:'Godkänn användaren innan du skapar en länk.'},409);
-   const data=checked(await admin.auth.admin.generateLink({type:target.email_confirmed_at?'recovery':'invite',email:target.email,options:{redirectTo}}));
-   return reply({ok:true,email:target.email,link:data.properties.action_link,message:'Dela den personliga länken med användaren.'});
+   const linkType=target.email_confirmed_at?'recovery':'invite';
+   const data=checked(await admin.auth.admin.generateLink({type:linkType,email:target.email,options:{redirectTo}}));
+   const auditOk=await audit('link',target,{type:linkType});
+   return reply({ok:true,email:target.email,link:data.properties.action_link,message:logged(auditOk,'Dela den personliga länken med användaren.')});
   }catch(error){
    // Never log session tokens or generated invitation links.
    return reply({error:'Åtgärden kunde inte slutföras. Ladda om listan och försök igen.'},500);

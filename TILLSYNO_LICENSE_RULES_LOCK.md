@@ -118,3 +118,10 @@ Beslutat av användaren inför IT-säkerhetsgranskningen. Ersätter självregist
 - **Ingen automatisk radering.** Sjudagarsregeln i avsnitt 4 gäller oförändrat: när licens eller offlineperiod tar slut bevaras lokalt arbete. Spärrsidan erbjuder bara länken *Logga ut och rensa enheten* som ett uttryckligt val.
 - GitHub Pages-adressen delar webbläsarens lagring med andra Pages-sidor på samma konto (`dyli2009-cmd.github.io`). Rensningen tar därför bort alla IndexedDB-databaser för den adressen. Med egen domän gäller rensningen bara Tillsyno.
 - Verifiering: `tests/device-data-clear-v573.cjs` (Chromium). Fysisk iPhone/iPad, Safari och TestFlight är inte verifierade.
+
+## 14. Administratörslogg och integritetssida – beslut 7 november 2026 (v2.4.575)
+- **Administratörslogg:** varje genomförd ändring via `tillsyno-admin` (lägg till, godkänn, ändra, förläng, avsluta licens, radera, skapa länk, spara kodlås) skrivs till `public.tillsyno_admin_audit` med tid, administratör, åtgärd, berört konto och moduler/licenstid. Lösenord, koder, inbjudningslänkar och token sparas aldrig. Rader äldre än 365 dagar raderas automatiskt.
+- Tabellen har RLS utan klientåtkomst; serverrollen får bara läsa, lägga till och radera (inte ändra). Administrationssidan visar de 200 senaste händelserna under **Administratörslogg**. Se `auth/admin-audit.sql`.
+- Loggningen stoppar aldrig själva ändringen. Om loggen inte kan skrivas får administratören ett meddelande om det.
+- **Integritetssida:** `auth/integritet.html` (öppen utan inloggning, länkad från inloggningen, Mitt konto och Administration) beskriver vilka uppgifter som sparas, var, varför och hur länge, vem som ansvarar och användarens rättigheter.
+- Driftsättningen av serverfunktionen med loggen görs separat i Supabase. Tills dess visar administrationssidan att loggen aktiveras när funktionen har uppdaterats.
