@@ -1,0 +1,27 @@
+/* v2.4.589: Tidigare service / anmärkningar in the dark themes, Dörrautomatik / Lås and Säkerhetsservice.
+   The panel was always light yellow, so the light text of the dark themes could hardly be read.
+   Light themes are unchanged. Presentation only: the history data and the PDF are not affected. */
+@layer controlflowStandard {
+  html[data-controlflow-ui="1"]:is([data-tillsyno-theme="night"], [data-tillsyno-theme="graphite"], [data-tillsyno-theme="pine"]) body.allInOneApp #securityProtocol #secPreviousPanel.previousPanel {
+    color: var(--ta-ink, #e5eef5) !important;
+    background: #33291a !important;
+    border: 1px solid #8a6a2e !important;
+  }
+  html[data-controlflow-ui="1"]:is([data-tillsyno-theme="night"], [data-tillsyno-theme="graphite"], [data-tillsyno-theme="pine"]) body.allInOneApp #securityProtocol #secPreviousPanel.previousPanel > summary {
+    color: #ffd27a !important;
+  }
+  html[data-controlflow-ui="1"]:is([data-tillsyno-theme="night"], [data-tillsyno-theme="graphite"], [data-tillsyno-theme="pine"]) body.allInOneApp #securityProtocol #secPreviousPanel.previousPanel > p {
+    color: var(--ta-muted, #adc0cf) !important;
+  }
+  html[data-controlflow-ui="1"]:is([data-tillsyno-theme="night"], [data-tillsyno-theme="graphite"], [data-tillsyno-theme="pine"]) body.allInOneApp #securityProtocol #secPreviousIssues .previousIssue {
+    color: var(--ta-ink, #e5eef5) !important;
+    background: #241d12 !important;
+    border-left-color: #e0a63a !important;
+  }
+  html[data-controlflow-ui="1"]:is([data-tillsyno-theme="night"], [data-tillsyno-theme="graphite"], [data-tillsyno-theme="pine"]) body.allInOneApp #securityProtocol #secPreviousIssues .previousIssue strong {
+    color: #ffd27a !important;
+  }
+  html[data-controlflow-ui="1"]:is([data-tillsyno-theme="night"], [data-tillsyno-theme="graphite"], [data-tillsyno-theme="pine"]) body.allInOneApp #securityProtocol #secPreviousIssues .previousIssue span {
+    color: var(--ta-ink, #e5eef5) !important;
+  }
+}

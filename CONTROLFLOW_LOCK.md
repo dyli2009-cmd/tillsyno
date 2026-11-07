@@ -408,3 +408,14 @@ Oförändrat: kontrollpunkter, protokollinnehåll, motorn `security-v335.js`, de
 - `revision-header-v584.js`: filnamnet placeras i sidraden.
 
 Säkerhetsservice har redan temafärgade sidpilar och öga och ändras inte. Oförändrat: motorn, delade filer, Brand, kontrollpunkter, protokoll, stämplar, arbetsfiler, import och exporterad PDF. Test: `tests/revision-views-v588.cjs`, uppdaterat `tests/revision-header-v584.cjs` och Kontrollflödets tester.
+
+# 2026-11-07 · v2.4.589 · Historikrutan i mörka teman, knappfärger och Signatur och logga
+
+Ägaren rapporterade att historiken efter *Ny service* (*Tidigare service / anmärkningar*) knappt gick att läsa, att några knappar var vita, och bad om en mer kompakt *Signatur och logga*. Ägaren godkände att historikrutan rättas också i Säkerhetsservice. Modulversioner: Dörrautomatik / Lås 1.5 → 1.6, Säkerhetsservice 1.1 → 1.2.
+
+Ändrat:
+- Ny delad `controlflow-previous-v589.css`, laddas av båda sidorna: historikrutan har mörk, varm bakgrund och ljus text i de mörka temana (natt, grafit, skog). Ljusa teman är oförändrade.
+- `security.js` och `controlflow-revision/security-v335.js`, samma ändring i båda (`renderSecurityPrevious`): en punkt utan anmärkningstext visas bara med nummer och namn, utan att namnet upprepas.
+- Ny `controlflow-revision/revision-polish-v589.css`: *Öppna ritning* och *Stäng ritning* har samma färger som *Mall*, ögat och sidpilarna samma som *Ångra*. *Signatur och logga* har mindre knappar bredvid varandra och mindre hjälptexter.
+
+Oförändrat: historikdata, kontrollpunkter, protokoll, stämplar, arbetsfiler, import och exporterad PDF; Brand. Test: `tests/controlflow-polish-v589.cjs` (alla sju teman, båda sidorna) och Kontrollflödets tester.

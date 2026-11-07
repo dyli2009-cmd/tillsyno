@@ -1,8 +1,8 @@
 # Kontrollflöde – Dörrautomatik
 
 ## 1. Version
-- **Appversion:** Tillsyno v2.4.588 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
-- **Modulversion:** Dörrautomatik / Lås 1.5. Det är en gemensam version för Dörrautomatik och Lås, som grupperas som i mappvalet (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (ägarens beslut, v2.4.584). Nästa funktionsändring, till exempel kraschrättningen, höjer den till 1.6.
+- **Appversion:** Tillsyno v2.4.589 (utgångspunkt v2.4.581, taggen `tillsyno-2.4.581-utgangspunkt`).
+- **Modulversion:** Dörrautomatik / Lås 1.6. Det är en gemensam version för Dörrautomatik och Lås, som grupperas som i mappvalet (beslut 7 november 2026). Versionen finns i `versions.json` och visas med liten text på startsidan och i mappvalet. Sidhuvudet i ritningsvyn visar ingen version (ägarens beslut, v2.4.584). Nästa funktionsändring, till exempel kraschrättningen, höjer den till 1.7.
 - Kontrollflödet är upplåst. Gemensamma regler, motorer och filkarta: [README.md](README.md).
 
 ## 2. Arbetsflöde från början till slut
@@ -64,6 +64,8 @@
     - Filnamn och antal objekt står i sidraden bredvid sidpilarna, på dator i verktygsraden. Raden med objekt finns inte längre, och inte heller *Svep*.
     - Ögat (visa/dölj markeringar) ligger i verktygsraden mellan *Gör om* och *Verktyg*. Sidpilarna och ögat följer färgtemat.
     - *Projekt*: ingen modulrubrik, inget kryss och ingen rubrik *Service*. Rubriken *Projekt* och alla formulär finns kvar. *Starta ny service* ligger sist, efter *Beställare*.
+  - **Tidigare service / anmärkningar (v2.4.589):** efter *Ny service* visar checklistan förra servicens status och anmärkningar. Rutan är läsbar i alla teman (mörk bakgrund i de mörka temana, `controlflow-previous-v589.css`, delad med Säkerhetsservice). En punkt utan anmärkningstext visas bara med nummer och namn.
+  - **Färger och Signatur och logga (v2.4.589, `revision-polish-v589.css`):** *Öppna ritning* och *Stäng ritning* har samma färger som *Mall*, ögat och sidpilarna samma som *Ångra*. *Signatur och logga* har mindre knappar bredvid varandra och mindre hjälptexter.
   - **Ändringskontrollen** jämför arbetet (objekt, anteckningar, ritobjekt, projektuppgifter, logotyp) med läget när ritningen öppnades eller PDF:en senast sparades. Motorn meddelar en sparad PDF med händelsen `revision-pdf-saved`.
 
 ## 4. Kodfiler och motor
@@ -78,6 +80,7 @@
   - `revision-header-v584.*` (sidhuvud, verktygsmeny och frågan innan ritningen lämnas)
   - `revision-protocol-v587.*` (checklistvyn: rubrik, infällda objektuppgifter med varning)
   - `revision-views-v588.*` (Ritning, Översikt och Projekt: meddelanden, sidrad, öga, översiktens filter, Starta ny service sist)
+  - `revision-polish-v589.css` (knappfärger som Mall, kompakt Signatur och logga)
   - kopior av `legacy-door-import.js`, `offline-work-v2.js`, `drawing-transfer-v2.js`, `session-history.js`, `drawing-annotations.js` och `tillsyno-appearance*`
 - **Delade Kontrollflödesfiler:** `controlflow-*` och `security-stamp-selection-v549.*`, `security-detectors-v344.*`. Se README.md.
 - **Äldre dörrkod på startsidan** (`app.js`, `v2.js`, `reports.js`): har en egen kopia av de 18 punkterna. Om den koden används är *ej verifierat*. Ändra den inte som följd av ändringar här.
@@ -114,7 +117,7 @@
 
 ## 8. Tester och status
 ```sh
-node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress security-automation-checklist revision-uncheck revision-header revision-draw-delete stamp-lock-frame revision-protocol revision-views controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
+node tools/run-tests.mjs --modules <mapp>/node_modules controlflow-heavy controlflow-drawing-load-progress security-automation-checklist revision-uncheck revision-header revision-draw-delete stamp-lock-frame revision-protocol revision-views controlflow-polish controlflow-production controlflow-pdf-roundtrip protocol-selection security-protocol-scope
 ```
 - **Senaste körning:** godkänd (v2.4.585), se [kvalitetskontroller.md](../../kvalitetskontroller.md). `revision-header-v584` provar sidhuvudet, verktygsmenyn och frågan innan ritningen lämnas på telefon, iPad och dator. `revision-draw-delete-v585` provar *Ta bort* för alla sex ritobjekt på telefon och dator. `revision-protocol-v587` provar checklistvyn på telefon, iPad och dator. `revision-views-v588` provar Ritning, Översikt och Projekt på telefon, iPad och dator, i ljust och mörkt tema.
 - **Ej verifierat på riktig enhet:** sidhuvudet och frågan på iPhone och iPad med Safari, och att nedladdningen av PDF:en blir klar innan användaren väljer att lämna.
